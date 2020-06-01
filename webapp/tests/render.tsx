@@ -5,7 +5,7 @@ import { render } from "@testing-library/react"
 import { Route, MemoryRouter, Switch } from "react-router-dom"
 
 interface Props {
-    children: ReactNode;
+    children: ReactNode
 }
 
 const MemoryRouterWrapper = (initialPath: string) => ({ children }: Props) =>

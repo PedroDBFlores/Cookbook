@@ -6,7 +6,7 @@ import NavDropdown from "react-bootstrap/NavDropdown"
 import { LinkContainer } from "react-router-bootstrap"
 
 export interface ApplicationToolbarProps {
-    title: string;
+    title: string
 }
 
 const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({ title }) => {

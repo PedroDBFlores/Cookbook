@@ -17,7 +17,7 @@ describe("Application Toolbar", () => {
             it("has an Administration menu", () => {
                 renderWithRouter(<ApplicationToolbar title={"title"} />)
                 expect(screen.getByText("Administration")).toBeInTheDocument()
-            });
+            })
 
             it(`navigates to the Users page`, async () => {
                 renderWithRoutes({

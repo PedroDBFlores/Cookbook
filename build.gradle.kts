@@ -14,6 +14,7 @@ plugins {
     application
     kotlin("jvm") version "1.3.72"
     id("com.moowork.node") version "1.3.1"
+    id("org.unbroken-dome.test-sets") version "3.0.1"
 }
 
 group = "pt.pedro"
@@ -58,16 +59,11 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotest_version") // for kotest framework
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotest_version") // for kotest core jvm assertions
+    testImplementation("io.kotest:kotest-assertions-json:$kotest_version") // for kotest json assertions
     testImplementation("io.kotest:kotest-property-jvm:$kotest_version") // for kotest property test
     testImplementation("io.mockk:mockk:$mockk_version")
     testImplementation("com.github.javafaker:javafaker:1.0.2")
 }
-
-kotlin.sourceSets["main"].kotlin.srcDirs("src")
-kotlin.sourceSets["test"].kotlin.srcDirs("test")
-
-sourceSets["main"].resources.srcDirs("resources")
-sourceSets["test"].resources.srcDirs("testresources")
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
@@ -75,8 +71,22 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     }
 }
 
+testSets {
+    createTestSet("integrationTest") {
+        dirName = "integration-test"
+    }
+}
+
+
 tasks.withType<Test> {
     useJUnitPlatform {}
+}
+
+tasks{
+    named("check") { dependsOn("integrationTest") }
+    named("integrationTest", Test::class) {
+        mustRunAfter("test")
+    }
 }
 
 //Webapp

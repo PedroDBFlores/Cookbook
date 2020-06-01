@@ -1,3 +1,4 @@
-import { User } from "./user";
+import { User } from "./user"
+import { RecipeType } from "./recipe-type"
 
-export { User }
+export { User, RecipeType }

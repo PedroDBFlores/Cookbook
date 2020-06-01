@@ -1,0 +1,16 @@
+package utils.mocks
+
+import io.ktor.application.ApplicationCall
+import io.mockk.mockk
+
+/**
+ * Provides mocks for using in the handler unit tests
+ */
+internal object HandlerMocks {
+    /**
+     * Gets a mock of the handler application call
+     */
+    fun getApplicationCallMock(): ApplicationCall {
+        return mockk(relaxed = true)
+    }
+}

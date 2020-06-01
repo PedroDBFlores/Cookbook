@@ -1,4 +1,4 @@
-import { User } from "../../../src/dto"
+import { User, RecipeType } from "../../../src/dto"
 import { name, internet, random } from "faker"
 
 /**
@@ -11,5 +11,11 @@ export const generateUser = (props?: object): User => ({
     lastName: name.lastName(),
     userName: internet.userName(),
     email: internet.email(),
+    ...props
+})
+
+export const generateRecipeType = (props?: object): RecipeType => ({
+    id: random.number(),
+    name: random.word(),
     ...props
 })
