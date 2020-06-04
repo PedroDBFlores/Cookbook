@@ -5,7 +5,7 @@ import Layout from "./components/layout/layout"
 import RecipeTypeListPage from "./features/recipe-type/list/list-page"
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-const App: React.FC<{}> = () => (
+const App: React.FC<unknown> = () => (
     <BrowserRouter>
         <Layout>
             <Switch>

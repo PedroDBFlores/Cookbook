@@ -7,9 +7,11 @@ export interface RecipeTypeService {
 
 export const createRecipeTypeService = (): RecipeTypeService => {
     return {
-        getAllRecipeTypes : getAllRecipeTypes
+        getAllRecipeTypes: getAllRecipeTypes
     }
 }
 
-const getAllRecipeTypes = (): Promise<Array<RecipeType>> =>
-    axios.get("/api/recipetype")
+const getAllRecipeTypes = async (): Promise<Array<RecipeType>> => {
+    const response = await axios.get<Array<RecipeType>>("/api/recipetype")
+    return response.data
+}

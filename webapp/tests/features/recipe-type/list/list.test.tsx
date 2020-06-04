@@ -22,7 +22,7 @@ describe("Recipe type list", () => {
             recipeTypes.forEach(element => {
                 expect(screen.getByText(element.id.toString())).toBeInTheDocument()
                 expect(screen.getByText(element.name)).toBeInTheDocument()
-            });
+            })
         })
     })
 })

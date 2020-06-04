@@ -12,19 +12,13 @@ serviceMock.mockImplementation(() => ({
 
 describe("Recipe type list page", () => {
     describe("Render", () => {
-        it("has the required content", async () => {
+        it("has the required content and gets the recipe types", async () => {
             getAllRecipeTypesMock.mockResolvedValueOnce([])
             render(<RecipeTypeListPage />)
             expect(screen.getByText(/Recipe type list/i)).toBeInTheDocument()
-        })
 
-        it("gets the recipe types on load", async () => {
-            getAllRecipeTypesMock.mockResolvedValueOnce([])
-            render(<RecipeTypeListPage />)
-
-            await waitFor(() => {
-                expect(getAllRecipeTypesMock).toHaveBeenCalled()
-            })
+            await screen.findByText("No recipe types found")
+            expect(getAllRecipeTypesMock).toHaveBeenCalled()
         })
     })
 })

@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import RecipeTypeList from "./list"
 import { createRecipeTypeService } from "../../../services/recipe-type-service"
 import { RecipeType } from "../../../dto"
+import { useQuery } from "react-query"
 
 const RecipeTypeListPage: React.FC<unknown> = () => {
-    const [recipeTypes, setRecipeTypes] = useState<RecipeType[]>([])
+    const { status, data, error } = useQuery<Array<RecipeType>, string>(
+        "recipeTypeList", createRecipeTypeService().getAllRecipeTypes)
 
-    useEffect(() => {
-        createRecipeTypeService().getAllRecipeTypes().then(setRecipeTypes)
-    }, [])
+    if (status === 'loading') {
+        return <span>Loading...</span>
+    }
+
+    if (status === 'error') {
+        return <span>Error: {error?.message}</span>
+    }
 
     return <>
-        <span>Recipe type List</span>
-        <RecipeTypeList recipeTypes={recipeTypes} />
-        <hr />
+        <h1>Recipe type List</h1>
+        {data ? <RecipeTypeList recipeTypes={data} /> : "No recipe types found"}
+
     </>
 }
 

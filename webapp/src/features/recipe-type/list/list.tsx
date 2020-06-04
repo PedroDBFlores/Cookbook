@@ -6,10 +6,10 @@ import { RecipeType } from "../../../dto"
 import PropTypes from "prop-types"
 
 export interface RecipeTypeListProps {
-  recipeTypes : Array<RecipeType>
+  recipeTypes: Array<RecipeType>
 }
 
-const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes}) => {
+const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes }) => {
   const columns = [{
     dataField: 'id',
     text: 'Id'
@@ -17,10 +17,21 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes}) => {
     dataField: 'name',
     text: 'Name'
   }]
-  
-  return <BootstrapTable keyField="id" data={recipeTypes} columns={columns}>
 
-  </BootstrapTable>
+  const contentToRender = !recipeTypes?.length ? "No recipe types found" :
+    <BootstrapTable keyField="id" data={recipeTypes} columns={columns}>
+    </BootstrapTable>
+
+  return <>{contentToRender}</> 
+
+  // return{ if(recipeTypes.length){
+  //       No recipe types found
+  //     }else{
+  //       <BootstrapTable keyField="id" data={recipeTypes} columns={columns}>
+  //       </BootstrapTable>
+  //     }
+  //   }
+  // </>
 }
 export default RecipeTypeList
 
