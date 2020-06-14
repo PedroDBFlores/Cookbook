@@ -9,8 +9,8 @@ object FileUtils {
     fun readResourceAsString(fileName: String): String {
         val stream = Thread.currentThread().contextClassLoader.getResourceAsStream(fileName)
         val reader = BufferedReader(stream.reader())
-        return reader.use { reader ->
-            reader.readText()
+        return reader.use { r ->
+            r.readText()
         }
     }
 }

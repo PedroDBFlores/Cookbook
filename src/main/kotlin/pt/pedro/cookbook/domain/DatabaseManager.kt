@@ -3,7 +3,6 @@ package pt.pedro.cookbook.domain
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.application.Application
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -31,7 +30,6 @@ object DatabaseManager {
     //region Methods
 
     fun buildTables() {
-        print("${db.vendor}")
         transaction {
             SchemaUtils.create(RecipeTypes)
         }

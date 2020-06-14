@@ -1,7 +1,7 @@
 package pt.pedro.cookbook.service
 
 /**
- * Represents a simple interface for the service that matches the [CrudRepository] interface
+ * Represents a simple interface for the service that matches the CrudRepository interface
  * @param T The entity type (DTO, not the table)
  */
 interface CrudService<T> {

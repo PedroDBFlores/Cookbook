@@ -6,7 +6,7 @@ import { useQuery } from "react-query"
 
 const RecipeTypeListPage: React.FC<unknown> = () => {
     const { status, data, error } = useQuery<Array<RecipeType>, string>(
-        "recipeTypeList", createRecipeTypeService().getAllRecipeTypes)
+        "recipeTypeList", createRecipeTypeService().getAll)
 
     if (status === 'loading') {
         return <span>Loading...</span>

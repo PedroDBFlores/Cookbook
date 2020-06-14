@@ -3,7 +3,7 @@ package pt.pedro.cookbook.handler
 import io.ktor.application.ApplicationCall
 
 /**
- * Represents a simple interface for the handler that matches the [CrudService] interface
+ * Represents a simple interface for the handler that matches the CrudService interface
  */
 interface CrudHandler {
 

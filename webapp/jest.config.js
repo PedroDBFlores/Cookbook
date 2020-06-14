@@ -12,7 +12,8 @@ module.exports = {
     clearMocks: true,
     setupFilesAfterEnv: [
         "@testing-library/jest-dom/extend-expect",
-        //path.join(__dirname, 'tests/setup'),
+        "jest-extended",
+        "jest-chain"
     ],
     moduleDirectories: ['node_modules', path.join(__dirname, 'src'), path.join(__dirname, 'tests')],
     testPathIgnorePatterns: [

@@ -11,14 +11,14 @@ import io.ktor.http.content.static
 import io.ktor.response.respond
 import io.ktor.response.respondRedirect
 import io.ktor.routing.*
-import org.kodein.di.generic.instance
-import org.kodein.di.ktor.kodein
-import pt.pedro.cookbook.domain.DatabaseManager
+import org.kodein.di.instance
+import org.kodein.di.ktor.di
+
 import pt.pedro.cookbook.handler.RecipeTypeHandler
 
 @Suppress("unused") // Referenced in application.conf
 fun Application.routingModule(testing: Boolean = false) {
-    val kodein = kodein()
+    val kodein = di()
 
     install(Routing) {
 

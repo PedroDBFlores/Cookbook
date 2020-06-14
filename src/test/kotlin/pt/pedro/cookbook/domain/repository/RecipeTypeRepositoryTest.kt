@@ -1,5 +1,7 @@
 package pt.pedro.cookbook.domain.repository
 
+import com.github.javafaker.Faker
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
@@ -11,8 +13,10 @@ import pt.pedro.cookbook.domain.DatabaseManager
 import pt.pedro.cookbook.domain.DatabaseManager.runInTransaction
 import pt.pedro.cookbook.domain.table.RecipeTypes
 import utils.DTOGenerator.generateRecipeType
+import java.lang.IllegalStateException
 
-internal class RecipeTypeRepositoryITest : DescribeSpec({
+internal class RecipeTypeRepositoryTest : DescribeSpec({
+    val faker = Faker()
     val repo = RecipeTypeRepository()
     beforeSpec {
         DatabaseManager.db
@@ -28,6 +32,15 @@ internal class RecipeTypeRepositoryITest : DescribeSpec({
             val createdRecipeType = repo.create(recipeType)
 
             createdRecipeType.shouldNotBe(0)
+        }
+
+        it("should throw when the name set is bigger than 64 characters") {
+            val recipeType = generateRecipeType(id = 0, name = faker.random().hex(70))
+
+            shouldThrow<Exception> {
+                repo.create(recipeType)
+            }
+
         }
 
         it("gets a recipe type by id") {
