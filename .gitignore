@@ -1,9 +1,2 @@
-/.gradle
-/.idea
-/out
-/build
-*.iml
-*.ipr
-*.iws
 webapp/node_modules/*
 webapp/coverage/*
