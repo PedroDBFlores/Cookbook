@@ -1,8 +1,8 @@
 package utils
 
 import com.github.javafaker.Faker
-import pt.pedro.cookbook.dto.Recipe
-import pt.pedro.cookbook.dto.RecipeType
+import model.Recipe
+import model.RecipeType
 
 /**
  * Generates random DTOs
