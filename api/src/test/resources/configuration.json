@@ -1,6 +1,6 @@
 {
   "api": {
-    "port": 8080
+    "port": 9000
   },
   "database": {
     "driver": "org.h2.Driver",

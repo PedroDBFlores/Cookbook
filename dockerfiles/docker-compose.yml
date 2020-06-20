@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  cookbook-api:
+    container_name: cookbook-api
+    build:
+      context: ../
+      dockerfile: ./dockerfiles/cookbook-api.Dockerfile
+    ports:
+      - 9000:9000
+  # cookbook-database:
+  #   container_name: cookbook-db
+  #   image: mysql:8.0
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   ports:
+  #     - 40000:3306
+  #   environment:
+  #     MYSQL_DATABASE: cookbook
+  #     MYSQL_ROOT_PASSWORD: am!28--zQ
+  # cookbook-webapp:
+  #   container_name: cookbook-webapp
+  #   build:
+  #     context: ../
+  #     dockerfile: ./dockerfiles/cookbook-webapp.Dockerfile
+  #   ports:
+  #     -8080:8080

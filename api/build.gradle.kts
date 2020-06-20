@@ -1,5 +1,3 @@
-import com.moowork.gradle.node.npm.NpmTask
-
 val logbackVersion: String by project
 val javalinVersion: String by project
 val kotlinVersion: String by project
@@ -13,15 +11,14 @@ val mockkVersion: String by project
 plugins {
     application
     kotlin("jvm") version "1.3.72"
-    id("com.moowork.node") version "1.3.1"
+    id("com.github.johnrengelman.shadow") version "5.2.0"
     id ("com.github.ben-manes.versions") version "0.28.0"
 }
 
 group = "pt.pedro"
-version = "1.0.0"
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClassName = "ApplicationKt"
 }
 
 repositories {
@@ -63,44 +60,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform {}
-}
-
-//Webapp
-
-node {
-    download = false
-    workDir = file("${project.buildDir}/webapp")
-}
-
-tasks {
-    register<NpmTask>("appNpmInstall") {
-        group = "webapp"
-        description = "Installs all dependencies from package.json"
-        setWorkingDir(file("${project.projectDir}/webapp"))
-        setArgs(listOf("install"))
-    }
-
-    register<NpmTask>("appNpmTest") {
-        dependsOn("appNpmInstall")
-        group = "webapp"
-        description = "Tests the webapp application for errors"
-        setWorkingDir(file("${project.projectDir}/webapp"))
-        setArgs(listOf("test"))
-    }
-
-    register<NpmTask>("appNpmBuild") {
-        dependsOn("appNpmTest")
-        group = "webapp"
-        description = "Builds production version of the webapp"
-        setWorkingDir(file("${project.projectDir}/webapp"))
-        setArgs(listOf("run", "build"))
-    }
-
-    register<Copy>("appCopy") {
-        dependsOn("appNpmBuild")
-        group = "webapp"
-        from("${project.projectDir}/webapp/dist")
-        into("build/resources/main/static/.")
-    }
 }
 
