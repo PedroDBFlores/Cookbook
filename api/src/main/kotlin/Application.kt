@@ -10,5 +10,4 @@ fun main() {
             plugins = javalinPlugins
         ).start()
     }
-    println("")
 }

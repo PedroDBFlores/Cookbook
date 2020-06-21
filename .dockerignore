@@ -1,0 +1,12 @@
+**/.vscode
+
+**/.gradle
+**/.idea
+**/gradle
+**/build
+**/out
+
+**/node_modules
+**/coverage
+**/dist
+**/npm-debug.log

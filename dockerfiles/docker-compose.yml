@@ -8,6 +8,7 @@ services:
       dockerfile: ./dockerfiles/cookbook-api.Dockerfile
     ports:
       - 9000:9000
+      - 8999:8999
   # cookbook-database:
   #   container_name: cookbook-db
   #   image: mysql:8.0
@@ -23,4 +24,4 @@ services:
   #     context: ../
   #     dockerfile: ./dockerfiles/cookbook-webapp.Dockerfile
   #   ports:
-  #     -8080:8080
+  #     - 8080:8080
