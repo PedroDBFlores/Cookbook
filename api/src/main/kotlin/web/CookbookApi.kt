@@ -7,6 +7,7 @@ import org.eclipse.jetty.http.HttpStatus
 import ports.RecipeDependencies
 import ports.RecipeTypeDependencies
 import web.recipe.CreateRecipeHandler
+import web.recipe.DeleteRecipeHandler
 import web.recipe.GetAllRecipesHandler
 import web.recipe.GetRecipeHandler
 import web.recipetype.*
@@ -45,6 +46,7 @@ internal class CookbookApi(
                     get("/:id", GetRecipeHandler(recipeDependencies.getRecipe))
                     get(GetAllRecipesHandler(recipeDependencies.getAllRecipes))
                     post(CreateRecipeHandler(recipeDependencies.createRecipe))
+                    delete("/:id", DeleteRecipeHandler(recipeDependencies.deleteRecipe))
                 }
             }
         }

@@ -31,7 +31,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             .join()
     }
 
-    describe("Delete recipe type") {
+    describe("Delete recipe type handler") {
         it("deletes a recipe type returning 204") {
             val deleteRecipeTypeMock = mockk<DeleteRecipeType> {
                 every { this@mockk(any()) } just runs
@@ -61,7 +61,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
         }
 
-        it("should return 400 if a wrong recipeTypeId is sent") {
+        it("should return 400 if a wrong recipeTypeId was sent") {
             val deleteRecipeTypeMock = mockk<DeleteRecipeType>()
             val requestBuilder = HttpRequest.newBuilder()
                 .DELETE().uri(URI("http://localhost:9000/api/recipetype/arroz"))

@@ -31,7 +31,7 @@ internal class UpdateRecipeTypeHandler(private val updateRecipeType: UpdateRecip
             ),
             OpenApiResponse(
                 status = "400",
-                description = "When an error ocurred parsing the body",
+                description = "When an error occurred parsing the body",
                 content = [OpenApiContent(from = ResponseError::class)]
             )
         ],
