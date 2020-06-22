@@ -8,10 +8,12 @@ import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 import ports.RecipeDependencies
 import ports.RecipeTypeDependencies
+import web.recipe.*
 import web.recipe.CreateRecipeHandler
 import web.recipe.DeleteRecipeHandler
 import web.recipe.GetAllRecipesHandler
 import web.recipe.GetRecipeHandler
+import web.recipe.UpdateRecipeHandler
 import web.recipetype.*
 
 /**
@@ -27,9 +29,10 @@ internal class CookbookApi(
     private val app: Javalin = Javalin.create { config ->
         plugins.forEach { config.registerPlugin(it) }
     }
-        .exception(Exception::class.java) { ex, ctx ->
+        .exception(BadRequestResponse::class.java) { ex, ctx ->
             handleError(ex, ctx)
-        }.exception(BadRequestResponse::class.java) { ex, ctx ->
+        }
+        .exception(Exception::class.java) { ex, ctx ->
             handleError(ex, ctx)
         }
         .routes {
@@ -45,10 +48,11 @@ internal class CookbookApi(
                     get("/:id", GetRecipeHandler(recipeDependencies.getRecipe))
                     get(GetAllRecipesHandler(recipeDependencies.getAllRecipes))
                     post(CreateRecipeHandler(recipeDependencies.createRecipe))
+                    put(UpdateRecipeHandler(recipeDependencies.updateRecipe))
                     delete("/:id", DeleteRecipeHandler(recipeDependencies.deleteRecipe))
                 }
             }
-        }
+        }.after(::enableStrictTransportSecurity)
 
 
     //region Methods
@@ -58,6 +62,12 @@ internal class CookbookApi(
 
     override fun close() {
         app.stop()
+    }
+
+    private fun enableStrictTransportSecurity(context: Context) {
+        if (context.header("X-Forwarded-Proto") == "https") {
+            context.header("Strict-Transport-Security", "max-age=31536000")
+        }
     }
 
     private fun handleError(ex: Exception, ctx: Context) {

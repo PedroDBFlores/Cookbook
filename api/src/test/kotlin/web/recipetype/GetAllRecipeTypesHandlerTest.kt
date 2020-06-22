@@ -35,7 +35,7 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
             .join()
     }
 
-    describe("Get all recipe types") {
+    describe("Get all recipe types handler") {
         val expectedRecipeTypes = listOf(
             generateRecipeType(),
             generateRecipeType()
