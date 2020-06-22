@@ -1,10 +1,11 @@
 package web.recipe
 
 import errors.RecipeNotFound
-import errors.RecipeTypeNotFound
 import io.javalin.Javalin
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.*
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.DeleteRecipe
@@ -62,15 +63,29 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
             response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
         }
 
-        it("should return 400 if a wrong recipeId was sent") {
-            val deleteRecipeMock = mockk<DeleteRecipe>()
-            val requestBuilder = HttpRequest.newBuilder()
-                .DELETE().uri(URI("http://localhost:9000/api/recipe/massa"))
+        arrayOf(
+            row(
+                "massa",
+                "a non-number is provided",
+                "Path parameter 'id' with value"
+            ),
+            row(
+                "-99",
+                "an invalid id is provided",
+                "Path param 'id' must be bigger than 0"
+            )
+        ).forEach { (pathParam, description, messageToContain) ->
+            it("should return 400 if $description") {
+                val deleteRecipeMock = mockk<DeleteRecipe>()
+                val requestBuilder = HttpRequest.newBuilder()
+                    .DELETE().uri(URI("http://localhost:9000/api/recipe/$pathParam"))
 
-            val response = executeRequest(deleteRecipeMock, requestBuilder)
+                val response = executeRequest(deleteRecipeMock, requestBuilder)
 
-            with(response){
-                statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
+                with(response){
+                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body().shouldContain(messageToContain)
+                }
                 verify(exactly = 0) { deleteRecipeMock(any()) }
             }
         }

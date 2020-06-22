@@ -25,7 +25,9 @@ internal class GetRecipeTypeHandler(private val getRecipeType: GetRecipeType) : 
     )
     override fun handle(ctx: Context) {
         try {
-            val recipeTypeId = ctx.pathParam("id", Int::class.java).get()
+            val recipeTypeId = ctx.pathParam("id", Int::class.java)
+                .check({ id -> id > 0 }, "Path param 'id' must be bigger than 0")
+                .get()
             val recipeType = getRecipeType(GetRecipeType.Parameters(recipeTypeId))
             ctx.status(HttpStatus.OK_200).json(recipeType)
         } catch (notFoundEx: RecipeTypeNotFound) {

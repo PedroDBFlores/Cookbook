@@ -1,13 +1,14 @@
 package web
 
-import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.json.shouldContainJsonKey
+import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
+import io.mockk.mockk
 import org.eclipse.jetty.http.HttpStatus
 import ports.RecipeTypeDependencies
-import utils.convertToJSON
-import java.lang.Exception
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -37,7 +38,7 @@ internal class ExceptionsTest : DescribeSpec({
     }
 
     describe("Exception test") {
-        it("throws") {
+        it("returns 500 on an unexpected exception") {
             every { recipeTypeDependencies.getAllRecipeTypes() } throws Exception("OOPS")
             val request = HttpRequest.newBuilder()
                 .GET().uri(URI("http://localhost:9000/api/recipetype"))
@@ -46,17 +47,31 @@ internal class ExceptionsTest : DescribeSpec({
                 .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
                 .join()
 
-            response.statusCode().shouldBe(HttpStatus.INTERNAL_SERVER_ERROR_500)
-            response.body().shouldMatchJson(
-                convertToJSON(
-                    ResponseError(
-                        code = "INTERNAL_SERVER_ERROR",
-                        message = "Unexpected error (Exception): OOPS"
-                    )
-                )
-            )
+            with(response) {
+                statusCode().shouldBe(HttpStatus.INTERNAL_SERVER_ERROR_500)
+                with(body()) {
+                    shouldContainJsonKeyValue("code", "INTERNAL_SERVER_ERROR")
+                    shouldContainJsonKey("message")
+                }
+            }
+        }
 
-            verify(exactly = 1) { recipeTypeDependencies.getAllRecipeTypes() }
+        it("returns a structured error on a BadRequestResponse") {
+            val request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString("""{ "name" : "" }"""))
+                .uri(URI("http://localhost:9000/api/recipetype"))
+
+            val response = HttpClient.newHttpClient()
+                .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
+                .join()
+
+            with(response) {
+                statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
+                with(body()) {
+                    shouldContainJsonKeyValue("code", "BAD_REQUEST")
+                    shouldContainJsonKey("message")
+                }
+            }
         }
     }
 })

@@ -3,6 +3,8 @@ package web
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder.*
 import io.javalin.core.plugin.Plugin
+import io.javalin.http.BadRequestResponse
+import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 import ports.RecipeDependencies
 import ports.RecipeTypeDependencies
@@ -25,13 +27,10 @@ internal class CookbookApi(
     private val app: Javalin = Javalin.create { config ->
         plugins.forEach { config.registerPlugin(it) }
     }
-        .exception(Exception::class.java) { exception, ctx ->
-            println("${exception.javaClass}\n${exception.message}")
-            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR_500)
-                .error(
-                    "INTERNAL_SERVER_ERROR",
-                    "Unexpected error (${exception.javaClass.simpleName}): ${exception.message}"
-                )
+        .exception(Exception::class.java) { ex, ctx ->
+            handleError(ex, ctx)
+        }.exception(BadRequestResponse::class.java) { ex, ctx ->
+            handleError(ex, ctx)
         }
         .routes {
             path("/api") {
@@ -61,7 +60,19 @@ internal class CookbookApi(
         app.stop()
     }
 
-
+    private fun handleError(ex: Exception, ctx: Context) {
+        println("${ex.javaClass}\n${ex.message}")
+        when (ex) {
+            is BadRequestResponse -> ctx.status(HttpStatus.BAD_REQUEST_400).error(
+                code = "BAD_REQUEST",
+                message = ex.message.toString()
+            )
+            else -> ctx.status(HttpStatus.INTERNAL_SERVER_ERROR_500).error(
+                code = "INTERNAL_SERVER_ERROR",
+                message = "Unexpected error (${ex.javaClass.simpleName}): ${ex.message}"
+            )
+        }
+    }
     //endregion Methods
 }
 

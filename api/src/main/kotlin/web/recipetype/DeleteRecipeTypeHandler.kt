@@ -27,7 +27,9 @@ internal class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecip
     )
     override fun handle(ctx: Context) {
         try {
-            val recipeTypeId = ctx.pathParam("id", Int::class.java).get()
+            val recipeTypeId = ctx.pathParam("id", Int::class.java)
+                .check({ id -> id > 0 }, "Path param 'id' must be bigger than 0")
+                .get()
             deleteRecipeType(DeleteRecipeType.Parameters(recipeTypeId))
             ctx.status(HttpStatus.NO_CONTENT_204)
         } catch (ex: RecipeTypeNotFound) {

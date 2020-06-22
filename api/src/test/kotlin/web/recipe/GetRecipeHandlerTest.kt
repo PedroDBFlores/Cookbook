@@ -4,7 +4,9 @@ import errors.RecipeNotFound
 import io.javalin.Javalin
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -67,15 +69,29 @@ internal class GetRecipeHandlerTest : DescribeSpec({
             response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
         }
 
-        it("should return 400 if a wrong recipeTypeId is sent") {
-            val getRecipeMock = mockk<GetRecipe>()
-            val requestBuilder = HttpRequest.newBuilder()
-                .GET().uri(URI("http://localhost:9000/api/recipe/arroz"))
+        arrayOf(
+            row(
+                "arroz",
+                "a non-number is provided",
+                "Path parameter 'id' with value"
+            ),
+            row(
+                "-99",
+                "an invalid id is provided",
+                "Path param 'id' must be bigger than 0"
+            )
+        ).forEach { (pathParam, description, messageToContain) ->
+            it("should return 400 if $description") {
+                val getRecipeMock = mockk<GetRecipe>()
+                val requestBuilder = HttpRequest.newBuilder()
+                    .GET().uri(URI("http://localhost:9000/api/recipe/$pathParam"))
 
-            val response = executeRequest(getRecipeMock, requestBuilder)
+                val response = executeRequest(getRecipeMock, requestBuilder)
 
-            with(response) {
-                statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
+                with(response) {
+                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body().shouldContain(messageToContain)
+                }
                 verify(exactly = 0) { getRecipeMock(any()) }
             }
         }

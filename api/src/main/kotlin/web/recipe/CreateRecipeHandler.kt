@@ -1,7 +1,6 @@
 package web.recipe
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import errors.ValidationError
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import io.javalin.plugin.openapi.annotations.*
@@ -37,7 +36,14 @@ internal class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Han
         tags = ["Recipe"]
     )
     override fun handle(ctx: Context) {
-        val recipe = ctx.body<CreateRecipeRepresenter>().toRecipe()
+        val recipe = ctx.bodyValidator<CreateRecipeRepresenter>()
+            .check({ rep -> rep.recipeTypeId > 0 }, "Field 'recipeTypeId' must be bigger than zero")
+            .check({ rep -> rep.name.isNotEmpty() }, "Field 'name' cannot be empty")
+            .check({ rep -> rep.description.isNotEmpty() }, "Field 'description' cannot be empty")
+            .check({ rep -> rep.ingredients.isNotEmpty() }, "Field 'ingredients' cannot be empty")
+            .check({ rep -> rep.preparingSteps.isNotEmpty() }, "Field 'preparingSteps' cannot be empty")
+            .get()
+            .toRecipe()
         val id = createRecipe(recipe)
         ctx.status(HttpStatus.CREATED_201).result(id.toString())
     }
@@ -49,14 +55,6 @@ internal class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Han
         @JsonProperty("ingredients") val ingredients: String,
         @JsonProperty("preparingSteps") val preparingSteps: String
     ) {
-        init {
-            require(recipeTypeId > 0) { throw ValidationError("recipeTypeId") }
-            require(name.isNotEmpty()) { throw ValidationError("name") }
-            require(description.isNotEmpty()) { throw ValidationError("description") }
-            require(ingredients.isNotEmpty()) { throw ValidationError("ingredients") }
-            require(preparingSteps.isNotEmpty()) { throw ValidationError("preparingSteps") }
-        }
-
         fun toRecipe() = Recipe(
             id = 0,
             recipeTypeId = recipeTypeId,

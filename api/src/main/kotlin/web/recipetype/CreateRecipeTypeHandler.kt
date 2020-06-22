@@ -1,7 +1,6 @@
 package web.recipetype
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import errors.ValidationError
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import io.javalin.plugin.openapi.annotations.*
@@ -37,16 +36,15 @@ internal class CreateRecipeTypeHandler(private val createRecipeType: CreateRecip
         tags = ["RecipeType"]
     )
     override fun handle(ctx: Context) {
-        val recipeType = ctx.body<CreateRecipeTypeRepresenter>().toRecipeType()
+        val recipeType = ctx.bodyValidator<CreateRecipeTypeRepresenter>()
+            .check({ rep -> rep.name.isNotEmpty() }, "Field 'name' cannot be empty")
+            .get()
+            .toRecipeType()
         val id = createRecipeType(recipeType)
         ctx.status(HttpStatus.CREATED_201).result(id.toString())
     }
 
     private data class CreateRecipeTypeRepresenter(@JsonProperty("name") val name: String) {
-        init {
-            require(name.isNotEmpty()) { throw ValidationError("name") }
-        }
-
         fun toRecipeType() = RecipeType(id = 0, name = name)
     }
 }

@@ -1,7 +1,6 @@
 package web.recipe
 
 import errors.RecipeNotFound
-import errors.RecipeTypeNotFound
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import io.javalin.plugin.openapi.annotations.HttpMethod
@@ -27,7 +26,9 @@ internal class DeleteRecipeHandler(private val deleteRecipe: DeleteRecipe) : Han
     )
     override fun handle(ctx: Context) {
         try {
-            val recipeId = ctx.pathParam("id", Int::class.java).get()
+            val recipeId = ctx.pathParam("id", Int::class.java)
+                .check({id -> id > 0}, "Path param 'id' must be bigger than 0")
+                .get()
             deleteRecipe(DeleteRecipe.Parameters(recipeId))
             ctx.status(HttpStatus.NO_CONTENT_204)
         } catch (ex: RecipeNotFound) {
