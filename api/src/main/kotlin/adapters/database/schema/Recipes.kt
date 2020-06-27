@@ -8,5 +8,5 @@ object Recipes : IntIdTable() {
     val name: Column<String> = varchar("name", 128).uniqueIndex()
     val description: Column<String> = varchar("description", 256)
     val ingredients: Column<String> = varchar("ingredients", 2048)
-    val preparingSteps: Column<String> = varchar("preparingSteps",4096)
+    val preparingSteps: Column<String> = varchar("preparingSteps", 4096)
 }

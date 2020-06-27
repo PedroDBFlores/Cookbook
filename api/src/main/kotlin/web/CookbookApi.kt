@@ -9,17 +9,12 @@ import org.eclipse.jetty.http.HttpStatus
 import ports.RecipeDependencies
 import ports.RecipeTypeDependencies
 import web.recipe.*
-import web.recipe.CreateRecipeHandler
-import web.recipe.DeleteRecipeHandler
-import web.recipe.GetAllRecipesHandler
-import web.recipe.GetRecipeHandler
-import web.recipe.UpdateRecipeHandler
 import web.recipetype.*
 
 /**
  * Defines the Cookbook API
  */
-internal class CookbookApi(
+class CookbookApi(
     private val port: Int = 8080,
     private val recipeTypeDependencies: RecipeTypeDependencies,
     private val recipeDependencies: RecipeDependencies,
@@ -38,14 +33,14 @@ internal class CookbookApi(
         .routes {
             path("/api") {
                 path("/recipetype") {
-                    get("/:id", GetRecipeTypeHandler(recipeTypeDependencies.getRecipeType))
+                    get("/:id", FindRecipeTypeHandler(recipeTypeDependencies.findRecipeType))
                     get(GetAllRecipeTypesHandler(recipeTypeDependencies.getAllRecipeTypes))
                     post(CreateRecipeTypeHandler(recipeTypeDependencies.createRecipeType))
                     put(UpdateRecipeTypeHandler(recipeTypeDependencies.updateRecipeType))
                     delete("/:id", DeleteRecipeTypeHandler(recipeTypeDependencies.deleteRecipeType))
                 }
                 path("/recipe") {
-                    get("/:id", GetRecipeHandler(recipeDependencies.getRecipe))
+                    get("/:id", FindRecipeHandler(recipeDependencies.findRecipe))
                     get(GetAllRecipesHandler(recipeDependencies.getAllRecipes))
                     post(CreateRecipeHandler(recipeDependencies.createRecipe))
                     put(UpdateRecipeHandler(recipeDependencies.updateRecipe))

@@ -8,34 +8,38 @@ import ports.RecipeRepository
 
 class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
-    override fun get(id: Int): Recipe? = transaction(database) {
+    override fun find(id: Int): Recipe? = transaction(database) {
         Recipes.select { Recipes.id eq id }
-            .mapNotNull { resultRow -> mapToRecipe(resultRow) }
+            .mapNotNull { row -> mapToRecipe(row) }
             .firstOrNull()
     }
 
     override fun getAll(): List<Recipe> = transaction(database) {
         Recipes.selectAll()
-            .map { resultRow -> mapToRecipe(resultRow) }
+            .map { row -> mapToRecipe(row) }
+    }
+
+    override fun count(): Long = transaction(database) {
+        Recipes.selectAll().count()
     }
 
     override fun create(recipe: Recipe): Int = transaction(database) {
-        Recipes.insertAndGetId {
-            it[recipeTypeId] = recipe.recipeTypeId
-            it[name] = recipe.name
-            it[description] = recipe.description
-            it[ingredients] = recipe.ingredients
-            it[preparingSteps] = recipe.preparingSteps
+        Recipes.insertAndGetId { recipeToCreate ->
+            recipeToCreate[recipeTypeId] = recipe.recipeTypeId
+            recipeToCreate[name] = recipe.name
+            recipeToCreate[description] = recipe.description
+            recipeToCreate[ingredients] = recipe.ingredients
+            recipeToCreate[preparingSteps] = recipe.preparingSteps
         }.value
     }
 
     override fun update(recipe: Recipe): Unit = transaction(database) {
-        Recipes.update({ Recipes.id eq recipe.id }) {
-            it[recipeTypeId] = recipe.recipeTypeId
-            it[name] = recipe.name
-            it[description] = recipe.description
-            it[ingredients] = recipe.ingredients
-            it[preparingSteps] = recipe.preparingSteps
+        Recipes.update({ Recipes.id eq recipe.id }) { recipeToUpdate ->
+            recipeToUpdate[recipeTypeId] = recipe.recipeTypeId
+            recipeToUpdate[name] = recipe.name
+            recipeToUpdate[description] = recipe.description
+            recipeToUpdate[ingredients] = recipe.ingredients
+            recipeToUpdate[preparingSteps] = recipe.preparingSteps
         }
     }
 
@@ -43,14 +47,12 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         Recipes.deleteWhere { Recipes.id eq id } > 0
     }
 
-    override fun mapToRecipe(row: ResultRow): Recipe {
-        return Recipe(
-            id = row[Recipes.id].value,
-            recipeTypeId = row[Recipes.recipeTypeId],
-            name = row[Recipes.name],
-            description = row[Recipes.description],
-            ingredients = row[Recipes.ingredients],
-            preparingSteps = row[Recipes.preparingSteps]
-        )
-    }
+    private fun mapToRecipe(row: ResultRow) = Recipe(
+        id = row[Recipes.id].value,
+        recipeTypeId = row[Recipes.recipeTypeId],
+        name = row[Recipes.name],
+        description = row[Recipes.description],
+        ingredients = row[Recipes.ingredients],
+        preparingSteps = row[Recipes.preparingSteps]
+    )
 }

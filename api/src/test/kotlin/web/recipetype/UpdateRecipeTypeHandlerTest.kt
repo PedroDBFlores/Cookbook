@@ -15,11 +15,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class UpdateRecipeTypeHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(

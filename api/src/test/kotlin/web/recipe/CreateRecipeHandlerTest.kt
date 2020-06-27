@@ -17,11 +17,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class CreateRecipeHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class CreateRecipeHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(
@@ -112,7 +112,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                 removeJSONProperties(DTOGenerator.generateRecipe(ingredients = ""), "id"),
                 "when the ingredients property is empty",
                 "Field 'ingredients' cannot be empty"
-            ),row(
+            ), row(
                 removeJSONProperties(DTOGenerator.generateRecipe(preparingSteps = ""), "id"),
                 "when the preparingSteps property is empty",
                 "Field 'preparingSteps' cannot be empty"

@@ -9,7 +9,7 @@ import org.eclipse.jetty.http.HttpStatus
 import usecases.recipetype.CreateRecipeType
 import web.ResponseError
 
-internal class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : Handler {
+class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : Handler {
 
     @OpenApi(
         description = "Creates a new recipe type",

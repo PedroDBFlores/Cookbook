@@ -7,7 +7,10 @@ describe("Error handling", () => {
     it("handles the errors provided by the API", () => {
         const axiosError = {
             response: {
-                data: "Database error",
+                data: `{
+                    "code" : "INTERNAL_SERVER_ERROR"
+                    "message: "Database Error"
+                }`,
                 status: 500
             }
         } as AxiosError

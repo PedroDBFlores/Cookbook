@@ -1,5 +1,3 @@
 package errors
 
-import java.lang.Exception
-
-class RecipeNotFound(identifier: Any) : Exception(identifier.toString())
+class RecipeNotFound(recipeId: Int) : Exception("Recipe with id $recipeId not found")

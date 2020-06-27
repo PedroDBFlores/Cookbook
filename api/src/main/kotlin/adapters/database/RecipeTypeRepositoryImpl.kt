@@ -1,43 +1,47 @@
 package adapters.database
 
-import org.jetbrains.exposed.sql.*
 import adapters.database.schema.RecipeTypes
-import ports.RecipeTypeRepository
+import errors.RecipeTypeNotFound
 import model.RecipeType
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import ports.RecipeTypeRepository
 
-internal class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepository {
-    override fun get(id: Int): RecipeType? = transaction(database) {
+class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepository {
+    override fun find(id: Int): RecipeType? = transaction(database) {
         RecipeTypes.select { RecipeTypes.id eq id }
-            .mapNotNull { resultRow -> mapToRecipeType(resultRow) }
+            .mapNotNull { row -> mapToRecipeType(row) }
             .firstOrNull()
     }
 
     override fun getAll(): List<RecipeType> = transaction(database) {
         RecipeTypes.selectAll()
-            .map { resultRow -> mapToRecipeType(resultRow) }
+            .map { row -> mapToRecipeType(row) }
+    }
+
+    override fun count(): Long = transaction(database) {
+        RecipeTypes.selectAll().count()
     }
 
     override fun create(recipeType: RecipeType): Int = transaction(database) {
-        RecipeTypes.insertAndGetId {
-            it[name] = recipeType.name
+        RecipeTypes.insertAndGetId { recipeTypeToCreate ->
+            recipeTypeToCreate[name] = recipeType.name
         }.value
     }
 
     override fun update(recipeType: RecipeType): Unit = transaction(database) {
-        RecipeTypes.update({ RecipeTypes.id eq recipeType.id }) {
-            it[name] = recipeType.name
+        val affectedRows = RecipeTypes.update({ RecipeTypes.id eq recipeType.id }) { recipeTypeToUpdate ->
+            recipeTypeToUpdate[name] = recipeType.name
         }
+        require(affectedRows == 1) { throw RecipeTypeNotFound(recipeTypeId = recipeType.id) }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
         RecipeTypes.deleteWhere { RecipeTypes.id eq id } > 0
     }
 
-    override fun mapToRecipeType(row: ResultRow): RecipeType {
-        return RecipeType(
-            id = row[RecipeTypes.id].value,
-            name = row[RecipeTypes.name]
-        )
-    }
+    private fun mapToRecipeType(row: ResultRow) = RecipeType(
+        id = row[RecipeTypes.id].value,
+        name = row[RecipeTypes.name]
+    )
 }

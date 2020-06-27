@@ -10,7 +10,7 @@ import io.javalin.plugin.openapi.annotations.OpenApiResponse
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipetype.DeleteRecipeType
 
-internal class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecipeType) : Handler {
+class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecipeType) : Handler {
 
     @OpenApi(
         summary = "Delete recipe type",

@@ -1,13 +1,12 @@
 package ports
 
 import model.RecipeType
-import org.jetbrains.exposed.sql.ResultRow
 
-internal interface RecipeTypeRepository {
-    fun get(id: Int): RecipeType?
+interface RecipeTypeRepository {
+    fun find(id: Int): RecipeType?
     fun getAll(): List<RecipeType>
+    fun count(): Long
     fun create(recipeType: RecipeType): Int
     fun update(recipeType: RecipeType)
-    fun delete(id: Int) : Boolean
-    fun mapToRecipeType(row: ResultRow): RecipeType
+    fun delete(id: Int): Boolean
 }

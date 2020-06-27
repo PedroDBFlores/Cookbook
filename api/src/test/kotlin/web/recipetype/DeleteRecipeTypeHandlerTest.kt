@@ -14,11 +14,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class DeleteRecipeTypeHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(

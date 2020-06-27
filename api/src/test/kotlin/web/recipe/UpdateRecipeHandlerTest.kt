@@ -8,7 +8,6 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.*
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.UpdateRecipe
-import usecases.recipetype.UpdateRecipeType
 import utils.DTOGenerator
 import utils.convertToJSON
 import utils.removeJSONProperties
@@ -17,11 +16,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class UpdateRecipeHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class UpdateRecipeHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(

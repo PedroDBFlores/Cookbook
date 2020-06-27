@@ -5,7 +5,7 @@ import MockAdapter from "axios-mock-adapter"
 import * as errors from "../../src/utils/error-handling"
 
 const mockedAxios = new MockAdapter(axios)
-const handleErrorsSpy = jest.spyOn(errors, "handleError")
+const handleErrorsSpy = jest.spyOn(errors, "handleApiError")
 
 describe("Recipe type service", () => {
     beforeEach(() => {
@@ -23,23 +23,23 @@ describe("Recipe type service", () => {
             expect(response).toStrictEqual(expectedRecipeType)
         })
 
-        describe("Error handling", () => {
+        fdescribe("Error handling", () => {
 
-            fit("throws an error with the message provided by the API on a 404", async () => {
+            it("throws an error with the message provided by the API on a 404", async () => {
                 mockedAxios.onGet("/api/recipetype/1")
                     .reply(404, "Entity not found")
 
-                await expect(createRecipeTypeService().get(1)).
+                await expect(await createRecipeTypeService().get(1)).
                     rejects.toStrictEqual({
                         status: 404,
                         message: "Entity not found"
                     })
-                console.log(handleErrorsSpy.mock.calls[0])
+                console.log(handleErrorsSpy.mock.calls.length)
                 expect(handleErrorsSpy).toHaveBeenCalled()
-                
+
             })
 
-            it("throws an error with the message provided by the API on a 500", async () => {
+            xit("throws an error with the message provided by the API on a 500", async () => {
                 mockedAxios.onGet("/api/recipetype/1")
                     .reply(500, "Database Error")
 

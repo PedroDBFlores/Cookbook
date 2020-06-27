@@ -14,7 +14,10 @@ class CookbookOpenApiPlugin {
         val initialConfigurationCreator = {
             OpenAPI()
                 .tags(listOf(Tag().name("Cookbook")))
-                .info(Info().version("0.1").title("Cookbook API documentation").description("Documentation for public endpoints of Cookbook."))
+                .info(
+                    Info().version("0.1").title("Cookbook API documentation")
+                        .description("Documentation for public endpoints of Cookbook.")
+                )
                 .addServersItem(Server().url("http://localhost:900"))
         }
 

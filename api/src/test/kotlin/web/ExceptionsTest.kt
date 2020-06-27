@@ -14,7 +14,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class ExceptionsTest : DescribeSpec({
+class ExceptionsTest : DescribeSpec({
     lateinit var app: CookbookApi
     val recipeTypeDependencies = mockk<RecipeTypeDependencies>(relaxed = true)
 

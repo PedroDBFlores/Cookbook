@@ -2,24 +2,22 @@ package usecases.recipetype
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import ports.RecipeTypeRepository
 import utils.DTOGenerator.generateRecipeType
 
-internal class GetAllRecipeTypesTest : DescribeSpec({
-    val recipeTypeRepository = mockk<RecipeTypeRepository>()
-
-    beforeTest {
-        clearMocks(recipeTypeRepository)
-    }
-
+class GetAllRecipeTypesTest : DescribeSpec({
     describe("Get all recipe types use case") {
         it("gets all the recipe types") {
             val expectedRecipeTypes = listOf(
                 generateRecipeType(),
                 generateRecipeType()
             )
-            every { recipeTypeRepository.getAll() } returns expectedRecipeTypes
+            val recipeTypeRepository = mockk<RecipeTypeRepository> {
+                every { getAll() } returns expectedRecipeTypes
+            }
             val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeRepository)
 
             val recipeTypes = getAllRecipeTypes()

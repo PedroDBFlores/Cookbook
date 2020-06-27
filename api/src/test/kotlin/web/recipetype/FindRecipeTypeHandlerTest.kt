@@ -1,6 +1,6 @@
-package web.recipe
+package web.recipetype
 
-import errors.RecipeNotFound
+import errors.RecipeTypeNotFound
 import io.javalin.Javalin
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
@@ -11,26 +11,26 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
-import usecases.recipe.GetRecipe
-import utils.DTOGenerator
+import usecases.recipetype.FindRecipeType
+import utils.DTOGenerator.generateRecipeType
 import utils.convertToJSON
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class GetRecipeHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class FindRecipeTypeHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(
-        getRecipe: GetRecipe,
+        findRecipeType: FindRecipeType,
         request: HttpRequest.Builder
     ): HttpResponse<String> {
-        app = Javalin.create().get("/api/recipe/:id", GetRecipeHandler(getRecipe))
+        app = Javalin.create().get("/api/recipetype/:id", FindRecipeTypeHandler(findRecipeType))
             .start(9000)
 
         return HttpClient.newHttpClient()
@@ -38,33 +38,32 @@ internal class GetRecipeHandlerTest : DescribeSpec({
             .join()
     }
 
-    describe("Get recipe handler") {
-        it("returns a recipe with status code 200") {
-            val expectedRecipe = DTOGenerator.generateRecipe()
-            val getRecipeMock = mockk<GetRecipe> {
-                every { this@mockk(GetRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
+    describe("Find recipe type handler") {
+        it("returns a recipe type with status code 200") {
+            val expectedRecipeType = generateRecipeType()
+            val getRecipeTypeMock = mockk<FindRecipeType> {
+                every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
             }
-
             val requestBuilder = HttpRequest.newBuilder()
-                .GET().uri(URI("http://localhost:9000/api/recipe/${expectedRecipe.id}"))
+                .GET().uri(URI("http://localhost:9000/api/recipetype/${expectedRecipeType.id}"))
 
-            val response = executeRequest(getRecipeMock, requestBuilder)
+            val response = executeRequest(getRecipeTypeMock, requestBuilder)
 
             with(response) {
                 statusCode().shouldBe(HttpStatus.OK_200)
-                body().shouldMatchJson(convertToJSON(expectedRecipe))
-                verify { getRecipeMock(GetRecipe.Parameters(expectedRecipe.id)) }
+                body().shouldMatchJson(convertToJSON(expectedRecipeType))
+                verify { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
             }
         }
 
         it("should return a 404 if the recipe type wasn't found") {
-            val getRecipeMock = mockk<GetRecipe> {
-                every { this@mockk(GetRecipe.Parameters(9999)) } throws RecipeNotFound(9999)
+            val getRecipeTypeMock = mockk<FindRecipeType> {
+                every { this@mockk(FindRecipeType.Parameters(9999)) } throws RecipeTypeNotFound(9999)
             }
             val requestBuilder = HttpRequest.newBuilder()
-                .GET().uri(URI("http://localhost:9000/api/recipe/9999"))
+                .GET().uri(URI("http://localhost:9000/api/recipetype/9999"))
 
-            val response = executeRequest(getRecipeMock, requestBuilder)
+            val response = executeRequest(getRecipeTypeMock, requestBuilder)
 
             response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
         }
@@ -81,18 +80,18 @@ internal class GetRecipeHandlerTest : DescribeSpec({
                 "Path param 'id' must be bigger than 0"
             )
         ).forEach { (pathParam, description, messageToContain) ->
-            it("should return 400 if $description") {
-                val getRecipeMock = mockk<GetRecipe>()
+            it("should return BAD_REQUEST if $description") {
+                val getRecipeTypeMock = mockk<FindRecipeType>()
                 val requestBuilder = HttpRequest.newBuilder()
-                    .GET().uri(URI("http://localhost:9000/api/recipe/$pathParam"))
+                    .GET().uri(URI("http://localhost:9000/api/recipetype/$pathParam"))
 
-                val response = executeRequest(getRecipeMock, requestBuilder)
+                val response = executeRequest(getRecipeTypeMock, requestBuilder)
 
                 with(response) {
                     statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
                     body().shouldContain(messageToContain)
                 }
-                verify(exactly = 0) { getRecipeMock(any()) }
+                verify(exactly = 0) { getRecipeTypeMock(any()) }
             }
         }
     }

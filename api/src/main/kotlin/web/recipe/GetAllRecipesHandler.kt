@@ -10,7 +10,7 @@ import model.Recipe
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.GetAllRecipes
 
-internal class GetAllRecipesHandler(private val getAllRecipes: GetAllRecipes) : Handler {
+class GetAllRecipesHandler(private val getAllRecipes: GetAllRecipes) : Handler {
 
     @OpenApi(
         description = "Gets all the recipes",

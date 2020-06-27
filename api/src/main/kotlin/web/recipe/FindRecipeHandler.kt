@@ -6,12 +6,13 @@ import io.javalin.http.Handler
 import io.javalin.plugin.openapi.annotations.*
 import model.Recipe
 import org.eclipse.jetty.http.HttpStatus
-import usecases.recipe.GetRecipe
+import usecases.recipe.FindRecipe
 
-internal class GetRecipeHandler(private val getRecipe: GetRecipe) : Handler {
+class FindRecipeHandler(private val findRecipe: FindRecipe) : Handler {
 
     @OpenApi(
-        description = "Gets a recipe by id",
+        summary = "Find recipe",
+        description = "Find a recipe by id",
         method = HttpMethod.GET,
         pathParams = [OpenApiParam(name = "id", description = "Recipe id")],
         responses = [OpenApiResponse(
@@ -25,11 +26,11 @@ internal class GetRecipeHandler(private val getRecipe: GetRecipe) : Handler {
     override fun handle(ctx: Context) {
         try {
             val recipeId = ctx.pathParam("id", Int::class.java)
-                .check({id -> id > 0}, "Path param 'id' must be bigger than 0")
+                .check({ id -> id > 0 }, "Path param 'id' must be bigger than 0")
                 .get()
-            val recipe = getRecipe(GetRecipe.Parameters(recipeId))
+            val recipe = findRecipe(FindRecipe.Parameters(recipeId))
             ctx.status(HttpStatus.OK_200).json(recipe)
-        }catch (ex:RecipeNotFound){
+        } catch (ex: RecipeNotFound) {
             ctx.status(HttpStatus.NOT_FOUND_404)
         }
     }

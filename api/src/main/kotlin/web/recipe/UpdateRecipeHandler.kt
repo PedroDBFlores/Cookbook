@@ -6,7 +6,7 @@ import io.javalin.http.Handler
 import model.Recipe
 import usecases.recipe.UpdateRecipe
 
-internal class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : Handler {
+class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : Handler {
     override fun handle(ctx: Context) {
         val recipe = ctx.bodyValidator<UpdateRecipeRepresenter>()
             .check({ rep -> rep.id > 0 }, "Field 'id' must be bigger than zero")

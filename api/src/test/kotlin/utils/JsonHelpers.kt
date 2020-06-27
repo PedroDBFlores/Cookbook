@@ -9,7 +9,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
  * @param source The source object
  * @return A JSON representation of the source object
  */
-fun convertToJSON(source: Any): String = ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(source)
+fun convertToJSON(source: Any): String =
+    ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(source)
 
 /**
  * Parses and removes a provided set of properties from a JSON object

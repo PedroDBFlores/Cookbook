@@ -2,12 +2,15 @@ package web.recipetype
 
 import io.javalin.http.Context
 import io.javalin.http.Handler
-import io.javalin.plugin.openapi.annotations.*
+import io.javalin.plugin.openapi.annotations.HttpMethod
+import io.javalin.plugin.openapi.annotations.OpenApi
+import io.javalin.plugin.openapi.annotations.OpenApiContent
+import io.javalin.plugin.openapi.annotations.OpenApiResponse
 import model.RecipeType
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipetype.GetAllRecipeTypes
 
-internal class GetAllRecipeTypesHandler(private val getAllRecipeTypes: GetAllRecipeTypes) : Handler {
+class GetAllRecipeTypesHandler(private val getAllRecipeTypes: GetAllRecipeTypes) : Handler {
 
     @OpenApi(
         description = "Gets all the recipe types",

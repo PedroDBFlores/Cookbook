@@ -16,11 +16,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class GetAllRecipeTypesHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(
@@ -52,7 +52,7 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
         with(response) {
             statusCode().shouldBe(HttpStatus.OK_200)
             body().shouldMatchJson(convertToJSON(expectedRecipeTypes))
-            verify(exactly = 1) {  getAllRecipeTypesMock() }
+            verify(exactly = 1) { getAllRecipeTypesMock() }
         }
     }
 

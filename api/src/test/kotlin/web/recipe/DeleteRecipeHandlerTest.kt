@@ -14,11 +14,11 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-internal class DeleteRecipeHandlerTest : DescribeSpec({
-    lateinit var app: Javalin
+class DeleteRecipeHandlerTest : DescribeSpec({
+    var app: Javalin? = null
 
     afterTest {
-        app.stop()
+        app?.stop()
     }
 
     fun executeRequest(
@@ -82,7 +82,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
 
                 val response = executeRequest(deleteRecipeMock, requestBuilder)
 
-                with(response){
+                with(response) {
                     statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
                     body().shouldContain(messageToContain)
                 }

@@ -3,16 +3,16 @@ package ports
 import usecases.recipe.*
 import usecases.recipetype.*
 
-internal interface RecipeTypeDependencies {
-    val getRecipeType: GetRecipeType
+interface RecipeTypeDependencies {
+    val findRecipeType: FindRecipeType
     val getAllRecipeTypes: GetAllRecipeTypes
     val createRecipeType: CreateRecipeType
     val updateRecipeType: UpdateRecipeType
     val deleteRecipeType: DeleteRecipeType
 }
 
-internal interface RecipeDependencies {
-    val getRecipe: GetRecipe
+interface RecipeDependencies {
+    val findRecipe: FindRecipe
     val getAllRecipes: GetAllRecipes
     val createRecipe: CreateRecipe
     val updateRecipe: UpdateRecipe

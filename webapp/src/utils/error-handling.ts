@@ -12,7 +12,8 @@ interface ApiErrorConstructor {
 
 declare const ApiError: ApiErrorConstructor
 
-export const handleError = (err: AxiosError): never => {
+export const handleApiError = (err: AxiosError): never => {
+    console.log("CALLED")
     throw {
         message: err.response?.data,
         status: err.response?.status
@@ -20,4 +21,4 @@ export const handleError = (err: AxiosError): never => {
 }
 
 export {ApiError}
-export default handleError
+export default handleApiError

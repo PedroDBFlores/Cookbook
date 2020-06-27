@@ -3,19 +3,17 @@ package usecases.recipetype
 import errors.RecipeTypeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import ports.RecipeTypeRepository
 
-internal class DeleteRecipeTypeTest : DescribeSpec({
-    val recipeTypeRepository = mockk<RecipeTypeRepository>()
-
-    beforeTest {
-        clearMocks(recipeTypeRepository)
-    }
-
+class DeleteRecipeTypeTest : DescribeSpec({
     describe("Delete recipe type use case") {
         it("deletes a recipe type") {
-            every { recipeTypeRepository.delete(1) } returns true
+            val recipeTypeRepository = mockk<RecipeTypeRepository> {
+                every { delete(1) } returns true
+            }
             val deleteRecipeType = DeleteRecipeType(recipeTypeRepository)
 
             deleteRecipeType(DeleteRecipeType.Parameters(1))
@@ -24,7 +22,9 @@ internal class DeleteRecipeTypeTest : DescribeSpec({
         }
 
         it("throws if the recipe type doesn't exist") {
-            every { recipeTypeRepository.delete(any()) } throws RecipeTypeNotFound(1)
+            val recipeTypeRepository = mockk<RecipeTypeRepository> {
+                every { delete(any()) } throws RecipeTypeNotFound(1)
+            }
             val deleteRecipeType = DeleteRecipeType(recipeTypeRepository)
 
             val act = { deleteRecipeType(DeleteRecipeType.Parameters(1)) }

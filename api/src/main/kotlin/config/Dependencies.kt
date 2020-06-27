@@ -20,7 +20,7 @@ internal object Dependencies {
     val recipeTypeDependencies = object : RecipeTypeDependencies {
         private val recipeTypeRepository by lazy { RecipeTypeRepositoryImpl(database) }
 
-        override val getRecipeType by lazy { GetRecipeType(recipeTypeRepository) }
+        override val findRecipeType by lazy { FindRecipeType(recipeTypeRepository) }
         override val getAllRecipeTypes by lazy { GetAllRecipeTypes(recipeTypeRepository) }
         override val createRecipeType by lazy { CreateRecipeType(recipeTypeRepository) }
         override val updateRecipeType by lazy { UpdateRecipeType(recipeTypeRepository) }
@@ -30,7 +30,7 @@ internal object Dependencies {
     val recipeDependencies = object : RecipeDependencies {
         private val recipeRepository by lazy { RecipeRepositoryImpl(database) }
 
-        override val getRecipe by lazy { GetRecipe(recipeRepository) }
+        override val findRecipe by lazy { FindRecipe(recipeRepository) }
         override val getAllRecipes by lazy { GetAllRecipes(recipeRepository) }
         override val createRecipe by lazy { CreateRecipe(recipeRepository) }
         override val updateRecipe by lazy { UpdateRecipe(recipeRepository) }
