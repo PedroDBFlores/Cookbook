@@ -101,7 +101,6 @@ class UserRepositoryImplTest : DescribeSpec({
 
             it("changes the password as well if both old and new password are provided") {
                 val currentUser = createUser("OLDPASSWORD")
-                println(currentUser.passwordHash)
                 val hashingService = mockk<HashingService> {
                     every { verify("OLDPASSWORD", "OLDPASSWORDHASH") } returns basicHashingService.verify(
                         "OLDPASSWORD",
