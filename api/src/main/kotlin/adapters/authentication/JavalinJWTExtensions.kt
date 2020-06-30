@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import io.javalin.http.InternalServerErrorResponse
+import model.User
 
 internal object JavalinJWTExtensions {
 
@@ -38,7 +39,7 @@ internal object JavalinJWTExtensions {
             }
     }
 
-    internal fun JWTProvider.createHeaderDecodeHandler(): Handler {
+    internal fun JWTProvider<User>.createHeaderDecodeHandler(): Handler {
         return Handler { context ->
             context.getTokenFromHeader()?.let { token ->
                 validateToken(token)?.let { decodedJWT ->
@@ -48,7 +49,7 @@ internal object JavalinJWTExtensions {
         }
     }
 
-    internal fun JWTProvider.createCookieDecodeHandler(): Handler {
+    internal fun JWTProvider<User>.createCookieDecodeHandler(): Handler {
         return Handler { context ->
             context.getTokenFromCookie()?.let { token ->
                 validateToken(token)?.let { decodedJWT ->

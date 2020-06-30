@@ -7,15 +7,21 @@ import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.mockk.*
+import io.restassured.RestAssured
+import io.restassured.module.kotlin.extensions.Extract
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.DeleteRecipe
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class DeleteRecipeHandlerTest : DescribeSpec({
     var app: Javalin? = null
+
+    beforeSpec {
+        RestAssured.baseURI = "http://localhost"
+        RestAssured.port = 9000
+    }
 
     afterTest {
         app?.stop()
@@ -23,14 +29,18 @@ class DeleteRecipeHandlerTest : DescribeSpec({
 
     fun executeRequest(
         deleteRecipe: DeleteRecipe,
-        request: HttpRequest.Builder
-    ): HttpResponse<String> {
+        recipeIdParam: String
+    ): Response {
         app = Javalin.create().delete("/api/recipe/:id", DeleteRecipeHandler(deleteRecipe))
             .start(9000)
 
-        return HttpClient.newHttpClient()
-            .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
-            .join()
+        return Given {
+            pathParam("id", recipeIdParam)
+        } When {
+            delete("/api/recipe/{id}")
+        } Extract {
+            response()
+        }
     }
 
     describe("Delete recipe handler") {
@@ -39,14 +49,10 @@ class DeleteRecipeHandlerTest : DescribeSpec({
                 every { this@mockk(any()) } just runs
             }
 
-            val requestBuilder = HttpRequest.newBuilder()
-                .DELETE()
-                .uri(URI("http://localhost:9000/api/recipe/1"))
-
-            val response = executeRequest(deleteRecipeMock, requestBuilder)
+            val response = executeRequest(deleteRecipeMock, "1")
 
             with(response) {
-                statusCode().shouldBe(HttpStatus.NO_CONTENT_204)
+                statusCode.shouldBe(HttpStatus.NO_CONTENT_204)
                 verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(1)) }
             }
         }
@@ -55,10 +61,8 @@ class DeleteRecipeHandlerTest : DescribeSpec({
             val deleteRecipeMock = mockk<DeleteRecipe> {
                 every { this@mockk(any()) } throws RecipeNotFound(9999)
             }
-            val requestBuilder = HttpRequest.newBuilder()
-                .DELETE().uri(URI("http://localhost:9000/api/recipe/9999"))
 
-            val response = executeRequest(deleteRecipeMock, requestBuilder)
+            val response = executeRequest(deleteRecipeMock, "9999")
 
             response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
         }
@@ -77,14 +81,11 @@ class DeleteRecipeHandlerTest : DescribeSpec({
         ).forEach { (pathParam, description, messageToContain) ->
             it("should return 400 if $description") {
                 val deleteRecipeMock = mockk<DeleteRecipe>()
-                val requestBuilder = HttpRequest.newBuilder()
-                    .DELETE().uri(URI("http://localhost:9000/api/recipe/$pathParam"))
-
-                val response = executeRequest(deleteRecipeMock, requestBuilder)
+                val response = executeRequest(deleteRecipeMock, pathParam)
 
                 with(response) {
-                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body().shouldContain(messageToContain)
+                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body.asString().shouldContain(messageToContain)
                 }
                 verify(exactly = 0) { deleteRecipeMock(any()) }
             }

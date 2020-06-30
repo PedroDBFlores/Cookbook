@@ -5,6 +5,7 @@ import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
 import config.Dependencies
 import errors.UserNotFound
+import errors.UserRoleNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -99,7 +100,7 @@ class UserRolesRepositoryImplTest : DescribeSpec({
 
                 val row = transaction(database) {
                     UserRoles.select { UserRoles.userId eq user.id }
-                            .firstOrNull()
+                        .firstOrNull()
                 }
                 row.shouldNotBeNull()
                 row[UserRoles.userId].shouldBe(user.id)
@@ -107,8 +108,8 @@ class UserRolesRepositoryImplTest : DescribeSpec({
             }
 
             arrayOf(
-                    row(createUser(), null, "when there's no matching role"),
-                    row(null, createRole(), "when there's no matching user")
+                row(createUser(), null, "when there's no matching role"),
+                row(null, createRole(), "when there's no matching user")
             ).forEach { (user, role, description) ->
                 it("should throw $description") {
                     val repo = UserRolesRepositoryImpl(database = database)
@@ -133,8 +134,8 @@ class UserRolesRepositoryImplTest : DescribeSpec({
             }
 
             arrayOf(
-                    row(null, 999, "when the role doesn't exist"),
-                    row(999, null, "when the user doesn't exist")
+                row(null, 999, "when the role doesn't exist"),
+                row(999, null, "when the user doesn't exist")
             ).forEach { (userId, roleId, description) ->
                 it("throws $description") {
                     val user = createUser()
@@ -142,7 +143,9 @@ class UserRolesRepositoryImplTest : DescribeSpec({
                     val repo = UserRolesRepositoryImpl(database = database)
                     repo.addRoleToUser(userId = user.id, roleId = role.id)
 
+                    val act = { repo.deleteRoleFromUser(userId ?: user.id, roleId ?: role.id) }
 
+                    shouldThrow<UserRoleNotFound> { act() }
                 }
             }
         }

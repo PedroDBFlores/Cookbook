@@ -3,6 +3,7 @@ package adapters.database
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
 import errors.UserNotFound
+import errors.UserRoleNotFound
 import model.UserRole
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -24,9 +25,11 @@ class UserRolesRepositoryImpl(private val database: Database) : UserRolesReposit
     }
 
     override fun deleteRoleFromUser(userId: Int, roleId: Int): Boolean = transaction(database) {
-        UserRoles.deleteWhere {
+        val affectedRows = UserRoles.deleteWhere {
             (UserRoles.userId eq userId) and (UserRoles.roleId eq roleId)
-        } > 0
+        }
+        require(affectedRows == 1) { throw UserRoleNotFound(userId, roleId) }
+        true
     }
 
     private fun mapToUserRole(row: ResultRow): UserRole =

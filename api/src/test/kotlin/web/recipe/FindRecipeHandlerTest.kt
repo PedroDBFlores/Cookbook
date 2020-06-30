@@ -10,17 +10,23 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.restassured.RestAssured
+import io.restassured.module.kotlin.extensions.Extract
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.FindRecipe
 import utils.DTOGenerator
 import utils.convertToJSON
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class FindRecipeHandlerTest : DescribeSpec({
     var app: Javalin? = null
+
+    beforeSpec {
+        RestAssured.baseURI = "http://localhost"
+        RestAssured.port = 9000
+    }
 
     afterTest {
         app?.stop()
@@ -28,14 +34,18 @@ class FindRecipeHandlerTest : DescribeSpec({
 
     fun executeRequest(
         findRecipe: FindRecipe,
-        request: HttpRequest.Builder
-    ): HttpResponse<String> {
+        recipeIdParam: String
+    ): Response {
         app = Javalin.create().get("/api/recipe/:id", FindRecipeHandler(findRecipe))
             .start(9000)
 
-        return HttpClient.newHttpClient()
-            .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
-            .join()
+        return Given {
+            pathParam("id", recipeIdParam)
+        } When {
+            get("/api/recipe/{id}")
+        } Extract {
+            response()
+        }
     }
 
     describe("Find recipe handler") {
@@ -45,14 +55,11 @@ class FindRecipeHandlerTest : DescribeSpec({
                 every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
             }
 
-            val requestBuilder = HttpRequest.newBuilder()
-                .GET().uri(URI("http://localhost:9000/api/recipe/${expectedRecipe.id}"))
-
-            val response = executeRequest(getRecipeMock, requestBuilder)
+            val response = executeRequest(getRecipeMock, expectedRecipe.id.toString())
 
             with(response) {
-                statusCode().shouldBe(HttpStatus.OK_200)
-                body().shouldMatchJson(convertToJSON(expectedRecipe))
+                statusCode.shouldBe(HttpStatus.OK_200)
+                body.asString().shouldMatchJson(convertToJSON(expectedRecipe))
                 verify { getRecipeMock(FindRecipe.Parameters(expectedRecipe.id)) }
             }
         }
@@ -61,10 +68,8 @@ class FindRecipeHandlerTest : DescribeSpec({
             val getRecipeMock = mockk<FindRecipe> {
                 every { this@mockk(FindRecipe.Parameters(9999)) } throws RecipeNotFound(9999)
             }
-            val requestBuilder = HttpRequest.newBuilder()
-                .GET().uri(URI("http://localhost:9000/api/recipe/9999"))
 
-            val response = executeRequest(getRecipeMock, requestBuilder)
+            val response = executeRequest(getRecipeMock, "9999")
 
             response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
         }
@@ -83,14 +88,12 @@ class FindRecipeHandlerTest : DescribeSpec({
         ).forEach { (pathParam, description, messageToContain) ->
             it("should return 400 if $description") {
                 val getRecipeMock = mockk<FindRecipe>()
-                val requestBuilder = HttpRequest.newBuilder()
-                    .GET().uri(URI("http://localhost:9000/api/recipe/$pathParam"))
 
-                val response = executeRequest(getRecipeMock, requestBuilder)
+                val response = executeRequest(getRecipeMock, pathParam)
 
                 with(response) {
-                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body().shouldContain(messageToContain)
+                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body.asString().shouldContain(messageToContain)
                 }
                 verify(exactly = 0) { getRecipeMock(any()) }
             }

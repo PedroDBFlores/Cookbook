@@ -1,4 +1,4 @@
-package adapters.database
+package adapters
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import ports.HashingService

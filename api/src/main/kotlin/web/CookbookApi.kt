@@ -49,6 +49,11 @@ class CookbookApi(
             }
         }.after(::enableStrictTransportSecurity)
 
+    fun x() {
+      //  StandAloneContext.startKoin
+
+    }
+
 
     //region Methods
     fun start() {

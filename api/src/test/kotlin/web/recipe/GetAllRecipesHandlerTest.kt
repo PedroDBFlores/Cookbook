@@ -7,32 +7,38 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.restassured.RestAssured
+import io.restassured.module.kotlin.extensions.Extract
+import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.GetAllRecipes
 import utils.DTOGenerator
 import utils.convertToJSON
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class GetAllRecipesHandlerTest : DescribeSpec({
     var app: Javalin? = null
+
+    beforeSpec {
+        RestAssured.baseURI = "http://localhost"
+        RestAssured.port = 9000
+    }
 
     afterTest {
         app?.stop()
     }
 
     fun executeRequest(
-        getAllRecipes: GetAllRecipes,
-        request: HttpRequest.Builder
-    ): HttpResponse<String> {
+        getAllRecipes: GetAllRecipes
+    ): Response {
         app = Javalin.create().get("/api/recipe", GetAllRecipesHandler(getAllRecipes))
             .start(9000)
 
-        return HttpClient.newHttpClient()
-            .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
-            .join()
+        return When {
+            get("/api/recipe")
+        } Extract {
+            response()
+        }
     }
 
     describe("Get all recipes handler") {
@@ -44,14 +50,11 @@ class GetAllRecipesHandlerTest : DescribeSpec({
             every { this@mockk() } returns expectedRecipes
         }
 
-        val requestBuilder = HttpRequest.newBuilder()
-            .GET().uri(URI("http://localhost:9000/api/recipe"))
-
-        val response = executeRequest(getAllRecipesMock, requestBuilder)
+        val response = executeRequest(getAllRecipesMock)
 
         with(response) {
-            statusCode().shouldBe(HttpStatus.OK_200)
-            body().shouldMatchJson(convertToJSON(expectedRecipes))
+            statusCode.shouldBe(HttpStatus.OK_200)
+            body.asString().shouldMatchJson(convertToJSON(expectedRecipes))
             verify(exactly = 1) { getAllRecipesMock() }
         }
     }

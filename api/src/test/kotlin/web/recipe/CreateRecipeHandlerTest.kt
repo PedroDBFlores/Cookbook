@@ -8,17 +8,24 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.restassured.RestAssured
+import io.restassured.http.ContentType
+import io.restassured.module.kotlin.extensions.Extract
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.CreateRecipe
 import utils.DTOGenerator
 import utils.removeJSONProperties
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class CreateRecipeHandlerTest : DescribeSpec({
     var app: Javalin? = null
+
+    beforeSpec {
+        RestAssured.baseURI = "http://localhost"
+        RestAssured.port = 9000
+    }
 
     afterTest {
         app?.stop()
@@ -26,33 +33,34 @@ class CreateRecipeHandlerTest : DescribeSpec({
 
     fun executeRequest(
         createRecipe: CreateRecipe,
-        request: HttpRequest.Builder
-    ): HttpResponse<String> {
+        jsonBody: String
+    ): Response {
         app = Javalin.create().post("/api/recipe", CreateRecipeHandler(createRecipe))
             .start(9000)
 
-        return HttpClient.newHttpClient()
-            .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
-            .join()
+        return Given {
+            contentType(ContentType.JSON)
+            body(jsonBody)
+        } When {
+            post("/api/recipe")
+        }Extract {
+            response()
+        }
     }
 
     describe("Create recipe type handler") {
         it("creates a recipe returning 201") {
             val expectedRecipe = DTOGenerator.generateRecipe(id = 0)
             val recipeRepresenterJson = removeJSONProperties(expectedRecipe, "id")
-
             val createRecipeMock = mockk<CreateRecipe> {
                 every { this@mockk(any()) } returns 1
             }
-            val requestBuilder = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(recipeRepresenterJson))
-                .uri(URI("http://localhost:9000/api/recipe"))
 
-            val response = executeRequest(createRecipeMock, requestBuilder)
+            val response = executeRequest(createRecipeMock, recipeRepresenterJson)
 
             with(response) {
-                statusCode().shouldBe(HttpStatus.CREATED_201)
-                body().shouldBe("1")
+                statusCode.shouldBe(HttpStatus.CREATED_201)
+                body.asString().shouldBe("1")
                 verify(exactly = 1) { createRecipeMock(expectedRecipe) }
             }
         }
@@ -120,15 +128,12 @@ class CreateRecipeHandlerTest : DescribeSpec({
         ).forEach { (jsonBody, description, messageToContain) ->
             it("returns 400 when $description") {
                 val createRecipeMock = mockk<CreateRecipe>()
-                val requestBuilder = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .uri(URI("http://localhost:9000/api/recipe"))
 
-                val response = executeRequest(createRecipeMock, requestBuilder)
+                val response = executeRequest(createRecipeMock, jsonBody)
 
                 with(response) {
-                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body().shouldContain(messageToContain)
+                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body.asString().shouldContain(messageToContain)
                 }
                 verify(exactly = 0) { createRecipeMock(any()) }
             }

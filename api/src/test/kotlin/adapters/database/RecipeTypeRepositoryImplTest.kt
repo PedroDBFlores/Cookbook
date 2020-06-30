@@ -1,5 +1,6 @@
 package adapters.database
 
+import adapters.database.DatabaseTestHelper.createRecipeType
 import adapters.database.schema.RecipeTypes
 import com.github.javafaker.Faker
 import config.Dependencies
@@ -33,16 +34,9 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
         }
     }
 
-    fun createRecipeType(): RecipeType {
-        val recipeType = DTOGenerator.generateRecipeType(id = 0)
-        val repo = RecipeTypeRepositoryImpl(database = database)
-        val id = repo.create(recipeType)
-        return recipeType.copy(id = id)
-    }
-
     describe("RecipeType repository") {
         it("finds a recipe type by id") {
-            val createdRecipeType = createRecipeType()
+            val createdRecipeType = createRecipeType(database = database)
             val repo = RecipeTypeRepositoryImpl(database = database)
 
             val returnedRecipeType = repo.find(id = createdRecipeType.id)
@@ -53,8 +47,8 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
 
         it("gets all the recipe types from the database") {
             val createdRecipeTypes = arrayOf(
-                createRecipeType(),
-                createRecipeType()
+                createRecipeType(database = database),
+                createRecipeType(database = database)
             )
             val repo = RecipeTypeRepositoryImpl(database = database)
 
@@ -65,8 +59,8 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
 
         it("gets the count of recipe types") {
             val createdRecipeTypes = arrayOf(
-                createRecipeType(),
-                createRecipeType()
+                createRecipeType(database = database),
+                createRecipeType(database = database)
             )
             val repo = RecipeTypeRepositoryImpl(database = database)
 
@@ -99,7 +93,7 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
 
         describe("update") {
             it("updates a recipe type on the database") {
-                val createdRecipeType = createRecipeType()
+                val createdRecipeType = createRecipeType(database = database)
                 val repo = RecipeTypeRepositoryImpl(database)
 
                 repo.update(createdRecipeType.copy(name = "Arroz"))
@@ -109,7 +103,7 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
             }
 
             it("throws if the recipe type doesn't exist in the database") {
-                val createdRecipe = createRecipeType()
+                val createdRecipe = createRecipeType(database = database)
                 val repo = RecipeTypeRepositoryImpl(database)
                 val recipeTypeToUpdate = createdRecipe.copy(id = 999999, name = "Different")
 

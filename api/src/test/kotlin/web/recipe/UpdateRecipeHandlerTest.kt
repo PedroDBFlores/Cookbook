@@ -6,18 +6,25 @@ import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.mockk.*
+import io.restassured.RestAssured
+import io.restassured.http.ContentType
+import io.restassured.module.kotlin.extensions.Extract
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.UpdateRecipe
 import utils.DTOGenerator
 import utils.convertToJSON
 import utils.removeJSONProperties
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class UpdateRecipeHandlerTest : DescribeSpec({
     var app: Javalin? = null
+
+    beforeSpec {
+        RestAssured.baseURI = "http://localhost"
+        RestAssured.port = 9000
+    }
 
     afterTest {
         app?.stop()
@@ -25,14 +32,19 @@ class UpdateRecipeHandlerTest : DescribeSpec({
 
     fun executeRequest(
         updateRecipe: UpdateRecipe,
-        request: HttpRequest.Builder
-    ): HttpResponse<String> {
+        jsonBody: String
+    ): Response {
         app = Javalin.create().put("/api/recipe", UpdateRecipeHandler(updateRecipe))
             .start(9000)
 
-        return HttpClient.newHttpClient()
-            .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
-            .join()
+        return Given {
+            contentType(ContentType.JSON)
+            body(jsonBody)
+        } When {
+            put("/api/recipe")
+        } Extract {
+            response()
+        }
     }
 
     describe("Update recipe handler") {
@@ -41,20 +53,11 @@ class UpdateRecipeHandlerTest : DescribeSpec({
             val updateRecipeMock = mockk<UpdateRecipe> {
                 every { this@mockk(any()) } just runs
             }
-            val requestBuilder = HttpRequest.newBuilder()
-                .PUT(
-                    HttpRequest.BodyPublishers.ofString(
-                        """
-                       ${convertToJSON(recipeToUpdate)}
-                    """.trimIndent()
-                    )
-                )
-                .uri(URI("http://localhost:9000/api/recipe"))
 
-            val response = executeRequest(updateRecipeMock, requestBuilder)
+            val response = executeRequest(updateRecipeMock, convertToJSON(recipeToUpdate))
 
             with(response) {
-                statusCode().shouldBe(HttpStatus.OK_200)
+                statusCode.shouldBe(HttpStatus.OK_200)
                 verify(exactly = 1) { updateRecipeMock(recipeToUpdate) }
             }
         }
@@ -134,15 +137,12 @@ class UpdateRecipeHandlerTest : DescribeSpec({
                 val updateRecipeMock = mockk<UpdateRecipe> {
                     every { this@mockk(any()) } just runs
                 }
-                val requestBuilder = HttpRequest.newBuilder()
-                    .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .uri(URI("http://localhost:9000/api/recipe"))
 
-                val response = executeRequest(updateRecipeMock, requestBuilder)
+                val response = executeRequest(updateRecipeMock, jsonBody)
 
                 with(response) {
-                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body().shouldContain(messageToContain)
+                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body.asString().shouldContain(messageToContain)
                 }
                 verify(exactly = 0) { updateRecipeMock.invoke(any()) }
             }

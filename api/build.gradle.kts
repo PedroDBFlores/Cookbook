@@ -14,12 +14,11 @@ application {
 repositories {
     mavenLocal()
     jcenter()
-    maven { url = uri("https://kotlin.bintray.com/ktor") }
-    maven { url = uri("https://dl.bintray.com/kodein-framework/Kodein-DI") }
     maven { url = uri("https://jitpack.io") }
 }
 
 val kotlinVersion: String by project
+val koinVersion: String by project
 val javalinVersion: String by project
 val slf4jVersion: String by project
 val exposedVersion: String by project
@@ -29,9 +28,11 @@ val auth0Version: String by project
 
 val kotestVersion: String by project
 val mockkVersion: String by project
+val restAssuredVersion: String by project
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+    implementation("org.koin:koin-core:$koinVersion")
     implementation("io.javalin:javalin:$javalinVersion")
     implementation("io.javalin:javalin-openapi:$javalinVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
@@ -45,6 +46,7 @@ dependencies {
     implementation("at.favre.lib:bcrypt:0.9.+")
 
     /* Tests */
+    implementation("org.koin:koin-test:$koinVersion")
     testImplementation("io.kotest:kotest-runner-console-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion") // for kotest framework
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions
@@ -52,6 +54,8 @@ dependencies {
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion") // for kotest property test
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.github.javafaker:javafaker:1.0.2")
+    testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
+    testImplementation("io.rest-assured:kotlin-extensions:$restAssuredVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

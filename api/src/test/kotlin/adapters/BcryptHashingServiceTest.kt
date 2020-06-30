@@ -1,4 +1,4 @@
-package adapters.database
+package adapters
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeFalse

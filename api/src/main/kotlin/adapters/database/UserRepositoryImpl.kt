@@ -1,5 +1,7 @@
 package adapters.database
 
+import adapters.database.schema.Roles
+import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
 import errors.UserNotFound
 import model.User
@@ -14,23 +16,44 @@ class UserRepositoryImpl(
     private val hashingService: HashingService
 ) : UserRepository {
     override fun find(id: Int): User? = transaction(database) {
-        Users.select { Users.id eq id }
+        findQuery { this.select { Users.id eq id } }
             .mapNotNull { row -> mapToUser(row) }
             .firstOrNull()
     }
 
     override fun find(userName: String): User? = transaction(database) {
-        Users.select { Users.userName eq userName }
+        findQuery { this.select { Users.userName eq userName } }
             .mapNotNull { row -> mapToUser(row) }
             .firstOrNull()
     }
 
+    private fun findQuery(selectFilter: FieldSet.() -> Query) =
+        (Users leftJoin UserRoles leftJoin Roles).slice(
+            Users.id,
+            Users.name,
+            Users.userName,
+            Users.passwordHash,
+            Roles.code.groupConcat(";")
+        )
+            .selectFilter()
+            .groupBy(Users.id, Users.name, Users.userName, Users.passwordHash, Roles.code)
+
+
     override fun create(user: User, userPassword: String): Int = transaction(database) {
-        Users.insertAndGetId { userToCreate ->
+        val userId = Users.insertAndGetId { userToCreate ->
             userToCreate[name] = user.name
             userToCreate[userName] = user.userName
             userToCreate[passwordHash] = hashingService.hash(userPassword)
         }.value
+
+        val roleId = Roles.select { Roles.code eq RoleCodes.USER }
+            .first()[Roles.id].value
+        UserRoles.insert { userRole ->
+            userRole[UserRoles.userId] = userId
+            userRole[UserRoles.roleId] = roleId
+        }
+
+        userId
     }
 
     override fun update(user: User, oldPassword: String?, newPassword: String?): Unit = transaction(database) {
@@ -53,6 +76,7 @@ class UserRepositoryImpl(
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
+        UserRoles.deleteWhere { UserRoles.userId eq id }
         Users.deleteWhere { Users.id eq id } > 0
     }
 
@@ -60,6 +84,9 @@ class UserRepositoryImpl(
         id = row[Users.id].value,
         name = row[Users.name],
         userName = row[Users.userName],
-        passwordHash = row[Users.passwordHash]
+        passwordHash = row[Users.passwordHash],
+        roles = row[Roles.code.groupConcat(";")].run {
+            split(";")
+        }
     )
 }

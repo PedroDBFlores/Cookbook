@@ -9,11 +9,12 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.User
 
 class JWTProviderTest : DescribeSpec({
     describe("JWT Provider") {
         it("generates a JWT string") {
-            val jwtGeneratorMock = mockk<JWTGenerator> {
+            val jwtGeneratorMock = mockk<JWTGenerator<User>> {
                 every { generate(any(), any()) } returns "JWT"
             }
             val jwtProvider = JWTProvider(
@@ -22,7 +23,7 @@ class JWTProviderTest : DescribeSpec({
                 jwtVerifier = mockk(relaxed = true)
             )
 
-            val jwtValue = jwtProvider.generateToken("ABC")
+            val jwtValue = jwtProvider.generateToken(mockk())
 
             jwtValue.shouldBe("JWT")
             verify(exactly = 1) { jwtGeneratorMock.generate(any(), any()) }
@@ -34,7 +35,7 @@ class JWTProviderTest : DescribeSpec({
                 val jwtVerifierMock = mockk<JWTVerifier> {
                     every { verify("token") } returns mockk(relaxed = true)
                 }
-                val jwtProvider = JWTProvider(
+                val jwtProvider = JWTProvider<User>(
                     algorithm = mockk(relaxed = true),
                     jwtGenerator = mockk(relaxed = true),
                     jwtVerifier = jwtVerifierMock
@@ -51,7 +52,7 @@ class JWTProviderTest : DescribeSpec({
                     every { verify("tekkenn") } throws JWTVerificationException("Non verifiable")
                 }
 
-                val jwtProvider = JWTProvider(
+                val jwtProvider = JWTProvider<User>(
                     algorithm = mockk(relaxed = true),
                     jwtGenerator = mockk(relaxed = true),
                     jwtVerifier = jwtVerifierMock

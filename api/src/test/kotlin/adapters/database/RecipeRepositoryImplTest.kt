@@ -1,5 +1,7 @@
 package adapters.database
 
+import adapters.database.DatabaseTestHelper.createRecipe
+import adapters.database.DatabaseTestHelper.createRecipeType
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
 import com.github.javafaker.Faker
@@ -14,7 +16,6 @@ import io.kotest.matchers.shouldBe
 import model.Recipe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
 import java.sql.SQLException
@@ -27,9 +28,7 @@ class RecipeRepositoryImplTest : DescribeSpec({
     beforeSpec {
         transaction(database) {
             SchemaUtils.create(RecipeTypes, Recipes)
-            recipeTypeId = RecipeTypes.insertAndGetId {
-                it[name] = faker.food().spice()
-            }.value
+            recipeTypeId = createRecipeType(database = database).id
         }
     }
 
@@ -39,16 +38,9 @@ class RecipeRepositoryImplTest : DescribeSpec({
         }
     }
 
-    fun createRecipe(): Recipe {
-        val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId)
-        val repo = RecipeRepositoryImpl(database = database)
-        val id = repo.create(recipe = recipe)
-        return recipe.copy(id = id)
-    }
-
     describe("Recipe repository") {
         it("finds a recipe") {
-            val createdRecipe = createRecipe()
+            val createdRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
             val repo = RecipeRepositoryImpl(database = database)
             val recipe = repo.find(id = createdRecipe.id)
 
@@ -58,8 +50,8 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
         it("gets all the recipe types") {
             val createdRecipes = listOf(
-                createRecipe(),
-                createRecipe()
+                createRecipe(database = database, recipeTypeId = recipeTypeId),
+                createRecipe(database = database, recipeTypeId = recipeTypeId)
             )
 
             val repo = RecipeRepositoryImpl(database = database)
@@ -70,8 +62,8 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
         it("gets the recipe count") {
             val createdRecipes = listOf(
-                createRecipe(),
-                createRecipe()
+                createRecipe(database = database, recipeTypeId = recipeTypeId),
+                createRecipe(database = database, recipeTypeId = recipeTypeId)
             )
             val repo = RecipeRepositoryImpl(database = database)
 
@@ -93,7 +85,7 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Update") {
             it("updates a recipe on the database") {
-                val createdRecipe = createRecipe()
+                val createdRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
                 val repo = RecipeRepositoryImpl(database = database)
                 val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = faker.name().fullName())
 
@@ -103,8 +95,8 @@ class RecipeRepositoryImplTest : DescribeSpec({
             }
 
             it("throws if an update has the same name of an existing one") {
-                val firstRecipe = createRecipe()
-                val secondRecipe = createRecipe()
+                val firstRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
+                val secondRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
                 val repo = RecipeRepositoryImpl(database = database)
 
                 val act = { repo.update(secondRecipe.copy(name = firstRecipe.name)) }
@@ -114,7 +106,7 @@ class RecipeRepositoryImplTest : DescribeSpec({
         }
 
         it("deletes a recipe type") {
-            val createdRecipe = createRecipe()
+            val createdRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
             val repo = RecipeRepositoryImpl(database = database)
             val deleted = repo.delete(createdRecipe.id)
 
