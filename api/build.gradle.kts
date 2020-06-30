@@ -19,6 +19,7 @@ repositories {
 
 val kotlinVersion: String by project
 val koinVersion: String by project
+val hopliteVersion: String by project
 val javalinVersion: String by project
 val slf4jVersion: String by project
 val exposedVersion: String by project
@@ -44,6 +45,8 @@ dependencies {
     implementation("com.h2database:h2:$h2Version")
     implementation("com.zaxxer:HikariCP:3.4.5")
     implementation("at.favre.lib:bcrypt:0.9.+")
+    implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
 
     /* Tests */
     implementation("org.koin:koin-test:$koinVersion")

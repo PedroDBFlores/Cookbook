@@ -14,7 +14,7 @@ class UserRolesRepositoryImpl(private val database: Database) : UserRolesReposit
         require(Users.select { Users.id eq userId }.count() == 1L) { throw UserNotFound(userId) }
 
         UserRoles.select { UserRoles.userId eq userId }
-            .mapNotNull { row -> mapToUserRole(row) }
+            .mapNotNull(::mapToUserRole)
     }
 
     override fun addRoleToUser(userId: Int, roleId: Int): Unit = transaction(database) {

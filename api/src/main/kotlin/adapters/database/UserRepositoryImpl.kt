@@ -8,7 +8,7 @@ import model.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
-import ports.PasswordMismatchError
+import errors.PasswordMismatchError
 import ports.UserRepository
 
 class UserRepositoryImpl(
@@ -17,13 +17,13 @@ class UserRepositoryImpl(
 ) : UserRepository {
     override fun find(id: Int): User? = transaction(database) {
         findQuery { this.select { Users.id eq id } }
-            .mapNotNull { row -> mapToUser(row) }
+            .mapNotNull(::mapToUser)
             .firstOrNull()
     }
 
     override fun find(userName: String): User? = transaction(database) {
         findQuery { this.select { Users.userName eq userName } }
-            .mapNotNull { row -> mapToUser(row) }
+            .mapNotNull(::mapToUser)
             .firstOrNull()
     }
 

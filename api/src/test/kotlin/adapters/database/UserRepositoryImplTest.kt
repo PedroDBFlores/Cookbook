@@ -5,7 +5,6 @@ import adapters.database.DatabaseTestHelper.createUser
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
-import config.Dependencies
 import errors.UserNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -18,24 +17,22 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import model.Role
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
-import ports.PasswordMismatchError
+import errors.PasswordMismatchError
 import utils.DTOGenerator.generateUser
 import java.sql.SQLException
 
 class UserRepositoryImplTest : DescribeSpec({
-    val database = Dependencies.database
+    val database = DatabaseTestHelper.database
+
     lateinit var role: Role
 
     beforeSpec {
         transaction(database) {
             SchemaUtils.create(Users, Roles, UserRoles)
-            role = createRole(database, "User", "USER")
+            role = createRole("User", "USER")
         }
     }
 
@@ -59,7 +56,7 @@ class UserRepositoryImplTest : DescribeSpec({
         describe("find") {
             it("finds a user by id ") {
                 val expectedUser =
-                    createUser(database = database, userPassword = "PASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
                 val user = repo.find(id = expectedUser.id)
@@ -70,7 +67,7 @@ class UserRepositoryImplTest : DescribeSpec({
 
             it("finds a user by username") {
                 val expectedUser =
-                    createUser(database = database, userPassword = "PASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
                 val user = repo.find(userName = expectedUser.userName)
@@ -110,7 +107,7 @@ class UserRepositoryImplTest : DescribeSpec({
         describe("update") {
             it("update an user when no new password is provided") {
                 val user =
-                    createUser(database = database, userPassword = "PASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val hashingService = mockk<HashingService>(relaxed = true)
                 val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
                 repo.update(user = user)
@@ -120,7 +117,7 @@ class UserRepositoryImplTest : DescribeSpec({
 
             it("changes the password as well if both old and new password are provided") {
                 val currentUser =
-                    createUser(database = database, userPassword = "OLDPASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "OLDPASSWORD", hashingService = basicHashingService)
                 val hashingService = mockk<HashingService> {
                     every { verify("OLDPASSWORD", "OLDPASSWORDHASH") } returns basicHashingService.verify(
                         "OLDPASSWORD",
@@ -140,7 +137,7 @@ class UserRepositoryImplTest : DescribeSpec({
 
             it("throws if the user doesn't exist on the database") {
                 val currentUser =
-                    createUser(database = database, userPassword = "OLDPASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "OLDPASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
                 val act = { repo.update(user = currentUser.copy(id = 99999)) }
@@ -150,7 +147,7 @@ class UserRepositoryImplTest : DescribeSpec({
 
             it("throws if a new password is provided but the old is not") {
                 val currentUser =
-                    createUser(database = database, userPassword = "OLDPASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "OLDPASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
                 val act = { repo.update(user = currentUser, oldPassword = null, newPassword = "newPassword") }
@@ -160,7 +157,7 @@ class UserRepositoryImplTest : DescribeSpec({
 
             it("throws if the old password doesn't match") {
                 val currentUser =
-                    createUser(database = database, userPassword = "OLDPASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "OLDPASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = basicHashingService)
 
                 val act = {
@@ -177,7 +174,7 @@ class UserRepositoryImplTest : DescribeSpec({
 
         it("deletes a user") {
             val currentUser =
-                createUser(database = database, userPassword = "PASSWORD", hashingService = basicHashingService)
+                createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
             val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
             val deleted = repo.delete(currentUser.id)
@@ -188,7 +185,7 @@ class UserRepositoryImplTest : DescribeSpec({
         describe("User table constraints") {
             it("throws if a user with the same username exists") {
                 val firstUser =
-                    createUser(database = database, userPassword = "PASSWORD", hashingService = basicHashingService)
+                    createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val secondUser = firstUser.copy(id = 0, name = "Mark")
                 val repo = UserRepositoryImpl(database = database, hashingService = basicHashingService)
 

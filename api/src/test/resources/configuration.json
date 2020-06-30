@@ -1,5 +1,6 @@
 {
   "api": {
+    "testing": true,
     "port": 9000
   },
   "database": {

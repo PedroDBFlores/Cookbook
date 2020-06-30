@@ -5,7 +5,6 @@ import adapters.database.DatabaseTestHelper.createRecipeType
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
 import com.github.javafaker.Faker
-import config.Dependencies
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -22,13 +21,13 @@ import java.sql.SQLException
 
 class RecipeRepositoryImplTest : DescribeSpec({
     val faker = Faker()
-    val database = Dependencies.database
+    val database = DatabaseTestHelper.database
     var recipeTypeId = 0
 
     beforeSpec {
         transaction(database) {
             SchemaUtils.create(RecipeTypes, Recipes)
-            recipeTypeId = createRecipeType(database = database).id
+            recipeTypeId = createRecipeType().id
         }
     }
 
@@ -40,7 +39,7 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
     describe("Recipe repository") {
         it("finds a recipe") {
-            val createdRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
+            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId)
             val repo = RecipeRepositoryImpl(database = database)
             val recipe = repo.find(id = createdRecipe.id)
 
@@ -50,8 +49,8 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
         it("gets all the recipe types") {
             val createdRecipes = listOf(
-                createRecipe(database = database, recipeTypeId = recipeTypeId),
-                createRecipe(database = database, recipeTypeId = recipeTypeId)
+                createRecipe(recipeTypeId = recipeTypeId),
+                createRecipe(recipeTypeId = recipeTypeId)
             )
 
             val repo = RecipeRepositoryImpl(database = database)
@@ -62,8 +61,8 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
         it("gets the recipe count") {
             val createdRecipes = listOf(
-                createRecipe(database = database, recipeTypeId = recipeTypeId),
-                createRecipe(database = database, recipeTypeId = recipeTypeId)
+                createRecipe(recipeTypeId = recipeTypeId),
+                createRecipe(recipeTypeId = recipeTypeId)
             )
             val repo = RecipeRepositoryImpl(database = database)
 
@@ -85,7 +84,7 @@ class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Update") {
             it("updates a recipe on the database") {
-                val createdRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
+                val createdRecipe = createRecipe(recipeTypeId = recipeTypeId)
                 val repo = RecipeRepositoryImpl(database = database)
                 val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = faker.name().fullName())
 
@@ -95,8 +94,8 @@ class RecipeRepositoryImplTest : DescribeSpec({
             }
 
             it("throws if an update has the same name of an existing one") {
-                val firstRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
-                val secondRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
+                val firstRecipe = createRecipe(recipeTypeId = recipeTypeId)
+                val secondRecipe = createRecipe(recipeTypeId = recipeTypeId)
                 val repo = RecipeRepositoryImpl(database = database)
 
                 val act = { repo.update(secondRecipe.copy(name = firstRecipe.name)) }
@@ -106,7 +105,7 @@ class RecipeRepositoryImplTest : DescribeSpec({
         }
 
         it("deletes a recipe type") {
-            val createdRecipe = createRecipe(database = database, recipeTypeId = recipeTypeId)
+            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId)
             val repo = RecipeRepositoryImpl(database = database)
             val deleted = repo.delete(createdRecipe.id)
 

@@ -1,63 +1,53 @@
 package web
 
+import config.ConfigurationFile
+import config.KoinModules.applicationModules
+import config.Router
 import io.javalin.Javalin
-import io.javalin.apibuilder.ApiBuilder.*
 import io.javalin.core.plugin.Plugin
 import io.javalin.http.BadRequestResponse
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
-import ports.RecipeDependencies
-import ports.RecipeTypeDependencies
-import web.recipe.*
-import web.recipetype.*
+import org.koin.core.KoinComponent
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.inject
+import org.koin.core.logger.Level
 
 /**
  * Defines the Cookbook API
  */
 class CookbookApi(
-    private val port: Int = 8080,
-    private val recipeTypeDependencies: RecipeTypeDependencies,
-    private val recipeDependencies: RecipeDependencies,
-    private val plugins: List<Plugin>
+    private val config: ConfigurationFile,
+    private val javalinPlugins: List<Plugin>,
+    private val router: Router,
+    private val onStop: () -> Unit = {}
 ) : AutoCloseable {
+    private val app: Javalin
 
-    private val app: Javalin = Javalin.create { config ->
-        plugins.forEach { config.registerPlugin(it) }
+    init {
+        app = initializeApp()
+        router.register(app)
+    }
+
+    private fun initializeApp(): Javalin = Javalin.create { config ->
+        javalinPlugins.forEach { config.registerPlugin(it) }
     }
         .exception(BadRequestResponse::class.java) { ex, ctx ->
             handleError(ex, ctx)
         }
         .exception(Exception::class.java) { ex, ctx ->
             handleError(ex, ctx)
-        }
-        .routes {
-            path("/api") {
-                path("/recipetype") {
-                    get("/:id", FindRecipeTypeHandler(recipeTypeDependencies.findRecipeType))
-                    get(GetAllRecipeTypesHandler(recipeTypeDependencies.getAllRecipeTypes))
-                    post(CreateRecipeTypeHandler(recipeTypeDependencies.createRecipeType))
-                    put(UpdateRecipeTypeHandler(recipeTypeDependencies.updateRecipeType))
-                    delete("/:id", DeleteRecipeTypeHandler(recipeTypeDependencies.deleteRecipeType))
-                }
-                path("/recipe") {
-                    get("/:id", FindRecipeHandler(recipeDependencies.findRecipe))
-                    get(GetAllRecipesHandler(recipeDependencies.getAllRecipes))
-                    post(CreateRecipeHandler(recipeDependencies.createRecipe))
-                    put(UpdateRecipeHandler(recipeDependencies.updateRecipe))
-                    delete("/:id", DeleteRecipeHandler(recipeDependencies.deleteRecipe))
-                }
+        }.events {
+            it.serverStopping {
+                onStop()
             }
-        }.after(::enableStrictTransportSecurity)
-
-    fun x() {
-      //  StandAloneContext.startKoin
-
-    }
-
+        }
+        .after(::enableStrictTransportSecurity)
 
     //region Methods
     fun start() {
-        app.start(port)
+        app.start(config.api.port)
     }
 
     override fun close() {

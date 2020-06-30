@@ -10,13 +10,12 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
     override fun find(id: Int): Recipe? = transaction(database) {
         Recipes.select { Recipes.id eq id }
-            .mapNotNull { row -> mapToRecipe(row) }
+            .mapNotNull(::mapToRecipe)
             .firstOrNull()
     }
 
     override fun getAll(): List<Recipe> = transaction(database) {
-        Recipes.selectAll()
-            .map { row -> mapToRecipe(row) }
+        Recipes.selectAll().map(::mapToRecipe)
     }
 
     override fun count(): Long = transaction(database) {

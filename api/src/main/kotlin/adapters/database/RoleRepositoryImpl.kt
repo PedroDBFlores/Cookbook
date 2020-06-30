@@ -9,17 +9,17 @@ import ports.RoleRepository
 
 class RoleRepositoryImpl(private val database: Database) : RoleRepository {
     override fun find(id: Int): Role? = transaction(database) {
-        Roles.select { Roles.id eq id }.mapNotNull { row -> mapToRole(row) }
+        Roles.select { Roles.id eq id }.mapNotNull(::mapToRole)
             .firstOrNull()
     }
 
     override fun find(code: String): Role? = transaction(database) {
-        Roles.select { Roles.code eq code }.mapNotNull { row -> mapToRole(row) }
+        Roles.select { Roles.code eq code }.mapNotNull(::mapToRole)
             .firstOrNull()
     }
 
     override fun getAll(): List<Role> = transaction(database) {
-        Roles.selectAll().mapNotNull { row -> mapToRole(row) }
+        Roles.selectAll().map(::mapToRole)
     }
 
     override fun create(role: Role): Int = transaction(database) {

@@ -10,13 +10,12 @@ import ports.RecipeTypeRepository
 class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepository {
     override fun find(id: Int): RecipeType? = transaction(database) {
         RecipeTypes.select { RecipeTypes.id eq id }
-            .mapNotNull { row -> mapToRecipeType(row) }
+            .mapNotNull(::mapToRecipeType)
             .firstOrNull()
     }
 
     override fun getAll(): List<RecipeType> = transaction(database) {
-        RecipeTypes.selectAll()
-            .map { row -> mapToRecipeType(row) }
+        RecipeTypes.selectAll().map(::mapToRecipeType)
     }
 
     override fun count(): Long = transaction(database) {

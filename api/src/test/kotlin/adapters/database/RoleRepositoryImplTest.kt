@@ -2,7 +2,6 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRole
 import adapters.database.schema.Roles
-import config.Dependencies
 import errors.RoleNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -17,7 +16,7 @@ import utils.DTOGenerator
 import java.sql.SQLException
 
 class RoleRepositoryImplTest : DescribeSpec({
-    val database = Dependencies.database
+    val database = DatabaseTestHelper.database
 
     beforeSpec {
         transaction(database) {
@@ -30,10 +29,10 @@ class RoleRepositoryImplTest : DescribeSpec({
             Roles.deleteAll()
         }
     }
-    
+
     describe("Role repository") {
         it("finds a role by it's id") {
-            val createdRole = createRole(database = database)
+            val createdRole = createRole()
             val repo = RoleRepositoryImpl(database = database)
 
             val role = repo.find(createdRole.id)
@@ -43,7 +42,7 @@ class RoleRepositoryImplTest : DescribeSpec({
         }
 
         it("finds a role by it's code") {
-            val createdRole = createRole(database = database)
+            val createdRole = createRole()
             val repo = RoleRepositoryImpl(database = database)
 
             val role = repo.find(createdRole.code)
@@ -54,8 +53,8 @@ class RoleRepositoryImplTest : DescribeSpec({
 
         it("gets all the roles") {
             val createdRoles = arrayOf(
-                createRole(database = database),
-                createRole(database = database)
+                createRole(),
+                createRole()
             )
             val repo = RoleRepositoryImpl(database = database)
 
@@ -77,14 +76,14 @@ class RoleRepositoryImplTest : DescribeSpec({
 
         describe("update") {
             it("updates a role") {
-                val createdRole = createRole(database = database)
+                val createdRole = createRole()
                 val repo = RoleRepositoryImpl(database = database)
 
                 repo.update(createdRole.copy(name = "UPDATEDROLE"))
             }
 
             it("throws if the role doesn't exist") {
-                val createdRole = createRole(database = database)
+                val createdRole = createRole()
                 val repo = RoleRepositoryImpl(database = database)
 
                 val act = { repo.update(createdRole.copy(code = "NEWCODE")) }
@@ -94,7 +93,7 @@ class RoleRepositoryImplTest : DescribeSpec({
         }
 
         it("deletes a role") {
-            val createdRole = createRole(database = database)
+            val createdRole = createRole()
             val repo = RoleRepositoryImpl(database = database)
 
             val deleted = repo.delete(createdRole.id)
@@ -104,7 +103,7 @@ class RoleRepositoryImplTest : DescribeSpec({
 
         describe("Role table constraints") {
             it("it throws if a duplicate role code is inserted") {
-                val createdRole = createRole(database = database)
+                val createdRole = createRole()
                 val duplicateRole = createdRole.copy(id = 0, name = "ABC")
                 val repo = RoleRepositoryImpl(database = database)
 
