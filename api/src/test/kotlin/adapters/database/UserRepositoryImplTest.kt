@@ -2,6 +2,7 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRole
 import adapters.database.DatabaseTestHelper.createUser
+import adapters.database.DatabaseTestHelper.mapToUser
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
@@ -88,6 +89,9 @@ class UserRepositoryImplTest : DescribeSpec({
                 val id = repo.create(user = user, userPassword = "PASSWORD")
 
                 id.shouldNotBeZero()
+                val createdUser =
+                    transaction(database) { Users.select { Users.id eq id }.map { row -> row.mapToUser() }.first() }
+                createdUser.shouldBe(user.copy(id = id, passwordHash = basicHashingService.hash("PASSWORD")))
                 verify(exactly = 1) { hashingService.hash("PASSWORD") }
             }
 
@@ -106,12 +110,18 @@ class UserRepositoryImplTest : DescribeSpec({
 
         describe("update") {
             it("update an user when no new password is provided") {
-                val user =
+                val createdUser =
                     createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val hashingService = mockk<HashingService>(relaxed = true)
-                val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
-                repo.update(user = user)
+                val userToUpdate = createdUser.copy(name = "ABC")
 
+                val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
+                repo.update(user = userToUpdate)
+
+                val updatedUser = transaction(database) {
+                    Users.select { Users.id eq createdUser.id }.map { row -> row.mapToUser() }.first()
+                }
+                updatedUser.shouldBe(userToUpdate.copy(passwordHash = basicHashingService.hash("PASSWORD")))
                 verify { hashingService wasNot called }
             }
 

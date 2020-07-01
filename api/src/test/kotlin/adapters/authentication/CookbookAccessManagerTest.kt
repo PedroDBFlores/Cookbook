@@ -1,74 +1,116 @@
 package adapters.authentication
 
+import adapters.authentication.JavalinJWTExtensions.createHeaderDecodeHandler
+import com.sksamuel.hoplite.ConfigLoader
+import config.ConfigurationFile
 import io.javalin.Javalin
 import io.javalin.core.security.AccessManager
+import io.javalin.core.security.Role
 import io.javalin.http.Context
+import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.spyk
+import io.mockk.verify
+import io.restassured.module.kotlin.extensions.Extract
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.Response
+import model.User
+import org.eclipse.jetty.http.HttpStatus
 import web.CookbookRoles
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 
 class CookbookAccessManagerTest : DescribeSpec({
     var app: Javalin? = null
+    val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
+
+    val userBearerToken =
+        "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJVU0VSIl0sIm5hbWUiOiJQZWRybyIsInVzZXJuYW1lIjoiUGVkcm8ifQ.8Yfjl-GiGmn4DO_rkGiJX4RiZTCF7Y_zW6uy5ryffnS4Al4veC8OKHJUQqN3ImPCdKyGgCMBPgu3gbti8zWQ2A"
 
     afterTest {
         app?.stop()
     }
 
+    fun Javalin.createGetHandler(handler: (Context) -> Unit, allowedRoles: Set<Role>) {
+        get("/api/recipetype", handler, allowedRoles)
+    }
+
+    fun getAccessManager() = spyk(
+        objToCopy = CookbookAccessManager(
+            "roles", mapOf(
+                "ANYONE" to CookbookRoles.ANYONE,
+                "USER" to CookbookRoles.USER,
+                "ADMIN" to CookbookRoles.ADMIN
+            ), CookbookRoles.ANYONE
+        )
+    )
+
     fun executeRequest(
         accessManager: AccessManager,
-        request: HttpRequest.Builder
-    ): HttpResponse<String> {
+        addHandler: (Javalin) -> Unit,
+        authorizationHeader: String
+    ): Response {
+        val provider = HMAC512Provider.provide(configuration.jwt.secret)
+
+        val user = User(0, "Pedro", "Pedro", roles = listOf(CookbookRoles.USER.toString()))
+        println(provider.generateToken(user))
+
         app = Javalin.create { config ->
             config.accessManager(accessManager)
         }
-            .before { ctx ->
-                val t = 1
-
-            }
-            .get(
-                "/api/recipetype", { ctx: Context -> ctx.json("""{"a":"1"}""") },
-                setOf(CookbookRoles.USER)
-            )
+            .before(provider.createHeaderDecodeHandler())
             .start(9000)
 
-        return HttpClient.newHttpClient()
-            .sendAsync(request.build(), HttpResponse.BodyHandlers.ofString())
-            .join()
+        addHandler(app!!)
+        return Given {
+            header(
+                "Authorization",
+                authorizationHeader
+            )
+        } When {
+            get("http://localhost:9000/api/recipetype")
+        } Extract {
+            response()
+        }
     }
 
     describe("JWT access manager") {
-        it("allows the operation to run sucessfully") {
-            val accessManagerSpy = spyk(
-                objToCopy = CookbookAccessManager(
-                    "role", mapOf(
-                        "anyone" to CookbookRoles.ANYONE,
-                        "user" to CookbookRoles.USER,
-                        "admin" to CookbookRoles.ADMIN
-                    ), CookbookRoles.ANYONE
-                ),
-                recordPrivateCalls = true
+        it("allows the operation to continue") {
+            val accessManagerSpy = getAccessManager()
+
+            val response = executeRequest(
+                accessManager = accessManagerSpy,
+                addHandler = {
+                    it.createGetHandler({ ctx -> ctx.result("""{"a":"1"}""") }, setOf(CookbookRoles.USER))
+                },
+                authorizationHeader = userBearerToken
             )
 
-            val requestBuilder = HttpRequest.newBuilder()
-                .setHeader(
-                    "Authhorization",
-                    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoidXNlciJ9.6TYOYJtskTZqY5EeFLEGba6rPDYr2gm0alVV0ZDXjzk"
-                )
-                .GET().uri(URI("http://localhost:9000/api/recipetype"))
+            with(response) {
+                statusCode.shouldBe(HttpStatus.OK_200)
+                body.asString().shouldContainJsonKeyValue("a", "1")
+            }
+            verify(exactly = 1) {
+                accessManagerSpy.manage(any(), any(), mutableSetOf(CookbookRoles.USER))
+            }
+        }
 
-            val response = executeRequest(accessManagerSpy, requestBuilder)
+        it("returns 403 if the user isn't allowed to use the resource") {
+            val accessManagerSpy = getAccessManager()
 
-//            with(response) {
-//                statusCode().shouldBe(HttpStatus.OK_200)
-//                body().shouldMatchJson("""{"a":"1"}""")
-//            }
+            val response = executeRequest(
+                accessManager = accessManagerSpy,
+                addHandler = {
+                    it.createGetHandler({ ctx -> ctx.result("""{"a":"1"}""") }, setOf(CookbookRoles.ADMIN))
+                },
+                authorizationHeader = userBearerToken
+            )
 
-            //accessManagerSpy.manage(handlerMock, contextMock, mutableSetOf(CookbookRoles.USER))
+            with(response) {
+                statusCode.shouldBe(HttpStatus.FORBIDDEN_403)
+                body.asString().shouldBe("You don't have permission to use this resource")
+            }
         }
     }
 })

@@ -1,6 +1,7 @@
 package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRole
+import adapters.database.DatabaseTestHelper.mapToRole
 import adapters.database.schema.Roles
 import errors.RoleNotFound
 import io.kotest.assertions.throwables.shouldThrow
@@ -11,6 +12,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
 import java.sql.SQLException
@@ -71,6 +73,9 @@ class RoleRepositoryImplTest : DescribeSpec({
                 val id = repo.create(role = roleToCreate)
 
                 id.shouldNotBeZero()
+                val createdRole =
+                    transaction(database) { Roles.select { Roles.id eq id }.map { row -> row.mapToRole() }.first() }
+                createdRole.shouldBe(roleToCreate.copy(id = id))
             }
         }
 
@@ -78,8 +83,14 @@ class RoleRepositoryImplTest : DescribeSpec({
             it("updates a role") {
                 val createdRole = createRole()
                 val repo = RoleRepositoryImpl(database = database)
+                val roleToUpdate = createdRole.copy(name = "UPDATEDROLE")
 
-                repo.update(createdRole.copy(name = "UPDATEDROLE"))
+                repo.update(roleToUpdate)
+
+                val updatedRole = transaction(database) {
+                    Roles.select { Roles.id eq createdRole.id }.map { row -> row.mapToRole() }.first()
+                }
+                updatedRole.shouldBe(roleToUpdate)
             }
 
             it("throws if the role doesn't exist") {

@@ -1,14 +1,14 @@
 package config
 
+import adapters.authentication.CookbookAccessManager
+import adapters.authentication.HMAC512Provider
 import adapters.database.RecipeRepositoryImpl
 import adapters.database.RecipeTypeRepositoryImpl
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.plugins.CookbookOpenApiPlugin
-import io.javalin.core.plugin.Plugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -17,7 +17,7 @@ import ports.RecipeRepository
 import ports.RecipeTypeRepository
 import usecases.recipe.*
 import usecases.recipetype.*
-import java.io.BufferedReader
+import web.CookbookRoles
 
 object KoinModules {
     val baseModule = module {
@@ -38,6 +38,19 @@ object KoinModules {
             db
         }
         single { Router(get(), get()) }
+    }
+
+    private val jwtModule = module {
+        single { HMAC512Provider.provide(configuration.jwt.secret) } //JWT provider
+        single {
+            CookbookAccessManager(
+                "roles", mapOf(
+                    "ANYONE" to CookbookRoles.ANYONE,
+                    "USER" to CookbookRoles.USER,
+                    "ADMIN" to CookbookRoles.ADMIN
+                ), CookbookRoles.ANYONE
+            )
+        }
     }
 
     private val recipeTypeModule = module {
@@ -66,7 +79,7 @@ object KoinModules {
         }
     }
 
-    internal val applicationModules = listOf(baseModule, recipeTypeModule, recipeModule)
+    internal val applicationModules = listOf(baseModule, jwtModule, recipeTypeModule, recipeModule)
 
     private val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
 }

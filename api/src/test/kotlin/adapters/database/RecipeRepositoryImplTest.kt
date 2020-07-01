@@ -2,6 +2,7 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRecipe
 import adapters.database.DatabaseTestHelper.createRecipeType
+import adapters.database.DatabaseTestHelper.mapToRecipe
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
 import com.github.javafaker.Faker
@@ -15,6 +16,7 @@ import io.kotest.matchers.shouldBe
 import model.Recipe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
 import java.sql.SQLException
@@ -79,6 +81,10 @@ class RecipeRepositoryImplTest : DescribeSpec({
                 val createdRecipeId = repo.create(recipe = recipe)
 
                 createdRecipeId.shouldNotBeZero()
+                val createdRecipe = transaction(database) {
+                    Recipes.select { Recipes.id eq createdRecipeId }.map { row -> row.mapToRecipe() }.first()
+                }
+                createdRecipe.shouldBe(recipe.copy(id = createdRecipeId))
             }
         }
 
@@ -88,9 +94,12 @@ class RecipeRepositoryImplTest : DescribeSpec({
                 val repo = RecipeRepositoryImpl(database = database)
                 val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = faker.name().fullName())
 
-                val act = { repo.update(recipeToBeUpdated) }
+                repo.update(recipeToBeUpdated)
 
-                shouldNotThrowAny { act() }
+                val updatedRecipe = transaction(database) {
+                    Recipes.select { Recipes.id eq createdRecipe.id }.map { row -> row.mapToRecipe() }.first()
+                }
+                updatedRecipe.shouldBe(recipeToBeUpdated)
             }
 
             it("throws if an update has the same name of an existing one") {

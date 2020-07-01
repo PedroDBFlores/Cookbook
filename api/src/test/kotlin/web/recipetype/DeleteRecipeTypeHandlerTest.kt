@@ -14,8 +14,6 @@ import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipetype.DeleteRecipeType
-import java.net.URI
-import java.net.http.HttpRequest
 
 class DeleteRecipeTypeHandlerTest : DescribeSpec({
     var app: Javalin? = null
@@ -54,7 +52,7 @@ class DeleteRecipeTypeHandlerTest : DescribeSpec({
             val response = executeRequest(deleteRecipeTypeMock, "1")
 
             with(response) {
-                statusCode().shouldBe(HttpStatus.NO_CONTENT_204)
+                statusCode.shouldBe(HttpStatus.NO_CONTENT_204)
                 verify(exactly = 1) { deleteRecipeTypeMock(DeleteRecipeType.Parameters(1)) }
             }
         }
@@ -63,12 +61,10 @@ class DeleteRecipeTypeHandlerTest : DescribeSpec({
             val deleteRecipeTypeMock = mockk<DeleteRecipeType> {
                 every { this@mockk(any()) } throws RecipeTypeNotFound(9999)
             }
-            val requestBuilder = HttpRequest.newBuilder()
-                .DELETE().uri(URI("http://localhost:9000/api/recipetype/9999"))
 
             val response = executeRequest(deleteRecipeTypeMock, "9999")
 
-            response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
+            response.statusCode.shouldBe(HttpStatus.NOT_FOUND_404)
         }
 
         arrayOf(
@@ -89,8 +85,8 @@ class DeleteRecipeTypeHandlerTest : DescribeSpec({
                 val response = executeRequest(deleteRecipeTypeMock, pathParam)
 
                 with(response) {
-                    statusCode().shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body().asString().shouldContain(messageToContain)
+                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body.asString().shouldContain(messageToContain)
                 }
                 verify(exactly = 0) { deleteRecipeTypeMock(any()) }
             }

@@ -1,5 +1,9 @@
 package adapters.database
 
+import adapters.database.schema.RecipeTypes
+import adapters.database.schema.Recipes
+import adapters.database.schema.Roles
+import adapters.database.schema.Users
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
@@ -8,6 +12,7 @@ import model.RecipeType
 import model.Role
 import model.User
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.ResultRow
 import ports.HashingService
 import utils.DTOGenerator
 
@@ -58,4 +63,35 @@ object DatabaseTestHelper {
         val id = repo.create(role = role)
         return role.copy(id = id)
     }
+
+    //region Map functions
+    fun ResultRow.mapToRecipeType() = RecipeType(
+        id = this[RecipeTypes.id].value,
+        name = this[RecipeTypes.name]
+    )
+
+    fun ResultRow.mapToRecipe() = Recipe(
+        id = this[Recipes.id].value,
+        recipeTypeId = this[Recipes.recipeTypeId],
+        name = this[Recipes.name],
+        description = this[Recipes.description],
+        ingredients = this[Recipes.ingredients],
+        preparingSteps = this[Recipes.preparingSteps]
+    )
+
+    fun ResultRow.mapToUser() = User(
+        id = this[Users.id].value,
+        name = this[Users.name],
+        userName = this[Users.userName],
+        passwordHash = this[Users.passwordHash]
+    )
+
+    fun ResultRow.mapToRole() = Role(
+        id = this[Roles.id].value,
+        name = this[Roles.name],
+        code = this[Roles.code],
+        persistent = this[Roles.persistent]
+    )
+
+    //endregion
 }

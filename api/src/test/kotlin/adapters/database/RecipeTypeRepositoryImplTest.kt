@@ -1,6 +1,7 @@
 package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRecipeType
+import adapters.database.DatabaseTestHelper.mapToRecipeType
 import adapters.database.schema.RecipeTypes
 import com.github.javafaker.Faker
 import errors.RecipeTypeNotFound
@@ -76,8 +77,11 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
                 val createdRecipeTypeId = repo.create(recipeType = recipeType)
 
                 createdRecipeTypeId.shouldNotBeZero()
-                val row = transaction { RecipeTypes.select { RecipeTypes.id eq createdRecipeTypeId }.first() }
-                row[RecipeTypes.name].shouldBe(recipeType.name)
+                val createdRecipeType = transaction(database) {
+                    RecipeTypes.select { RecipeTypes.id eq createdRecipeTypeId }.map { row -> row.mapToRecipeType() }
+                        .first()
+                }
+                createdRecipeType.shouldBe(recipeType.copy(id = createdRecipeTypeId))
             }
 
             it("should throw when the name set is bigger than 64 characters") {
@@ -97,8 +101,11 @@ class RecipeTypeRepositoryImplTest : DescribeSpec({
 
                 repo.update(createdRecipeType.copy(name = "Arroz"))
 
-                val row = transaction { RecipeTypes.select { RecipeTypes.id eq createdRecipeType.id }.first() }
-                row[RecipeTypes.name].shouldBe("Arroz")
+                val updatedRecipeType = transaction(database) {
+                    RecipeTypes.select { RecipeTypes.id eq createdRecipeType.id }.map { row -> row.mapToRecipeType() }
+                        .first()
+                }
+                updatedRecipeType.name.shouldBe("Arroz")
             }
 
             it("throws if the recipe type doesn't exist in the database") {
