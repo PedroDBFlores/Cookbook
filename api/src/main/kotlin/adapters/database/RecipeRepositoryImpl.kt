@@ -46,7 +46,7 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
             )
         }
 
-        val numberOfPages = ceil(count.toDouble() / parameters.itemsPerPage!!).toInt()
+        val numberOfPages = ceil(count.toDouble() / parameters.itemsPerPage).toInt()
         val results = query.map(::mapToRecipe)
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }

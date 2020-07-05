@@ -70,18 +70,5 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             }
             verify { searchRecipe(searchParameters = searchParameters) }
         }
-
-        it("returns 400 when the provided body doesn't match the required JSON") {
-            val searchRecipe = mockk<SearchRecipe>()
-
-            val response =
-                executeRequest(searchRecipe, """{}""")
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
-                body.asString().shouldContain("Couldn't deserialize body")
-            }
-            verify(exactly = 0) { searchRecipe(any()) }
-        }
     }
 })

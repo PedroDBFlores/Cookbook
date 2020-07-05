@@ -93,7 +93,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
             // THESE ARE FLAWED, we need to control at least one of them
             it("searches for a specific recipe description") {
                 createRecipes(numberOfRecipes = 10)
-                val pickedRecipe = createRecipe(DTOGenerator.generateRecipe(name = "Very good", recipeTypeId = recipeTypeId))
+                val pickedRecipe = createRecipe(DTOGenerator.generateRecipe(description = "Very good", recipeTypeId = recipeTypeId))
                 val repo = RecipeRepositoryImpl(database = database)
                 val parameters = SearchRecipeParameters(description = pickedRecipe.description)
 
