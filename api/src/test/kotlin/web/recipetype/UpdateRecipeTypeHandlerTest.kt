@@ -17,32 +17,31 @@ import usecases.recipetype.UpdateRecipeType
 import utils.DTOGenerator
 import utils.convertToJSON
 
-class UpdateRecipeTypeHandlerTest : DescribeSpec({
-    var app: Javalin? = null
+internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
     beforeSpec {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = 9000
     }
 
-    afterTest {
-        app?.stop()
-    }
-
     fun executeRequest(
         updateRecipeType: UpdateRecipeType,
         jsonBody: String
     ): Response {
-        app = Javalin.create().put("/api/recipetype", UpdateRecipeTypeHandler(updateRecipeType))
+        val app = Javalin.create().put("/api/recipetype", UpdateRecipeTypeHandler(updateRecipeType))
             .start(9000)
 
-        return Given {
-            contentType(ContentType.JSON)
-            body(jsonBody)
-        } When {
-            put("/api/recipetype")
-        } Extract {
-            response()
+        try {
+            return Given {
+                contentType(ContentType.JSON)
+                body(jsonBody)
+            } When {
+                put("/api/recipetype")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 
@@ -63,29 +62,14 @@ class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
         arrayOf(
             row(
-                "",
-                "no body is provided",
-                "Couldn't deserialize body"
-            ),
-            row(
                 """{"non":"conformant"}""",
-                "an invalid body is provided",
-                "Couldn't deserialize body"
-            ),
-            row(
-                """{"id":""}""",
-                "the name field is missing",
+                "the provided body doesn't match the required JSON",
                 "Couldn't deserialize body"
             ),
             row(
                 """{"id":-1, "name":""}""",
                 "the id is invalid",
                 "Field 'id' must be bigger than 0"
-            ),
-            row(
-                """{"id":123,"name":""}""",
-                "the name is empty",
-                "Field 'name' cannot be empty"
             )
         ).forEach { (jsonBody, description, messageToContain) ->
             it("returns 400 when $description") {

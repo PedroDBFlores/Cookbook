@@ -4,7 +4,9 @@ import errors.PasswordMismatchError
 import errors.UserNotFound
 import io.javalin.Javalin
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,13 +20,10 @@ import model.Credentials
 import org.eclipse.jetty.http.HttpStatus
 import usecases.user.ValidateUserCredentials
 import utils.convertToJSON
+import utils.removeJSONProperties
 
-class ValidateUserCredentialsHandlerTest : DescribeSpec({
-    var app: Javalin? = null
-    val credentials = object {
-        val username = "username"
-        val password = "password"
-    }
+internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
+    val credentials = Credentials(username = "username", password = "password")
     val jsonBody = convertToJSON(credentials)
 
     beforeSpec {
@@ -32,24 +31,24 @@ class ValidateUserCredentialsHandlerTest : DescribeSpec({
         RestAssured.port = 9000
     }
 
-    afterTest {
-        app?.stop()
-    }
-
     fun executeRequest(
         validateUserCredentials: ValidateUserCredentials,
         jsonBody: String
     ): Response {
-        app = Javalin.create().post("/api/user/validate", ValidateUserCredentialsHandler(validateUserCredentials))
+        val app = Javalin.create().post("/api/user/validate", ValidateUserCredentialsHandler(validateUserCredentials))
             .start(9000)
 
-        return Given {
-            contentType(ContentType.JSON)
-            body(jsonBody)
-        } When {
-            post("api/user/validate")
-        } Extract {
-            response()
+        try {
+            return Given {
+                contentType(ContentType.JSON)
+                body(jsonBody)
+            } When {
+                post("api/user/validate")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 
@@ -112,6 +111,39 @@ class ValidateUserCredentialsHandlerTest : DescribeSpec({
 
             with(response) {
                 statusCode.shouldBe(HttpStatus.UNAUTHORIZED_401)
+            }
+        }
+
+        arrayOf(
+            row(
+                "",
+                "when there is no body"
+            ),
+            row(
+                """{"non":"conformant"}""",
+                "an invalid body is provided"
+            ),
+            row(
+                removeJSONProperties(credentials, "username"),
+                "when the username property is missing"
+            ),
+            row(
+                removeJSONProperties(credentials, "password"),
+                "when the password property is missing"
+            )
+        ).forEach { (jsonBody, description) ->
+            it("returns 400 $description") {
+                val validateUserCredentials = mockk<ValidateUserCredentials>(relaxed = true)
+
+                val response = executeRequest(
+                    validateUserCredentials = validateUserCredentials,
+                    jsonBody = jsonBody
+                )
+
+                with(response) {
+                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                    body.asString().shouldContain("Couldn't deserialize body")
+                }
             }
         }
     }

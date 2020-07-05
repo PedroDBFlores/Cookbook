@@ -1,8 +1,11 @@
+
+
 plugins {
     application
     kotlin("jvm") version "1.3.72"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.28.0"
+    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
 }
 
 group = "pt.pedro"
@@ -71,3 +74,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+ktlint {
+    disabledRules.set(setOf("no-wildcard-imports"))
+}

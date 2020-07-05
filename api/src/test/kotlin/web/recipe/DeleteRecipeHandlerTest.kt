@@ -15,31 +15,27 @@ import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.DeleteRecipe
 
-class DeleteRecipeHandlerTest : DescribeSpec({
-    var app: Javalin? = null
-
+internal class DeleteRecipeHandlerTest : DescribeSpec({
     beforeSpec {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = 9000
-    }
-
-    afterTest {
-        app?.stop()
     }
 
     fun executeRequest(
         deleteRecipe: DeleteRecipe,
         recipeIdParam: String
     ): Response {
-        app = Javalin.create().delete("/api/recipe/:id", DeleteRecipeHandler(deleteRecipe))
-            .start(9000)
-
-        return Given {
-            pathParam("id", recipeIdParam)
-        } When {
-            delete("/api/recipe/{id}")
-        } Extract {
-            response()
+        val app = Javalin.create().delete("/api/recipe/:id", DeleteRecipeHandler(deleteRecipe)).start(9000)
+        try {
+            return Given {
+                pathParam("id", recipeIdParam)
+            } When {
+                delete("/api/recipe/{id}")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 

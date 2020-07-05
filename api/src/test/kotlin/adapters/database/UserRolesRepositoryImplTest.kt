@@ -1,28 +1,24 @@
 package adapters.database
 
+import adapters.database.DatabaseTestHelper.mapToUserRole
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
-import config.KoinModules
 import errors.UserNotFound
 import errors.UserRoleNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import java.sql.SQLException
 import model.Role
 import model.User
 import model.UserRole
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.java.KoinJavaComponent
 import utils.DTOGenerator
-import java.sql.SQLException
 
-class UserRolesRepositoryImplTest : DescribeSpec({
+internal class UserRolesRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database
 
     beforeSpec {
@@ -44,7 +40,7 @@ class UserRolesRepositoryImplTest : DescribeSpec({
         val id = transaction(database) {
             Users.insertAndGetId { createUser ->
                 createUser[name] = user.name
-                createUser[userName] = user.userName
+                createUser[userName] = user.username
                 createUser[passwordHash] = user.passwordHash
             }
         }.value
@@ -98,13 +94,11 @@ class UserRolesRepositoryImplTest : DescribeSpec({
 
                 repo.addRoleToUser(userId = user.id, roleId = role.id)
 
-                val row = transaction(database) {
-                    UserRoles.select { UserRoles.userId eq user.id }
-                        .firstOrNull()
+                val createdUserRole = transaction(database) {
+                    UserRoles.select { UserRoles.userId eq user.id }.map { row -> row.mapToUserRole() }
+                        .first()
                 }
-                row.shouldNotBeNull()
-                row[UserRoles.userId].shouldBe(user.id)
-                row[UserRoles.roleId].shouldBe(role.id)
+                createdUserRole.shouldBe(UserRole(userId = user.id, roleId = role.id))
             }
 
             arrayOf(

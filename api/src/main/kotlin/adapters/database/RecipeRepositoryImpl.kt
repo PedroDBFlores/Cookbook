@@ -1,7 +1,10 @@
 package adapters.database
 
 import adapters.database.schema.Recipes
+import kotlin.math.ceil
 import model.Recipe
+import model.SearchResult
+import model.parameters.SearchRecipeParameters
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
@@ -20,6 +23,32 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
     override fun count(): Long = transaction(database) {
         Recipes.selectAll().count()
+    }
+
+    override fun search(parameters: SearchRecipeParameters): SearchResult<Recipe> = transaction(database) {
+        val query = Recipes.selectAll()
+
+        with(parameters) {
+            name?.let { nameParam ->
+                query.andWhere { Recipes.name like nameParam }
+            }
+            description?.let { descriptionParam ->
+                query.andWhere { Recipes.description like descriptionParam }
+            }
+        }
+
+        val count = query.count()
+        parameters.itemsPerPage.let { itemsPerPage ->
+            val offset = parameters.pageNumber.toLong().minus(1) * itemsPerPage
+            query.limit(
+                n = itemsPerPage,
+                offset = offset
+            )
+        }
+
+        val numberOfPages = ceil(count.toDouble() / parameters.itemsPerPage!!).toInt()
+        val results = query.map(::mapToRecipe)
+        SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }
 
     override fun create(recipe: Recipe): Int = transaction(database) {

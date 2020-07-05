@@ -20,31 +20,29 @@ import usecases.recipe.FindRecipe
 import utils.DTOGenerator
 import utils.convertToJSON
 
-class FindRecipeHandlerTest : DescribeSpec({
-    var app: Javalin? = null
+internal class FindRecipeHandlerTest : DescribeSpec({
 
     beforeSpec {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = 9000
     }
 
-    afterTest {
-        app?.stop()
-    }
-
     fun executeRequest(
         findRecipe: FindRecipe,
         recipeIdParam: String
     ): Response {
-        app = Javalin.create().get("/api/recipe/:id", FindRecipeHandler(findRecipe))
+        val app = Javalin.create().get("/api/recipe/:id", FindRecipeHandler(findRecipe))
             .start(9000)
-
-        return Given {
-            pathParam("id", recipeIdParam)
-        } When {
-            get("/api/recipe/{id}")
-        } Extract {
-            response()
+        try {
+            return Given {
+                pathParam("id", recipeIdParam)
+            } When {
+                get("/api/recipe/{id}")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 

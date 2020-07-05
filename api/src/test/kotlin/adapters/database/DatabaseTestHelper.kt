@@ -1,16 +1,10 @@
 package adapters.database
 
-import adapters.database.schema.RecipeTypes
-import adapters.database.schema.Recipes
-import adapters.database.schema.Roles
-import adapters.database.schema.Users
+import adapters.database.schema.*
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
-import model.Recipe
-import model.RecipeType
-import model.Role
-import model.User
+import model.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
 import ports.HashingService
@@ -50,6 +44,12 @@ object DatabaseTestHelper {
         return recipe.copy(id = id)
     }
 
+    fun createRecipe(recipe: Recipe): Recipe {
+        val repo = RecipeRepositoryImpl(database = database)
+        val id = repo.create(recipe = recipe.copy(id = 0))
+        return recipe.copy(id = id)
+    }
+
     fun createUser(userPassword: String, hashingService: HashingService): User {
         val user = DTOGenerator.generateUser(id = 0)
         val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
@@ -82,7 +82,7 @@ object DatabaseTestHelper {
     fun ResultRow.mapToUser() = User(
         id = this[Users.id].value,
         name = this[Users.name],
-        userName = this[Users.userName],
+        username = this[Users.userName],
         passwordHash = this[Users.passwordHash]
     )
 
@@ -93,5 +93,9 @@ object DatabaseTestHelper {
         persistent = this[Roles.persistent]
     )
 
+    fun ResultRow.mapToUserRole() = UserRole(
+        userId = this[UserRoles.userId],
+        roleId = this[UserRoles.roleId]
+    )
     //endregion
 }

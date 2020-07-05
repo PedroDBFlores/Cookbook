@@ -1,8 +1,13 @@
 package model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import errors.ValidationError
 
 data class Credentials(
-    @JsonProperty("username") val username: String,
-    @JsonProperty("password") val password: String
-)
+    val username: String,
+    val password: String
+) {
+    init {
+        check(username.isNotEmpty()) { throw ValidationError("username") }
+        check(password.isNotEmpty()) { throw ValidationError("password") }
+    }
+}

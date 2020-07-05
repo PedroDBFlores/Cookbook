@@ -1,8 +1,13 @@
 package model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import errors.ValidationError
 
 data class RecipeType(
-    @JsonProperty("id") val id: Int,
-    @JsonProperty("name") val name: String
-)
+    val id: Int,
+    val name: String
+) {
+    init {
+        check(id >= 0) { throw ValidationError("id") }
+        check(name.isNotEmpty()) { throw ValidationError("name") }
+    }
+}

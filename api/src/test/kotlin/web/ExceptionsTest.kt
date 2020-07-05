@@ -3,6 +3,7 @@ package web
 import config.KoinModules
 import config.RecipeDependencies
 import config.RecipeTypeDependencies
+import errors.ValidationError
 import io.javalin.http.BadRequestResponse
 import io.kotest.assertions.fail
 import io.kotest.assertions.json.shouldContainJsonKey
@@ -22,7 +23,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 
-class ExceptionsTest : KoinComponent, DescribeSpec({
+internal class ExceptionsTest : KoinComponent, DescribeSpec({
 
     fun executeRequest(
         recipeTypeDependencies: RecipeTypeDependencies,
@@ -40,7 +41,7 @@ class ExceptionsTest : KoinComponent, DescribeSpec({
             app = CookbookApi(
                 config = koin.koin.get(),
                 javalinPlugins = koin.koin.get(),
-                router =koin.koin.get(),
+                router = koin.koin.get(),
                 onStop = { stopKoin() }
             )
             require(app != null) { fail("Javalin failed to initialize") }
@@ -78,6 +79,31 @@ class ExceptionsTest : KoinComponent, DescribeSpec({
         it("returns a structured error on a BadRequestResponse") {
             val recipeTypeDependencies = mockk<RecipeTypeDependencies>(relaxed = true) {
                 every { createRecipeType(any()) } throws BadRequestResponse()
+            }
+
+            val response = executeRequest(recipeTypeDependencies) {
+                Given {
+                    body("""{ "name" : "" }""")
+                }
+                When {
+                    post("http://localhost:9000/api/recipetype")
+                } Extract {
+                    response()
+                }
+            }
+
+            with(response) {
+                statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                with(body.asString()) {
+                    shouldContainJsonKeyValue("code", "BAD_REQUEST")
+                    shouldContainJsonKey("message")
+                }
+            }
+        }
+
+        it("returns a structured error on a ValidationError") {
+            val recipeTypeDependencies = mockk<RecipeTypeDependencies>(relaxed = true) {
+                every { createRecipeType(any()) } throws ValidationError("name")
             }
 
             val response = executeRequest(recipeTypeDependencies) {

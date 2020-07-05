@@ -25,18 +25,3 @@ fun removeJSONProperties(source: Any, vararg properties: String): String {
     }
     return jsonNode.toString()
 }
-
-/**
- * Creates a JSON object with simple key-value pairs (without nesting)
- * @param values The key-value pairs to be added to the JSON object
- * @return A JSON with the provided key-value pairs
- */
-fun composeSimpleJsonObject(values: Map<String, String>): String {
-    val objectNode = ObjectMapper().createObjectNode()
-    for (mapValue in values) {
-        with(mapValue) {
-            objectNode.put(key, value)
-        }
-    }
-    return objectNode.toString()
-}

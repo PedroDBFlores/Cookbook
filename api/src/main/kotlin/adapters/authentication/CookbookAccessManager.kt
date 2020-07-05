@@ -32,6 +32,5 @@ class CookbookAccessManager(
         val userRoles = userRolesClaim.asList(String::class.java)
         return rolesMapping.filter { role -> userRoles.contains(role.key) }
             .map { rolesMapping -> rolesMapping.value }
-
     }
 }

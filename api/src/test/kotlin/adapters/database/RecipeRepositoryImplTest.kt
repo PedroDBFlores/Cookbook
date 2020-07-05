@@ -6,22 +6,22 @@ import adapters.database.DatabaseTestHelper.mapToRecipe
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
 import com.github.javafaker.Faker
-import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.ints.shouldNotBeZero
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import java.sql.SQLException
 import model.Recipe
+import model.parameters.SearchRecipeParameters
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
-import java.sql.SQLException
 
-class RecipeRepositoryImplTest : DescribeSpec({
+internal class RecipeRepositoryImplTest : DescribeSpec({
     val faker = Faker()
     val database = DatabaseTestHelper.database
     var recipeTypeId = 0
@@ -71,6 +71,60 @@ class RecipeRepositoryImplTest : DescribeSpec({
             val count = repo.count()
 
             count.shouldBe(createdRecipes.size)
+        }
+
+        describe("Search") {
+            fun createRecipes(numberOfRecipes: Int = 20) = List(numberOfRecipes) {
+                createRecipe(recipeTypeId = recipeTypeId)
+            }
+
+            it("searches for a specific recipe name") {
+                createRecipes(numberOfRecipes = 10)
+                val pickedRecipe = createRecipe(DTOGenerator.generateRecipe(name = "Lichens", recipeTypeId = 1))
+                val repo = RecipeRepositoryImpl(database = database)
+                val parameters = SearchRecipeParameters(name = pickedRecipe.name)
+
+                val result = repo.search(parameters = parameters)
+
+                result.count.shouldBe(1)
+                result.numberOfPages.shouldBe(1)
+                result.results.first().shouldBe(pickedRecipe)
+            }
+            // THESE ARE FLAWED, we need to control at least one of them
+            it("searches for a specific recipe description") {
+                createRecipes(numberOfRecipes = 10)
+                val pickedRecipe = createRecipe(DTOGenerator.generateRecipe(name = "Very good", recipeTypeId = recipeTypeId))
+                val repo = RecipeRepositoryImpl(database = database)
+                val parameters = SearchRecipeParameters(description = pickedRecipe.description)
+
+                val result = repo.search(parameters = parameters)
+
+                result.count.shouldBe(1)
+                result.numberOfPages.shouldBe(1)
+                result.results.first().shouldBe(pickedRecipe)
+            }
+
+            arrayOf(
+                row(1, 5),
+                row(3, 20),
+                row(10, 5),
+                row(2, 50)
+            ).forEach { (pageNumber, itemsPerPage) ->
+                it("returns the paginated results for page $pageNumber and $itemsPerPage items per page") {
+                    val createdRecipes = createRecipes(100)
+                    val repo = RecipeRepositoryImpl(database = database)
+                    val parameters = SearchRecipeParameters(pageNumber = pageNumber, itemsPerPage = itemsPerPage)
+
+                    val searchResult = repo.search(parameters = parameters)
+
+                    with(searchResult) {
+                        count.shouldBe(100)
+                        numberOfPages.shouldBe(100 / itemsPerPage)
+                        val offset = pageNumber.minus(1) * itemsPerPage
+                        createdRecipes.subList(offset, offset + itemsPerPage).shouldBe(results)
+                    }
+                }
+            }
         }
 
         describe("Create") {

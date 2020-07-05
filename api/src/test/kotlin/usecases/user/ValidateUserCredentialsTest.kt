@@ -16,12 +16,12 @@ import ports.HashingService
 import ports.UserRepository
 import utils.DTOGenerator
 
-class ValidateUserCredentialsTest : DescribeSpec({
+internal class ValidateUserCredentialsTest : DescribeSpec({
     describe("Validate user credentials use case") {
         it("validates the user credentials and returns an access token") {
             val user = DTOGenerator.generateUser()
             val userRepository = mockk<UserRepository> {
-                every { find(user.userName) } returns user
+                every { find(user.username) } returns user
             }
             val hashingService = mockk<HashingService> {
                 every { hash("PASSWORD") } returns "PASSWORDHASH"
@@ -36,11 +36,11 @@ class ValidateUserCredentialsTest : DescribeSpec({
                 jwtProvider = jwtProvider
             )
 
-            val jwtToken = userHasValidCredentials(Credentials(user.userName, "PASSWORD"))
+            val jwtToken = userHasValidCredentials(Credentials(user.username, "PASSWORD"))
 
             jwtToken.shouldBe("JWT_TOKEN")
             verify {
-                userRepository.find(user.userName)
+                userRepository.find(user.username)
                 hashingService.hash("PASSWORD")
                 hashingService.verify("PASSWORDHASH", user.passwordHash)
                 jwtProvider.generateToken(user)
@@ -50,7 +50,7 @@ class ValidateUserCredentialsTest : DescribeSpec({
         it("should return false if the credentials don't match") {
             val user = DTOGenerator.generateUser()
             val userRepository = mockk<UserRepository> {
-                every { find(user.userName) } returns user
+                every { find(user.username) } returns user
             }
             val hashingService = mockk<HashingService>(relaxed = true) {
                 every { verify(any(), user.passwordHash) } returns false
@@ -61,14 +61,14 @@ class ValidateUserCredentialsTest : DescribeSpec({
                 jwtProvider = mockk()
             )
 
-            val act = { userHasValidCredentials(Credentials(user.userName, "PASSWORD")) }
+            val act = { userHasValidCredentials(Credentials(user.username, "PASSWORD")) }
 
             shouldThrow<PasswordMismatchError> { act() }
         }
 
         it("throws if the user is not found") {
             val userRepository = mockk<UserRepository> {
-                every { find(ofType(String::class)) } returns null
+                every { find(ofType<String>()) } returns null
             }
             val hashingService = mockk<HashingService>(relaxed = true)
             val userHasValidCredentials =

@@ -16,28 +16,27 @@ import usecases.recipetype.GetAllRecipeTypes
 import utils.DTOGenerator.generateRecipeType
 import utils.convertToJSON
 
-class GetAllRecipeTypesHandlerTest : DescribeSpec({
-    var app: Javalin? = null
+internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
 
     beforeSpec {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = 9000
     }
 
-    afterTest {
-        app?.stop()
-    }
-
     fun executeRequest(
         getAllRecipeTypes: GetAllRecipeTypes
     ): Response {
-        app = Javalin.create().get("/api/recipetype", GetAllRecipeTypesHandler(getAllRecipeTypes))
+        val app = Javalin.create().get("/api/recipetype", GetAllRecipeTypesHandler(getAllRecipeTypes))
             .start(9000)
 
-        return When {
-            get("/api/recipetype")
-        } Extract {
-            response()
+        try {
+            return When {
+                get("/api/recipetype")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 
@@ -55,5 +54,4 @@ class GetAllRecipeTypesHandlerTest : DescribeSpec({
             verify(exactly = 1) { getAllRecipeTypesMock() }
         }
     }
-
 })

@@ -1,14 +1,14 @@
 package web.recipetype
 
 import io.javalin.Javalin
+import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.restassured.RestAssured.*
+import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
@@ -17,35 +17,33 @@ import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
 import usecases.recipetype.CreateRecipeType
 import utils.DTOGenerator
-import utils.composeSimpleJsonObject
 import utils.removeJSONProperties
 
-class CreateRecipeTypeHandlerTest : DescribeSpec({
-    var app: Javalin? = null
+internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
     beforeSpec {
-        baseURI = "http://localhost"
-        port = 9000
-    }
-
-    afterTest {
-        app?.stop()
+        RestAssured.baseURI = "http://localhost"
+        RestAssured.port = 9000
     }
 
     fun executeRequest(
         createRecipeType: CreateRecipeType,
         jsonBody: String
     ): Response {
-        app = Javalin.create().post("/api/recipetype", CreateRecipeTypeHandler(createRecipeType))
+        val app = Javalin.create().post("/api/recipetype", CreateRecipeTypeHandler(createRecipeType))
             .start(9000)
 
-        return Given {
-            contentType(ContentType.JSON)
-            body(jsonBody)
-        }When {
-            post("/api/recipetype")
-        }Extract {
-            response()
+        try {
+            return Given {
+                contentType(ContentType.JSON)
+                body(jsonBody)
+            } When {
+                post("/api/recipetype")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 
@@ -60,38 +58,20 @@ class CreateRecipeTypeHandlerTest : DescribeSpec({
 
             with(response) {
                 statusCode.shouldBe(HttpStatus.CREATED_201)
-                body.asString().shouldBe("1")
+                body.asString().shouldMatchJson("""{"id":1}""")
                 verify(exactly = 1) { createRecipeTypeMock(expectedRecipeType) }
             }
         }
 
-        arrayOf(
-            row(
-                "",
-                "no body is provided",
-                "Couldn't deserialize body"
-            ),
-            row(
-                """{"non":"conformant"}""",
-                "an invalid body is provided",
-                "Couldn't deserialize body"
-            ),
-            row(
-                composeSimpleJsonObject(mapOf(Pair("name", ""))),
-                "the name is empty",
-                "Field 'name' cannot be empty"
-            )
-        ).forEach { (jsonBody, description, messageToContain) ->
-            it("returns 400 when $description") {
-                val createRecipeTypeMock = mockk<CreateRecipeType>()
-                val response = executeRequest(createRecipeTypeMock, jsonBody)
+        it("returns 400 when the provided body doesn't match the required JSON") {
+            val createRecipeTypeMock = mockk<CreateRecipeType>()
+            val response = executeRequest(createRecipeTypeMock, """{"non":"conformant"}""")
 
-                with(response) {
-                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body.asString().shouldContain(messageToContain)
-                }
-                verify(exactly = 0) { createRecipeTypeMock(any()) }
+            with(response) {
+                statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
+                body.asString().shouldContain("Couldn't deserialize body")
             }
+            verify(exactly = 0) { createRecipeTypeMock(any()) }
         }
     }
 })

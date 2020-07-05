@@ -1,8 +1,13 @@
 package model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import errors.ValidationError
 
 data class UserRole(
-    @JsonProperty("userId") val userId: Int,
-    @JsonProperty("roleId") val roleId: Int
-)
+    val userId: Int,
+    val roleId: Int
+) {
+    init {
+        check(userId >= 0) { throw ValidationError("userId") }
+        check(roleId >= 0) { throw ValidationError("roleId") }
+    }
+}

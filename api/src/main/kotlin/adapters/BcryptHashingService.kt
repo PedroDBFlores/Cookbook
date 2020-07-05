@@ -1,9 +1,9 @@
 package adapters
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import ports.HashingService
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
+import ports.HashingService
 
 class BcryptHashingService : HashingService {
     override fun hash(value: String): String = String(

@@ -3,12 +3,12 @@ package adapters.database
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
+import errors.PasswordMismatchError
 import errors.UserNotFound
 import model.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
-import errors.PasswordMismatchError
 import ports.UserRepository
 
 class UserRepositoryImpl(
@@ -38,11 +38,10 @@ class UserRepositoryImpl(
             .selectFilter()
             .groupBy(Users.id, Users.name, Users.userName, Users.passwordHash, Roles.code)
 
-
     override fun create(user: User, userPassword: String): Int = transaction(database) {
         val userId = Users.insertAndGetId { userToCreate ->
             userToCreate[name] = user.name
-            userToCreate[userName] = user.userName
+            userToCreate[userName] = user.username
             userToCreate[passwordHash] = hashingService.hash(userPassword)
         }.value
 
@@ -83,7 +82,7 @@ class UserRepositoryImpl(
     private fun mapToUser(row: ResultRow) = User(
         id = row[Users.id].value,
         name = row[Users.name],
-        userName = row[Users.userName],
+        username = row[Users.userName],
         passwordHash = row[Users.passwordHash],
         roles = row[Roles.code.groupConcat(";")].run {
             split(";")

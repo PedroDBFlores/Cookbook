@@ -10,14 +10,14 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.ints.shouldNotBeZero
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import java.sql.SQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
-import java.sql.SQLException
 
-class RoleRepositoryImplTest : DescribeSpec({
+internal class RoleRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database
 
     beforeSpec {

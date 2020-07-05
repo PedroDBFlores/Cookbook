@@ -16,12 +16,10 @@ import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
-import model.User
 import org.eclipse.jetty.http.HttpStatus
 import web.CookbookRoles
 
-
-class CookbookAccessManagerTest : DescribeSpec({
+internal class CookbookAccessManagerTest : DescribeSpec({
     var app: Javalin? = null
     val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
 
@@ -53,9 +51,6 @@ class CookbookAccessManagerTest : DescribeSpec({
     ): Response {
         val provider = HMAC512Provider.provide(configuration.jwt.secret)
 
-        val user = User(0, "Pedro", "Pedro", roles = listOf(CookbookRoles.USER.toString()))
-        println(provider.generateToken(user))
-
         app = Javalin.create { config ->
             config.accessManager(accessManager)
         }
@@ -64,10 +59,7 @@ class CookbookAccessManagerTest : DescribeSpec({
 
         addHandler(app!!)
         return Given {
-            header(
-                "Authorization",
-                authorizationHeader
-            )
+            header("Authorization", authorizationHeader)
         } When {
             get("http://localhost:9000/api/recipetype")
         } Extract {

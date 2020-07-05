@@ -6,6 +6,7 @@ import adapters.database.DatabaseTestHelper.mapToUser
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
+import errors.PasswordMismatchError
 import errors.UserNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -17,15 +18,14 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.sql.SQLException
 import model.Role
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
-import errors.PasswordMismatchError
 import utils.DTOGenerator.generateUser
-import java.sql.SQLException
 
-class UserRepositoryImplTest : DescribeSpec({
+internal class UserRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database
 
     lateinit var role: Role
@@ -71,7 +71,7 @@ class UserRepositoryImplTest : DescribeSpec({
                     createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
-                val user = repo.find(userName = expectedUser.userName)
+                val user = repo.find(userName = expectedUser.username)
 
                 user.shouldNotBeNull()
                 user.shouldBe(expectedUser.copy(passwordHash = "PASSWORDHASH", roles = listOf(RoleCodes.USER)))
@@ -138,7 +138,11 @@ class UserRepositoryImplTest : DescribeSpec({
                 val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
 
                 repo.update(user = currentUser, oldPassword = "OLDPASSWORD", newPassword = "NEWPASSWORD")
+                val updatedUser = transaction(database) {
+                    Users.select { Users.id eq currentUser.id }.map { row -> row.mapToUser() }.first()
+                }
 
+                updatedUser.shouldBe(currentUser.copy(passwordHash = basicHashingService.hash("NEWPASSWORD")))
                 verify(exactly = 1) {
                     hashingService.verify("OLDPASSWORD", "OLDPASSWORDHASH")
                     hashingService.hash("NEWPASSWORD")

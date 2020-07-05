@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import ports.RecipeTypeRepository
 
-class DeleteRecipeTypeTest : DescribeSpec({
+internal class DeleteRecipeTypeTest : DescribeSpec({
     describe("Delete recipe type use case") {
         it("deletes a recipe type") {
             val recipeTypeRepository = mockk<RecipeTypeRepository> {

@@ -1,18 +1,12 @@
 package web
 
 import config.ConfigurationFile
-import config.KoinModules.applicationModules
 import config.Router
 import io.javalin.Javalin
 import io.javalin.core.plugin.Plugin
 import io.javalin.http.BadRequestResponse
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
-import org.koin.core.KoinComponent
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.core.inject
-import org.koin.core.logger.Level
 
 /**
  * Defines the Cookbook API
@@ -75,8 +69,3 @@ class CookbookApi(
     }
     //endregion Methods
 }
-
-
-
-
-

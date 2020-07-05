@@ -6,13 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.JWTVerifier
 import model.User
 
-
 object HMAC512Provider {
     private val generator: JWTGenerator<User> = object : JWTGenerator<User> {
         override fun generate(obj: User, algorithm: Algorithm): String {
             val token: JWTCreator.Builder = JWT.create()
                 .withClaim("name", obj.name)
-                .withClaim("username", obj.userName)
+                .withClaim("username", obj.username)
                 .withArrayClaim("roles", obj.roles?.toTypedArray())
             return token.sign(algorithm)
         }

@@ -10,7 +10,7 @@ import io.mockk.verify
 import ports.RecipeRepository
 import utils.DTOGenerator
 
-class FindRecipeTest : DescribeSpec({
+internal class FindRecipeTest : DescribeSpec({
     describe("Find recipe use case") {
         it("Find a recipe by id") {
             val expectedRecipe = DTOGenerator.generateRecipe()

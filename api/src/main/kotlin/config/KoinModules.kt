@@ -41,7 +41,7 @@ object KoinModules {
     }
 
     private val jwtModule = module {
-        single { HMAC512Provider.provide(configuration.jwt.secret) } //JWT provider
+        single { HMAC512Provider.provide(configuration.jwt.secret) } // JWT provider
         single {
             CookbookAccessManager(
                 "roles", mapOf(

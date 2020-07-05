@@ -25,7 +25,6 @@ class CookbookOpenApiPlugin {
             .path("/swagger-docs")
             .reDoc(ReDocOptions("/apidoc").title("Cookbook documentations"))
 
-
         return OpenApiPlugin(openApiOptions)
     }
 }

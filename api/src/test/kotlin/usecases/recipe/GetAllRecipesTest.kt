@@ -8,7 +8,7 @@ import io.mockk.verify
 import ports.RecipeRepository
 import utils.DTOGenerator
 
-class GetAllRecipesTest : DescribeSpec({
+internal class GetAllRecipesTest : DescribeSpec({
     describe("Get all recipes use case") {
         it("gets all the recipes") {
             val expectedRecipes = listOf(

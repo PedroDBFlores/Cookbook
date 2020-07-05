@@ -8,7 +8,7 @@ import io.mockk.verify
 import ports.UserRepository
 import utils.DTOGenerator
 
-class CreateUserTest : DescribeSpec({
+internal class CreateUserTest : DescribeSpec({
     describe("Create user use case") {
         it("creates a new user") {
             val userToCreate = DTOGenerator.generateUser(id = 0)

@@ -10,7 +10,7 @@ import io.mockk.verify
 import ports.UserRepository
 import utils.DTOGenerator
 
-class FindUserTest : DescribeSpec({
+internal class FindUserTest : DescribeSpec({
     describe("Find user use case") {
         it("returns a user") {
             val expectedUser = DTOGenerator.generateUser()
@@ -27,7 +27,7 @@ class FindUserTest : DescribeSpec({
 
         it("throws if the user is not found") {
             val userRepository = mockk<UserRepository> {
-                every { find(ofType(Int::class)) } returns null
+                every { find(ofType<Int>()) } returns null
             }
             val findUser = FindUser(userRepository)
 

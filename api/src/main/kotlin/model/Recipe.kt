@@ -1,12 +1,21 @@
 package model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import errors.ValidationError
 
 data class Recipe(
-    @JsonProperty("id") val id: Int,
-    @JsonProperty("recipeTypeId") val recipeTypeId: Int,
-    @JsonProperty("name") val name: String,
-    @JsonProperty("description") val description: String,
-    @JsonProperty("ingredients") val ingredients: String,
-    @JsonProperty("preparingSteps") val preparingSteps: String
-)
+    val id: Int,
+    val recipeTypeId: Int,
+    val name: String,
+    val description: String,
+    val ingredients: String,
+    val preparingSteps: String
+) {
+    init {
+        check(id >= 0) { throw ValidationError("id") }
+        check(recipeTypeId >= 0) { throw ValidationError("recipeTypeId") }
+        check(name.isNotEmpty()) { throw ValidationError("name") }
+        check(description.isNotEmpty()) { throw ValidationError("description") }
+        check(ingredients.isNotEmpty()) { throw ValidationError("ingredients") }
+        check(preparingSteps.isNotEmpty()) { throw ValidationError("preparingSteps") }
+    }
+}

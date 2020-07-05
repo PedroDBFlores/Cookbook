@@ -7,7 +7,7 @@ import io.mockk.*
 import ports.RecipeRepository
 import utils.DTOGenerator
 
-class UpdateRecipeTest : DescribeSpec({
+internal class UpdateRecipeTest : DescribeSpec({
     describe("Update recipe use case") {
         it("updates an existing recipe") {
             val currentRecipe = DTOGenerator.generateRecipe()

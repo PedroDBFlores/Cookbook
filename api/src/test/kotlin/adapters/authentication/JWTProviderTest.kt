@@ -11,7 +11,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import model.User
 
-class JWTProviderTest : DescribeSpec({
+internal class JWTProviderTest : DescribeSpec({
     describe("JWT Provider") {
         it("generates a JWT string") {
             val jwtGeneratorMock = mockk<JWTGenerator<User>> {

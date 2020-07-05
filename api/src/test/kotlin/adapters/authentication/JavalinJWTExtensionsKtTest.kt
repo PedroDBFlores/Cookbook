@@ -17,7 +17,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 
-class JavalinJWTExtensionsKtTest : DescribeSpec({
+internal class JavalinJWTExtensionsKtTest : DescribeSpec({
 
     beforeTest {
         mockkObject(JavalinJWTExtensions)
@@ -54,12 +54,12 @@ class JavalinJWTExtensionsKtTest : DescribeSpec({
 
         it("adds a DecodedJWT to the context") {
             val contextMock = mockk<Context> {
-                every { attribute("jwt", ofType(DecodedJWT::class)) } just runs
+                every { attribute("jwt", ofType<DecodedJWT>()) } just runs
             }
 
             contextMock.addDecodedJWT(mockk())
 
-            verify { contextMock.attribute("jwt", ofType(DecodedJWT::class)) }
+            verify { contextMock.attribute("jwt", ofType<DecodedJWT>()) }
         }
 
         describe("Get token from cookie") {

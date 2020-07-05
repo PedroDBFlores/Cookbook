@@ -5,7 +5,7 @@ import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.string.shouldStartWith
 
-class BcryptHashingServiceTest : DescribeSpec({
+internal class BcryptHashingServiceTest : DescribeSpec({
     describe("Bcrypt hashing service") {
         it("hashes a value") {
             val valueToBeHashed = "VALUE"

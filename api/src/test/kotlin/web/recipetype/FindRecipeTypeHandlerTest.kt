@@ -20,31 +20,30 @@ import usecases.recipetype.FindRecipeType
 import utils.DTOGenerator.generateRecipeType
 import utils.convertToJSON
 
-class FindRecipeTypeHandlerTest : DescribeSpec({
-    var app: Javalin? = null
+internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
     beforeSpec {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = 9000
     }
 
-    afterTest {
-        app?.stop()
-    }
-
     fun executeRequest(
         findRecipeType: FindRecipeType,
         recipeTypeIdParam: String
     ): Response {
-        app = Javalin.create().get("/api/recipetype/:id", FindRecipeTypeHandler(findRecipeType))
+        val app = Javalin.create().get("/api/recipetype/:id", FindRecipeTypeHandler(findRecipeType))
             .start(9000)
 
-        return Given {
-            pathParam("id", recipeTypeIdParam)
-        } When {
-            get("/api/recipetype/{id}")
-        } Extract {
-            response()
+        try {
+            return Given {
+                pathParam("id", recipeTypeIdParam)
+            } When {
+                get("/api/recipetype/{id}")
+            } Extract {
+                response()
+            }
+        } finally {
+            app.stop()
         }
     }
 
@@ -59,7 +58,7 @@ class FindRecipeTypeHandlerTest : DescribeSpec({
 
             with(response) {
                 statusCode.shouldBe(HttpStatus.OK_200)
-                //body.`as`<RecipeType>(RecipeType::class.java).shouldBe(expectedRecipeType)
+                // body.`as`<RecipeType>(RecipeType::class.java).shouldBe(expectedRecipeType)
                 body.asString().shouldMatchJson(convertToJSON(expectedRecipeType))
                 verify { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
             }

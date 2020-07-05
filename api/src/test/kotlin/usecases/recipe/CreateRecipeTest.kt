@@ -8,7 +8,7 @@ import io.mockk.verify
 import ports.RecipeRepository
 import utils.DTOGenerator
 
-class CreateRecipeTest : DescribeSpec({
+internal class CreateRecipeTest : DescribeSpec({
 
     describe("Create recipe use case") {
         it("creates a recipe") {

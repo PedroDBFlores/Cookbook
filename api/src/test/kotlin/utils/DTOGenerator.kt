@@ -18,7 +18,8 @@ internal object DTOGenerator {
      * @param name Provide if you want to override the randomized name
      */
     internal fun generateRecipeType(
-        id: Int? = null, name: String? = null
+        id: Int? = null,
+        name: String? = null
     ): RecipeType = RecipeType(
         id = id ?: faker.number().randomDigitNotZero(),
         name = name ?: faker.name().name()
@@ -34,9 +35,12 @@ internal object DTOGenerator {
      * @param preparingSteps Provide if you want to override the randomized preparing stepts
      */
     internal fun generateRecipe(
-        id: Int? = null, recipeTypeId: Int? = null,
-        name: String? = null, description: String? = null,
-        ingredients: String? = null, preparingSteps: String? = null
+        id: Int? = null,
+        recipeTypeId: Int? = null,
+        name: String? = null,
+        description: String? = null,
+        ingredients: String? = null,
+        preparingSteps: String? = null
     ): Recipe = Recipe(
         id = id ?: faker.number().randomDigitNotZero(),
         recipeTypeId = recipeTypeId ?: faker.number().randomDigitNotZero(),
@@ -54,12 +58,14 @@ internal object DTOGenerator {
      * @param passwordHash Provide if you want to override the randomized password
      */
     internal fun generateUser(
-        id: Int? = null, name: String? = null,
-        username: String? = null, passwordHash: String? = null
+        id: Int? = null,
+        name: String? = null,
+        username: String? = null,
+        passwordHash: String? = null
     ): User = User(
         id = id ?: faker.number().randomDigitNotZero(),
         name = name ?: faker.name().name(),
-        userName = username ?: faker.name().username(),
+        username = username ?: faker.name().username(),
         passwordHash = passwordHash ?: faker.internet().password()
     )
 
@@ -71,8 +77,10 @@ internal object DTOGenerator {
      * @param persistent Provide if you want to override the randomized peristent value
      */
     internal fun generateRole(
-        id: Int? = null, name: String? = null,
-        code: String? = null, persistent: Boolean? = null
+        id: Int? = null,
+        name: String? = null,
+        code: String? = null,
+        persistent: Boolean? = null
     ): Role = Role(
         id = id ?: faker.number().randomDigitNotZero(),
         name = name ?: faker.name().name(),

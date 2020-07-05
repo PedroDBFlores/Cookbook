@@ -32,7 +32,7 @@ class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepos
         val affectedRows = RecipeTypes.update({ RecipeTypes.id eq recipeType.id }) { recipeTypeToUpdate ->
             recipeTypeToUpdate[name] = recipeType.name
         }
-        require(affectedRows == 1) { throw RecipeTypeNotFound(recipeTypeId = recipeType.id) }
+        check(affectedRows == 1) { throw RecipeTypeNotFound(recipeTypeId = recipeType.id) }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {

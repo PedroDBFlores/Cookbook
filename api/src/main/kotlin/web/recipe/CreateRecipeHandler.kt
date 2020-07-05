@@ -1,6 +1,5 @@
 package web.recipe
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import io.javalin.plugin.openapi.annotations.*
@@ -45,15 +44,15 @@ class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Handler {
             .get()
             .toRecipe()
         val id = createRecipe(recipe)
-        ctx.status(HttpStatus.CREATED_201).result(id.toString())
+        ctx.status(HttpStatus.CREATED_201).json(mapOf("id" to id))
     }
 
     private data class CreateRecipeRepresenter(
-        @JsonProperty("recipeTypeId") val recipeTypeId: Int,
-        @JsonProperty("name") val name: String,
-        @JsonProperty("description") val description: String,
-        @JsonProperty("ingredients") val ingredients: String,
-        @JsonProperty("preparingSteps") val preparingSteps: String
+        val recipeTypeId: Int,
+        val name: String,
+        val description: String,
+        val ingredients: String,
+        val preparingSteps: String
     ) {
         fun toRecipe() = Recipe(
             id = 0,

@@ -28,7 +28,7 @@ class UserRolesRepositoryImpl(private val database: Database) : UserRolesReposit
         val affectedRows = UserRoles.deleteWhere {
             (UserRoles.userId eq userId) and (UserRoles.roleId eq roleId)
         }
-        require(affectedRows == 1) { throw UserRoleNotFound(userId, roleId) }
+        check(affectedRows == 1) { throw UserRoleNotFound(userId, roleId) }
         true
     }
 
