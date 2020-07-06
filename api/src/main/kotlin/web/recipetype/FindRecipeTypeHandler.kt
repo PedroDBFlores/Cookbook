@@ -13,8 +13,9 @@ class FindRecipeTypeHandler(private val findRecipeType: FindRecipeType) : Handle
     @OpenApi(
         summary = "Find recipe type",
         description = "Find a recipe type by id",
+        operationId = "FindRecipeType",
         method = HttpMethod.GET,
-        pathParams = [OpenApiParam(name = "id", description = "Recipe type id")],
+        pathParams = [OpenApiParam(name = "id", type = Int::class, description = "Recipe type id")],
         responses = [OpenApiResponse(
             status = "200",
             content = [OpenApiContent(from = RecipeType::class)]

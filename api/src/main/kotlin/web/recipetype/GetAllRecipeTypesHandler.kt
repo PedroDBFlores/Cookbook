@@ -13,11 +13,13 @@ import usecases.recipetype.GetAllRecipeTypes
 class GetAllRecipeTypesHandler(private val getAllRecipeTypes: GetAllRecipeTypes) : Handler {
 
     @OpenApi(
+        summary = "Get recipe types",
         description = "Gets all the recipe types",
+        operationId = "GetAllRecipeTypes",
         method = HttpMethod.GET,
         responses = [OpenApiResponse(
             status = "200",
-            content = [OpenApiContent(from = Array<RecipeType>::class)]
+            content = [OpenApiContent(from = RecipeType::class, isArray = true)]
         )],
         tags = ["RecipeType"]
     )

@@ -1,10 +1,10 @@
 import { AxiosError } from "axios"
-import handleError, { ApiError } from "../../src/utils/error-handling"
-import 'jest-extended'
-import 'jest-chain'
+import "jest-chain"
+import "jest-extended"
+import handleApiError, { ApiError } from "../../src/utils/error-handling"
 
 describe("Error handling", () => {
-    it("handles the errors provided by the API", () => {
+    it("handles the errors provided by the API", async () => {
         const axiosError = {
             response: {
                 data: `{
@@ -15,6 +15,8 @@ describe("Error handling", () => {
             }
         } as AxiosError
 
-        expect(() => handleError(axiosError)).toThrowError(ApiError)
+        expect(() => handleApiError(axiosError)).toThrowError(ApiError).toBe({
+            
+        })
     })
 })

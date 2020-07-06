@@ -8,11 +8,11 @@ const RecipeTypeListPage: React.FC<unknown> = () => {
     const { status, data, error } = useQuery<Array<RecipeType>, string>(
         "recipeTypeList", createRecipeTypeService().getAll)
 
-    if (status === 'loading') {
+    if (status === "loading") {
         return <span>Loading...</span>
     }
 
-    if (status === 'error') {
+    if (status === "error") {
         return <span>Error: {error?.message}</span>
     }
 

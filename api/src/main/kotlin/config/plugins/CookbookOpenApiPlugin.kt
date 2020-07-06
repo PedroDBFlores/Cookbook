@@ -15,14 +15,14 @@ class CookbookOpenApiPlugin {
             OpenAPI()
                 .tags(listOf(Tag().name("Cookbook")))
                 .info(
-                    Info().version("0.1").title("Cookbook API documentation")
+                    Info().version("1.0").title("Cookbook API documentation")
                         .description("Documentation for public endpoints of Cookbook.")
                 )
-                .addServersItem(Server().url("http://localhost:900"))
+                .addServersItem(Server().url("http://localhost:9000"))
         }
 
         val openApiOptions = OpenApiOptions(initialConfigurationCreator)
-            .path("/swagger-docs")
+            .path("/openapi")
             .reDoc(ReDocOptions("/apidoc").title("Cookbook documentations"))
 
         return OpenApiPlugin(openApiOptions)

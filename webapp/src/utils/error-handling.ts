@@ -1,11 +1,11 @@
 import { AxiosError } from "axios"
 
 interface ApiError extends Error {
-    status: number
+    code: string
 }
 
 interface ApiErrorConstructor {
-    new(message: string, status: number): ApiError
+    new(message: string, code: string): ApiError
     (message: string): ApiError
     readonly prototype: ApiError
 }
@@ -13,10 +13,9 @@ interface ApiErrorConstructor {
 declare const ApiError: ApiErrorConstructor
 
 export const handleApiError = (err: AxiosError): never => {
-    console.log("CALLED")
     throw {
-        message: err.response?.data,
-        status: err.response?.status
+        message: err.response?.data.message,
+        code: err.response?.data.code
     } as ApiError
 }
 

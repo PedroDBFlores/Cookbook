@@ -13,6 +13,7 @@ class UpdateRecipeTypeHandler(private val updateRecipeType: UpdateRecipeType) : 
     @OpenApi(
         description = "Updates an existing recipe type",
         method = HttpMethod.PUT,
+        operationId = "UpdateRecipeType",
         requestBody = OpenApiRequestBody(
             content = [OpenApiContent(
                 from = UpdateRecipeTypeRepresenter::class

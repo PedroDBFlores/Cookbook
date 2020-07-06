@@ -15,8 +15,9 @@ class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecipeType) : 
     @OpenApi(
         summary = "Delete recipe type",
         description = "Deletes a recipe type by id",
+        operationId = "DeleteRecipeType",
         method = HttpMethod.DELETE,
-        pathParams = [OpenApiParam(name = "id", description = "Recipe type id")],
+        pathParams = [OpenApiParam(name = "id", type = Int::class, description = "Recipe type id")],
         responses = [OpenApiResponse(
             status = "204"
         ), OpenApiResponse(
