@@ -1,5 +1,5 @@
 import axios from "axios"
-import { RecipeType } from "../dto"
+import {RecipeType} from "../dto"
 import handleApiError from "../utils/error-handling"
 
 class RecipeTypeService {
@@ -9,7 +9,6 @@ class RecipeTypeService {
             const response = await axios.get<RecipeType>(`/api/recipetype/${id}`)
             return response.data
         } catch (err) {
-            //throw new Error(err.response.data)
             throw handleApiError(err)
         }
     }

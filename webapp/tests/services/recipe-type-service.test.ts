@@ -2,10 +2,10 @@ import axios from "axios"
 import { generateRecipeType } from "../helpers/generators/dto-generators"
 import RecipeTypeService from "../../src/services/recipe-type-service"
 import MockAdapter from "axios-mock-adapter"
-import * as errors from "../../src/utils/error-handling"
+import * as errorHandler from "../../src/utils/error-handling"
 
 const mockedAxios = new MockAdapter(axios)
-const handleErrorsSpy = jest.spyOn(errors, "handleApiError")
+const handleErrorsSpy = jest.spyOn(errorHandler, "default")
 
 describe("Recipe type service", () => {
     beforeEach(() => {
@@ -23,7 +23,7 @@ describe("Recipe type service", () => {
             expect(response).toStrictEqual(expectedRecipeType)
         })
 
-        fdescribe("Error handling", () => {
+        describe("Error handling", () => {
 
             it("throws an error with the message provided by the API on a 404", async () => {
                 mockedAxios.onGet("/api/recipetype/1")
@@ -31,15 +31,14 @@ describe("Recipe type service", () => {
 
                 await expect(new RecipeTypeService().find(1)).
                     rejects.toStrictEqual({
-                        status: 404,
+                        code: "NOT_FOUND",
                         message: "Entity not found"
                     })
                 console.log(handleErrorsSpy.mock.calls.length)
                 expect(handleErrorsSpy).toHaveBeenCalled()
-
             })
 
-            xit("throws an error with the message provided by the API on a 500", async () => {
+            it("throws an error with the message provided by the API on a 500", async () => {
                 mockedAxios.onGet("/api/recipetype/1")
                     .reply(500, "Database Error")
 
