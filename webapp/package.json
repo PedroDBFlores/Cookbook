@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.29",
+    "@fortawesome/free-solid-svg-icons": "^5.13.1",
+    "@fortawesome/react-fontawesome": "^0.1.11",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
     "http-status-codes": "1.4.0",
@@ -11,12 +14,12 @@
     "npm-check-updates": "^7.0.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
-    "react-bootstrap-table-next": "4.0.3",
     "react-dom": "^16.13.1",
     "react-error-boundary": "^2.2.3",
-    "react-query": "^2.4.2",
+    "react-query": "^2.4.13",
     "react-router-bootstrap": "^0.25.0",
-    "react-router-dom": "5.2.0"
+    "react-router-dom": "5.2.0",
+    "react-table": "^7.2.2"
   },
   "devDependencies": {
     "@babel/core": "7.10.3",
@@ -30,9 +33,7 @@
     "@types/node": "^14.0.14",
     "@types/react": "^16.9.41",
     "@types/react-bootstrap": "^1.0.1",
-    "@types/react-bootstrap-table-next": "^4.0.4",
     "@types/react-dom": "^16.9.8",
-    "@types/react-query": "^1.1.2",
     "@types/react-router-bootstrap": "^0.24.5",
     "@types/react-router-dom": "5.1.5",
     "@types/react-table": "^7.0.19",
@@ -42,7 +43,6 @@
     "babel-jest": "^26.1.0",
     "babel-loader": "8.1.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
-    "babel-plugin-react-remove-properties": "^0.3.0",
     "css-loader": "3.6.0",
     "eslint": "^7.3.1",
     "eslint-plugin-jest": "^23.17.1",

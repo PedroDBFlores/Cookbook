@@ -6,8 +6,8 @@ module.exports = {
         "<rootDir>/tests"
     ],
     transform: {
-        "\\.ts?$": "ts-jest",
-        "\\.tsx?$": "ts-jest"
+        "\\.test.ts?$": "ts-jest",
+        "\\.test.tsx?$": "ts-jest"
     },
     clearMocks: true,
     setupFilesAfterEnv: [

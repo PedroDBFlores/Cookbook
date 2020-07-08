@@ -1,6 +1,6 @@
 {
   "include": [
-    "src/**/*"
+    "src/**/*", "tests/utils/error-handling.test.ts", "tests/services/recipe-type-service.test.ts", "tests/features/recipetype/list.test.tsx", "tests/features/recipetype/list-page.test.tsx", "tests/components/layout/layout.test.tsx", "tests/components/layout/application-toolbar.test.tsx"
   ],
   "exclude": [
     "node_modules"

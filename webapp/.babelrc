@@ -3,12 +3,5 @@
     "presets": [
         "@babel/preset-react",
         "@babel/preset-env"
-    ],
-    "env": {
-        "production": {
-          "plugins": [
-            ["react-remove-properties", {"properties": ["data-testid"]}]
-          ]
-        }
-      }
+    ]
 }

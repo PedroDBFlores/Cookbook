@@ -15,8 +15,6 @@ describe("Error handling", () => {
             }
         } as AxiosError
 
-        expect(() => handleApiError(axiosError)).toThrowError(ApiError).toBe({
-            
-        })
+        expect(() => handleApiError(axiosError)).toThrowError(ApiError)
     })
 })

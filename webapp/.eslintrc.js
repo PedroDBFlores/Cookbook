@@ -35,6 +35,7 @@ module.exports = {
     },
     "rules": {
         "react/no-unescaped-entities": "off",
+        "react/display-name": ["off"],
         "semi": [2, "never"],
         "quotes": ["error", "double", { "allowTemplateLiterals": true }],
         "@typescript-eslint/member-delimiter-style": ["error", {
