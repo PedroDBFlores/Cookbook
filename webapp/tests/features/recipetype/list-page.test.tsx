@@ -1,20 +1,10 @@
 import React from "react"
 import { render, screen } from "@testing-library/react"
 import RecipeTypeListPage from "../../../src/features/recipetype/list/list-page"
-import createRecipeTypeService from "../../../src/services/recipe-type-service"
-import { generateRecipeType } from "../../helpers/generators/dto-generators"
+import {getAllRecipeTypes} from "../../../src/services/recipe-type-service"
 
 jest.mock("../../../src/services/recipe-type-service")
-const serviceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
-
-const getAllRecipeTypesMock = jest.fn()
-serviceMock.mockImplementation(() => ({
-    getAll: getAllRecipeTypesMock,
-    create: jest.fn(),
-    delete: jest.fn(),
-    find: jest.fn(),
-    update: jest.fn()
-}))
+const getAllRecipeTypesMock = getAllRecipeTypes as jest.MockedFunction<typeof getAllRecipeTypes>
 
 describe("Recipe type list page", () => {
     it("has the required content and gets the recipe types", async () => {

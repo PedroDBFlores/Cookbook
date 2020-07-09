@@ -2,15 +2,7 @@ import axios from "axios"
 import { RecipeType, CreateResult } from "../dto"
 import handleApiError from "../utils/error-handling"
 
-export interface RecipeTypeService {
-    find: (id: number) => Promise<RecipeType>
-    getAll: () => Promise<Array<RecipeType>>
-    create: (recipeType: Omit<RecipeType, "id">) => Promise<CreateResult>
-    update: (recipeType: RecipeType) => Promise<void>
-    delete: (id: number) => Promise<void>
-}
-
-const find = async (id: number): Promise<RecipeType> => {
+const findRecipeType = async (id: number): Promise<RecipeType> => {
     try {
         const response = await axios.get<RecipeType>(`/api/recipetype/${id}`)
         return response.data
@@ -19,7 +11,7 @@ const find = async (id: number): Promise<RecipeType> => {
     }
 }
 
-const getAll = async (): Promise<Array<RecipeType>> => {
+const getAllRecipeTypes = async (): Promise<Array<RecipeType>> => {
     try {
         const response = await axios.get<Array<RecipeType>>("/api/recipetype")
         return response.data
@@ -28,7 +20,7 @@ const getAll = async (): Promise<Array<RecipeType>> => {
     }
 }
 
-const create = async (recipeType: Omit<RecipeType, "id">): Promise<CreateResult> => {
+const createRecipeType = async (recipeType: Omit<RecipeType, "id">): Promise<CreateResult> => {
     try {
         const response = await axios.post<CreateResult>("/api/recipetype", recipeType)
         return response.data
@@ -37,7 +29,7 @@ const create = async (recipeType: Omit<RecipeType, "id">): Promise<CreateResult>
     }
 }
 
-const update = async (recipeType: RecipeType): Promise<void> => {
+const updateRecipeType = async (recipeType: RecipeType): Promise<void> => {
     try {
         await axios.put("/api/recipetype", recipeType)
     } catch (err) {
@@ -53,14 +45,10 @@ const deleteRecipeType = async (id: number): Promise<void> => {
     }
 }
 
-function createRecipeTypeService() : RecipeTypeService{
-    return{
-        find: find,
-        getAll: getAll,
-        create: create,
-        update: update,
-        delete: deleteRecipeType
-    }
+export {
+    findRecipeType,
+    getAllRecipeTypes,
+    createRecipeType,
+    updateRecipeType,
+    deleteRecipeType
 }
-
-export default createRecipeTypeService

@@ -12,9 +12,10 @@ import { faEye, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons"
 
 export interface RecipeTypeListProps {
   recipeTypes: Array<RecipeType>
+  onDelete: (id: number) => void
 }
 
-const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes }) => {
+const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes, onDelete }) => {
   const data = React.useMemo(() => recipeTypes, [])
   const columns = React.useMemo(
     () => [
@@ -38,7 +39,7 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes }) => {
             <Button aria-label={`Edit Recipe type with id ${id}`}>
               <FontAwesomeIcon icon={faEdit} />
             </Button>
-            <Button aria-label={`Delete Recipe type with id ${id}`}>
+            <Button aria-label={`Delete Recipe type with id ${id}`} onClick={() => onDelete(id)}>
               <FontAwesomeIcon icon={faTrash} />
             </Button>
           </ButtonGroup>
@@ -88,5 +89,6 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes }) => {
 export default RecipeTypeList
 
 RecipeTypeList.propTypes = {
-  recipeTypes: PropTypes.array.isRequired
+  recipeTypes: PropTypes.array.isRequired,
+  onDelete: PropTypes.func.isRequired
 }

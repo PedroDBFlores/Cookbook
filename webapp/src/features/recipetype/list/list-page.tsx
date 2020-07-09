@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import RecipeTypeList from "./list"
-import createRecipeTypeService from "../../../services/recipe-type-service"
+import { getAllRecipeTypes } from "../../../services/recipe-type-service"
 import { ResponseError } from "../../../dto/response-error"
 import { RecipeType } from "../../../dto"
 
@@ -9,9 +9,9 @@ const RecipeTypeListPage: React.FC<unknown> = () => {
     const [error, setError] = useState<ResponseError>()
 
     useEffect(() => {
-        createRecipeTypeService().getAll()
-        .then(setData)
-        .catch(setError)
+        getAllRecipeTypes()
+            .then(setData)
+            .catch(setError)
     }, [])
 
     if (error) return <div>Error: {(error as ResponseError).message}</div>
