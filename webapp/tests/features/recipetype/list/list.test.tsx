@@ -1,9 +1,9 @@
 import React from "react"
 import { render, screen, waitFor, fireEvent } from "@testing-library/react"
-import RecipeTypeList from "../../../src/features/recipetype/list/list"
-import { generateRecipeType } from "../../helpers/generators/dto-generators"
+import RecipeTypeList from "../../../../src/features/recipetype/list/list"
+import { generateRecipeType } from "../../../helpers/generators/dto-generators"
 import userEvent from "@testing-library/user-event"
-import { renderWithRoutes } from "../../render"
+import { renderWithRoutes } from "../../../render"
 
 const onDeleteStub = jest.fn()
 
@@ -61,20 +61,37 @@ describe("Recipe type list", () => {
             expect(deleteButton).toBeInTheDocument()
         })
 
+
         it("navigates to the recipe type details", async () => {
             const recipeTypes = [generateRecipeType()]
             const firstRecipeType = recipeTypes[0]
             renderWithRoutes({
-                "/users": <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
+                "/users": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
                 [`/users/${firstRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
             }, "/users")
-            const detailsButton = screen.getByLabelText(`Edit Recipe type with id ${firstRecipeType.id}`, {
+            const detailsButton = screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
                 selector: "button"
             })
 
             fireEvent.click(detailsButton)
 
             expect(await screen.findByText(/i'm the recipe type details page/i)).toBeInTheDocument()
+        })
+
+        it("navigates to the recipe type edit page", async () => {
+            const recipeTypes = [generateRecipeType()]
+            const firstRecipeType = recipeTypes[0]
+            renderWithRoutes({
+                "/users": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
+                [`/users/${firstRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
+            }, "/users")
+            const editButton = screen.getByLabelText(`Edit Recipe type with id ${firstRecipeType.id}`, {
+                selector: "button"
+            })
+
+            fireEvent.click(editButton)
+
+            expect(await screen.findByText(/i'm the recipe type edit page/i)).toBeInTheDocument()
         })
 
         it("deletes a recipe type", async () => {

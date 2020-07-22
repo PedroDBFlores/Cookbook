@@ -10,13 +10,13 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import java.sql.SQLException
 import model.Role
 import model.User
 import model.UserRole
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
+import java.sql.SQLException
 
 internal class UserRolesRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database

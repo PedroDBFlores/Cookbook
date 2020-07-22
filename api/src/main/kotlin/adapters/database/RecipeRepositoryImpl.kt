@@ -1,13 +1,13 @@
 package adapters.database
 
 import adapters.database.schema.Recipes
-import kotlin.math.ceil
 import model.Recipe
 import model.SearchResult
 import model.parameters.SearchRecipeParameters
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
+import kotlin.math.ceil
 
 class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 

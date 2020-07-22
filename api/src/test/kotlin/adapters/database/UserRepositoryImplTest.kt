@@ -18,12 +18,12 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import java.sql.SQLException
 import model.Role
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
 import utils.DTOGenerator.generateUser
+import java.sql.SQLException
 
 internal class UserRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database

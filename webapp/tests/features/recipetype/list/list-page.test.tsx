@@ -1,7 +1,7 @@
 import React from "react"
 import { render, screen } from "@testing-library/react"
-import RecipeTypeListPage from "../../../src/features/recipetype/list/list-page"
-import {getAllRecipeTypes} from "../../../src/services/recipe-type-service"
+import RecipeTypeListPage from "../../../../src/features/recipetype/list/list-page"
+import {getAllRecipeTypes} from "../../../../src/services/recipe-type-service"
 
 jest.mock("../../../src/services/recipe-type-service")
 const getAllRecipeTypesMock = getAllRecipeTypes as jest.MockedFunction<typeof getAllRecipeTypes>

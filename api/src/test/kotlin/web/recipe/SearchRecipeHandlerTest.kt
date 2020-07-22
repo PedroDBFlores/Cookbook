@@ -4,7 +4,6 @@ import io.javalin.Javalin
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,7 +18,6 @@ import org.eclipse.jetty.http.HttpStatus
 import usecases.recipe.SearchRecipe
 import utils.DTOGenerator
 import utils.convertToJSON
-import utils.removeJSONProperties
 
 internal class SearchRecipeHandlerTest : DescribeSpec({
     beforeSpec {
