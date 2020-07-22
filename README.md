@@ -1,3 +1,5 @@
+![Kotlin CI with Gradle](https://github.com/PedroDBFlores/Cookbook/workflows/Kotlin%20CI%20with%20Gradle/badge.svg)
+
 # Cookbook
 
 Application intended to be developed with React frontend and Kotlin backend (Javalin server).
