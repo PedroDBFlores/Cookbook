@@ -9,6 +9,7 @@ import Button from "react-bootstrap/Button"
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { useHistory } from "react-router-dom"
 
 export interface RecipeTypeListProps {
   recipeTypes: Array<RecipeType>
@@ -16,6 +17,8 @@ export interface RecipeTypeListProps {
 }
 
 const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes, onDelete }) => {
+  const history = useHistory()
+
   const data = React.useMemo(() => recipeTypes, [])
   const columns = React.useMemo(
     () => [
@@ -33,10 +36,10 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes, onDelete }
         accessor: (r: RecipeType) => r.id,
         Cell: ({ value: id }: any) => (
           <ButtonGroup>
-            <Button aria-label={`Recipe type details for id ${id}`}>
+            <Button aria-label={`Recipe type details for id ${id}`} onClick={() => navigateToDetails(id)}>
               <FontAwesomeIcon icon={faEye} />
             </Button>
-            <Button aria-label={`Edit Recipe type with id ${id}`}>
+            <Button aria-label={`Edit Recipe type with id ${id}`} onClick={() => navigateToEdit(id)}>
               <FontAwesomeIcon icon={faEdit} />
             </Button>
             <Button aria-label={`Delete Recipe type with id ${id}`} onClick={() => onDelete(id)}>
@@ -49,6 +52,9 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes, onDelete }
   const {
     getTableProps, getTableBodyProps, headerGroups, rows, prepareRow
   } = useTable({ columns, data })
+
+  const navigateToDetails = (id: number): void => history.push(`/users/${id}`)
+  const navigateToEdit = (id: number): void => history.push(`/users/${id}/edit`)
 
   const contentToRender = !recipeTypes?.length ? "No recipe types." :
     <Table striped bordered hover {...getTableProps}>

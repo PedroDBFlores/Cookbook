@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import React, { ReactNode } from "react"
+import React, { ReactNode, } from "react"
 import { render } from "@testing-library/react"
 import { Route, MemoryRouter, Switch } from "react-router-dom"
 
