@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from "react"
+import React, {useState, useEffect} from "react"
 import RecipeTypeList from "./list"
-import { getAllRecipeTypes } from "../../../services/recipe-type-service"
-import { ResponseError } from "../../../dto/response-error"
-import { RecipeType } from "../../../dto"
+import {deleteRecipeType, getAllRecipeTypes} from "../../../services/recipe-type-service"
+import {ResponseError} from "../../../dto/response-error"
+import {RecipeType} from "../../../dto"
+import {Async} from "react-async"
 
 const RecipeTypeListPage: React.FC<unknown> = () => {
-    const [data, setData] = useState<RecipeType[]>()
-    const [error, setError] = useState<ResponseError>()
 
-    useEffect(() => {
-        getAllRecipeTypes()
-            .then(setData)
-            .catch(setError)
-    }, [])
-
-    if (error) return <div>Error: {(error as ResponseError).message}</div>
-    if (!data) return <div>Loading...</div>
+    const onDelete = (id: number) => deleteRecipeType(id)
 
     return <>
-        <h1>Recipe type list</h1>
-        {data ? <RecipeTypeList recipeTypes={data} /> : ""}
+        <h1>Recipe type list page</h1>
+        <Async promiseFn={getAllRecipeTypes}>
+            <Async.Loading>Loading...</Async.Loading>
+            <Async.Rejected>
+                {(error: ResponseError) =>
+                    <span>Error: {error.message}</span>
+                }
+            </Async.Rejected>
+            <Async.Fulfilled>
+                {(data: Array<RecipeType>) =>
+                    <RecipeTypeList recipeTypes={data} onDelete={(id => onDelete(id))}/>
+                }
+            </Async.Fulfilled>
+        </Async>
     </>
 }
 

@@ -2,7 +2,7 @@ import axios from "axios"
 import { RecipeType, CreateResult } from "../dto"
 import handleApiError from "../utils/error-handling"
 
-const findRecipeType = async (id: number): Promise<RecipeType> => {
+export const findRecipeType = async (id: number): Promise<RecipeType> => {
     try {
         const response = await axios.get<RecipeType>(`/api/recipetype/${id}`)
         return response.data
@@ -11,7 +11,7 @@ const findRecipeType = async (id: number): Promise<RecipeType> => {
     }
 }
 
-const getAllRecipeTypes = async (): Promise<Array<RecipeType>> => {
+export const getAllRecipeTypes = async (): Promise<Array<RecipeType>> => {
     try {
         const response = await axios.get<Array<RecipeType>>("/api/recipetype")
         return response.data
@@ -20,7 +20,7 @@ const getAllRecipeTypes = async (): Promise<Array<RecipeType>> => {
     }
 }
 
-const createRecipeType = async (recipeType: Omit<RecipeType, "id">): Promise<CreateResult> => {
+export const createRecipeType = async (recipeType: Omit<RecipeType, "id">): Promise<CreateResult> => {
     try {
         const response = await axios.post<CreateResult>("/api/recipetype", recipeType)
         return response.data
@@ -29,7 +29,7 @@ const createRecipeType = async (recipeType: Omit<RecipeType, "id">): Promise<Cre
     }
 }
 
-const updateRecipeType = async (recipeType: RecipeType): Promise<void> => {
+export const updateRecipeType = async (recipeType: RecipeType): Promise<void> => {
     try {
         await axios.put("/api/recipetype", recipeType)
     } catch (err) {
@@ -37,18 +37,10 @@ const updateRecipeType = async (recipeType: RecipeType): Promise<void> => {
     }
 }
 
-const deleteRecipeType = async (id: number): Promise<void> => {
+export const deleteRecipeType = async (id: number): Promise<void> => {
     try {
         await axios.delete(`/api/recipetype/${id}`)
     } catch (err) {
         throw handleApiError(err)
     }
-}
-
-export {
-    findRecipeType,
-    getAllRecipeTypes,
-    createRecipeType,
-    updateRecipeType,
-    deleteRecipeType
 }
