@@ -15,7 +15,7 @@ module.exports = {
         "jest-extended",
         "jest-chain"
     ],
-    moduleDirectories: ['node_modules', path.join(__dirname, 'src'), path.join(__dirname, 'tests')],
+    moduleDirectories: ["node_modules", path.join(__dirname, "src"), path.join(__dirname, "tests")],
     testPathIgnorePatterns: [
         "<rootDir>/node_modules/"
     ],
@@ -23,16 +23,14 @@ module.exports = {
         "ts",
         "tsx",
         "js",
-        "jsx",
-        "json",
-        "node"
+        "jsx"
     ],
     moduleNameMapper: {
         "^.+\\.(css|less|scss)$": "babel-jest",
-        "^.+\\.(jpg|png|gi,f|svg)$": "identity-obj-proxy"
+        "^.+\\.(jpg|png|gif|svg)$": "identity-obj-proxy"
     },
     watchPlugins: [
-        'jest-watch-typeahead/filename',
-        'jest-watch-typeahead/testname',
+        "jest-watch-typeahead/filename",
+        "jest-watch-typeahead/testname",
     ]
 }

@@ -3,13 +3,17 @@ import {RecipeType} from "../../../dto"
 import PropTypes from "prop-types"
 import {findRecipeType} from "../../../services/recipe-type-service"
 import {Async} from "react-async"
-import {ResponseError} from "../../../dto/response-error";
+import {ResponseError} from "../../../dto/response-error"
+import Button from "react-bootstrap/Button"
+import {faTrash} from "@fortawesome/free-solid-svg-icons"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 
 interface RecipeTypeDetailsProps {
     id: number
+    onDelete: (id: number) => void
 }
 
-const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id}) => {
+const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, onDelete}) => {
     return <>
         <Async promiseFn={() => findRecipeType(id)}>
             <Async.Loading>Loading...</Async.Loading>
@@ -19,13 +23,18 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id}) => {
                 }
             </Async.Rejected>
             <Async.Fulfilled>
-                {(data: RecipeType) =>
-                    <dl>
-                        <dt>Id:</dt>
-                        <dd>{data?.id}</dd>
-                        <dt>Name:</dt>
-                        <dd>{data?.name}</dd>
-                    </dl>
+                {(recipeType: RecipeType) =>
+                    <>
+                        <dl>
+                            <dt>Id:</dt>
+                            <dd>{recipeType.id}</dd>
+                            <dt>Name:</dt>
+                            <dd>{recipeType.name}</dd>
+                        </dl>
+                        <Button aria-label={`Delete recipe type with id ${recipeType.id}`} onClick={() => onDelete(recipeType.id)}>
+                            <FontAwesomeIcon icon={faTrash} />
+                        </Button>
+                    </>
                 }
             </Async.Fulfilled>
         </Async>
@@ -33,7 +42,8 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id}) => {
 }
 
 RecipeTypeDetails.propTypes = {
-    id: PropTypes.number.isRequired
+    id: PropTypes.number.isRequired,
+    onDelete: PropTypes.func.isRequired
 }
 
 export default RecipeTypeDetails

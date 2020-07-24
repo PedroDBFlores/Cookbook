@@ -1,5 +1,5 @@
 import React from "react"
-import {act, render, screen, waitFor} from "@testing-library/react"
+import {act, render, screen, waitFor, fireEvent} from "@testing-library/react"
 import RecipeTypeDetails from "../../../../src/features/recipetype/details/details"
 import {findRecipeType} from "../../../../src/services/recipe-type-service"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
@@ -12,7 +12,7 @@ describe("Recipe type details", () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValue(expectedRecipeType)
         act(() => {
-            render(<RecipeTypeDetails id={99}/>)
+            render(<RecipeTypeDetails id={99} onDelete={jest.fn()} />)
         })
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -28,13 +28,30 @@ describe("Recipe type details", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(<RecipeTypeDetails id={99}/>)
+        render(<RecipeTypeDetails id={99} onDelete={jest.fn()}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
-            screen.debug()
             expect(findRecipeTypeMock).toHaveBeenCalled()
             expect(screen.getByText(/failure/i)).toBeInTheDocument()
         })
+    })
+
+    it("deletes the user", async() => {
+        const onDeleteMock = jest.fn()
+        const expectedRecipeType = generateRecipeType()
+        findRecipeTypeMock.mockResolvedValue(expectedRecipeType)
+        render(<RecipeTypeDetails id={expectedRecipeType.id} onDelete={onDeleteMock}/>)
+
+        await waitFor( () => {
+            expect(findRecipeTypeMock).toHaveBeenCalled()
+            expect(screen.getByText(/Id:/i)).toBeInTheDocument()
+            expect(screen.getByText(/Name:/i)).toBeInTheDocument()
+        })
+
+        const deleteButton = screen.getByRole(`Delete recipe type with id ${expectedRecipeType.id}`, { name: "button" })
+        fireEvent.click(deleteButton)
+
+        expect(onDeleteMock).toHaveBeenCalledWith(expectedRecipeType.id)
     })
 })
