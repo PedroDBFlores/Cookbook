@@ -1,7 +1,8 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const path = require("path");
+import HtmlWebpackPlugin from "html-webpack-plugin"
+import path from "path"
+import * as webpack from "webpack"
 
-module.exports = {
+const config: webpack.Configuration = {
     entry: "./index.js",
     output: {
         filename: "bundle.[hash].js",
@@ -25,7 +26,7 @@ module.exports = {
     resolve: {
         modules: [__dirname, "src", "node_modules"],
         extensions: ["*", ".js", ".jsx", ".tsx", ".ts"],
-      },
+    },
     module: {
         rules: [
             {
@@ -53,3 +54,5 @@ module.exports = {
         ]
     }
 }
+
+export default config

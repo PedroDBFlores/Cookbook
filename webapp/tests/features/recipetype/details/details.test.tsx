@@ -49,7 +49,7 @@ describe("Recipe type details", () => {
             expect(screen.getByText(/Name:/i)).toBeInTheDocument()
         })
 
-        const deleteButton = screen.getByRole(`Delete recipe type with id ${expectedRecipeType.id}`, { name: "button" })
+        const deleteButton = screen.getByLabelText(`Delete recipe type with id ${expectedRecipeType.id}`)
         fireEvent.click(deleteButton)
 
         expect(onDeleteMock).toHaveBeenCalledWith(expectedRecipeType.id)
