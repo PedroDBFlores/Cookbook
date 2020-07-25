@@ -1,4 +1,5 @@
-![Kotlin CI with Gradle](https://github.com/PedroDBFlores/Cookbook/workflows/Kotlin%20CI%20with%20Gradle/badge.svg?branch=master)
+![Webapp Test](https://github.com/PedroDBFlores/Cookbook/workflows/Webapp%20Test/badge.svg?branch=master)
+![API test](https://github.com/PedroDBFlores/Cookbook/workflows/API%20test/badge.svg?branch=master)
 
 # Cookbook
 
