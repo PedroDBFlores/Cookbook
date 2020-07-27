@@ -1,9 +1,11 @@
 import React, {useEffect} from "react"
-import {render, screen, waitFor} from "@testing-library/react"
+import {render, screen, waitFor, fireEvent} from "@testing-library/react"
 import RecipeTypeListPage from "../../../../src/features/recipetype/list/list-page"
 import {deleteRecipeType, getAllRecipeTypes} from "../../../../src/services/recipe-type-service"
 import RecipeTypeList from "../../../../src/features/recipetype/list/list"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
+import {renderWithRoutes} from "../../../render";
+import exp = require("constants");
 
 jest.mock("../../../../src/services/recipe-type-service")
 const getAllRecipeTypesMock = getAllRecipeTypes as jest.MockedFunction<typeof getAllRecipeTypes>
@@ -25,7 +27,8 @@ describe("Recipe type list page", () => {
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         await waitFor(() => {
-            screen.getByText(/^mock recipe type list$/i)
+            expect(screen.getByLabelText("Create new recipe type")).toBeInTheDocument()
+            expect(screen.getByText(/^mock recipe type list$/i)).toBeInTheDocument()
         })
     })
 
@@ -55,5 +58,19 @@ describe("Recipe type list page", () => {
         await waitFor(() => {
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
         })
+    })
+
+    it("navigates to the recipe type create page on click", async () => {
+        getAllRecipeTypesMock.mockResolvedValueOnce([])
+        renderWithRoutes({
+            "/recipetype": () => <RecipeTypeListPage/>,
+            [`/recipetype/new`]: () => <>I'm the recipe type create page</>
+        }, "/recipetype")
+        await waitFor(() => expect(screen.getByLabelText(/create new recipe type/i)).toBeInTheDocument())
+
+        const createButton = screen.getByLabelText(/create new recipe type/i)
+        fireEvent.click(createButton)
+
+        await waitFor(() => expect(screen.getByText(/I'm the recipe type create page/i)).toBeInTheDocument())
     })
 })

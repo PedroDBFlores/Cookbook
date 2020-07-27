@@ -66,9 +66,9 @@ describe("Recipe type list", () => {
             const recipeTypes = [generateRecipeType()]
             const firstRecipeType = recipeTypes[0]
             renderWithRoutes({
-                "/users": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
-                [`/users/${firstRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
-            }, "/users")
+                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
+                [`/recipetype/${firstRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
+            }, "/recipetype")
             const detailsButton = screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
                 selector: "button"
             })
@@ -82,9 +82,9 @@ describe("Recipe type list", () => {
             const recipeTypes = [generateRecipeType()]
             const firstRecipeType = recipeTypes[0]
             renderWithRoutes({
-                "/users": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
-                [`/users/${firstRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
-            }, "/users")
+                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
+                [`/recipetype/${firstRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
+            }, "/recipetype")
             const editButton = screen.getByLabelText(`Edit Recipe type with id ${firstRecipeType.id}`, {
                 selector: "button"
             })

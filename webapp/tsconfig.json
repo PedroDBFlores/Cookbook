@@ -8,11 +8,11 @@
   "compilerOptions": {
     "strict": true,
     "incremental": true,
-    "outDir": "./build/",
+    "outDir": "./dist/",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "commonjs",
-    "target": "ES2020",
+    "target": "ES2019",
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

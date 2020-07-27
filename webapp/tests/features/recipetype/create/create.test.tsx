@@ -1,0 +1,43 @@
+import React from "React"
+import {render, screen, fireEvent, waitFor} from "@testing-library/react"
+import CreateRecipeType from "../../../../src/features/recipetype/create/create"
+import {createRecipeType} from "../../../../src/services/recipe-type-service"
+
+jest.mock("../../../../src/services/recipe-type-service")
+const createRecipeTypeMock = createRecipeType as jest.MockedFunction<typeof createRecipeType>
+
+describe("Create recipe type", () => {
+    it("renders the initial form", () => {
+        render(<CreateRecipeType/>)
+
+        expect(screen.getByText(/name/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
+        const submitButton = screen.getByLabelText(/create recipe type/i)
+        expect(submitButton).toHaveAttribute("type", "submit")
+    })
+
+    it("displays an error when the name is empty on submitting", async () => {
+        render(<CreateRecipeType/>)
+
+        const submitButton = screen.getByLabelText(/create recipe type/i)
+        fireEvent.submit(submitButton)
+
+        await waitFor(() =>
+            expect(screen.getByText(/name is required/i)).toBeInTheDocument()
+        )
+    })
+
+    it("calls the create recipe type endpoint", async () => {
+        createRecipeTypeMock.mockResolvedValueOnce({id: 1})
+        render(<CreateRecipeType/>)
+
+        const nameInput = screen.getByLabelText(/name/i)
+        fireEvent.change(nameInput, {target: {value: "Fish"}})
+        const submitButton = screen.getByLabelText(/create recipe type/i)
+        fireEvent.submit(submitButton)
+
+        await waitFor(() => {
+            expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
+        })
+    })
+})
