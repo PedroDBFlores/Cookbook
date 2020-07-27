@@ -1,6 +1,6 @@
 import React from "react"
 import ApplicationToolbar from "../../../src/components/layout/application-toolbar"
-import { renderWithRouter, renderWithRoutes } from "../../render"
+import { \renderWithRouter, renderWithRoutes } from "../../render"
 import { screen, fireEvent, waitFor } from "@testing-library/react"
 import { random } from "faker"
 

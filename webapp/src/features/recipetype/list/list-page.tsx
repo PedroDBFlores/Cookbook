@@ -4,7 +4,7 @@ import {deleteRecipeType, getAllRecipeTypes} from "../../../services/recipe-type
 import {RecipeType} from "../../../dto"
 import {useAsync} from "react-async"
 import Button from "react-bootstrap/Button"
-import {useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom"
 
 const RecipeTypeListPage: React.FC<unknown> = () => {
     const history = useHistory()

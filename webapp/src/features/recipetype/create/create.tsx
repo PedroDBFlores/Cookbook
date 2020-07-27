@@ -1,12 +1,13 @@
 import React, {FormEvent} from "React"
+import {useHistory} from "react-router-dom"
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button"
 import {Formik} from "formik"
 import * as yup from "yup"
-import {createRecipeType} from "../../../services/recipe-type-service";
+import {createRecipeType} from "../../../services/recipe-type-service"
 
 interface CreateRecipeFormData {
-    name: string | undefined
+    name: string
 }
 
 const schema = yup.object({
@@ -14,13 +15,16 @@ const schema = yup.object({
 })
 
 const CreateRecipeType: React.FC<unknown> = () => {
+    const history = useHistory()
+
     const onSubmit = (data: CreateRecipeFormData) => {
-        const {name} = data
-        return createRecipeType({name: data.name.toString()})
+        createRecipeType({name: data.name})
+            .then(recipeType => history.push(`/recipetype/${recipeType.id}`))
+
     }
 
     return <Formik
-        initialValues={{name: undefined}}
+        initialValues={{name: ""}}
         validateOnBlur={true}
         onSubmit={onSubmit}
         validationSchema={schema}>

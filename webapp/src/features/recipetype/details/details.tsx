@@ -6,7 +6,7 @@ import {useAsync} from "react-async"
 import Button from "react-bootstrap/Button"
 import {faTrash} from "@fortawesome/free-solid-svg-icons"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import BasicModalDialog from "../../../components/modal/basic-modal-dialog";
+import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
 
 interface RecipeTypeDetailsProps {
     id: number

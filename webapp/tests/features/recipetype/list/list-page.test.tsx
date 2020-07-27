@@ -4,8 +4,7 @@ import RecipeTypeListPage from "../../../../src/features/recipetype/list/list-pa
 import {deleteRecipeType, getAllRecipeTypes} from "../../../../src/services/recipe-type-service"
 import RecipeTypeList from "../../../../src/features/recipetype/list/list"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
-import {renderWithRoutes} from "../../../render";
-import exp = require("constants");
+import {renderWithRoutes} from "../../../render"
 
 jest.mock("../../../../src/services/recipe-type-service")
 const getAllRecipeTypesMock = getAllRecipeTypes as jest.MockedFunction<typeof getAllRecipeTypes>
