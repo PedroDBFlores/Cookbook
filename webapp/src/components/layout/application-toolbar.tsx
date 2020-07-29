@@ -1,34 +1,30 @@
 import React from "react"
 import PropTypes from "prop-types"
-import Navbar from "react-bootstrap/Navbar"
-import Nav from "react-bootstrap/Nav"
-import NavDropdown from "react-bootstrap/NavDropdown"
-import { LinkContainer } from "react-router-bootstrap"
+import {AppBar, Toolbar, IconButton, Typography} from "@material-ui/core"
+import MenuIcon from "@material-ui/icons/Menu"
 
 export interface ApplicationToolbarProps {
     title: string
+    onMenuClick: () => void
 }
 
-const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({ title }) => {
-    return <Navbar bg="light" expand="lg" role="navbar">
-        <Navbar.Brand href="/">{title}</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mr-auto" role="navbar-menu">
-                <Nav.Link href="#home">Home</Nav.Link>
-                <Nav.Link href="#link">Link</Nav.Link>
-                <NavDropdown title="Administration" id="basic-nav-dropdown">
-                    <LinkContainer to="/users">
-                        <NavDropdown.Item>Users</NavDropdown.Item>
-                    </LinkContainer>
-                </NavDropdown>
-            </Nav>
-        </Navbar.Collapse>
-    </Navbar>
+const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({title, onMenuClick}) => {
+    return (
+        <AppBar position="static">
+            <Toolbar>
+                <IconButton edge="start" color="inherit" aria-label="menu" onClick={onMenuClick}>
+                    <MenuIcon/>
+                </IconButton>
+                <Typography variant="h6">
+                    {title}
+                </Typography>
+            </Toolbar>
+        </AppBar>)
 }
 
 ApplicationToolbar.propTypes = {
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
+    onMenuClick: PropTypes.func.isRequired
 }
 
 export default ApplicationToolbar

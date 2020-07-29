@@ -1,39 +1,26 @@
 import React from "react"
 import ApplicationToolbar from "../../../src/components/layout/application-toolbar"
-import { \renderWithRouter, renderWithRoutes } from "../../render"
-import { screen, fireEvent, waitFor } from "@testing-library/react"
-import { random } from "faker"
+import {renderWithRouter} from "../../render"
+import {screen, fireEvent} from "@testing-library/react"
+import {random} from "faker"
 
 describe("Application Toolbar", () => {
     describe("Layout", () => {
         it("has the application title", () => {
             const expectedTitle = random.word()
-            renderWithRouter(<ApplicationToolbar title={expectedTitle} />)
+            renderWithRouter(<ApplicationToolbar title={expectedTitle} onMenuClick={jest.fn()}/>)
 
             expect(screen.getByText(expectedTitle)).toBeInTheDocument()
         })
 
-        describe("Menus", () => {
-            it("has an Administration menu", () => {
-                renderWithRouter(<ApplicationToolbar title={"title"} />)
-                expect(screen.getByText("Administration")).toBeInTheDocument()
-            })
+        it("executes the provided function when the menu button is clicked", () => {
+            const menuClickFn = jest.fn()
+            renderWithRouter(<ApplicationToolbar title="Title" onMenuClick={menuClickFn}/>)
 
-            it(`navigates to the Users page`, async () => {
-                renderWithRoutes({
-                    "/": () => <ApplicationToolbar title={"title"} />,
-                    "/users": () => <div>I'm the user page</div>
-                })
+            const menuButton = screen.getByLabelText("menu")
+            fireEvent.click(menuButton)
 
-                const adminMenu = await screen.findByText("Administration")
-                fireEvent.click(adminMenu)
-
-                const userLink = await screen.findByText("Users")
-                fireEvent.click(userLink)
-                await waitFor(() => {
-                    expect(screen.queryByText("I'm the user page")).toBeInTheDocument()
-                })
-            })
+            expect(menuClickFn).toHaveBeenCalled()
         })
     })
 })
