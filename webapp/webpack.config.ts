@@ -8,7 +8,7 @@ const config: webpack.Configuration = {
         filename: "bundle.[hash].js",
         path: path.resolve(__dirname, "dist")
     },
-    devServer:{
+    devServer: {
         historyApiFallback: true,
         port: 8080,
         proxy: {
@@ -40,8 +40,8 @@ const config: webpack.Configuration = {
                 exclude: /node_modules/
             },
             {
-                test:/\.css$/,
-                use:["style-loader","css-loader"]
+                test: /\.css$/,
+                use: ["style-loader", "css-loader"]
             },
             {
                 test: /\.s[ac]ss$/,
@@ -49,7 +49,7 @@ const config: webpack.Configuration = {
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,
-                use: ["file-loader" ]
+                use: ["file-loader"]
             }
         ]
     }
