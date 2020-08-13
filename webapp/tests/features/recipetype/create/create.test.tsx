@@ -11,6 +11,7 @@ describe("Create recipe type", () => {
     it("renders the initial form", () => {
         render(<CreateRecipeType/>)
 
+        expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
         expect(screen.getByText(/name/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
         const submitButton = screen.getByLabelText(/create recipe type/i)

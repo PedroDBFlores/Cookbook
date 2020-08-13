@@ -40,21 +40,4 @@ describe("Basic modal dialog", () => {
 
         expect(closeFn).toHaveBeenCalled()
     })
-
-    it("closes the modal by using the aria tag on the close 'X'", () => {
-        const closeFn = jest.fn()
-        render(<BasicModalDialog title="A title" content="The content"
-                                 dismiss={{
-                                     text: "OK",
-                                     onDismiss: jest.fn()
-                                 }}
-                                 onClose={closeFn}
-        />)
-        const closeButton = screen.getByText(/close modal/i)
-
-        fireEvent.click(closeButton)
-
-        expect(closeFn).toHaveBeenCalled()
-    })
-
 })

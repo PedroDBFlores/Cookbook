@@ -16,6 +16,7 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.DTOGenerator
+import java.lang.IllegalArgumentException
 import java.sql.SQLException
 
 internal class RecipeTypeRepositoryImplTest : DescribeSpec({
@@ -90,7 +91,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
                 val act = { repo.create(recipeType) }
 
-                shouldThrow<IllegalStateException> { act() }
+                shouldThrow<IllegalArgumentException> { act() }
             }
         }
 

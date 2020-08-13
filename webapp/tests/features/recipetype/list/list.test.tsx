@@ -72,6 +72,7 @@ describe("Recipe type list", () => {
             const detailsButton = screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
                 selector: "button"
             })
+            screen.debug()
 
             fireEvent.click(detailsButton)
 

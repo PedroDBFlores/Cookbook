@@ -7,7 +7,7 @@ describe("Application layout", () => {
     it("renders the navbar", () => {
         renderWithRouter(<Layout/>)
 
-        expect(screen.queryByRole("navbar")).toBeInTheDocument()
+        expect(screen.getByText("Cookbook")).toBeInTheDocument()
     })
 
     it("renders the provided children", () => {
@@ -26,7 +26,7 @@ describe("Application layout", () => {
             fireEvent.click(menuButton)
 
             expect(screen.getByLabelText(/recipe types menu/i)).toBeInTheDocument()
-            expect(screen.getByText("Recipe types")).toBeVisible()
+            expect(screen.getByText(/recipe types/i)).toBeVisible()
         })
 
         it(`navigates to the recipe types page`, async () => {

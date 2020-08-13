@@ -1,3 +1,4 @@
 webapp/node_modules/*
 webapp/coverage/*
+webapp/dist/*
 .idea/

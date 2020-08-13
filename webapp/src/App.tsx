@@ -2,21 +2,20 @@ import React from "react"
 import "./App.css"
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import Layout from "./components/layout/layout"
-import "bootstrap/dist/css/bootstrap.min.css"
 import RecipeTypeListPage from "./features/recipetype/list/list-page"
 import BasicModalDialog from "./components/modal/basic-modal-dialog"
 import CreateRecipeType from "./features/recipetype/create/create"
+import RecipeTypeDetails from "./features/recipetype/details/details"
+import EditRecipeType from "./features/recipetype/edit/edit"
 
 const App: React.FC<unknown> = () => (
     <BrowserRouter>
         <Layout>
             <Switch>
-                <Route path="/recipetype">
-                    <RecipeTypeListPage/>
-                </Route>
-                <Route exact path="/recipetype/new">
-                    <CreateRecipeType />
-                </Route>
+                <Route exact path="/recipetype" render={() => <RecipeTypeListPage/>}/>
+                <Route exact path="/recipetype/new" render={() => <CreateRecipeType/>}/>
+                <Route path="/recipetype/:id" render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}/>}/>
+                <Route path="/recipetype/:id/edit" render={(x) => <EditRecipeType id={Number(x.match.params.id)}/>}/>
                 <Route path="/test">
                     <BasicModalDialog title={"a"} content={"B"} dismiss={{
                         text: "OK", onDismiss: () => {

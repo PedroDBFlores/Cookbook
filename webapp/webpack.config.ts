@@ -1,25 +1,11 @@
 import HtmlWebpackPlugin from "html-webpack-plugin"
-import path from "path"
 import * as webpack from "webpack"
 
-const config: webpack.Configuration = {
+const commonConfig: webpack.Configuration = {
     entry: "./index.js",
-    output: {
-        filename: "bundle.[hash].js",
-        path: path.resolve(__dirname, "dist")
-    },
-    devServer: {
-        historyApiFallback: true,
-        port: 8080,
-        proxy: {
-            "/api": {
-                target: "http://localhost:9000",
-                secure: false
-            }
-        }
-    },
     plugins: [
         new HtmlWebpackPlugin({
+            filename: "./index.html",
             template: "./index.html"
         })
     ],
@@ -30,22 +16,13 @@ const config: webpack.Configuration = {
     module: {
         rules: [
             {
-                test: /\.jsx?$/,
-                exclude: /node_modules/,
-                loader: require.resolve("babel-loader")
-            },
-            {
-                test: /\.tsx?$/,
+                test: /\.js|\.ts|\.tsx$/,
                 use: "ts-loader",
                 exclude: /node_modules/
             },
             {
                 test: /\.css$/,
                 use: ["style-loader", "css-loader"]
-            },
-            {
-                test: /\.s[ac]ss$/,
-                use: ["style-loader", "css-loader", "sass-loader"]
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,
@@ -55,4 +32,4 @@ const config: webpack.Configuration = {
     }
 }
 
-export default config
+export default commonConfig

@@ -23,6 +23,7 @@ describe("Recipe type list page", () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         render(<RecipeTypeListPage/>)
 
+        expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         await waitFor(() => {
@@ -63,7 +64,7 @@ describe("Recipe type list page", () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
             "/recipetype": () => <RecipeTypeListPage/>,
-            [`/recipetype/new`]: () => <>I'm the recipe type create page</>
+            "/recipetype/new": () => <>I'm the recipe type create page</>
         }, "/recipetype")
         await waitFor(() => expect(screen.getByLabelText(/create new recipe type/i)).toBeInTheDocument())
 

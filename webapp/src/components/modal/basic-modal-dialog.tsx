@@ -1,7 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import Button from "react-bootstrap/Button"
-import Modal from "react-bootstrap/Modal"
+import {Modal, Button, ButtonGroup, Dialog, DialogTitle, DialogContent, DialogActions} from "@material-ui/core"
 
 interface ModalProps {
     title: string
@@ -14,21 +13,19 @@ interface ModalProps {
 }
 
 const BasicModalDialog: React.FC<ModalProps> = ({
-                                              title, content,
-                                              dismiss,
-                                              onClose
-                                          }) => <Modal.Dialog>
-    <Modal.Header closeButton closeLabel="Close modal" onHide={onClose}>
-        <Modal.Title>{title}</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
+                                                    title, content,
+                                                    dismiss,
+                                                    onClose
+                                                }) => <Dialog open={true} onClose={onClose}>
+    <DialogTitle>{title}</DialogTitle>
+    <DialogContent>
         {content}
-    </Modal.Body>
-    <Modal.Footer>
-        <Button aria-label="Cancel modal" onClick={onClose}>{dismiss.text}</Button>
+    </DialogContent>
+    <DialogActions>
+        <Button aria-label="Cancel modal" onClick={onClose}>Close</Button>
         <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
-    </Modal.Footer>
-</Modal.Dialog>
+    </DialogActions>
+</Dialog>
 
 BasicModalDialog.propTypes = {
     title: PropTypes.string.isRequired,
