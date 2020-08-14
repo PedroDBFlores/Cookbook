@@ -56,7 +56,6 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                                                                    isDrawerOpen
                                                                }) => {
     const classes = useStyles({drawerWidth})
-    console.log(classes)
 
     return (
         <AppBar position="absolute" className={clsx(classes.appBar, isDrawerOpen && classes.appBarShift)}>
