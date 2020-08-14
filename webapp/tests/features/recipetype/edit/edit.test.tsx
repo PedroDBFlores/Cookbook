@@ -1,19 +1,25 @@
-import {act, fireEvent, render, screen, waitFor} from "@testing-library/react"
+import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import React from "react"
 import EditRecipeType from "../../../../src/features/recipetype/edit/edit"
 import {findRecipeType, updateRecipeType} from "../../../../src/services/recipe-type-service"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
+import {renderWithRoutes} from "../../../render"
+import {SnackbarProvider} from "notistack"
 
 jest.mock("../../../../src/services/recipe-type-service")
 const findRecipeTypeMock = findRecipeType as jest.MockedFunction<typeof findRecipeType>
 const updateRecipeTypeMock = updateRecipeType as jest.MockedFunction<typeof updateRecipeType>
 
+const wrappedEditComponent = (children: React.ReactNode) =>
+    <SnackbarProvider maxSnack={4}>
+        {children}
+    </SnackbarProvider>
 
 describe("Edit recipe type", () => {
     it("renders the initial form", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(<EditRecipeType id={expectedRecipeType.id}/>)
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>))
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
@@ -30,7 +36,7 @@ describe("Edit recipe type", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(<EditRecipeType id={99}/>)
+        render(wrappedEditComponent(<EditRecipeType id={99}/>))
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
@@ -42,7 +48,7 @@ describe("Edit recipe type", () => {
     it("displays an error when the name is empty on submitting", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(<EditRecipeType id={expectedRecipeType.id}/>)
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>))
 
         await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
 
@@ -55,5 +61,49 @@ describe("Edit recipe type", () => {
         await waitFor(() =>
             expect(screen.getByText(/name is required/i)).toBeInTheDocument()
         )
+    })
+
+    it("updates the recipe type in the Cookbook API and navigates to the details", async () => {
+        const expectedRecipeType = generateRecipeType()
+        findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
+        updateRecipeTypeMock.mockResolvedValueOnce()
+
+        renderWithRoutes({
+            [`/recipetype/${expectedRecipeType.id}/edit`]: () => wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>),
+            [`/recipetype/${expectedRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
+        }, `/recipetype/${expectedRecipeType.id}/edit`)
+
+        await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
+
+        const nameInput = screen.getByLabelText(/name/i)
+        fireEvent.change(nameInput, {target: {value: "Japanese"}})
+
+        const submitButton = screen.getByLabelText(/edit recipe type/i)
+        fireEvent.submit(submitButton)
+
+        await waitFor(() => {
+            expect(updateRecipeTypeMock).toHaveBeenCalledWith({...expectedRecipeType, name: "Japanese"})
+            expect(screen.getByText("I'm the recipe type details page")).toBeInTheDocument()
+        })
+    })
+
+    it("shows an error message if the update API call fails", async () => {
+        const expectedRecipeType = generateRecipeType()
+        findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
+        updateRecipeTypeMock.mockRejectedValueOnce({})
+
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>))
+
+        await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
+
+        const nameInput = screen.getByLabelText(/name/i)
+        fireEvent.change(nameInput, {target: {value: "Japanese"}})
+
+        const submitButton = screen.getByLabelText(/edit recipe type/i)
+        fireEvent.submit(submitButton)
+
+        await waitFor(() => {
+            expect(screen.getByText("An error occurred while updating the recipe type")).toBeInTheDocument()
+        })
     })
 })
