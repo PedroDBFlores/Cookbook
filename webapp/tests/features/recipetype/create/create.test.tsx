@@ -1,4 +1,4 @@
-import React from "React"
+import React from "react"
 import {render, screen, fireEvent, waitFor} from "@testing-library/react"
 import CreateRecipeType from "../../../../src/features/recipetype/create/create"
 import {createRecipeType} from "../../../../src/services/recipe-type-service"
@@ -29,7 +29,7 @@ describe("Create recipe type", () => {
         )
     })
 
-    it("calls the create recipe type endpoint and navigates to it's details", async () => {
+    it("create the recipe type in the Cookbook API and navigates to the details", async () => {
         createRecipeTypeMock.mockResolvedValueOnce({id: 1})
 
         renderWithRoutes({

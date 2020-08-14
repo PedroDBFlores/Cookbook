@@ -4,28 +4,34 @@ import PropTypes from "prop-types"
 import * as yup from "yup"
 import {Button, FormControl, Grid, Input, InputLabel, Typography} from "@material-ui/core"
 import FormHelperText from "@material-ui/core/FormHelperText"
-import {findRecipeType} from "../../../services/recipe-type-service"
+import {findRecipeType, updateRecipeType} from "../../../services/recipe-type-service"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {Formik, FormikValues} from "formik"
 import If from "../../../components/flow-control/if"
-
+import {useHistory} from "react-router-dom"
+import {useSnackbar} from "notistack"
 
 interface EditRecipeTypeProps {
     id: number
 }
 
 const schema = yup.object({
-    name: yup.string().required("Name is required").min(1, "Name is required")
+    name: yup.string().required("Name is required")
+        .min(1, "Name is required")
 })
 
 const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id}) => {
+    const {enqueueSnackbar} = useSnackbar()
+    const history = useHistory()
     const findPromiseRef = useRef(() => findRecipeType(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
     const onSubmit = (values: FormikValues) => {
-        console.log(values)
+        updateRecipeType({...values} as RecipeType)
+            .then(() => history.push(`/recipetype/${id}`))
+            .catch(() => enqueueSnackbar("An error occurred while updating the recipe type"))
     }
 
     return <>
@@ -52,7 +58,7 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id}) => {
                              handleChange,
                              handleSubmit
                          }) => (
-                            <form>
+                            <form onSubmit={event => handleSubmit(event)}>
                                 <Grid item xs={12}>
                                     <FormControl>
                                         <InputLabel htmlFor="name">Name</InputLabel>
@@ -60,6 +66,7 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id}) => {
                                             id="name"
                                             name="name"
                                             value={values.name}
+                                            onChange={handleChange}
                                             aria-describedby="component-error-text-name"
                                         />
                                         <If condition={!!errors?.name}>

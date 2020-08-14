@@ -10,6 +10,7 @@
     "clsx": "^1.1.1",
     "formik": "^2.1.5",
     "http-status-codes": "1.4.0",
+    "notistack": "^0.9.17",
     "react": "^16.13.1",
     "react-async": "^10.0.1",
     "react-dom": "^16.13.1",
