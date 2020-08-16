@@ -19,11 +19,11 @@ import io.mockk.*
 
 internal class JavalinJWTExtensionsKtTest : DescribeSpec({
 
-    beforeTest {
+    beforeSpec {
         mockkObject(JavalinJWTExtensions)
     }
 
-    afterTest {
+    afterSpec {
         unmockkAll()
     }
 

@@ -56,17 +56,20 @@ internal object DTOGenerator {
      * @param name Provide if you want to override the randomized name
      * @param username Provide if you want to override the randomized username
      * @param passwordHash Provide if you want to override the randomized password
+     * @param roles Provide if you want to set the user's roles
      */
     internal fun generateUser(
         id: Int? = null,
         name: String? = null,
         username: String? = null,
-        passwordHash: String? = null
+        passwordHash: String? = null,
+        roles: List<String>? = emptyList()
     ): User = User(
         id = id ?: faker.number().randomDigitNotZero(),
         name = name ?: faker.name().name(),
         username = username ?: faker.name().username(),
-        passwordHash = passwordHash ?: faker.internet().password()
+        passwordHash = passwordHash ?: faker.internet().password(),
+        roles = roles
     )
 
     /**

@@ -14,8 +14,7 @@ import org.eclipse.jetty.http.HttpStatus
 class CookbookApi(
     private val config: ConfigurationFile,
     private val javalinPlugins: List<Plugin>,
-    private val router: Router,
-    private val onStop: () -> Unit = {}
+    private val router: Router
 ) : AutoCloseable {
     private val app: Javalin
 
@@ -32,10 +31,6 @@ class CookbookApi(
         }
         .exception(Exception::class.java) { ex, ctx ->
             handleError(ex, ctx)
-        }.events {
-            it.serverStopping {
-                onStop()
-            }
         }
         .after(::enableStrictTransportSecurity)
 

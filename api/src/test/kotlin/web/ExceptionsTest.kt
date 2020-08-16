@@ -1,8 +1,8 @@
 package web
 
-import config.KoinModules
-import config.RecipeDependencies
+import config.Modules
 import config.RecipeTypeDependencies
+import config.Router
 import errors.ValidationError
 import io.javalin.http.BadRequestResponse
 import io.kotest.assertions.fail
@@ -17,13 +17,8 @@ import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
 import org.eclipse.jetty.http.HttpStatus
-import org.koin.core.KoinComponent
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 
-internal class ExceptionsTest : KoinComponent, DescribeSpec({
+internal class ExceptionsTest : DescribeSpec({
 
     fun executeRequest(
         recipeTypeDependencies: RecipeTypeDependencies,
@@ -31,18 +26,10 @@ internal class ExceptionsTest : KoinComponent, DescribeSpec({
     ): Response {
         var app: CookbookApi? = null
         try {
-            val koin = startKoin {
-                loadKoinModules(listOf(KoinModules.baseModule, module(override = true) {
-                    single { recipeTypeDependencies }
-                    single { mockk<RecipeDependencies>(relaxed = true) }
-                }))
-            }
-
             app = CookbookApi(
-                config = koin.koin.get(),
-                javalinPlugins = koin.koin.get(),
-                router = koin.koin.get(),
-                onStop = { stopKoin() }
+                config = Modules.cookbookApiDependencies.configurationFile,
+                javalinPlugins = listOf(),
+                router = Router(recipeTypeDependencies, mockk(relaxed = true))
             )
             require(app != null) { fail("Javalin failed to initialize") }
             app!!.start()

@@ -36,7 +36,6 @@ val restAssuredVersion: String by project
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
-    implementation("org.koin:koin-core:$koinVersion")
     implementation("io.javalin:javalin:$javalinVersion")
     implementation("io.javalin:javalin-openapi:$javalinVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
@@ -52,7 +51,6 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
 
     /* Tests */
-    implementation("org.koin:koin-test:$koinVersion")
     testImplementation("io.kotest:kotest-runner-console-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion") // for kotest framework
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions

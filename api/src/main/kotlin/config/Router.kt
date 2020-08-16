@@ -3,14 +3,13 @@ package config
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.ApiBuilder.path
-import org.koin.core.KoinComponent
 import web.recipe.*
 import web.recipetype.*
 
 class Router(
     private val recipeTypeDependencies: RecipeTypeDependencies,
     private val recipeDependencies: RecipeDependencies
-) : KoinComponent {
+) {
     fun register(app: Javalin) {
         app.routes {
             path("/api") {

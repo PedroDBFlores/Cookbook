@@ -34,7 +34,7 @@ internal class CookbookAccessManagerTest : DescribeSpec({
         get("/api/recipetype", handler, allowedRoles)
     }
 
-    fun getAccessManager() = spyk(
+    fun buildAccessManager() = spyk(
         objToCopy = CookbookAccessManager(
             "roles", mapOf(
                 "ANYONE" to CookbookRoles.ANYONE,
@@ -69,7 +69,7 @@ internal class CookbookAccessManagerTest : DescribeSpec({
 
     describe("JWT access manager") {
         it("allows the operation to continue") {
-            val accessManagerSpy = getAccessManager()
+            val accessManagerSpy = buildAccessManager()
 
             val response = executeRequest(
                 accessManager = accessManagerSpy,
@@ -89,7 +89,7 @@ internal class CookbookAccessManagerTest : DescribeSpec({
         }
 
         it("returns 403 if the user isn't allowed to use the resource") {
-            val accessManagerSpy = getAccessManager()
+            val accessManagerSpy = buildAccessManager()
 
             val response = executeRequest(
                 accessManager = accessManagerSpy,

@@ -10,8 +10,10 @@ object HMAC512Provider {
     private val generator: JWTGenerator<User> = object : JWTGenerator<User> {
         override fun generate(obj: User, algorithm: Algorithm): String {
             val token: JWTCreator.Builder = JWT.create()
-                .withClaim("name", obj.name)
+                .withAudience("cookbook")
+                .withSubject(obj.id.toString())
                 .withClaim("username", obj.username)
+                .withClaim("name", obj.name)
                 .withArrayClaim("roles", obj.roles?.toTypedArray())
             return token.sign(algorithm)
         }
