@@ -37,6 +37,7 @@ internal object DTOGenerator {
     internal fun generateRecipe(
         id: Int? = null,
         recipeTypeId: Int? = null,
+        userId: Int? = null,
         name: String? = null,
         description: String? = null,
         ingredients: String? = null,
@@ -44,6 +45,7 @@ internal object DTOGenerator {
     ): Recipe = Recipe(
         id = id ?: faker.number().randomDigitNotZero(),
         recipeTypeId = recipeTypeId ?: faker.number().randomDigitNotZero(),
+        userId = userId ?: faker.number().randomDigitNotZero(),
         name = name ?: faker.name().name(),
         description = description ?: faker.ancient().god(),
         ingredients = ingredients ?: faker.job().position(),

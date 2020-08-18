@@ -1,6 +1,5 @@
 package web.recipe
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import model.Recipe
@@ -17,16 +16,18 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : Handler {
     }
 
     private data class UpdateRecipeRepresenter(
-        @JsonProperty("id", required = true) val id: Int,
-        @JsonProperty("recipeTypeId", required = true) val recipeTypeId: Int,
-        @JsonProperty("name", required = true) val name: String,
-        @JsonProperty("description", required = true) val description: String,
-        @JsonProperty("ingredients", required = true) val ingredients: String,
-        @JsonProperty("preparingSteps", required = true) val preparingSteps: String
+        val id: Int,
+        val recipeTypeId: Int,
+        val userId: Int,
+        val name: String,
+        val description: String,
+        val ingredients: String,
+        val preparingSteps: String
     ) {
         fun toRecipe() = Recipe(
             id = id,
             recipeTypeId = recipeTypeId,
+            userId = userId,
             name = name,
             description = description,
             ingredients = ingredients,

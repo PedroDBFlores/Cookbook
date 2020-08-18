@@ -14,7 +14,7 @@ import org.eclipse.jetty.http.HttpStatus
 class CookbookApi(
     private val config: ConfigurationFile,
     private val javalinPlugins: List<Plugin>,
-    private val router: Router
+    router: Router
 ) : AutoCloseable {
     private val app: Javalin
 

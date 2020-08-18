@@ -37,8 +37,8 @@ object DatabaseTestHelper {
         return recipeType.copy(id = id)
     }
 
-    fun createRecipe(recipeTypeId: Int): Recipe {
-        val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId)
+    fun createRecipe(recipeTypeId: Int, userId: Int): Recipe {
+        val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId, userId = userId)
         val repo = RecipeRepositoryImpl(database = database)
         val id = repo.create(recipe = recipe)
         return recipe.copy(id = id)
@@ -73,6 +73,7 @@ object DatabaseTestHelper {
     fun ResultRow.mapToRecipe() = Recipe(
         id = this[Recipes.id].value,
         recipeTypeId = this[Recipes.recipeTypeId],
+        userId = this[Recipes.userId],
         name = this[Recipes.name],
         description = this[Recipes.description],
         ingredients = this[Recipes.ingredients],

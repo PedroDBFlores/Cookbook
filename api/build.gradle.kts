@@ -2,7 +2,7 @@
 
 plugins {
     application
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.29.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
@@ -35,7 +35,7 @@ val mockkVersion: String by project
 val restAssuredVersion: String by project
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("io.javalin:javalin:$javalinVersion")
     implementation("io.javalin:javalin-openapi:$javalinVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
@@ -51,7 +51,6 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
 
     /* Tests */
-    testImplementation("io.kotest:kotest-runner-console-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion") // for kotest framework
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion") // for kotest json assertions

@@ -20,7 +20,6 @@ import model.Credentials
 import org.eclipse.jetty.http.HttpStatus
 import usecases.user.ValidateUserCredentials
 import utils.convertToJSON
-import utils.removeJSONProperties
 
 internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
     val credentials = Credentials(username = "username", password = "password")
@@ -122,14 +121,6 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
             row(
                 """{"non":"conformant"}""",
                 "an invalid body is provided"
-            ),
-            row(
-                removeJSONProperties(credentials, "username"),
-                "when the username property is missing"
-            ),
-            row(
-                removeJSONProperties(credentials, "password"),
-                "when the password property is missing"
             )
         ).forEach { (jsonBody, description) ->
             it("returns 400 $description") {

@@ -1,10 +1,9 @@
 package adapters.authentication
 
 import adapters.authentication.JavalinJWTExtensions.addDecodedJWT
-import adapters.authentication.JavalinJWTExtensions.addTokenToCookie
 import adapters.authentication.JavalinJWTExtensions.containsJWT
 import adapters.authentication.JavalinJWTExtensions.getDecodedJWT
-import adapters.authentication.JavalinJWTExtensions.getTokenFromCookie
+import adapters.authentication.JavalinJWTExtensions.subject
 import com.auth0.jwt.interfaces.DecodedJWT
 import io.javalin.http.Context
 import io.javalin.http.InternalServerErrorResponse
@@ -12,8 +11,6 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
-import io.kotest.matchers.nulls.shouldBeNull
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 
@@ -62,37 +59,6 @@ internal class JavalinJWTExtensionsKtTest : DescribeSpec({
             verify { contextMock.attribute("jwt", ofType<DecodedJWT>()) }
         }
 
-        describe("Get token from cookie") {
-            it("returns the token if there is a JWT cookie") {
-                val contextMock = mockk<Context> {
-                    every { cookie("jwt") } returns "TOKEN"
-                }
-
-                val token = contextMock.getTokenFromCookie()
-                token.shouldNotBeNull()
-                token.shouldBe("TOKEN")
-                verify(exactly = 1) { contextMock.cookie("jwt") }
-            }
-
-            it("returns null if there is not JWT cookie") {
-                val contextMock = mockk<Context> {
-                    every { cookie("jwt") } returns null
-                }
-
-                val token = contextMock.getTokenFromCookie()
-                token.shouldBeNull()
-            }
-        }
-
-        it("adds a token to a cookie") {
-            val contextMock = mockk<Context> {
-                every { cookie("jwt", "TOKEN") } returns this@mockk
-            }
-
-            contextMock.addTokenToCookie("TOKEN")
-            verify(exactly = 1) { contextMock.cookie("jwt", "TOKEN") }
-        }
-
         describe("Get decoded JWT") {
             it("returns a JWT if it exists") {
                 val contextMock = mockk<Context> {
@@ -117,6 +83,22 @@ internal class JavalinJWTExtensionsKtTest : DescribeSpec({
 
                 shouldThrow<InternalServerErrorResponse> { act() }
                 verify(exactly = 0) { contextMock.attribute<DecodedJWT>("jwt") }
+            }
+        }
+
+        it("gets the subject of the user token") {
+            val contextMock = mockk<Context> {
+                every { containsJWT() } returns true
+                every { attribute<DecodedJWT>("jwt") } returns mockk {
+                    every { subject } returns "1234"
+                }
+            }
+
+            val subject = contextMock.subject()
+
+            subject.shouldBe(1234)
+            verify(exactly = 1) {
+                contextMock.getDecodedJWT()
             }
         }
     }

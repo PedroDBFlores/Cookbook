@@ -1,5 +1,6 @@
 package web.recipe
 
+import adapters.authentication.JavalinJWTExtensions.subject
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import io.javalin.plugin.openapi.annotations.*
@@ -13,6 +14,11 @@ class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Handler {
     @OpenApi(
         description = "Creates a new recipe",
         method = HttpMethod.POST,
+        headers = [OpenApiParam(
+            name = "Authorization",
+            description = "Bearer token",
+            required = true
+        )],
         requestBody = OpenApiRequestBody(
             content = [OpenApiContent(
                 from = CreateRecipeRepresenter::class
@@ -23,12 +29,12 @@ class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Handler {
         responses = [
             OpenApiResponse(
                 status = "201",
-                description = "A recipe was created sucessfully, returning it's id",
+                description = "A recipe was created successfully, returning it's id",
                 content = [OpenApiContent(from = Int::class)]
             ),
             OpenApiResponse(
                 status = "400",
-                description = "When an error ocurred parsing the body",
+                description = "When an error occurred parsing the body",
                 content = [OpenApiContent(from = ResponseError::class)]
             )
         ],
@@ -42,7 +48,7 @@ class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Handler {
             .check({ rep -> rep.ingredients.isNotEmpty() }, "Field 'ingredients' cannot be empty")
             .check({ rep -> rep.preparingSteps.isNotEmpty() }, "Field 'preparingSteps' cannot be empty")
             .get()
-            .toRecipe()
+            .toRecipe(ctx.subject())
         val id = createRecipe(recipe)
         ctx.status(HttpStatus.CREATED_201).json(mapOf("id" to id))
     }
@@ -54,9 +60,9 @@ class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Handler {
         val ingredients: String,
         val preparingSteps: String
     ) {
-        fun toRecipe() = Recipe(
-            id = 0,
+        fun toRecipe(userId: Int) = Recipe(
             recipeTypeId = recipeTypeId,
+            userId = userId,
             name = name,
             description = description,
             ingredients = ingredients,

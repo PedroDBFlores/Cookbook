@@ -9,7 +9,6 @@ import model.User
 internal object JavalinJWTExtensions {
 
     private const val CONTEXT_ATTRIBUTE = "jwt"
-    private const val COOKIE_KEY = "jwt"
 
     internal fun Context.containsJWT(): Boolean = attribute<DecodedJWT>(CONTEXT_ATTRIBUTE) != null
 
@@ -18,10 +17,6 @@ internal object JavalinJWTExtensions {
         return this
     }
 
-    internal fun Context.getTokenFromCookie(): String? = cookie(COOKIE_KEY)
-
-    internal fun Context.addTokenToCookie(token: String): Context = cookie(COOKIE_KEY, token)
-
     internal fun Context.getDecodedJWT(): DecodedJWT {
         if (!containsJWT()) {
             throw InternalServerErrorResponse("No JWT")
@@ -29,7 +24,9 @@ internal object JavalinJWTExtensions {
         return attribute<DecodedJWT>(CONTEXT_ATTRIBUTE)!!
     }
 
-    internal fun Context.getTokenFromHeader(): String? {
+    internal fun Context.subject(): Int = getDecodedJWT().subject.toInt()
+
+    private fun Context.getTokenFromHeader(): String? {
         return header("Authorization")
             ?.split(" ")?.let {
                 if (it.size != 2 || !it[0].contains("Bearer")) {
@@ -42,16 +39,6 @@ internal object JavalinJWTExtensions {
     internal fun JWTProvider<User>.createHeaderDecodeHandler(): Handler {
         return Handler { context ->
             context.getTokenFromHeader()?.let { token ->
-                validateToken(token)?.let { decodedJWT ->
-                    context.addDecodedJWT(decodedJWT)
-                }
-            }
-        }
-    }
-
-    internal fun JWTProvider<User>.createCookieDecodeHandler(): Handler {
-        return Handler { context ->
-            context.getTokenFromCookie()?.let { token ->
                 validateToken(token)?.let { decodedJWT ->
                     context.addDecodedJWT(decodedJWT)
                 }

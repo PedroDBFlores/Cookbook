@@ -2,9 +2,14 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRecipe
 import adapters.database.DatabaseTestHelper.createRecipeType
+import adapters.database.DatabaseTestHelper.createRole
+import adapters.database.DatabaseTestHelper.createUser
 import adapters.database.DatabaseTestHelper.mapToRecipe
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
+import adapters.database.schema.Roles
+import adapters.database.schema.UserRoles
+import adapters.database.schema.Users
 import com.github.javafaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -12,6 +17,7 @@ import io.kotest.data.row
 import io.kotest.matchers.ints.shouldNotBeZero
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.mockk.mockk
 import model.Recipe
 import model.parameters.SearchRecipeParameters
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -26,11 +32,16 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
     val faker = Faker()
     val database = DatabaseTestHelper.database
     var recipeTypeId = 0
+    var userId = 0
+    var extraUserId = 0
 
     beforeSpec {
         transaction(database) {
-            SchemaUtils.create(RecipeTypes, Recipes)
+            SchemaUtils.create(RecipeTypes, Recipes, Users, Roles, UserRoles)
             recipeTypeId = createRecipeType().id
+            createRole("User", RoleCodes.USER)
+            userId = createUser("password", mockk(relaxed = true)).id
+            extraUserId = createUser("password2", mockk(relaxed = true)).id
         }
     }
 
@@ -40,9 +51,17 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
         }
     }
 
+    afterSpec {
+        transaction(database) {
+            UserRoles.deleteAll()
+            Roles.deleteAll()
+            Users.deleteAll()
+        }
+    }
+
     describe("Recipe repository") {
         it("finds a recipe") {
-            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId)
+            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
             val repo = RecipeRepositoryImpl(database = database)
             val recipe = repo.find(id = createdRecipe.id)
 
@@ -50,22 +69,36 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
             recipe.shouldBe(createdRecipe)
         }
 
-        it("gets all the recipe types") {
-            val createdRecipes = listOf(
-                createRecipe(recipeTypeId = recipeTypeId),
-                createRecipe(recipeTypeId = recipeTypeId)
-            )
+        describe("Get all") {
+            it("gets all the recipe types") {
+                val createdRecipes = listOf(
+                    createRecipe(recipeTypeId = recipeTypeId, userId = userId),
+                    createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+                )
 
-            val repo = RecipeRepositoryImpl(database = database)
-            val recipes = repo.getAll()
+                val repo = RecipeRepositoryImpl(database = database)
+                val recipes = repo.getAll()
 
-            recipes.shouldBe(createdRecipes)
+                recipes.shouldBe(createdRecipes)
+            }
+
+            it("gets all the recipe types by userId") {
+                val createdRecipes = listOf(
+                    createRecipe(recipeTypeId = recipeTypeId, userId = userId),
+                    createRecipe(recipeTypeId = recipeTypeId, userId = extraUserId)
+                )
+
+                val repo = RecipeRepositoryImpl(database = database)
+                val recipes = repo.getAll(extraUserId)
+
+                recipes.shouldBe(createdRecipes.filter { it.userId == extraUserId })
+            }
         }
 
         it("gets the recipe count") {
             val createdRecipes = listOf(
-                createRecipe(recipeTypeId = recipeTypeId),
-                createRecipe(recipeTypeId = recipeTypeId)
+                createRecipe(recipeTypeId = recipeTypeId, userId = userId),
+                createRecipe(recipeTypeId = recipeTypeId, userId = userId)
             )
             val repo = RecipeRepositoryImpl(database = database)
 
@@ -76,12 +109,13 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Search") {
             fun createRecipes(numberOfRecipes: Int = 20) = List(numberOfRecipes) {
-                createRecipe(recipeTypeId = recipeTypeId)
+                createRecipe(recipeTypeId = recipeTypeId, userId = userId)
             }
 
             it("searches for a specific recipe name") {
                 createRecipes(numberOfRecipes = 10)
-                val pickedRecipe = createRecipe(DTOGenerator.generateRecipe(name = "Lichens", recipeTypeId = 1))
+                val pickedRecipe =
+                    createRecipe(DTOGenerator.generateRecipe(name = "Lichens", recipeTypeId = 1, userId = userId))
                 val repo = RecipeRepositoryImpl(database = database)
                 val parameters = SearchRecipeParameters(name = pickedRecipe.name)
 
@@ -91,10 +125,18 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 result.numberOfPages.shouldBe(1)
                 result.results.first().shouldBe(pickedRecipe)
             }
+
             // THESE ARE FLAWED, we need to control at least one of them
             it("searches for a specific recipe description") {
                 createRecipes(numberOfRecipes = 10)
-                val pickedRecipe = createRecipe(DTOGenerator.generateRecipe(description = "Very good", recipeTypeId = recipeTypeId))
+                val pickedRecipe =
+                    createRecipe(
+                        DTOGenerator.generateRecipe(
+                            description = "Very good",
+                            recipeTypeId = recipeTypeId,
+                            userId = userId
+                        )
+                    )
                 val repo = RecipeRepositoryImpl(database = database)
                 val parameters = SearchRecipeParameters(description = pickedRecipe.description)
 
@@ -130,7 +172,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Create") {
             it("creates a new recipe") {
-                val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId)
+                val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId, userId = userId)
                 val repo = RecipeRepositoryImpl(database = database)
 
                 val createdRecipeId = repo.create(recipe = recipe)
@@ -145,7 +187,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Update") {
             it("updates a recipe on the database") {
-                val createdRecipe = createRecipe(recipeTypeId = recipeTypeId)
+                val createdRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
                 val repo = RecipeRepositoryImpl(database = database)
                 val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = faker.name().fullName())
 
@@ -158,8 +200,8 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
             }
 
             it("throws if an update has the same name of an existing one") {
-                val firstRecipe = createRecipe(recipeTypeId = recipeTypeId)
-                val secondRecipe = createRecipe(recipeTypeId = recipeTypeId)
+                val firstRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+                val secondRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
                 val repo = RecipeRepositoryImpl(database = database)
 
                 val act = { repo.update(secondRecipe.copy(name = firstRecipe.name)) }
@@ -169,7 +211,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
         }
 
         it("deletes a recipe type") {
-            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId)
+            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
             val repo = RecipeRepositoryImpl(database = database)
             val deleted = repo.delete(createdRecipe.id)
 

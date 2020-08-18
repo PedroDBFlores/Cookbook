@@ -21,6 +21,11 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         Recipes.selectAll().map(::mapToRecipe)
     }
 
+    override fun getAll(userId: Int): List<Recipe> = transaction(database) {
+        Recipes.select { Recipes.userId eq userId }
+            .map(::mapToRecipe)
+    }
+
     override fun count(): Long = transaction(database) {
         Recipes.selectAll().count()
     }
@@ -54,6 +59,7 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
     override fun create(recipe: Recipe): Int = transaction(database) {
         Recipes.insertAndGetId { recipeToCreate ->
             recipeToCreate[recipeTypeId] = recipe.recipeTypeId
+            recipeToCreate[userId] = recipe.userId
             recipeToCreate[name] = recipe.name
             recipeToCreate[description] = recipe.description
             recipeToCreate[ingredients] = recipe.ingredients
@@ -78,6 +84,7 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
     private fun mapToRecipe(row: ResultRow) = Recipe(
         id = row[Recipes.id].value,
         recipeTypeId = row[Recipes.recipeTypeId],
+        userId = row[Recipes.userId],
         name = row[Recipes.name],
         description = row[Recipes.description],
         ingredients = row[Recipes.ingredients],
