@@ -3,6 +3,6 @@
 
 # Cookbook
 
-Application intended to be developed with React frontend and Kotlin backend (Javalin server).
+Application intended to be developed with React frontend and Kotlin backend (Ktor server).
 
 Work in progress.
