@@ -4,6 +4,6 @@ import server.CookbookApi
 
 fun main() {
     val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
-    CookbookApi(config = configuration)
+    CookbookApi(configuration = configuration)
 }
 

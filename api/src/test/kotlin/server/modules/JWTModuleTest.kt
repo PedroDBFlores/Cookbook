@@ -14,7 +14,6 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
-import io.mockk.called
 import io.mockk.clearMocks
 import io.mockk.spyk
 import io.mockk.verify
@@ -87,14 +86,8 @@ class JWTModuleTest : DescribeSpec({
                 }
             }
 
-            it("refuses the request with 401 from a different domain/audience") {
-                val token = JWTManagerImpl(
-                    domain = "http://not-my-domain",
-                    audience = "not-my-audience",
-                    realm = "my-realm",
-                    allowedRoles = listOf(ApplicationRoles.USER),
-                    algorithmSecret = "secret"
-                ).generateToken(applicationUser)
+            it("refuses the request with 401 if the user hasn't got at least the USER role") {
+                val token = userJwtManager.generateToken(DTOGenerator.generateUser())
 
                 withTestApplication(moduleFunction = createTestServer()) {
                     with(handleRequest(HttpMethod.Get, "/userRoute") {
@@ -107,18 +100,35 @@ class JWTModuleTest : DescribeSpec({
                     }
                 }
             }
+        }
 
-            it("refuses the request with 401 if the user has no allowed role") {
-                val token = userJwtManager.generateToken(DTOGenerator.generateUser())
+        describe("Admin authentication with JWT"){
+            it("allows the request through") {
+                val token = adminJwtManager.generateToken(applicationAdmin)
 
                 withTestApplication(moduleFunction = createTestServer()) {
-                    with(handleRequest(HttpMethod.Get, "/userRoute") {
+                    with(handleRequest(HttpMethod.Get, "/adminRoute") {
+                        addHeader("Authorization", "Bearer $token")
+                    }) {
+                        response.status().shouldBe(HttpStatusCode.NoContent)
+                        principal<UserPrincipal>().shouldNotBeNull()
+                        verify(exactly = 1) { adminJwtManager.validate(any()) }
+                        verify(exactly = 0) { userJwtManager.validate(any()) }
+                    }
+                }
+            }
+
+            it("refuses the request with 401 if anything besides an ADMIN tries to use this endpoint"){
+                val token = adminJwtManager.generateToken(applicationUser)
+
+                withTestApplication(moduleFunction = createTestServer()) {
+                    with(handleRequest(HttpMethod.Get, "/adminRoute") {
                         addHeader("Authorization", "Bearer $token")
                     }) {
                         response.status().shouldBe(HttpStatusCode.Unauthorized)
                         principal<UserPrincipal>().shouldBeNull()
-                        verify(exactly = 0) { userJwtManager.validate(any()) }
                         verify(exactly = 0) { adminJwtManager.validate(any()) }
+                        verify(exactly = 0) { userJwtManager.validate(any()) }
                     }
                 }
             }

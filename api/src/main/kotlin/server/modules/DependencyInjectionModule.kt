@@ -21,9 +21,7 @@ import ports.RecipeTypeRepository
 import usecases.recipe.*
 import usecases.recipetype.*
 
-fun Application.dependencyInjectionModule(){
-    val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
-
+fun Application.dependencyInjectionModule(configuration: ConfigurationFile){
     val db by lazy {
         val dataSource = HikariDataSource()
         with(configuration.database) {

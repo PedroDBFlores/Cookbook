@@ -1,10 +1,6 @@
 package server
 
-import com.fasterxml.jackson.databind.SerializationFeature
 import config.ConfigurationFile
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import server.modules.contentNegotiationModule
@@ -15,11 +11,11 @@ import server.modules.routingModule
  * Defines the Cookbook API
  */
 class CookbookApi(
-    config: ConfigurationFile
+    configuration: ConfigurationFile
 ) : AutoCloseable {
-    private val server = embeddedServer(Netty, config.api.port) {
+    private val server = embeddedServer(Netty, configuration.api.port) {
         contentNegotiationModule()
-        dependencyInjectionModule()
+        dependencyInjectionModule(configuration)
         routingModule()
     }
 
