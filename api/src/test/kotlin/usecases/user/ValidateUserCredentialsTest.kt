@@ -1,6 +1,5 @@
 package usecases.user
 
-import adapters.authentication.JWTProvider
 import errors.PasswordMismatchError
 import errors.UserNotFound
 import io.kotest.assertions.throwables.shouldThrow
@@ -13,6 +12,7 @@ import io.mockk.verify
 import model.Credentials
 import model.User
 import ports.HashingService
+import ports.JWTManager
 import ports.UserRepository
 import utils.DTOGenerator
 
@@ -21,26 +21,26 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
         it("validates the user credentials and returns an access token") {
             val user = DTOGenerator.generateUser()
             val userRepository = mockk<UserRepository> {
-                every { find(user.username) } returns user
+                every { find(user.userName) } returns user
             }
             val hashingService = mockk<HashingService> {
                 every { hash("PASSWORD") } returns "PASSWORDHASH"
                 every { verify("PASSWORDHASH", user.passwordHash) } returns true
             }
-            val jwtProvider = mockk<JWTProvider<User>> {
+            val jwtProvider = mockk<JWTManager<User>> {
                 every { generateToken(user) } returns "JWT_TOKEN"
             }
             val userHasValidCredentials = ValidateUserCredentials(
                 userRepository = userRepository,
                 hashingService = hashingService,
-                jwtProvider = jwtProvider
+                jwtManager = jwtProvider
             )
 
-            val jwtToken = userHasValidCredentials(Credentials(user.username, "PASSWORD"))
+            val jwtToken = userHasValidCredentials(Credentials(user.userName, "PASSWORD"))
 
             jwtToken.shouldBe("JWT_TOKEN")
             verify {
-                userRepository.find(user.username)
+                userRepository.find(user.userName)
                 hashingService.hash("PASSWORD")
                 hashingService.verify("PASSWORDHASH", user.passwordHash)
                 jwtProvider.generateToken(user)
@@ -50,7 +50,7 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
         it("should return false if the credentials don't match") {
             val user = DTOGenerator.generateUser()
             val userRepository = mockk<UserRepository> {
-                every { find(user.username) } returns user
+                every { find(user.userName) } returns user
             }
             val hashingService = mockk<HashingService>(relaxed = true) {
                 every { verify(any(), user.passwordHash) } returns false
@@ -58,10 +58,10 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
             val userHasValidCredentials = ValidateUserCredentials(
                 userRepository = userRepository,
                 hashingService = hashingService,
-                jwtProvider = mockk()
+                jwtManager = mockk()
             )
 
-            val act = { userHasValidCredentials(Credentials(user.username, "PASSWORD")) }
+            val act = { userHasValidCredentials(Credentials(user.userName, "PASSWORD")) }
 
             shouldThrow<PasswordMismatchError> { act() }
         }
@@ -75,7 +75,7 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
                 ValidateUserCredentials(
                     userRepository = userRepository,
                     hashingService = hashingService,
-                    jwtProvider = mockk()
+                    jwtManager = mockk()
                 )
 
             val act = { userHasValidCredentials.invoke(Credentials("username", "password")) }

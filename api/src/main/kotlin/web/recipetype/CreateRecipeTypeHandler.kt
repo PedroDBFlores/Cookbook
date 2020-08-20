@@ -1,48 +1,24 @@
 package web.recipetype
 
-import io.javalin.http.Context
-import io.javalin.http.Handler
-import io.javalin.plugin.openapi.annotations.*
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
 import model.CreateResult
 import model.RecipeType
-import org.eclipse.jetty.http.HttpStatus
+import ports.KtorHandler
+import server.extensions.validateReceivedBody
 import usecases.recipetype.CreateRecipeType
-import web.ResponseError
 
-class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : Handler {
+class CreateRecipeTypeHandler(
+    private val createRecipeType: CreateRecipeType
+) : KtorHandler {
 
-    @OpenApi(
-        summary = "Create recipe type",
-        description = "Creates a new recipe type",
-        operationId = "CreateRecipeType",
-        method = HttpMethod.POST,
-        requestBody = OpenApiRequestBody(
-            content = [OpenApiContent(
-                from = CreateRecipeTypeRepresenter::class
-            )],
-            required = true,
-            description = "The required information to create a new recipe type"
-        ),
-        responses = [
-            OpenApiResponse(
-                status = "201",
-                description = "A recipe type was created sucessfully, returning it's id",
-                content = [OpenApiContent(from = CreateResult::class)]
-            ),
-            OpenApiResponse(
-                status = "400",
-                description = "When an error ocurred parsing the body",
-                content = [OpenApiContent(from = ResponseError::class)]
-            )
-        ],
-        tags = ["RecipeType"]
-    )
-    override fun handle(ctx: Context) {
-        val recipeType = ctx.bodyValidator<CreateRecipeTypeRepresenter>()
-            .get()
-            .toRecipeType()
+    override suspend fun handle(call: ApplicationCall) {
+        val recipeType = call.validateReceivedBody<CreateRecipeTypeRepresenter> {
+            check(it.name.isNotEmpty()) { "Field 'name' cannot be empty" }
+        }.toRecipeType()
         val id = createRecipeType(recipeType)
-        ctx.status(HttpStatus.CREATED_201).json(CreateResult(id))
+        call.respond(HttpStatusCode.Created, CreateResult(id))
     }
 
     private data class CreateRecipeTypeRepresenter(val name: String) {

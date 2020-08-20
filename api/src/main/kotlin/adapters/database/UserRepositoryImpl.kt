@@ -41,7 +41,7 @@ class UserRepositoryImpl(
     override fun create(user: User, userPassword: String): Int = transaction(database) {
         val userId = Users.insertAndGetId { userToCreate ->
             userToCreate[name] = user.name
-            userToCreate[userName] = user.username
+            userToCreate[userName] = user.userName
             userToCreate[passwordHash] = hashingService.hash(userPassword)
         }.value
 
@@ -82,7 +82,7 @@ class UserRepositoryImpl(
     private fun mapToUser(row: ResultRow) = User(
         id = row[Users.id].value,
         name = row[Users.name],
-        username = row[Users.userName],
+        userName = row[Users.userName],
         passwordHash = row[Users.passwordHash],
         roles = row[Roles.code.groupConcat(";")].run {
             split(";")

@@ -40,7 +40,7 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
         val id = transaction(database) {
             Users.insertAndGetId { createUser ->
                 createUser[name] = user.name
-                createUser[userName] = user.username
+                createUser[userName] = user.userName
                 createUser[passwordHash] = user.passwordHash
             }
         }.value

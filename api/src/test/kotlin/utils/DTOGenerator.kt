@@ -69,7 +69,7 @@ internal object DTOGenerator {
     ): User = User(
         id = id ?: faker.number().randomDigitNotZero(),
         name = name ?: faker.name().name(),
-        username = username ?: faker.name().username(),
+        userName = username ?: faker.name().username(),
         passwordHash = passwordHash ?: faker.internet().password(),
         roles = roles
     )

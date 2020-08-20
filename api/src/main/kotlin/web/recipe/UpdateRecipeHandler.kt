@@ -1,18 +1,22 @@
 package web.recipe
 
-import io.javalin.http.Context
-import io.javalin.http.Handler
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
 import model.Recipe
+import ports.KtorHandler
+import server.extensions.validateReceivedBody
 import usecases.recipe.UpdateRecipe
 
-class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : Handler {
-    override fun handle(ctx: Context) {
-        val recipe = ctx.bodyValidator<UpdateRecipeRepresenter>()
-            .check({ rep -> rep.id > 0 }, "Field 'id' must be bigger than zero")
-            .check({ rep -> rep.recipeTypeId > 0 }, "Field 'recipeTypeId' must be bigger than zero")
-            .get()
-            .toRecipe()
+class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler {
+
+    override suspend fun handle(call: ApplicationCall) {
+        val recipe = call.validateReceivedBody<UpdateRecipeRepresenter> {
+            check(it.id > 0) { "Field 'id' must be bigger than zero" }
+            check(it.recipeTypeId > 0) { "Field 'recipeTypeId' must be bigger than zero" }
+        }.toRecipe()
         updateRecipe(recipe)
+        call.respond(HttpStatusCode.OK)
     }
 
     private data class UpdateRecipeRepresenter(

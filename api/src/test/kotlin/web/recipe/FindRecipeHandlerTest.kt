@@ -1,99 +1,81 @@
 package web.recipe
 
 import errors.RecipeNotFound
-import io.javalin.Javalin
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.routing.*
+import io.ktor.server.testing.*
+import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.restassured.RestAssured
-import io.restassured.module.kotlin.extensions.Extract
-import io.restassured.module.kotlin.extensions.Given
-import io.restassured.module.kotlin.extensions.When
-import io.restassured.response.Response
-import org.eclipse.jetty.http.HttpStatus
+import server.modules.contentNegotiationModule
 import usecases.recipe.FindRecipe
 import utils.DTOGenerator
 import utils.convertToJSON
 
 internal class FindRecipeHandlerTest : DescribeSpec({
 
-    beforeSpec {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 9000
-    }
-
-    fun executeRequest(
-        findRecipe: FindRecipe,
-        recipeIdParam: String
-    ): Response {
-        val app = Javalin.create().get("/api/recipe/:id", FindRecipeHandler(findRecipe))
-            .start(9000)
-        try {
-            return Given {
-                pathParam("id", recipeIdParam)
-            } When {
-                get("/api/recipe/{id}")
-            } Extract {
-                response()
-            }
-        } finally {
-            app.stop()
+    fun createTestServer(findRecipe: FindRecipe): Application.() -> Unit = {
+        contentNegotiationModule()
+        routing {
+            get("/api/recipe/{id}") { FindRecipeHandler(findRecipe).handle(call) }
         }
     }
 
     describe("Find recipe handler") {
         it("returns a recipe with status code 200") {
             val expectedRecipe = DTOGenerator.generateRecipe()
-            val getRecipeMock = mockk<FindRecipe> {
+            val findRecipe = mockk<FindRecipe> {
                 every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
             }
 
-            val response = executeRequest(getRecipeMock, expectedRecipe.id.toString())
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.OK_200)
-                body.asString().shouldMatchJson(convertToJSON(expectedRecipe))
-                verify { getRecipeMock(FindRecipe.Parameters(expectedRecipe.id)) }
+            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
+                    response.status().shouldBe(HttpStatusCode.OK)
+                    response.content.shouldMatchJson(convertToJSON(expectedRecipe))
+                    verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
+                }
             }
         }
 
         it("should return a 404 if the recipe type wasn't found") {
-            val getRecipeMock = mockk<FindRecipe> {
+            val findRecipe = mockk<FindRecipe> {
                 every { this@mockk(FindRecipe.Parameters(9999)) } throws RecipeNotFound(9999)
             }
 
-            val response = executeRequest(getRecipeMock, "9999")
-
-            response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
+            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe/9999")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
+                    verify(exactly = 1) { findRecipe(FindRecipe.Parameters(9999)) }
+                }
+            }
         }
 
         arrayOf(
             row(
                 "arroz",
-                "a non-number is provided",
-                "Path parameter 'id' with value"
+                "a non-number is provided"
             ),
             row(
                 "-99",
-                "an invalid id is provided",
-                "Path param 'id' must be bigger than 0"
+                "an invalid id is provided"
             )
-        ).forEach { (pathParam, description, messageToContain) ->
+        ).forEach { (pathParam, description) ->
             it("should return 400 if $description") {
-                val getRecipeMock = mockk<FindRecipe>()
+                val findRecipe = mockk<FindRecipe>()
 
-                val response = executeRequest(getRecipeMock, pathParam)
-
-                with(response) {
-                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body.asString().shouldContain(messageToContain)
+                withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+                    with(handleRequest(HttpMethod.Get, "/api/recipe/$pathParam")) {
+                        response.status().shouldBe(HttpStatusCode.BadRequest)
+                        verify { findRecipe wasNot called }
+                    }
                 }
-                verify(exactly = 0) { getRecipeMock(any()) }
             }
         }
     }

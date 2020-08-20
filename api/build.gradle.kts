@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.4.0"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.29.0"
-    id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
 }
 
 group = "pt.pedro"
@@ -18,13 +18,14 @@ repositories {
     mavenLocal()
     jcenter()
     maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://kotlin.bintray.com/ktor") }
 }
 
 val kotlinVersion: String by project
-val koinVersion: String by project
 val hopliteVersion: String by project
-val javalinVersion: String by project
-val slf4jVersion: String by project
+val ktorVersion: String by project
+val kodeinVersion: String by project
+val logbackVersion: String by project
 val exposedVersion: String by project
 val h2Version: String by project
 val jodaDataTypeVersion: String by project
@@ -35,10 +36,14 @@ val mockkVersion: String by project
 val restAssuredVersion: String by project
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    implementation("io.javalin:javalin:$javalinVersion")
-    implementation("io.javalin:javalin-openapi:$javalinVersion")
-    implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-host-common:$ktorVersion")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:$kodeinVersion")
     implementation("com.auth0:java-jwt:$auth0Version")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-joda:$jodaDataTypeVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -51,6 +56,7 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
 
     /* Tests */
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion") // for kotest framework
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion") // for kotest json assertions
@@ -71,6 +77,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-ktlint {
-    disabledRules.set(setOf("no-wildcard-imports", "indent"))
-}
+//ktlint {
+//    disabledRules.set(setOf("no-wildcard-imports", "indent"))
+//}

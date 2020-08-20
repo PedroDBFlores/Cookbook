@@ -1,49 +1,28 @@
 package web.recipetype
 
 import errors.RecipeTypeNotFound
-import io.javalin.Javalin
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.routing.*
+import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.restassured.RestAssured
-import io.restassured.module.kotlin.extensions.Extract
-import io.restassured.module.kotlin.extensions.Given
-import io.restassured.module.kotlin.extensions.When
-import io.restassured.response.Response
-import org.eclipse.jetty.http.HttpStatus
+import server.modules.contentNegotiationModule
 import usecases.recipetype.FindRecipeType
 import utils.DTOGenerator.generateRecipeType
 import utils.convertToJSON
 
 internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
-    beforeSpec {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 9000
-    }
-
-    fun executeRequest(
-        findRecipeType: FindRecipeType,
-        recipeTypeIdParam: String
-    ): Response {
-        val app = Javalin.create().get("/api/recipetype/:id", FindRecipeTypeHandler(findRecipeType))
-            .start(9000)
-
-        try {
-            return Given {
-                pathParam("id", recipeTypeIdParam)
-            } When {
-                get("/api/recipetype/{id}")
-            } Extract {
-                response()
-            }
-        } finally {
-            app.stop()
+    fun createTestServer(findRecipeType: FindRecipeType): Application.() -> Unit = {
+        contentNegotiationModule()
+        routing {
+            get("/api/recipetype/{id}") { FindRecipeTypeHandler(findRecipeType).handle(call) }
         }
     }
 
@@ -54,13 +33,12 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
                 every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
             }
 
-            val response = executeRequest(getRecipeTypeMock, expectedRecipeType.id.toString())
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.OK_200)
-                // body.`as`<RecipeType>(RecipeType::class.java).shouldBe(expectedRecipeType)
-                body.asString().shouldMatchJson(convertToJSON(expectedRecipeType))
-                verify { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
+            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeType.id}")) {
+                    response.status().shouldBe(HttpStatusCode.OK)
+                    response.content.shouldMatchJson(convertToJSON(expectedRecipeType))
+                    verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
+                }
             }
         }
 
@@ -69,33 +47,33 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
                 every { this@mockk(FindRecipeType.Parameters(9999)) } throws RecipeTypeNotFound(9999)
             }
 
-            val response = executeRequest(getRecipeTypeMock, "9999")
-
-            response.statusCode().shouldBe(HttpStatus.NOT_FOUND_404)
+            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipetype/9999")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
+                    verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(9999)) }
+                }
+            }
         }
 
         arrayOf(
             row(
                 "arroz",
-                "a non-number is provided",
-                "Path parameter 'id' with value"
+                "a non-number is provided"
             ),
             row(
                 "-99",
-                "an invalid id is provided",
-                "Path param 'id' must be bigger than 0"
+                "an invalid id is provided"
             )
-        ).forEach { (pathParam, description, messageToContain) ->
+        ).forEach { (pathParam, description) ->
             it("should return BAD_REQUEST if $description") {
                 val getRecipeTypeMock = mockk<FindRecipeType>()
 
-                val response = executeRequest(getRecipeTypeMock, pathParam)
-
-                with(response) {
-                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body.asString().shouldContain(messageToContain)
+                withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+                    with(handleRequest(HttpMethod.Get, "/api/recipetype/$pathParam")) {
+                        response.status().shouldBe(HttpStatusCode.BadRequest)
+                        verify(exactly = 0) { getRecipeTypeMock(any()) }
+                    }
                 }
-                verify(exactly = 0) { getRecipeTypeMock(any()) }
             }
         }
     }

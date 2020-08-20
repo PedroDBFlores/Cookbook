@@ -71,7 +71,7 @@ internal class UserRepositoryImplTest : DescribeSpec({
                     createUser(userPassword = "PASSWORD", hashingService = basicHashingService)
                 val repo = UserRepositoryImpl(database = database, hashingService = mockk())
 
-                val user = repo.find(userName = expectedUser.username)
+                val user = repo.find(userName = expectedUser.userName)
 
                 user.shouldNotBeNull()
                 user.shouldBe(expectedUser.copy(passwordHash = "PASSWORDHASH", roles = listOf(RoleCodes.USER)))

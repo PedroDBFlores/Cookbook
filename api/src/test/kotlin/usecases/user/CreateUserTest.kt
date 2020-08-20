@@ -32,7 +32,7 @@ internal class CreateUserTest : DescribeSpec({
         ).forEach { (user, description) ->
             it("throws 'UserAlreadyExists' when $description") {
                 val userRepository = mockk<UserRepository> {
-                    every { find(user.username) } returns user
+                    every { find(user.userName) } returns user
                 }
 
                 val createUser = CreateUser(userRepository = userRepository)

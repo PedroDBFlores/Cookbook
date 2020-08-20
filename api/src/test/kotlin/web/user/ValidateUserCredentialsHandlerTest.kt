@@ -2,22 +2,19 @@ package web.user
 
 import errors.PasswordMismatchError
 import errors.UserNotFound
-import io.javalin.Javalin
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.routing.*
+import io.ktor.server.testing.*
+import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.restassured.RestAssured
-import io.restassured.http.ContentType
-import io.restassured.module.kotlin.extensions.Extract
-import io.restassured.module.kotlin.extensions.Given
-import io.restassured.module.kotlin.extensions.When
-import io.restassured.response.Response
 import model.Credentials
-import org.eclipse.jetty.http.HttpStatus
+import server.modules.contentNegotiationModule
 import usecases.user.ValidateUserCredentials
 import utils.convertToJSON
 
@@ -25,29 +22,10 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
     val credentials = Credentials(username = "username", password = "password")
     val jsonBody = convertToJSON(credentials)
 
-    beforeSpec {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 9000
-    }
-
-    fun executeRequest(
-        validateUserCredentials: ValidateUserCredentials,
-        jsonBody: String
-    ): Response {
-        val app = Javalin.create().post("/api/user/validate", ValidateUserCredentialsHandler(validateUserCredentials))
-            .start(9000)
-
-        try {
-            return Given {
-                contentType(ContentType.JSON)
-                body(jsonBody)
-            } When {
-                post("api/user/validate")
-            } Extract {
-                response()
-            }
-        } finally {
-            app.stop()
+    fun createTestServer(validateUserCredentials: ValidateUserCredentials): Application.() -> Unit = {
+        contentNegotiationModule()
+        routing {
+            post("/api/user/validate") { ValidateUserCredentialsHandler(validateUserCredentials).handle(call) }
         }
     }
 
@@ -64,37 +42,47 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
                 } returns "A_VALID_TOKEN"
             }
 
-            val response = executeRequest(
-                validateUserCredentials = validateUserCredentials,
-                jsonBody = jsonBody
-            )
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.OK_200)
-                body.asString().shouldBe("A_VALID_TOKEN")
-            }
-            verify(exactly = 1) {
-                validateUserCredentials.invoke(
-                    Credentials(
-                        username = credentials.username,
-                        password = credentials.password
-                    )
-                )
+            withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
+                with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                    setBody(jsonBody)
+                    addHeader("Content-Type", "application/json")
+                })
+                {
+                    response.status().shouldBe(HttpStatusCode.OK)
+                    response.content.shouldBe("A_VALID_TOKEN")
+                    verify(exactly = 1) {
+                        validateUserCredentials.invoke(
+                            Credentials(
+                                username = credentials.username,
+                                password = credentials.password
+                            )
+                        )
+                    }
+                }
             }
         }
 
-        it("returns 404 if the user is not found") {
+        it("returns 403 if the user is not found") {
             val validateUserCredentials = mockk<ValidateUserCredentials> {
                 every { this@mockk(any()) } throws UserNotFound()
             }
 
-            val response = executeRequest(
-                validateUserCredentials = validateUserCredentials,
-                jsonBody = jsonBody
-            )
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.NOT_FOUND_404)
+            withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
+                with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                    setBody(jsonBody)
+                    addHeader("Content-Type", "application/json")
+                })
+                {
+                    response.status().shouldBe(HttpStatusCode.Forbidden)
+                    verify(exactly = 1) {
+                        validateUserCredentials.invoke(
+                            Credentials(
+                                username = credentials.username,
+                                password = credentials.password
+                            )
+                        )
+                    }
+                }
             }
         }
 
@@ -103,13 +91,22 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
                 every { this@mockk(any()) } throws PasswordMismatchError()
             }
 
-            val response = executeRequest(
-                validateUserCredentials = validateUserCredentials,
-                jsonBody = jsonBody
-            )
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.UNAUTHORIZED_401)
+            withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
+                with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                    setBody(jsonBody)
+                    addHeader("Content-Type", "application/json")
+                })
+                {
+                    response.status().shouldBe(HttpStatusCode.Unauthorized)
+                    verify(exactly = 1) {
+                        validateUserCredentials.invoke(
+                            Credentials(
+                                username = credentials.username,
+                                password = credentials.password
+                            )
+                        )
+                    }
+                }
             }
         }
 
@@ -126,14 +123,15 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
             it("returns 400 $description") {
                 val validateUserCredentials = mockk<ValidateUserCredentials>(relaxed = true)
 
-                val response = executeRequest(
-                    validateUserCredentials = validateUserCredentials,
-                    jsonBody = jsonBody
-                )
-
-                with(response) {
-                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body.asString().shouldContain("Couldn't deserialize body")
+                withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
+                    with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    })
+                    {
+                        response.status().shouldBe(HttpStatusCode.BadRequest)
+                        verify { validateUserCredentials wasNot called }
+                    }
                 }
             }
         }

@@ -7,13 +7,13 @@ import errors.ValidationError
 data class User(
     val id: Int,
     val name: String,
-    val username: String,
+    val userName: String,
     @JsonIgnore val passwordHash: String = "",
     @JsonProperty("roles", required = false, defaultValue = "[]") val roles: List<String>? = emptyList()
 ) {
     init {
         check(id >= 0) { throw ValidationError("id") }
         check(name.isNotEmpty()) { throw ValidationError("name") }
-        check(username.isNotEmpty()) { throw ValidationError("username") }
+        check(userName.isNotEmpty()) { throw ValidationError("username") }
     }
 }

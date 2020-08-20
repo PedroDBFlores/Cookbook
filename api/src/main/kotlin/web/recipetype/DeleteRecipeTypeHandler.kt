@@ -1,40 +1,24 @@
 package web.recipetype
 
 import errors.RecipeTypeNotFound
-import io.javalin.http.Context
-import io.javalin.http.Handler
-import io.javalin.plugin.openapi.annotations.HttpMethod
-import io.javalin.plugin.openapi.annotations.OpenApi
-import io.javalin.plugin.openapi.annotations.OpenApiParam
-import io.javalin.plugin.openapi.annotations.OpenApiResponse
-import org.eclipse.jetty.http.HttpStatus
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.response.*
+import ports.KtorHandler
 import usecases.recipetype.DeleteRecipeType
 
-class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecipeType) : Handler {
-
-    @OpenApi(
-        summary = "Delete recipe type",
-        description = "Deletes a recipe type by id",
-        operationId = "DeleteRecipeType",
-        method = HttpMethod.DELETE,
-        pathParams = [OpenApiParam(name = "id", type = Int::class, description = "Recipe type id")],
-        responses = [OpenApiResponse(
-            status = "204"
-        ), OpenApiResponse(
-            status = "404",
-            description = "When the recipe type to delete wasn't found"
-        )],
-        tags = ["RecipeType"]
-    )
-    override fun handle(ctx: Context) {
+class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecipeType) : KtorHandler {
+    override suspend fun handle(call: ApplicationCall) {
         try {
-            val recipeTypeId = ctx.pathParam("id", Int::class.java)
-                .check({ id -> id > 0 }, "Path param 'id' must be bigger than 0")
-                .get()
+            val recipeTypeId = call.parameters["id"]?.toIntOrNull()
+                ?: throw BadRequestException("Path param 'id' must be bigger than 0")
+            require(recipeTypeId > 0) { throw BadRequestException("Path param 'id' must be bigger than 0")}
+
             deleteRecipeType(DeleteRecipeType.Parameters(recipeTypeId))
-            ctx.status(HttpStatus.NO_CONTENT_204)
+            call.respond(HttpStatusCode.NoContent)
         } catch (ex: RecipeTypeNotFound) {
-            ctx.status(HttpStatus.NOT_FOUND_404)
+            call.respond(HttpStatusCode.NotFound)
         }
     }
 }

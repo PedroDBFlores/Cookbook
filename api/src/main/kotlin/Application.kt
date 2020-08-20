@@ -1,12 +1,9 @@
-import config.Modules
-import web.CookbookApi
+import com.sksamuel.hoplite.ConfigLoader
+import config.ConfigurationFile
+import server.CookbookApi
 
 fun main() {
-    with(Modules.cookbookApiDependencies) {
-        CookbookApi(
-            config = configurationFile,
-            javalinPlugins = plugins,
-            router = router
-        ).start()
-    }
+    val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
+    CookbookApi(config = configuration)
 }
+

@@ -1,44 +1,21 @@
 package web.recipetype
 
 import errors.RecipeTypeNotFound
-import io.javalin.Javalin
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.routing.*
+import io.ktor.server.testing.*
 import io.mockk.*
-import io.restassured.RestAssured
-import io.restassured.module.kotlin.extensions.Extract
-import io.restassured.module.kotlin.extensions.Given
-import io.restassured.module.kotlin.extensions.When
-import io.restassured.response.Response
-import org.eclipse.jetty.http.HttpStatus
 import usecases.recipetype.DeleteRecipeType
 
 internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
-
-    beforeSpec {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 9000
-    }
-
-    fun executeRequest(
-        deleteRecipeType: DeleteRecipeType,
-        recipeTypeIdParam: String
-    ): Response {
-        val app = Javalin.create().delete("/api/recipetype/:id", DeleteRecipeTypeHandler(deleteRecipeType))
-            .start(9000)
-
-        try {
-            return Given {
-                pathParam("id", recipeTypeIdParam)
-            } When {
-                delete("/api/recipetype/{id}")
-            } Extract {
-                response()
-            }
-        } finally {
-            app.stop()
+    fun createTestServer(deleteRecipeType: DeleteRecipeType): Application.() -> Unit = {
+        routing {
+            delete("/api/recipetype/{id}") { DeleteRecipeTypeHandler(deleteRecipeType).handle(call) }
         }
     }
 
@@ -48,11 +25,11 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
                 every { this@mockk(any()) } just runs
             }
 
-            val response = executeRequest(deleteRecipeTypeMock, "1")
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.NO_CONTENT_204)
-                verify(exactly = 1) { deleteRecipeTypeMock(DeleteRecipeType.Parameters(1)) }
+            withTestApplication(moduleFunction = createTestServer(deleteRecipeTypeMock)) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipetype/1")) {
+                    response.status().shouldBe(HttpStatusCode.NoContent)
+                    verify(exactly = 1) { deleteRecipeTypeMock(DeleteRecipeType.Parameters(1)) }
+                }
             }
         }
 
@@ -61,33 +38,33 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
                 every { this@mockk(any()) } throws RecipeTypeNotFound(9999)
             }
 
-            val response = executeRequest(deleteRecipeTypeMock, "9999")
-
-            response.statusCode.shouldBe(HttpStatus.NOT_FOUND_404)
+            withTestApplication(moduleFunction = createTestServer(deleteRecipeTypeMock)) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipetype/9999")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
+                    verify(exactly = 1) { deleteRecipeTypeMock(DeleteRecipeType.Parameters(9999)) }
+                }
+            }
         }
 
         arrayOf(
             row(
                 "massa",
-                "a non-number is provided",
-                "Path parameter 'id' with value"
+                "a non-number is provided"
             ),
             row(
                 "-99",
                 "an invalid id is provided",
-                "Path param 'id' must be bigger than 0"
             )
-        ).forEach { (pathParam, description, messageToContain) ->
+        ).forEach { (pathParam, description) ->
             it("should return 400 if $description") {
                 val deleteRecipeTypeMock = mockk<DeleteRecipeType>()
 
-                val response = executeRequest(deleteRecipeTypeMock, pathParam)
-
-                with(response) {
-                    statusCode.shouldBe(HttpStatus.BAD_REQUEST_400)
-                    body.asString().shouldContain(messageToContain)
+                withTestApplication(moduleFunction = createTestServer(deleteRecipeTypeMock)) {
+                    with(handleRequest(HttpMethod.Delete, "/api/recipetype/$pathParam")) {
+                        response.status().shouldBe(HttpStatusCode.BadRequest)
+                        verify { deleteRecipeTypeMock wasNot called }
+                    }
                 }
-                verify(exactly = 0) { deleteRecipeTypeMock(any()) }
             }
         }
     }

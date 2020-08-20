@@ -83,7 +83,7 @@ object DatabaseTestHelper {
     fun ResultRow.mapToUser() = User(
         id = this[Users.id].value,
         name = this[Users.name],
-        username = this[Users.userName],
+        userName = this[Users.userName],
         passwordHash = this[Users.passwordHash]
     )
 

@@ -1,66 +1,38 @@
 package web.recipe
 
-import adapters.authentication.JavalinJWTExtensions.subject
-import io.javalin.http.Context
-import io.javalin.http.Handler
-import io.javalin.plugin.openapi.annotations.*
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
 import model.Recipe
-import org.eclipse.jetty.http.HttpStatus
+import ports.KtorHandler
+import server.extensions.validateReceivedBody
 import usecases.recipe.CreateRecipe
-import web.ResponseError
 
-class CreateRecipeHandler(private val createRecipe: CreateRecipe) : Handler {
+class CreateRecipeHandler(private val createRecipe: CreateRecipe) : KtorHandler {
 
-    @OpenApi(
-        description = "Creates a new recipe",
-        method = HttpMethod.POST,
-        headers = [OpenApiParam(
-            name = "Authorization",
-            description = "Bearer token",
-            required = true
-        )],
-        requestBody = OpenApiRequestBody(
-            content = [OpenApiContent(
-                from = CreateRecipeRepresenter::class
-            )],
-            required = true,
-            description = "The required information to create a new recipe"
-        ),
-        responses = [
-            OpenApiResponse(
-                status = "201",
-                description = "A recipe was created successfully, returning it's id",
-                content = [OpenApiContent(from = Int::class)]
-            ),
-            OpenApiResponse(
-                status = "400",
-                description = "When an error occurred parsing the body",
-                content = [OpenApiContent(from = ResponseError::class)]
-            )
-        ],
-        tags = ["Recipe"]
-    )
-    override fun handle(ctx: Context) {
-        val recipe = ctx.bodyValidator<CreateRecipeRepresenter>()
-            .check({ rep -> rep.recipeTypeId > 0 }, "Field 'recipeTypeId' must be bigger than zero")
-            .check({ rep -> rep.name.isNotEmpty() }, "Field 'name' cannot be empty")
-            .check({ rep -> rep.description.isNotEmpty() }, "Field 'description' cannot be empty")
-            .check({ rep -> rep.ingredients.isNotEmpty() }, "Field 'ingredients' cannot be empty")
-            .check({ rep -> rep.preparingSteps.isNotEmpty() }, "Field 'preparingSteps' cannot be empty")
-            .get()
-            .toRecipe(ctx.subject())
+    override suspend fun handle(call: ApplicationCall) {
+        val recipe = call.validateReceivedBody<CreateRecipeRepresenter> { rep ->
+            check(rep.recipeTypeId > 0) { "Field 'recipeTypeId' must be bigger than zero" }
+            check(rep.userId > 0) { "Field 'userId' must be bigger than zero" }
+            check(rep.name.isNotEmpty()) { "Field 'name' cannot be empty" }
+            check(rep.description.isNotEmpty()) { "Field 'description' cannot be empty" }
+            check(rep.ingredients.isNotEmpty()) { "Field 'ingredients' cannot be empty" }
+            check(rep.preparingSteps.isNotEmpty()) { "Field 'preparingSteps' cannot be empty" }
+        }.toRecipe()
+
         val id = createRecipe(recipe)
-        ctx.status(HttpStatus.CREATED_201).json(mapOf("id" to id))
+        call.respond(HttpStatusCode.Created, mapOf("id" to id))
     }
 
     private data class CreateRecipeRepresenter(
         val recipeTypeId: Int,
+        val userId: Int,
         val name: String,
         val description: String,
         val ingredients: String,
         val preparingSteps: String
     ) {
-        fun toRecipe(userId: Int) = Recipe(
+        fun toRecipe() = Recipe(
             recipeTypeId = recipeTypeId,
             userId = userId,
             name = name,

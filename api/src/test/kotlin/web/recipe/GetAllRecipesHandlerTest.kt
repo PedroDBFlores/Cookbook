@@ -1,42 +1,26 @@
 package web.recipe
 
-import io.javalin.Javalin
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.routing.*
+import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.restassured.RestAssured
-import io.restassured.module.kotlin.extensions.Extract
-import io.restassured.module.kotlin.extensions.When
-import io.restassured.response.Response
-import org.eclipse.jetty.http.HttpStatus
+import server.modules.contentNegotiationModule
 import usecases.recipe.GetAllRecipes
 import utils.DTOGenerator
 import utils.convertToJSON
 
 internal class GetAllRecipesHandlerTest : DescribeSpec({
 
-    beforeSpec {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 9000
-    }
-
-    fun executeRequest(
-        getAllRecipes: GetAllRecipes
-    ): Response {
-        val app = Javalin.create().get("/api/recipe", GetAllRecipesHandler(getAllRecipes))
-            .start(9000)
-
-        try {
-            return When {
-                get("/api/recipe")
-            } Extract {
-                response()
-            }
-        } finally {
-            app.stop()
+    fun createTestServer(getAllRecipes: GetAllRecipes): Application.() -> Unit = {
+        contentNegotiationModule()
+        routing {
+            get("/api/recipe") { GetAllRecipesHandler(getAllRecipes).handle(call) }
         }
     }
 
@@ -46,16 +30,16 @@ internal class GetAllRecipesHandlerTest : DescribeSpec({
                 DTOGenerator.generateRecipe(),
                 DTOGenerator.generateRecipe()
             )
-            val getAllRecipesMock = mockk<GetAllRecipes> {
+            val getAllRecipes = mockk<GetAllRecipes> {
                 every { this@mockk() } returns expectedRecipes
             }
 
-            val response = executeRequest(getAllRecipesMock)
-
-            with(response) {
-                statusCode.shouldBe(HttpStatus.OK_200)
-                body.asString().shouldMatchJson(convertToJSON(expectedRecipes))
-                verify(exactly = 1) { getAllRecipesMock() }
+            withTestApplication(moduleFunction = createTestServer(getAllRecipes)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe")) {
+                    response.status().shouldBe(HttpStatusCode.OK)
+                    response.content.shouldMatchJson(convertToJSON(expectedRecipes))
+                    verify(exactly = 1) { getAllRecipes() }
+                }
             }
         }
     }
