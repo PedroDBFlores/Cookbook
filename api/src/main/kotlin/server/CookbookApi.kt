@@ -3,9 +3,11 @@ package server
 import config.ConfigurationFile
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import server.modules.contentNegotiationModule
-import server.modules.dependencyInjectionModule
-import server.modules.routingModule
+import model.User
+import org.kodein.di.instance
+import org.kodein.di.ktor.di
+import ports.JWTManager
+import server.modules.*
 
 /**
  * Defines the Cookbook API
@@ -16,6 +18,10 @@ class CookbookApi(
     private val server = embeddedServer(Netty, configuration.api.port) {
         contentNegotiationModule()
         dependencyInjectionModule(configuration)
+
+        val userJWTManager by di().instance<JWTManager<User>>("userJWTManager")
+        val adminJWTManager by di().instance<JWTManager<User>>("adminJWTManager")
+        jwtModule(userJwtManager = userJWTManager, adminJWTManager = adminJWTManager)
         routingModule()
     }
 
@@ -24,6 +30,6 @@ class CookbookApi(
     }
 
     override fun close() {
-        server.stop(5000,5500)
+        server.stop(5000, 5500)
     }
 }

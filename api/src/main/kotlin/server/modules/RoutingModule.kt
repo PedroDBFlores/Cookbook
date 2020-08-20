@@ -1,6 +1,7 @@
 package server.modules
 
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.routing.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.di

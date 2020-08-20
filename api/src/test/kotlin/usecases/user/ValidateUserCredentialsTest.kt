@@ -27,13 +27,13 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
                 every { hash("PASSWORD") } returns "PASSWORDHASH"
                 every { verify("PASSWORDHASH", user.passwordHash) } returns true
             }
-            val jwtProvider = mockk<JWTManager<User>> {
+            val jwtManager = mockk<JWTManager<User>> {
                 every { generateToken(user) } returns "JWT_TOKEN"
             }
             val userHasValidCredentials = ValidateUserCredentials(
                 userRepository = userRepository,
                 hashingService = hashingService,
-                jwtManager = jwtProvider
+                jwtManager = jwtManager
             )
 
             val jwtToken = userHasValidCredentials(Credentials(user.userName, "PASSWORD"))
@@ -43,7 +43,7 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
                 userRepository.find(user.userName)
                 hashingService.hash("PASSWORD")
                 hashingService.verify("PASSWORDHASH", user.passwordHash)
-                jwtProvider.generateToken(user)
+                jwtManager.generateToken(user)
             }
         }
 
