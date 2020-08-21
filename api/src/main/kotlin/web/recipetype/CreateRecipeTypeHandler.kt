@@ -6,22 +6,23 @@ import io.ktor.response.*
 import model.CreateResult
 import model.RecipeType
 import ports.KtorHandler
-import server.extensions.validateReceivedBody
+import server.extensions.receiveOrThrow
 import usecases.recipetype.CreateRecipeType
 
-class CreateRecipeTypeHandler(
-    private val createRecipeType: CreateRecipeType
-) : KtorHandler {
+class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : KtorHandler {
 
     override suspend fun handle(call: ApplicationCall) {
-        val recipeType = call.validateReceivedBody<CreateRecipeTypeRepresenter> {
-            check(it.name.isNotEmpty()) { "Field 'name' cannot be empty" }
-        }.toRecipeType()
+        val recipeType = call.receiveOrThrow<CreateRecipeTypeRepresenter>()
+            .toRecipeType()
         val id = createRecipeType(recipeType)
         call.respond(HttpStatusCode.Created, CreateResult(id))
     }
 
     private data class CreateRecipeTypeRepresenter(val name: String) {
+        init {
+            check(name.isNotEmpty()) { "Field 'name' cannot be empty" }
+        }
+
         fun toRecipeType() = RecipeType(id = 0, name = name)
     }
 }

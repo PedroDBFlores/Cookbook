@@ -11,9 +11,11 @@ import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.CreateResult
 import server.modules.contentNegotiationModule
 import usecases.recipe.CreateRecipe
 import utils.DTOGenerator
+import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.removePropertiesFromJson
 import utils.JsonHelpers.toJson
 
@@ -40,9 +42,8 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                     addHeader("Content-Type", "application/json")
                 })
                 {
-                    println(request.headers["Content-Type"])
                     response.status().shouldBe(HttpStatusCode.Created)
-                    response.content.shouldMatchJson("""{"id":1}""")
+                    response.content.shouldMatchJson(CreateResult(1).toJson())
                     verify(exactly = 1) { createRecipe(expectedRecipe) }
                 }
             }
@@ -53,7 +54,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
 
             withTestApplication(moduleFunction = createTestServer(createRecipeMock)) {
                 with(handleRequest(HttpMethod.Post, "/recipe") {
-                    setBody("""{"non":"conformant"}""")
+                    setBody(createJSONObject("non" to "conformant"))
                     addHeader("Content-Type", "application/json")
                 })
                 {

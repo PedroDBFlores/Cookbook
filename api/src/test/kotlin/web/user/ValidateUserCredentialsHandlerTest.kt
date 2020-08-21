@@ -16,6 +16,7 @@ import io.mockk.verify
 import model.Credentials
 import server.modules.contentNegotiationModule
 import usecases.user.ValidateUserCredentials
+import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
 internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
@@ -112,11 +113,11 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
 
         arrayOf(
             row(
-                "",
+                createJSONObject(),
                 "when there is no body"
             ),
             row(
-                """{"non":"conformant"}""",
+                createJSONObject("non" to "conformant"),
                 "an invalid body is provided"
             )
         ).forEach { (jsonBody, description) ->

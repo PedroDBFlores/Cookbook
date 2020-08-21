@@ -6,20 +6,23 @@ import io.ktor.response.*
 import model.RecipeType
 import ports.KtorHandler
 import usecases.recipetype.UpdateRecipeType
-import server.extensions.validateReceivedBody
+import server.extensions.receiveOrThrow
 
 class UpdateRecipeTypeHandler(private val updateRecipeType: UpdateRecipeType) : KtorHandler {
 
     override suspend fun handle(call: ApplicationCall) {
-        val recipeType = call.validateReceivedBody<UpdateRecipeTypeRepresenter> {
-            check(it.id > 0) { "Field 'id' must be bigger than 0" }
-        }
+        val recipeType = call.receiveOrThrow<UpdateRecipeTypeRepresenter>()
             .toRecipeType()
         updateRecipeType(recipeType)
         call.respond(HttpStatusCode.OK)
     }
 
     data class UpdateRecipeTypeRepresenter(val id: Int, val name: String) {
+        init {
+            check(id > 0) { "Field 'id' must be bigger than 0" }
+            check(name.isNotEmpty()) { "Field 'name' must not be empty" }
+        }
+
         fun toRecipeType() = RecipeType(id = id, name = name)
     }
 

@@ -5,13 +5,13 @@ import io.ktor.http.*
 import io.ktor.response.*
 import model.Recipe
 import ports.KtorHandler
-import server.extensions.validateReceivedBody
+import server.extensions.receiveOrThrow
 import usecases.recipe.CreateRecipe
 
 class CreateRecipeHandler(private val createRecipe: CreateRecipe) : KtorHandler {
 
     override suspend fun handle(call: ApplicationCall) {
-        val recipe = call.validateReceivedBody<CreateRecipeRepresenter> { rep ->
+        val recipe = call.receiveOrThrow<CreateRecipeRepresenter> { rep ->
             check(rep.recipeTypeId > 0) { "Field 'recipeTypeId' must be bigger than zero" }
             check(rep.userId > 0) { "Field 'userId' must be bigger than zero" }
             check(rep.name.isNotEmpty()) { "Field 'name' cannot be empty" }

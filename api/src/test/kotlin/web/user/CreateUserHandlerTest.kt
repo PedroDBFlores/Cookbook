@@ -31,11 +31,9 @@ internal class CreateUserHandlerTest : DescribeSpec({
         it("returns 201 on a successful creation") {
             val expectedUser = DTOGenerator.generateUser()
             val jsonBody = createJSONObject(
-                mapOf(
-                    "name" to expectedUser.name,
-                    "userName" to expectedUser.userName,
-                    "password" to "password"
-                )
+                "name" to expectedUser.name,
+                "userName" to expectedUser.userName,
+                "password" to "password"
             )
 
             val createUser = mockk<CreateUser> {

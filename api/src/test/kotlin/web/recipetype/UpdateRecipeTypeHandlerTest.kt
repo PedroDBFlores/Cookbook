@@ -11,6 +11,7 @@ import io.mockk.*
 import server.modules.contentNegotiationModule
 import usecases.recipetype.UpdateRecipeType
 import utils.DTOGenerator
+import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
 internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
@@ -43,12 +44,16 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
         arrayOf(
             row(
-                """{"non":"conformant"}""",
+                createJSONObject("non" to "conformant"),
                 "the provided body doesn't match the required JSON"
             ),
             row(
-                """{"id":-1, "name":""}""",
+                createJSONObject("id" to -1, "name" to "name"),
                 "the id is invalid"
+            ),
+            row(
+                createJSONObject("id" to 1, "name" to ""),
+                "the name is invalid"
             )
         ).forEach { (jsonBody, description) ->
             it("returns 400 when $description") {

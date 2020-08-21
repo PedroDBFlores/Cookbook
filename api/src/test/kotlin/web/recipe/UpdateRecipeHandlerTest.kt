@@ -11,10 +11,12 @@ import io.mockk.*
 import server.modules.contentNegotiationModule
 import usecases.recipe.UpdateRecipe
 import utils.DTOGenerator
+import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
 
 internal class UpdateRecipeHandlerTest : DescribeSpec({
+    val basicRecipe = DTOGenerator.generateRecipe()
 
     fun createTestServer(updateRecipe: UpdateRecipe): Application.() -> Unit = {
         contentNegotiationModule()
@@ -25,35 +27,54 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
 
     describe("Update recipe handler") {
         it("updates a recipe type returning 200") {
-            val recipeToUpdate = DTOGenerator.generateRecipe()
             val updateRecipe = mockk<UpdateRecipe> {
-                every { this@mockk(any()) } just runs
+                every { this@mockk(basicRecipe) } just runs
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
                 with(handleRequest(HttpMethod.Put, "/recipe") {
-                    setBody(recipeToUpdate.toJson())
+                    setBody(basicRecipe.toJson())
                     addHeader("Content-Type", "application/json")
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipe(recipeToUpdate) }
+                    verify(exactly = 1) { updateRecipe(basicRecipe) }
                 }
             }
         }
 
         arrayOf(
             row(
-                """{"non":"conformant"}""",
+                createJSONObject("non" to "conformant"),
                 "the provided body doesn't match the required JSON"
             ),
             row(
-                DTOGenerator.generateRecipe(id = 0).toJson(),
+                basicRecipe.copy(id = 0).toJson(),
                 "when the id property is invalid"
             ),
             row(
-                DTOGenerator.generateRecipe(recipeTypeId = 0).toJson(),
+                basicRecipe.copy(recipeTypeId = 0).toJson(),
                 "when the recipeTypeId property is invalid"
+            ),
+            row(
+                basicRecipe.copy(userId = 0).toJson(),
+                "when the userId property is invalid"
+            ),
+            row(
+                basicRecipe.copy(name = "").toJson(),
+                "when the name property is invalid"
+            ),
+            row(
+                basicRecipe.copy(description = "").toJson(),
+                "when the description property is invalid"
+            ),
+            row(
+                basicRecipe.copy(ingredients = "").toJson(),
+                "when the ingredients property is invalid"
+            ),
+            row(
+                basicRecipe.copy(preparingSteps = "").toJson(),
+                "when the preparingSteps property is invalid"
             )
         ).forEach { (jsonBody, description) ->
             it("returns 400 when $description") {

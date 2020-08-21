@@ -54,6 +54,8 @@ object JsonHelpers {
         return objectNode.toString()
     }
 
+    fun createJSONObject(vararg properties: Pair<String, Any>) = createJSONObject(mapOf(*properties))
+
     //Extension methods
     fun Any.toJson() = convertToJSON(this)
     fun String.addPropertiesToJSON(properties: Map<String, Any>) = addJSONProperties(this, properties)

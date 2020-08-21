@@ -15,6 +15,7 @@ import model.CreateResult
 import server.modules.contentNegotiationModule
 import usecases.recipetype.CreateRecipeType
 import utils.DTOGenerator
+import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.removePropertiesFromJson
 import utils.JsonHelpers.toJson
 
@@ -53,7 +54,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
             withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
                 with(handleRequest(HttpMethod.Post, "/recipetype") {
-                    setBody("""{"non":"conformant"}""")
+                    setBody(createJSONObject("non" to "conformant"))
                     addHeader("Content-Type", "application/json")
 
                 }) {

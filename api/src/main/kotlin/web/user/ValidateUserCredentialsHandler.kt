@@ -5,17 +5,16 @@ import errors.UserNotFound
 import errors.ValidationError
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import model.Credentials
 import ports.KtorHandler
-import server.extensions.validateReceivedBody
+import server.extensions.receiveOrThrow
 import usecases.user.ValidateUserCredentials
 
 class ValidateUserCredentialsHandler(private val validateUserCredentials: ValidateUserCredentials) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
         try {
-            val credentialsRepresenter = call.validateReceivedBody<CredentialsRepresenter>()
+            val credentialsRepresenter = call.receiveOrThrow<CredentialsRepresenter>()
 
             val token = validateUserCredentials.invoke(credentialsRepresenter.toCredentials())
             call.respond(HttpStatusCode.OK, token)
@@ -25,16 +24,16 @@ class ValidateUserCredentialsHandler(private val validateUserCredentials: Valida
             call.respond(HttpStatusCode.Unauthorized)
         }
     }
-}
 
-private data class CredentialsRepresenter(
-    val username: String,
-    val password: String
-) {
-    init {
-        check(username.isNotEmpty()) { throw ValidationError("username") }
-        check(password.isNotEmpty()) { throw ValidationError("password") }
+    private data class CredentialsRepresenter(
+        val username: String,
+        val password: String
+    ) {
+        init {
+            check(username.isNotEmpty()) { throw ValidationError("username") }
+            check(password.isNotEmpty()) { throw ValidationError("password") }
+        }
+
+        fun toCredentials() = Credentials(username = username, password = password)
     }
-
-    fun toCredentials() = Credentials(username = username, password = password)
 }
