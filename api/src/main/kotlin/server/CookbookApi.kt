@@ -23,6 +23,8 @@ class CookbookApi(
         val adminJWTManager by di().instance<JWTManager<User>>("adminJWTManager")
         jwtModule(userJwtManager = userJWTManager, adminJWTManager = adminJWTManager)
         routingModule()
+
+        defaultHeadersModule()
     }
 
     init {

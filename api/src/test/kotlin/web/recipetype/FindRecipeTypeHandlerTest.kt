@@ -15,14 +15,14 @@ import io.mockk.verify
 import server.modules.contentNegotiationModule
 import usecases.recipetype.FindRecipeType
 import utils.DTOGenerator.generateRecipeType
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
 
 internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
     fun createTestServer(findRecipeType: FindRecipeType): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            get("/api/recipetype/{id}") { FindRecipeTypeHandler(findRecipeType).handle(call) }
+            get("/recipetype/{id}") { FindRecipeTypeHandler(findRecipeType).handle(call) }
         }
     }
 
@@ -34,9 +34,9 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeType.id}")) {
+                with(handleRequest(HttpMethod.Get, "/recipetype/${expectedRecipeType.id}")) {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    response.content.shouldMatchJson(convertToJSON(expectedRecipeType))
+                    response.content.shouldMatchJson(expectedRecipeType.toJson())
                     verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
                 }
             }
@@ -48,7 +48,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype/9999")) {
+                with(handleRequest(HttpMethod.Get, "/recipetype/9999")) {
                     response.status().shouldBe(HttpStatusCode.NotFound)
                     verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(9999)) }
                 }
@@ -69,7 +69,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
                 val getRecipeTypeMock = mockk<FindRecipeType>()
 
                 withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                    with(handleRequest(HttpMethod.Get, "/api/recipetype/$pathParam")) {
+                    with(handleRequest(HttpMethod.Get, "/recipetype/$pathParam")) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify(exactly = 0) { getRecipeTypeMock(any()) }
                     }

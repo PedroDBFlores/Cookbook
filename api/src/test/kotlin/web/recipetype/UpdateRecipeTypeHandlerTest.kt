@@ -3,7 +3,6 @@ package web.recipetype
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -12,14 +11,14 @@ import io.mockk.*
 import server.modules.contentNegotiationModule
 import usecases.recipetype.UpdateRecipeType
 import utils.DTOGenerator
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
 
 internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
     fun createTestServer(updateRecipeType: UpdateRecipeType): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            put("/api/recipetype") { UpdateRecipeTypeHandler(updateRecipeType).handle(call) }
+            put("/recipetype") { UpdateRecipeTypeHandler(updateRecipeType).handle(call) }
         }
     }
 
@@ -31,8 +30,8 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Put, "/api/recipetype") {
-                    setBody(convertToJSON(recipeTypeToUpdate))
+                with(handleRequest(HttpMethod.Put, "/recipetype") {
+                    setBody(recipeTypeToUpdate.toJson())
                     addHeader("Content-Type", "application/json")
                 })
                 {
@@ -58,7 +57,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 }
 
                 withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
-                    with(handleRequest(HttpMethod.Put, "/api/recipetype") {
+                    with(handleRequest(HttpMethod.Put, "/recipetype") {
                         setBody(jsonBody)
                         addHeader("Content-Type", "application/json")
                     })

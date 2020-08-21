@@ -15,7 +15,7 @@ import usecases.recipetype.DeleteRecipeType
 internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
     fun createTestServer(deleteRecipeType: DeleteRecipeType): Application.() -> Unit = {
         routing {
-            delete("/api/recipetype/{id}") { DeleteRecipeTypeHandler(deleteRecipeType).handle(call) }
+            delete("/recipetype/{id}") { DeleteRecipeTypeHandler(deleteRecipeType).handle(call) }
         }
     }
 
@@ -26,7 +26,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(deleteRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Delete, "/api/recipetype/1")) {
+                with(handleRequest(HttpMethod.Delete, "/recipetype/1")) {
                     response.status().shouldBe(HttpStatusCode.NoContent)
                     verify(exactly = 1) { deleteRecipeTypeMock(DeleteRecipeType.Parameters(1)) }
                 }
@@ -39,7 +39,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(deleteRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Delete, "/api/recipetype/9999")) {
+                with(handleRequest(HttpMethod.Delete, "/recipetype/9999")) {
                     response.status().shouldBe(HttpStatusCode.NotFound)
                     verify(exactly = 1) { deleteRecipeTypeMock(DeleteRecipeType.Parameters(9999)) }
                 }
@@ -60,7 +60,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
                 val deleteRecipeTypeMock = mockk<DeleteRecipeType>()
 
                 withTestApplication(moduleFunction = createTestServer(deleteRecipeTypeMock)) {
-                    with(handleRequest(HttpMethod.Delete, "/api/recipetype/$pathParam")) {
+                    with(handleRequest(HttpMethod.Delete, "/recipetype/$pathParam")) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { deleteRecipeTypeMock wasNot called }
                     }

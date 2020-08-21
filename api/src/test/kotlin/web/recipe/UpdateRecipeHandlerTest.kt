@@ -3,7 +3,6 @@ package web.recipe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -12,14 +11,15 @@ import io.mockk.*
 import server.modules.contentNegotiationModule
 import usecases.recipe.UpdateRecipe
 import utils.DTOGenerator
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
+
 
 internal class UpdateRecipeHandlerTest : DescribeSpec({
 
     fun createTestServer(updateRecipe: UpdateRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            put("/api/recipe") { UpdateRecipeHandler(updateRecipe).handle(call) }
+            put("/recipe") { UpdateRecipeHandler(updateRecipe).handle(call) }
         }
     }
 
@@ -31,8 +31,8 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
-                with(handleRequest(HttpMethod.Put, "/api/recipe") {
-                    setBody(convertToJSON(recipeToUpdate))
+                with(handleRequest(HttpMethod.Put, "/recipe") {
+                    setBody(recipeToUpdate.toJson())
                     addHeader("Content-Type", "application/json")
                 })
                 {
@@ -48,11 +48,11 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                 "the provided body doesn't match the required JSON"
             ),
             row(
-                convertToJSON(DTOGenerator.generateRecipe(id = 0)),
+                DTOGenerator.generateRecipe(id = 0).toJson(),
                 "when the id property is invalid"
             ),
             row(
-                convertToJSON(DTOGenerator.generateRecipe(recipeTypeId = 0)),
+                DTOGenerator.generateRecipe(recipeTypeId = 0).toJson(),
                 "when the recipeTypeId property is invalid"
             )
         ).forEach { (jsonBody, description) ->
@@ -62,7 +62,7 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                 }
 
                 withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
-                    with(handleRequest(HttpMethod.Put, "/api/recipe") {
+                    with(handleRequest(HttpMethod.Put, "/recipe") {
                         setBody(jsonBody)
                         addHeader("Content-Type", "application/json")
                     })

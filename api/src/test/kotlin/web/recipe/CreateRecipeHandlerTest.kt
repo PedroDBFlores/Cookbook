@@ -3,7 +3,6 @@ package web.recipe
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -15,27 +14,28 @@ import io.mockk.verify
 import server.modules.contentNegotiationModule
 import usecases.recipe.CreateRecipe
 import utils.DTOGenerator
-import utils.removeJSONProperties
+import utils.JsonHelpers.removePropertiesFromJson
+import utils.JsonHelpers.toJson
 
 internal class CreateRecipeHandlerTest : DescribeSpec({
 
     fun createTestServer(createRecipe: CreateRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            post("/api/recipe") { CreateRecipeHandler(createRecipe).handle(call) }
+            post("/recipe") { CreateRecipeHandler(createRecipe).handle(call) }
         }
     }
 
     describe("Create recipe type handler") {
         it("creates a recipe returning 201") {
             val expectedRecipe = DTOGenerator.generateRecipe(id = 0, userId = 1)
-            val jsonBody = removeJSONProperties(expectedRecipe, "id")
+            val jsonBody = expectedRecipe.toJson().removePropertiesFromJson("id")
             val createRecipe = mockk<CreateRecipe> {
                 every { this@mockk(any()) } returns 1
             }
-            println(jsonBody)
+
             withTestApplication(moduleFunction = createTestServer(createRecipe)) {
-                with(handleRequest(HttpMethod.Post, "/api/recipe") {
+                with(handleRequest(HttpMethod.Post, "/recipe") {
                     setBody(jsonBody)
                     addHeader("Content-Type", "application/json")
                 })
@@ -52,7 +52,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
             val createRecipeMock = mockk<CreateRecipe>()
 
             withTestApplication(moduleFunction = createTestServer(createRecipeMock)) {
-                with(handleRequest(HttpMethod.Post, "/api/recipe") {
+                with(handleRequest(HttpMethod.Post, "/recipe") {
                     setBody("""{"non":"conformant"}""")
                     addHeader("Content-Type", "application/json")
                 })

@@ -16,16 +16,16 @@ import io.mockk.verify
 import model.Credentials
 import server.modules.contentNegotiationModule
 import usecases.user.ValidateUserCredentials
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
 
 internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
     val credentials = Credentials(username = "username", password = "password")
-    val jsonBody = convertToJSON(credentials)
+    val jsonBody = credentials.toJson()
 
     fun createTestServer(validateUserCredentials: ValidateUserCredentials): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            post("/api/user/validate") { ValidateUserCredentialsHandler(validateUserCredentials).handle(call) }
+            post("/user/validate") { ValidateUserCredentialsHandler(validateUserCredentials).handle(call) }
         }
     }
 
@@ -43,7 +43,7 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
-                with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                with(handleRequest(HttpMethod.Post, "/user/validate") {
                     setBody(jsonBody)
                     addHeader("Content-Type", "application/json")
                 })
@@ -68,7 +68,7 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
-                with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                with(handleRequest(HttpMethod.Post, "/user/validate") {
                     setBody(jsonBody)
                     addHeader("Content-Type", "application/json")
                 })
@@ -92,7 +92,7 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
-                with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                with(handleRequest(HttpMethod.Post, "/user/validate") {
                     setBody(jsonBody)
                     addHeader("Content-Type", "application/json")
                 })
@@ -124,7 +124,7 @@ internal class ValidateUserCredentialsHandlerTest : DescribeSpec({
                 val validateUserCredentials = mockk<ValidateUserCredentials>(relaxed = true)
 
                 withTestApplication(moduleFunction = createTestServer(validateUserCredentials)) {
-                    with(handleRequest(HttpMethod.Post, "/api/user/validate") {
+                    with(handleRequest(HttpMethod.Post, "/user/validate") {
                         setBody(jsonBody)
                         addHeader("Content-Type", "application/json")
                     })

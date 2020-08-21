@@ -13,14 +13,14 @@ import io.mockk.verify
 import server.modules.contentNegotiationModule
 import usecases.recipetype.GetAllRecipeTypes
 import utils.DTOGenerator.generateRecipeType
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
 
 internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
 
     fun createTestServer(getAllRecipeTypes: GetAllRecipeTypes): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            get("/api/recipetype") { GetAllRecipeTypesHandler(getAllRecipeTypes).handle(call) }
+            get("/recipetype") { GetAllRecipeTypesHandler(getAllRecipeTypes).handle(call) }
         }
     }
 
@@ -31,9 +31,9 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
         }
 
         withTestApplication(moduleFunction = createTestServer(getAllRecipeTypesMock)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipetype")) {
+            with(handleRequest(HttpMethod.Get, "/recipetype")) {
                 response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(convertToJSON(expectedRecipeTypes))
+                response.content.shouldMatchJson(expectedRecipeTypes.toJson())
                 verify(exactly = 1) { getAllRecipeTypesMock() }
             }
         }

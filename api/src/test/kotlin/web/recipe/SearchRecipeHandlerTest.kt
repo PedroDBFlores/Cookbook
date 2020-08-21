@@ -15,14 +15,15 @@ import model.parameters.SearchRecipeParameters
 import server.modules.contentNegotiationModule
 import usecases.recipe.SearchRecipe
 import utils.DTOGenerator
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
+
 
 internal class SearchRecipeHandlerTest : DescribeSpec({
 
     fun createTestServer(searchRecipe: SearchRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            post("/api/recipe/search") { SearchRecipeHandler(searchRecipe).handle(call) }
+            post("/recipe/search") { SearchRecipeHandler(searchRecipe).handle(call) }
         }
     }
 
@@ -42,13 +43,13 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
-                with(handleRequest(HttpMethod.Post, "/api/recipe/search") {
-                    setBody(convertToJSON(searchParameters))
+                with(handleRequest(HttpMethod.Post, "/recipe/search") {
+                    setBody(searchParameters.toJson())
                     addHeader("Content-Type", "application/json")
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    response.content.shouldMatchJson(convertToJSON(expectedSearchResult))
+                    response.content.shouldMatchJson(expectedSearchResult.toJson())
                     verify(exactly = 1) { searchRecipe(searchParameters = searchParameters) }
                 }
             }

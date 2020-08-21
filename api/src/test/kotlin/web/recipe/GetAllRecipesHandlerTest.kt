@@ -13,14 +13,14 @@ import io.mockk.verify
 import server.modules.contentNegotiationModule
 import usecases.recipe.GetAllRecipes
 import utils.DTOGenerator
-import utils.convertToJSON
+import utils.JsonHelpers.toJson
 
 internal class GetAllRecipesHandlerTest : DescribeSpec({
 
     fun createTestServer(getAllRecipes: GetAllRecipes): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            get("/api/recipe") { GetAllRecipesHandler(getAllRecipes).handle(call) }
+            get("/recipe") { GetAllRecipesHandler(getAllRecipes).handle(call) }
         }
     }
 
@@ -35,9 +35,9 @@ internal class GetAllRecipesHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(getAllRecipes)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipe")) {
+                with(handleRequest(HttpMethod.Get, "/recipe")) {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    response.content.shouldMatchJson(convertToJSON(expectedRecipes))
+                    response.content.shouldMatchJson(expectedRecipes.toJson())
                     verify(exactly = 1) { getAllRecipes() }
                 }
             }
