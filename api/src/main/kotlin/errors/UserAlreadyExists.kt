@@ -1,5 +1,4 @@
 package errors
 
-import java.lang.Exception
-
-class UserAlreadyExists : Exception()
+class UserAlreadyExists(userName:String)
+    : ResourceAlreadyExists("An user with the username '$userName' already exists")

@@ -1,3 +1,3 @@
 package errors
 
-class RecipeTypeNotFound(recipeTypeId: Int) : Exception("Recipetype with id $recipeTypeId not found")
+class RecipeTypeNotFound(recipeTypeId: Int) : Exception("Recipe type with id $recipeTypeId not found")

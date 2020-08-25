@@ -13,9 +13,9 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.User
 import server.modules.contentNegotiationModule
 import usecases.user.FindUser
-import utils.DTOGenerator
 import utils.JsonHelpers.toJson
 
 internal class FindUserHandlerTest : DescribeSpec({
@@ -29,7 +29,7 @@ internal class FindUserHandlerTest : DescribeSpec({
 
     describe("Find user handler") {
         it("returns 200 with the requested user") {
-            val expectedUser = DTOGenerator.generateUser(id = 1)
+            val expectedUser = User(id = 123, name = "name", userName = "username")
             val findUser = mockk<FindUser> {
                 every { this@mockk(FindUser.Parameters(expectedUser.id)) } returns expectedUser
             }

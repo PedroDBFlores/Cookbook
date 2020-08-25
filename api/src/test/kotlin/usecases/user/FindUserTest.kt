@@ -7,13 +7,13 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.User
 import ports.UserRepository
-import utils.DTOGenerator
 
 internal class FindUserTest : DescribeSpec({
     describe("Find user use case") {
         it("returns a user") {
-            val expectedUser = DTOGenerator.generateUser()
+            val expectedUser =  User(id = 1, name = "New user", userName = "NewUserName")
             val userRepository = mockk<UserRepository> {
                 every { find(expectedUser.id) } returns expectedUser
             }

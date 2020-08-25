@@ -55,14 +55,16 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
 
+    implementation("org.flywaydb:flyway-core:6.5.5")
+
     /* Tests */
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion") // for kotest framework
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion") // for kotest json assertions
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion") // for kotest property test
+    testImplementation("io.kotest:kotest-assertions-ktor-jvm:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("com.github.javafaker:javafaker:1.0.2")
     testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
     testImplementation("io.rest-assured:kotlin-extensions:$restAssuredVersion")
 }

@@ -10,11 +10,11 @@ import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import model.SearchResult
-import model.parameters.SearchRecipeParameters
+import model.parameters.SearchRecipeRequestBody
 import server.modules.contentNegotiationModule
 import usecases.recipe.SearchRecipe
-import utils.DTOGenerator
 import utils.JsonHelpers.toJson
 
 
@@ -28,29 +28,41 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
     }
 
     describe("Search recipe handler") {
+        val basicRecipe = Recipe(
+            id = 1,
+            recipeTypeId = 1,
+            recipeTypeName = "Recipe type name",
+            userId = 1,
+            userName = "User name",
+            name = "Recipe Name",
+            description = "Recipe description",
+            ingredients = "Oh so many ingredients",
+            preparingSteps = "This will be so easy..."
+        )
+
         it("searches for recipes") {
             val expectedSearchResult = SearchResult(
                 count = 2,
                 numberOfPages = 1,
                 results = listOf(
-                    DTOGenerator.generateRecipe(),
-                    DTOGenerator.generateRecipe()
+                    basicRecipe,
+                    basicRecipe.copy(id = 2)
                 )
             )
-            val searchParameters = SearchRecipeParameters()
+            val searchRecipeRequestBody = SearchRecipeRequestBody()
             val searchRecipe = mockk<SearchRecipe> {
-                every { this@mockk(searchParameters) } returns expectedSearchResult
+                every { this@mockk(SearchRecipe.Parameters(searchRecipeRequestBody)) } returns expectedSearchResult
             }
 
             withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
                 with(handleRequest(HttpMethod.Post, "/recipe/search") {
-                    setBody(searchParameters.toJson())
+                    setBody(searchRecipeRequestBody.toJson())
                     addHeader("Content-Type", "application/json")
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedSearchResult.toJson())
-                    verify(exactly = 1) { searchRecipe(searchParameters = searchParameters) }
+                    verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(searchRecipeRequestBody)) }
                 }
             }
         }

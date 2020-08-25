@@ -13,13 +13,13 @@ class UpdateRecipeTypeHandler(private val updateRecipeType: UpdateRecipeType) : 
     override suspend fun handle(call: ApplicationCall) {
         val recipeType = call.receiveOrThrow<UpdateRecipeTypeRepresenter>()
             .toRecipeType()
-        updateRecipeType(recipeType)
+        updateRecipeType(UpdateRecipeType.Parameters(recipeType))
         call.respond(HttpStatusCode.OK)
     }
 
     data class UpdateRecipeTypeRepresenter(val id: Int, val name: String) {
         init {
-            check(id > 0) { "Field 'id' must be bigger than 0" }
+            check(id > 0) { "Field 'id' must be bigger than zero" }
             check(name.isNotEmpty()) { "Field 'name' must not be empty" }
         }
 

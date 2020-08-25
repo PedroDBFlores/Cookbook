@@ -1,7 +1,6 @@
 package adapters.database
 
 import adapters.database.schema.RecipeTypes
-import errors.RecipeTypeNotFound
 import model.RecipeType
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -10,6 +9,12 @@ import ports.RecipeTypeRepository
 class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepository {
     override fun find(id: Int): RecipeType? = transaction(database) {
         RecipeTypes.select { RecipeTypes.id eq id }
+            .mapNotNull(::mapToRecipeType)
+            .firstOrNull()
+    }
+
+    override fun find(name: String): RecipeType? = transaction(database) {
+        RecipeTypes.select { RecipeTypes.name eq name }
             .mapNotNull(::mapToRecipeType)
             .firstOrNull()
     }
@@ -29,10 +34,9 @@ class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepos
     }
 
     override fun update(recipeType: RecipeType): Unit = transaction(database) {
-        val affectedRows = RecipeTypes.update({ RecipeTypes.id eq recipeType.id }) { recipeTypeToUpdate ->
+        RecipeTypes.update({ RecipeTypes.id eq recipeType.id }) { recipeTypeToUpdate ->
             recipeTypeToUpdate[name] = recipeType.name
         }
-        check(affectedRows == 1) { throw RecipeTypeNotFound(recipeTypeId = recipeType.id) }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {

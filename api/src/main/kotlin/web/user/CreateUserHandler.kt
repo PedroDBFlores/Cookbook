@@ -11,8 +11,13 @@ import usecases.user.CreateUser
 
 class CreateUserHandler(private val createUser: CreateUser) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
-        val createUserRepresenter = call.receiveOrThrow<CreateUserRepresenter> { }
-        val userId = createUser(createUserRepresenter.toUser(), createUserRepresenter.password)
+        val createUserRepresenter = call.receiveOrThrow<CreateUserRepresenter>()
+        val userId = createUser(
+            CreateUser.Parameters(
+                createUserRepresenter.asUser(),
+                createUserRepresenter.password
+            )
+        )
         call.respond(HttpStatusCode.Created, CreateResult(userId))
     }
 
@@ -21,10 +26,16 @@ class CreateUserHandler(private val createUser: CreateUser) : KtorHandler {
         val userName: String,
         val password: String,
     ) {
-        fun toUser() = User(
+        private val user = User(
             id = 0,
             name = name,
             userName = userName
         )
+
+        init {
+            check(password.isNotEmpty()) { "Field 'password' must not be empty" }
+        }
+
+        fun asUser() = user
     }
 }

@@ -8,9 +8,9 @@ import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
+import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.UpdateRecipeType
-import utils.DTOGenerator
 import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
@@ -25,7 +25,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
     describe("Update recipe type handler") {
         it("updates a recipe type returning 200") {
-            val recipeTypeToUpdate = DTOGenerator.generateRecipeType()
+            val recipeTypeToUpdate = RecipeType(id = 1, name = "Recipe type")
             val updateRecipeTypeMock = mockk<UpdateRecipeType> {
                 every { this@mockk(any()) } just runs
             }
@@ -37,7 +37,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipeTypeMock(recipeTypeToUpdate) }
+                    verify(exactly = 1) { updateRecipeTypeMock(UpdateRecipeType.Parameters(recipeTypeToUpdate)) }
                 }
             }
         }
@@ -48,7 +48,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 "the provided body doesn't match the required JSON"
             ),
             row(
-                createJSONObject("id" to -1, "name" to "name"),
+                createJSONObject("id" to 0, "name" to "name"),
                 "the id is invalid"
             ),
             row(

@@ -4,6 +4,7 @@ import model.RecipeType
 
 interface RecipeTypeRepository {
     fun find(id: Int): RecipeType?
+    fun find(name: String): RecipeType?
     fun getAll(): List<RecipeType>
     fun count(): Long
     fun create(recipeType: RecipeType): Int

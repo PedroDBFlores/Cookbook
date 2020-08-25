@@ -5,10 +5,10 @@ import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import model.*
+import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
 import ports.HashingService
-import utils.DTOGenerator
 
 /**
  * Object that contains common functions that are used throughout the database tests
@@ -26,39 +26,40 @@ object DatabaseTestHelper {
             dataSource.username = username
             dataSource.password = password
         }
+        migrateDB(configuration)
         val db = Database.connect(dataSource)
         db
     }
 
-    fun createRecipeType(): RecipeType {
-        val recipeType = DTOGenerator.generateRecipeType(id = 0)
+    private fun migrateDB(configuration: ConfigurationFile) {
+        with(configuration.database) {
+            val flyway = Flyway.configure()
+                .dataSource(jdbcUrl, username, password)
+                .load()
+
+            flyway.migrate()
+        }
+    }
+
+    fun createRecipeTypeInDatabase(recipeType: RecipeType): RecipeType {
         val repo = RecipeTypeRepositoryImpl(database = database)
         val id = repo.create(recipeType)
         return recipeType.copy(id = id)
     }
 
-    fun createRecipe(recipeTypeId: Int, userId: Int): Recipe {
-        val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId, userId = userId)
-        val repo = RecipeRepositoryImpl(database = database)
-        val id = repo.create(recipe = recipe)
-        return recipe.copy(id = id)
-    }
-
-    fun createRecipe(recipe: Recipe): Recipe {
+    fun createRecipeInDatabase(recipe: Recipe): Recipe {
         val repo = RecipeRepositoryImpl(database = database)
         val id = repo.create(recipe = recipe.copy(id = 0))
         return recipe.copy(id = id)
     }
 
-    fun createUser(userPassword: String, hashingService: HashingService): User {
-        val user = DTOGenerator.generateUser(id = 0)
+    fun createUserInDatabase(user: User, userPassword: String, hashingService: HashingService): User{
         val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
         val id = repo.create(user = user, userPassword = userPassword)
         return user.copy(id = id)
     }
 
-    fun createRole(name: String? = null, code: String? = null): Role {
-        val role = DTOGenerator.generateRole(id = 0, name = name, code = code)
+    fun createRoleInDatabase(role: Role) : Role{
         val repo = RoleRepositoryImpl(database = database)
         val id = repo.create(role = role)
         return role.copy(id = id)

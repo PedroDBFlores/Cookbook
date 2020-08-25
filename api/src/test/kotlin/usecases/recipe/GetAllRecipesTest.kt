@@ -5,15 +5,27 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import ports.RecipeRepository
-import utils.DTOGenerator
 
 internal class GetAllRecipesTest : DescribeSpec({
     describe("Get all recipes use case") {
+        val basicRecipe = Recipe(
+            id = 1,
+            recipeTypeId = 1,
+            recipeTypeName = "Recipe type name",
+            userId = 1,
+            userName = "User name",
+            name = "Recipe Name",
+            description = "Recipe description",
+            ingredients = "Oh so many ingredients",
+            preparingSteps = "This will be so easy..."
+        )
+
         it("gets all the recipes") {
             val expectedRecipes = listOf(
-                DTOGenerator.generateRecipe(),
-                DTOGenerator.generateRecipe()
+                basicRecipe.copy(),
+                basicRecipe.copy(id = 2)
             )
             val recipeRepository = mockk<RecipeRepository> {
                 every { getAll() } returns expectedRecipes

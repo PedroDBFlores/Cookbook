@@ -31,8 +31,6 @@ class RoleRepositoryImpl(private val database: Database) : RoleRepository {
     }
 
     override fun update(role: Role): Unit = transaction(database) {
-        require(find(role.code) != null) { throw RoleNotFound(role.code) }
-
         Roles.update({ Roles.id eq role.id }) { roleToUpdate ->
             roleToUpdate[name] = role.name
             roleToUpdate[code] = role.code

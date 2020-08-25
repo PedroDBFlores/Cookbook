@@ -14,15 +14,11 @@ class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : 
     override suspend fun handle(call: ApplicationCall) {
         val recipeType = call.receiveOrThrow<CreateRecipeTypeRepresenter>()
             .toRecipeType()
-        val id = createRecipeType(recipeType)
+        val id = createRecipeType(CreateRecipeType.Parameters(recipeType))
         call.respond(HttpStatusCode.Created, CreateResult(id))
     }
 
     private data class CreateRecipeTypeRepresenter(val name: String) {
-        init {
-            check(name.isNotEmpty()) { "Field 'name' cannot be empty" }
-        }
-
         fun toRecipeType() = RecipeType(id = 0, name = name)
     }
 }

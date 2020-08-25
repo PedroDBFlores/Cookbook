@@ -16,6 +16,34 @@ fun Application.routingModule() {
         healthCheckRoute()
         recipeTypeRoutes()
         recipeRoutes()
+
+        optionsRoutes()
+    }
+}
+
+fun Routing.optionsRoutes() {
+    //Recipe type
+    options("recipetype") {
+        call.response.header("Allow", "GET,POST,PUT")
+        call.respond(HttpStatusCode.OK)
+    }
+    options("recipetype/{id}") {
+        call.response.header("Allow", "GET,DELETE")
+        call.respond(HttpStatusCode.OK)
+    }
+
+    //Recipe
+    options("recipe") {
+        call.response.header("Allow", "GET,POST,PUT")
+        call.respond(HttpStatusCode.OK)
+    }
+    options("recipe/{id}") {
+        call.response.header("Allow", "GET,DELETE")
+        call.respond(HttpStatusCode.OK)
+    }
+    options("recipe/search") {
+        call.response.header("Allow", "POST")
+        call.respond(HttpStatusCode.OK)
     }
 }
 
@@ -26,7 +54,7 @@ fun Routing.healthCheckRoute() {
 }
 
 fun Routing.recipeTypeRoutes() {
-    route("/recipetype") {
+    route("recipetype") {
         get {
             val useCase by call.di().instance<GetAllRecipeTypes>()
             GetAllRecipeTypesHandler(useCase).handle(call)
@@ -51,7 +79,7 @@ fun Routing.recipeTypeRoutes() {
 }
 
 fun Routing.recipeRoutes() {
-    route("/recipe") {
+    route("recipe") {
         get {
             val useCase by call.di().instance<GetAllRecipes>()
             GetAllRecipesHandler(useCase).handle(call)

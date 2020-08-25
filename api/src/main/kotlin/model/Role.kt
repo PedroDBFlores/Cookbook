@@ -3,10 +3,10 @@ package model
 import errors.ValidationError
 
 data class Role(
-    val id: Int,
+    val id: Int = 0,
     val name: String,
     val code: String,
-    val persistent: Boolean
+    val persistent: Boolean = true
 ) {
     init {
         check(id >= 0) { throw ValidationError("id") }

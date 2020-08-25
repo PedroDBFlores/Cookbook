@@ -1,9 +1,10 @@
 package adapters.database
 
+import adapters.authentication.ApplicationRoles
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
-import errors.PasswordMismatchError
+import errors.WrongCredentials
 import errors.UserNotFound
 import model.User
 import org.jetbrains.exposed.sql.*
@@ -39,20 +40,11 @@ class UserRepositoryImpl(
             .groupBy(Users.id, Users.name, Users.userName, Users.passwordHash, Roles.code)
 
     override fun create(user: User, userPassword: String): Int = transaction(database) {
-        val userId = Users.insertAndGetId { userToCreate ->
+        Users.insertAndGetId { userToCreate ->
             userToCreate[name] = user.name
             userToCreate[userName] = user.userName
             userToCreate[passwordHash] = hashingService.hash(userPassword)
         }.value
-
-        val roleId = Roles.select { Roles.code eq RoleCodes.USER }
-            .first()[Roles.id].value
-        UserRoles.insert { userRole ->
-            userRole[UserRoles.userId] = userId
-            userRole[UserRoles.roleId] = roleId
-        }
-
-        userId
     }
 
     override fun update(user: User, oldPassword: String?, newPassword: String?): Unit = transaction(database) {
@@ -62,7 +54,7 @@ class UserRepositoryImpl(
         val passwordHashToUpdate = newPassword?.let {
             require(oldPassword != null)
             if (!hashingService.verify(oldPassword, currentUser.passwordHash)) {
-                throw PasswordMismatchError()
+                throw WrongCredentials()
             }
 
             hashingService.hash(newPassword)
@@ -84,8 +76,8 @@ class UserRepositoryImpl(
         name = row[Users.name],
         userName = row[Users.userName],
         passwordHash = row[Users.passwordHash],
-        roles = row[Roles.code.groupConcat(";")].run {
+        roles = row.getOrNull(Roles.code.groupConcat(";"))?.run {
             split(";")
-        }
+        } ?: listOf()
     )
 }

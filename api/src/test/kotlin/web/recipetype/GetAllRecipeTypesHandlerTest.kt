@@ -10,9 +10,9 @@ import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.GetAllRecipeTypes
-import utils.DTOGenerator.generateRecipeType
 import utils.JsonHelpers.toJson
 
 internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
@@ -25,16 +25,20 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
     }
 
     describe("Get all recipe types handler") {
-        val expectedRecipeTypes = listOf(generateRecipeType(), generateRecipeType())
-        val getAllRecipeTypesMock = mockk<GetAllRecipeTypes> {
-            every { this@mockk() } returns expectedRecipeTypes
-        }
+        val basicRecipeType = RecipeType(id = 1, name = "Recipe type")
 
-        withTestApplication(moduleFunction = createTestServer(getAllRecipeTypesMock)) {
-            with(handleRequest(HttpMethod.Get, "/recipetype")) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedRecipeTypes.toJson())
-                verify(exactly = 1) { getAllRecipeTypesMock() }
+        it("gets all the recipe types") {
+            val expectedRecipeTypes = listOf(basicRecipeType, basicRecipeType.copy(id = 2))
+            val getAllRecipeTypesMock = mockk<GetAllRecipeTypes> {
+                every { this@mockk() } returns expectedRecipeTypes
+            }
+
+            withTestApplication(moduleFunction = createTestServer(getAllRecipeTypesMock)) {
+                with(handleRequest(HttpMethod.Get, "/recipetype")) {
+                    response.status().shouldBe(HttpStatusCode.OK)
+                    response.content.shouldMatchJson(expectedRecipeTypes.toJson())
+                    verify(exactly = 1) { getAllRecipeTypesMock() }
+                }
             }
         }
     }

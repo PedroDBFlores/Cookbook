@@ -1,6 +1,6 @@
 package usecases.user
 
-import errors.PasswordMismatchError
+import errors.WrongCredentials
 import errors.UserNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -14,56 +14,55 @@ import model.User
 import ports.HashingService
 import ports.JWTManager
 import ports.UserRepository
-import utils.DTOGenerator
 
-internal class ValidateUserCredentialsTest : DescribeSpec({
+internal class LoginUserTest : DescribeSpec({
     describe("Validate user credentials use case") {
+        val basicUser = User(id = 543, name = "Ferry Corsten", userName = "ferry@corsten")
+
         it("validates the user credentials and returns an access token") {
-            val user = DTOGenerator.generateUser()
             val userRepository = mockk<UserRepository> {
-                every { find(user.userName) } returns user
+                every { find(basicUser.userName) } returns basicUser
             }
             val hashingService = mockk<HashingService> {
                 every { hash("PASSWORD") } returns "PASSWORDHASH"
-                every { verify("PASSWORDHASH", user.passwordHash) } returns true
+                every { verify("PASSWORDHASH", basicUser.passwordHash) } returns true
             }
             val jwtManager = mockk<JWTManager<User>> {
-                every { generateToken(user) } returns "JWT_TOKEN"
+                every { generateToken(basicUser) } returns "JWT_TOKEN"
             }
-            val userHasValidCredentials = ValidateUserCredentials(
+            val loginUser = LoginUser(
                 userRepository = userRepository,
                 hashingService = hashingService,
                 jwtManager = jwtManager
             )
 
-            val jwtToken = userHasValidCredentials(Credentials(user.userName, "PASSWORD"))
+            val jwtToken = loginUser(LoginUser.Parameters(Credentials(basicUser.userName, "PASSWORD")))
 
             jwtToken.shouldBe("JWT_TOKEN")
             verify {
-                userRepository.find(user.userName)
+                userRepository.find(basicUser.userName)
                 hashingService.hash("PASSWORD")
-                hashingService.verify("PASSWORDHASH", user.passwordHash)
-                jwtManager.generateToken(user)
+                hashingService.verify("PASSWORDHASH", basicUser.passwordHash)
+                jwtManager.generateToken(basicUser)
             }
         }
 
-        it("should return false if the credentials don't match") {
-            val user = DTOGenerator.generateUser()
+        it("should throw if the credentials don't match") {
             val userRepository = mockk<UserRepository> {
-                every { find(user.userName) } returns user
+                every { find(basicUser.userName) } returns basicUser
             }
             val hashingService = mockk<HashingService>(relaxed = true) {
-                every { verify(any(), user.passwordHash) } returns false
+                every { verify(any(), basicUser.passwordHash) } returns false
             }
-            val userHasValidCredentials = ValidateUserCredentials(
+            val loginUser = LoginUser(
                 userRepository = userRepository,
                 hashingService = hashingService,
                 jwtManager = mockk()
             )
 
-            val act = { userHasValidCredentials(Credentials(user.userName, "PASSWORD")) }
+            val act = { loginUser(LoginUser.Parameters(Credentials(basicUser.userName, "PASSWORD"))) }
 
-            shouldThrow<PasswordMismatchError> { act() }
+            shouldThrow<WrongCredentials> { act() }
         }
 
         it("throws if the user is not found") {
@@ -71,14 +70,14 @@ internal class ValidateUserCredentialsTest : DescribeSpec({
                 every { find(ofType<String>()) } returns null
             }
             val hashingService = mockk<HashingService>(relaxed = true)
-            val userHasValidCredentials =
-                ValidateUserCredentials(
+            val loginUser =
+                LoginUser(
                     userRepository = userRepository,
                     hashingService = hashingService,
                     jwtManager = mockk()
                 )
 
-            val act = { userHasValidCredentials.invoke(Credentials("username", "password")) }
+            val act = { loginUser.invoke(LoginUser.Parameters(Credentials("username", "password"))) }
 
             shouldThrow<UserNotFound> { act() }
             verify { hashingService wasNot called }

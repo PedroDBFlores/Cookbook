@@ -12,8 +12,8 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler 
 
     override suspend fun handle(call: ApplicationCall) {
         val recipe = call.receiveOrThrow<UpdateRecipeRepresenter>()
-            .toRecipe()
-        updateRecipe(recipe)
+            .asRecipe()
+        updateRecipe(UpdateRecipe.Parameters(recipe))
         call.respond(HttpStatusCode.OK)
     }
 
@@ -26,17 +26,7 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler 
         val ingredients: String,
         val preparingSteps: String
     ) {
-        init {
-            check(id > 0) { "Field 'id' must be bigger than zero" }
-            check(recipeTypeId > 0) { "Field 'recipeTypeId' must be bigger than zero" }
-            check(userId > 0) { "Field 'userId' must be bigger than zero" }
-            check(name.isNotEmpty()) { "Field 'name' must not be empty" }
-            check(description.isNotEmpty()) { "Field 'description' must not be empty" }
-            check(ingredients.isNotEmpty()) { "Field 'ingredients' must not be empty" }
-            check(preparingSteps.isNotEmpty()) { "Field 'preparingSteps' must not be empty" }
-        }
-
-        fun toRecipe() = Recipe(
+        private val recipe = Recipe(
             id = id,
             recipeTypeId = recipeTypeId,
             userId = userId,
@@ -45,5 +35,11 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler 
             ingredients = ingredients,
             preparingSteps = preparingSteps
         )
+
+        init {
+            check(id > 0) { "Field 'id' must be bigger than zero" }
+        }
+
+        fun asRecipe() = recipe
     }
 }

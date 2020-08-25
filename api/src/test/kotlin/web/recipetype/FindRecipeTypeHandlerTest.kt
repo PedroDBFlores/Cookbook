@@ -12,9 +12,9 @@ import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.FindRecipeType
-import utils.DTOGenerator.generateRecipeType
 import utils.JsonHelpers.toJson
 
 internal class FindRecipeTypeHandlerTest : DescribeSpec({
@@ -28,7 +28,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
     describe("Find recipe type handler") {
         it("returns a recipe type with status code 200") {
-            val expectedRecipeType = generateRecipeType()
+            val expectedRecipeType = RecipeType(id = 1, name = "Recipe type")
             val getRecipeTypeMock = mockk<FindRecipeType> {
                 every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
             }

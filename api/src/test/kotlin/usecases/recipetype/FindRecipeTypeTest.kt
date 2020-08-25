@@ -7,34 +7,36 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.RecipeType
 import ports.RecipeTypeRepository
-import utils.DTOGenerator
 
 internal class FindRecipeTypeTest : DescribeSpec({
     describe("Find recipe type use case") {
+
         it("Find a recipe type by id") {
-            val expectedRecipeType = DTOGenerator.generateRecipeType()
+            val basicRecipeType = RecipeType(id = 1, name = "Recipe type")
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(expectedRecipeType.id) } returns expectedRecipeType
+                every { find(basicRecipeType.id) } returns basicRecipeType
             }
             val findRecipeType = FindRecipeType(recipeTypeRepository)
 
-            val recipeType = findRecipeType(FindRecipeType.Parameters(expectedRecipeType.id))
+            val recipeType = findRecipeType(FindRecipeType.Parameters(basicRecipeType.id))
 
-            recipeType.shouldBe(expectedRecipeType)
-            verify(exactly = 1) { recipeTypeRepository.find(expectedRecipeType.id) }
+            recipeType.shouldBe(basicRecipeType)
+            verify(exactly = 1) { recipeTypeRepository.find(basicRecipeType.id) }
         }
 
         it("throws if a recipe type is not found") {
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(any()) } returns null
+                every { find(ofType<Int>()) } returns null
             }
             val findRecipeType = FindRecipeType(recipeTypeRepository)
 
             val act = { findRecipeType(FindRecipeType.Parameters(1)) }
 
-            shouldThrow<RecipeTypeNotFound> { act() }
-            verify(exactly = 1) { recipeTypeRepository.find(any()) }
+            val recipeTypeNotFound = shouldThrow<RecipeTypeNotFound> { act() }
+            recipeTypeNotFound.message.shouldBe("Recipe type with id 1 not found")
+            verify(exactly = 1) { recipeTypeRepository.find(ofType<Int>()) }
         }
     }
 })

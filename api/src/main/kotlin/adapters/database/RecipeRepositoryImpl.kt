@@ -1,9 +1,11 @@
 package adapters.database
 
+import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
+import adapters.database.schema.Users
 import model.Recipe
 import model.SearchResult
-import model.parameters.SearchRecipeParameters
+import model.parameters.SearchRecipeRequestBody
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
@@ -12,17 +14,22 @@ import kotlin.math.ceil
 class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
     override fun find(id: Int): Recipe? = transaction(database) {
-        Recipes.select { Recipes.id eq id }
+        (Recipes innerJoin RecipeTypes innerJoin Users)
+            .select {
+                (Recipes.recipeTypeId eq RecipeTypes.id)
+                    .and((Recipes.userId eq Users.id))
+                    .and(Recipes.id eq id)
+            }
             .mapNotNull(::mapToRecipe)
             .firstOrNull()
     }
 
     override fun getAll(): List<Recipe> = transaction(database) {
-        Recipes.selectAll().map(::mapToRecipe)
+        (Recipes innerJoin RecipeTypes innerJoin Users).selectAll().map(::mapToRecipe)
     }
 
     override fun getAll(userId: Int): List<Recipe> = transaction(database) {
-        Recipes.select { Recipes.userId eq userId }
+        (Recipes innerJoin RecipeTypes innerJoin Users).select { Recipes.userId eq userId }
             .map(::mapToRecipe)
     }
 
@@ -30,10 +37,14 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         Recipes.selectAll().count()
     }
 
-    override fun search(parameters: SearchRecipeParameters): SearchResult<Recipe> = transaction(database) {
-        val query = Recipes.selectAll()
+    override fun search(requestBody: SearchRecipeRequestBody): SearchResult<Recipe> = transaction(database) {
+        val query = (Recipes innerJoin RecipeTypes innerJoin Users)
+            .select {
+                (Recipes.recipeTypeId eq RecipeTypes.id)
+                    .and((Recipes.userId eq Users.id))
+            }
 
-        with(parameters) {
+        with(requestBody) {
             name?.let { nameParam ->
                 query.andWhere { Recipes.name like nameParam }
             }
@@ -43,15 +54,15 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         }
 
         val count = query.count()
-        parameters.itemsPerPage.let { itemsPerPage ->
-            val offset = parameters.pageNumber.toLong().minus(1) * itemsPerPage
+        requestBody.itemsPerPage.let { itemsPerPage ->
+            val offset = requestBody.pageNumber.toLong().minus(1) * itemsPerPage
             query.limit(
                 n = itemsPerPage,
                 offset = offset
             )
         }
 
-        val numberOfPages = ceil(count.toDouble() / parameters.itemsPerPage).toInt()
+        val numberOfPages = ceil(count.toDouble() / requestBody.itemsPerPage).toInt()
         val results = query.map(::mapToRecipe)
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }
@@ -84,7 +95,9 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
     private fun mapToRecipe(row: ResultRow) = Recipe(
         id = row[Recipes.id].value,
         recipeTypeId = row[Recipes.recipeTypeId],
+        recipeTypeName = row[RecipeTypes.name],
         userId = row[Recipes.userId],
+        userName = row[Users.name],
         name = row[Recipes.name],
         description = row[Recipes.description],
         ingredients = row[Recipes.ingredients],

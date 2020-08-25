@@ -5,31 +5,41 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import model.SearchResult
-import model.parameters.SearchRecipeParameters
+import model.parameters.SearchRecipeRequestBody
 import ports.RecipeRepository
-import utils.DTOGenerator
 
 internal class SearchRecipeTest : DescribeSpec({
     describe("Search recipes use case") {
         it("it searches for recipes in the database") {
-            val expectedRecipes = List(21) {
-                DTOGenerator.generateRecipe()
-            }
-            val searchParameters = SearchRecipeParameters(name = "Cake")
+            val expectedRecipes = listOf(
+                Recipe(
+                    id = 0,
+                    recipeTypeId = 1,
+                    recipeTypeName = "Recipe type name",
+                    userId = 1,
+                    userName = "User name",
+                    name = "Recipe Name",
+                    description = "Recipe description",
+                    ingredients = "Oh so many ingredients",
+                    preparingSteps = "This will be so easy..."
+                )
+            )
+            val searchRecipeRequestBody = SearchRecipeRequestBody(name = "Cake")
             val repo = mockk<RecipeRepository> {
-                every { search(searchParameters) } returns SearchResult(1, 1, listOf(expectedRecipes.first()))
+                every { search(searchRecipeRequestBody) } returns SearchResult(1, 1, listOf(expectedRecipes.first()))
             }
             val searchRecipe = SearchRecipe(recipeRepository = repo)
 
-            val searchResults = searchRecipe(searchParameters)
+            val searchResults = searchRecipe(SearchRecipe.Parameters(searchRecipeRequestBody))
 
             with(searchResults) {
                 count.shouldBe(1)
                 numberOfPages.shouldBe(1)
                 results.shouldBe(listOf(expectedRecipes.first()))
             }
-            verify { repo.search(parameters = searchParameters) }
+            verify { repo.search(requestBody = searchRecipeRequestBody) }
         }
     }
 })

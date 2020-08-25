@@ -3,6 +3,8 @@ package server.modules
 import adapters.authentication.ApplicationRoles
 import adapters.authentication.JWTManagerImpl
 import adapters.authentication.UserPrincipal
+import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.ktor.shouldHaveHeader
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.nulls.shouldBeNull
@@ -17,7 +19,8 @@ import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.spyk
 import io.mockk.verify
-import utils.DTOGenerator
+import model.User
+import utils.JsonHelpers.toJson
 
 class JWTModuleTest : DescribeSpec({
     describe("Ktor JWT module implementation") {
@@ -42,8 +45,11 @@ class JWTModuleTest : DescribeSpec({
                 algorithmSecret = "secret"
             )
         )
-        val applicationUser = DTOGenerator.generateUser(roles = listOf(ApplicationRoles.USER.name))
-        val applicationAdmin = DTOGenerator.generateUser(
+        val applicationUser = User(
+            id = 123, name = "John Doe", userName = "johnDoe", roles = listOf(ApplicationRoles.USER.name)
+        )
+        val applicationAdmin = User(
+            id = 456, name = "Jane Doe", userName = "janeDoe",
             roles = listOf(
                 ApplicationRoles.USER.name,
                 ApplicationRoles.ADMIN.name
@@ -87,7 +93,7 @@ class JWTModuleTest : DescribeSpec({
             }
 
             it("refuses the request with 401 if the user hasn't got at least the USER role") {
-                val token = userJwtManager.generateToken(DTOGenerator.generateUser())
+                val token = userJwtManager.generateToken(User(id = 999, name = "Who", userName = "isThisGuy?"))
 
                 withTestApplication(moduleFunction = createTestServer()) {
                     with(handleRequest(HttpMethod.Get, "/userRoute") {
@@ -100,9 +106,24 @@ class JWTModuleTest : DescribeSpec({
                     }
                 }
             }
+
+            it("should return a structured error when a challenge is returned") {
+                val responseError = ResponseError(
+                    HttpStatusCode.Unauthorized.value.toString(),
+                    "Scheme Bearer isn't authorized to use the realm $realm"
+                )
+
+                withTestApplication(moduleFunction = createTestServer()) {
+                    with(handleRequest(HttpMethod.Get, "/userRoute")) {
+                        response.status().shouldBe(HttpStatusCode.Unauthorized)
+                        response.content.shouldMatchJson(responseError.toJson())
+                        response.shouldHaveHeader("WWW-Authenticate", "Bearer realm=$realm")
+                    }
+                }
+            }
         }
 
-        describe("Admin authentication with JWT"){
+        describe("Admin authentication with JWT") {
             it("allows the request through") {
                 val token = adminJwtManager.generateToken(applicationAdmin)
 
@@ -118,7 +139,7 @@ class JWTModuleTest : DescribeSpec({
                 }
             }
 
-            it("refuses the request with 401 if anything besides an ADMIN tries to use this endpoint"){
+            it("refuses the request with 401 if anything besides an ADMIN tries to use this endpoint") {
                 val token = adminJwtManager.generateToken(applicationUser)
 
                 withTestApplication(moduleFunction = createTestServer()) {
@@ -129,6 +150,21 @@ class JWTModuleTest : DescribeSpec({
                         principal<UserPrincipal>().shouldBeNull()
                         verify(exactly = 0) { adminJwtManager.validate(any()) }
                         verify(exactly = 0) { userJwtManager.validate(any()) }
+                    }
+                }
+            }
+
+            it("should return a structured error when a challenge is returned") {
+                val responseError = ResponseError(
+                    HttpStatusCode.Unauthorized.value.toString(),
+                    "Scheme Bearer isn't authorized to use the realm $realm"
+                )
+
+                withTestApplication(moduleFunction = createTestServer()) {
+                    with(handleRequest(HttpMethod.Get, "/adminRoute")) {
+                        response.status().shouldBe(HttpStatusCode.Unauthorized)
+                        response.content.shouldMatchJson(responseError.toJson())
+                        response.shouldHaveHeader("WWW-Authenticate", "Bearer realm=$realm")
                     }
                 }
             }

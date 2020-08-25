@@ -1,6 +1,7 @@
 package server
 
 import config.ConfigurationFile
+import io.ktor.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import model.User
@@ -17,13 +18,12 @@ class CookbookApi(
 ) : AutoCloseable {
     private val server = embeddedServer(Netty, configuration.api.port) {
         contentNegotiationModule()
+        exceptionInterceptorModule()
         dependencyInjectionModule(configuration)
-
         val userJWTManager by di().instance<JWTManager<User>>("userJWTManager")
         val adminJWTManager by di().instance<JWTManager<User>>("adminJWTManager")
         jwtModule(userJwtManager = userJWTManager, adminJWTManager = adminJWTManager)
         routingModule()
-
         defaultHeadersModule()
     }
 

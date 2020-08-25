@@ -2,7 +2,7 @@ package model.parameters
 
 import errors.ValidationError
 
-data class SearchRecipeParameters(
+data class SearchRecipeRequestBody(
     val name: String? = null,
     val description: String? = null,
     val recipeTypeId: Int? = null,

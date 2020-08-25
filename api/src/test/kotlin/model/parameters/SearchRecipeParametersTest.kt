@@ -15,7 +15,7 @@ internal class SearchRecipeParametersTest : DescribeSpec({
             val pageNumber = 1
             val itemsPerPage = 1
 
-            val parameters = SearchRecipeParameters(
+            val parameters = SearchRecipeRequestBody(
                 name = name,
                 description = description,
                 recipeTypeId = recipeTypeId,
@@ -40,7 +40,7 @@ internal class SearchRecipeParametersTest : DescribeSpec({
                 val description = "description"
 
                 val act = {
-                    SearchRecipeParameters(
+                    SearchRecipeRequestBody(
                         name = name,
                         description = description,
                         recipeTypeId = recipeTypeId,

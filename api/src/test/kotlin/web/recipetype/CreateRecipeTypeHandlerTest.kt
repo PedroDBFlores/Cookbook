@@ -12,11 +12,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import model.CreateResult
+import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.CreateRecipeType
-import utils.DTOGenerator
 import utils.JsonHelpers.createJSONObject
-import utils.JsonHelpers.removePropertiesFromJson
 import utils.JsonHelpers.toJson
 
 internal class CreateRecipeTypeHandlerTest : DescribeSpec({
@@ -30,8 +29,8 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
     describe("Create recipe type handler") {
         it("creates a recipe type returning 201") {
-            val expectedRecipeType = DTOGenerator.generateRecipeType(id = 0)
-            val jsonBody = expectedRecipeType.toJson().removePropertiesFromJson("id")
+            val expectedRecipeType = RecipeType(id = 0, name = "Recipe type")
+            val jsonBody = createJSONObject("name" to expectedRecipeType.name)
             val createRecipeTypeMock = mockk<CreateRecipeType> {
                 every { this@mockk(any()) } returns 1
             }
@@ -44,7 +43,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
                 {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
-                    verify(exactly = 1) { createRecipeTypeMock(expectedRecipeType) }
+                    verify(exactly = 1) { createRecipeTypeMock(CreateRecipeType.Parameters(expectedRecipeType)) }
                 }
             }
         }
@@ -62,7 +61,6 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
                     verify { createRecipeType wasNot called}
                 }
             }
-
         }
     }
 })

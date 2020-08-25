@@ -10,9 +10,9 @@ import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.GetAllRecipes
-import utils.DTOGenerator
 import utils.JsonHelpers.toJson
 
 internal class GetAllRecipesHandlerTest : DescribeSpec({
@@ -25,10 +25,22 @@ internal class GetAllRecipesHandlerTest : DescribeSpec({
     }
 
     describe("Get all recipes handler") {
+        val basicRecipe = Recipe(
+            id = 1,
+            recipeTypeId = 1,
+            recipeTypeName = "Recipe type name",
+            userId = 1,
+            userName = "User name",
+            name = "Recipe Name",
+            description = "Recipe description",
+            ingredients = "Oh so many ingredients",
+            preparingSteps = "This will be so easy..."
+        )
+
         it("gets all the recipes") {
             val expectedRecipes = listOf(
-                DTOGenerator.generateRecipe(),
-                DTOGenerator.generateRecipe()
+                basicRecipe,
+                basicRecipe.copy(id = 2)
             )
             val getAllRecipes = mockk<GetAllRecipes> {
                 every { this@mockk() } returns expectedRecipes

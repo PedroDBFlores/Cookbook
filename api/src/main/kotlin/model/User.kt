@@ -17,3 +17,4 @@ data class User(
         check(userName.isNotEmpty()) { throw ValidationError("username") }
     }
 }
+

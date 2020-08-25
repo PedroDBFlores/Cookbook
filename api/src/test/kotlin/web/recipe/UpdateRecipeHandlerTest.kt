@@ -8,15 +8,22 @@ import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
+import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.UpdateRecipe
-import utils.DTOGenerator
 import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
-
 internal class UpdateRecipeHandlerTest : DescribeSpec({
-    val basicRecipe = DTOGenerator.generateRecipe()
+    val updateRecipeRepresenterMap = mapOf<String, Any>(
+        "id" to 1,
+        "recipeTypeId" to 1,
+        "userId" to 1,
+        "name" to "name",
+        "description" to "description",
+        "ingredients" to "ingredients",
+        "preparingSteps" to "preparingSteps"
+    )
 
     fun createTestServer(updateRecipe: UpdateRecipe): Application.() -> Unit = {
         contentNegotiationModule()
@@ -28,53 +35,50 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
     describe("Update recipe handler") {
         it("updates a recipe type returning 200") {
             val updateRecipe = mockk<UpdateRecipe> {
-                every { this@mockk(basicRecipe) } just runs
+                every { this@mockk(any()) } just runs
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
                 with(handleRequest(HttpMethod.Put, "/recipe") {
-                    setBody(basicRecipe.toJson())
+                    setBody(updateRecipeRepresenterMap.toJson())
                     addHeader("Content-Type", "application/json")
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipe(basicRecipe) }
+                    verify(exactly = 1) { updateRecipe(any()) }
                 }
             }
         }
 
         arrayOf(
+            row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
             row(
-                createJSONObject("non" to "conformant"),
-                "the provided body doesn't match the required JSON"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("id" to 0)).toJson(),
+                "the id field is invalid"
             ),
             row(
-                basicRecipe.copy(id = 0).toJson(),
-                "when the id property is invalid"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("recipeTypeId" to 0)).toJson(),
+                "the recipeTypeId field is invalid"
             ),
             row(
-                basicRecipe.copy(recipeTypeId = 0).toJson(),
-                "when the recipeTypeId property is invalid"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("userId" to 0)).toJson(),
+                "the userId field is invalid"
             ),
             row(
-                basicRecipe.copy(userId = 0).toJson(),
-                "when the userId property is invalid"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("name" to "")).toJson(),
+                "the name field is invalid"
             ),
             row(
-                basicRecipe.copy(name = "").toJson(),
-                "when the name property is invalid"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("description" to "")).toJson(),
+                "the description field is invalid"
             ),
             row(
-                basicRecipe.copy(description = "").toJson(),
-                "when the description property is invalid"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("ingredients" to "")).toJson(),
+                "the ingredients field is invalid"
             ),
             row(
-                basicRecipe.copy(ingredients = "").toJson(),
-                "when the ingredients property is invalid"
-            ),
-            row(
-                basicRecipe.copy(preparingSteps = "").toJson(),
-                "when the preparingSteps property is invalid"
+                (updateRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to "")).toJson(),
+                "the preparingSteps field is invalid"
             )
         ).forEach { (jsonBody, description) ->
             it("returns 400 when $description") {

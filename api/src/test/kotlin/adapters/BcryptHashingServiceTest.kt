@@ -15,7 +15,7 @@ internal class BcryptHashingServiceTest : DescribeSpec({
             hash.shouldStartWith("""${'$'}2a${'$'}10${'$'}""")
         }
 
-        it("verifies an matching hash sucessfully") {
+        it("verifies an matching hash successfully") {
             val valueToMatch = "VALUE"
             val hashToMatch = """${'$'}2a${'$'}04${'$'}UBfKKQCyLTPXZUCyHBKvM.xpXpW.upzTAL14llmp92jLLjZBcoWzy"""
 

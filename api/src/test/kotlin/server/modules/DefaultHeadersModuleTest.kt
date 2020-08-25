@@ -1,5 +1,6 @@
 package server.modules
 
+import io.kotest.assertions.ktor.shouldHaveStatus
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldNotBeEmpty
@@ -21,6 +22,7 @@ class DefaultHeadersModuleTest : DescribeSpec({
         it("adds a set of default headers to the response") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Get, "/route")) {
+                    response shouldHaveStatus HttpStatusCode.OK
                     response.status().shouldBe(HttpStatusCode.OK)
                     with(response.headers){
                         get("Date").shouldNotBeEmpty()

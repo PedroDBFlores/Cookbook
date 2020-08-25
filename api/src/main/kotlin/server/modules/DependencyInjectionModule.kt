@@ -4,16 +4,11 @@ import adapters.authentication.ApplicationRoles
 import adapters.authentication.JWTManagerImpl
 import adapters.database.RecipeRepositoryImpl
 import adapters.database.RecipeTypeRepositoryImpl
-import adapters.database.schema.RecipeTypes
-import adapters.database.schema.Recipes
-import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.application.*
 import model.User
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -35,9 +30,6 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
             dataSource.password = password
         }
         val db = Database.connect(dataSource)
-        transaction(db) {
-            SchemaUtils.create(RecipeTypes, Recipes)
-        }
         db
     }
 

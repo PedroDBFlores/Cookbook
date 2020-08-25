@@ -11,7 +11,9 @@ internal class RecipeTest : DescribeSpec({
         it("is created succesfully") {
             val id = 1
             val recipeTypeId = 1
+            val recipeTypeName = "recipeTypeName"
             val userId = 1
+            val userName = "userName"
             val name = "name"
             val description = "description"
             val ingredients = "ingredients"
@@ -20,7 +22,9 @@ internal class RecipeTest : DescribeSpec({
             val recipe = Recipe(
                 id = id,
                 recipeTypeId = recipeTypeId,
+                recipeTypeName = recipeTypeName,
                 userId = userId,
+                userName = userName,
                 name = name,
                 description = description,
                 ingredients = ingredients,
@@ -50,7 +54,9 @@ internal class RecipeTest : DescribeSpec({
                     Recipe(
                         id = id,
                         recipeTypeId = recipeTypeId,
+                        recipeTypeName = "recipeTypeName",
                         userId = userId,
+                        userName = "userName",
                         name = name,
                         description = description,
                         ingredients = ingredients,

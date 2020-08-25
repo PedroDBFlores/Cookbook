@@ -19,14 +19,14 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
 
         describe("with custom validation") {
             val receivedBodyHandlerWithValidation: suspend ApplicationCall.() -> Unit = {
-                val body = this.receiveOrThrow<ExampleClass>() {
+                val body = this.receiveOrThrow<ExampleClass> {
                     check(it.id == 1)
                     check(it.name == "Marco")
                 }
                 respond(HttpStatusCode.OK, body)
             }
 
-            it("recieves and returns the body as an object when it's successful") {
+            it("receives and returns the body as an object when it's successful") {
                 val jsonBody = ExampleClass(1, "Marco").toJson()
 
                 withTestApplication(moduleFunction = {
@@ -49,7 +49,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
                     routing { post("*") { receivedBodyHandlerWithValidation(call) } }
                 }) {
                     with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(createJSONObject(mapOf("non" to "conformant")))
+                        setBody(createJSONObject(mapOf("non" to "conforming")))
                         addHeader("Content-Type", "application/json")
                     }) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
@@ -85,7 +85,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
                 respond(HttpStatusCode.OK, body)
             }
 
-            it("recieves and returns the body as an object when it's successful") {
+            it("receives and returns the body as an object when it's successful") {
                 val jsonBody = ExampleClass(1, "Marco").toJson()
 
                 withTestApplication(moduleFunction = {
@@ -108,7 +108,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
                     routing { post("*") { receivedBodyHandler(call) } }
                 }) {
                     with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(createJSONObject(mapOf("non" to "conformant")))
+                        setBody(createJSONObject(mapOf("non" to "conforming")))
                         addHeader("Content-Type", "application/json")
                     }) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
@@ -134,26 +134,6 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
                     }) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                     }
-                }
-            }
-        }
-    }
-
-    describe("ApplicationCall error extension") {
-        val callHandler: suspend ApplicationCall.() -> Unit = {
-            error(HttpStatusCode.Forbidden, "403", "You are not allowed.")
-        }
-
-        it("returns a structured JSON on calling the method") {
-            withTestApplication(moduleFunction = {
-                contentNegotiationModule()
-                routing { get("*") { callHandler(call) } }
-            }) {
-                with(handleRequest(HttpMethod.Get, "/willfail") {
-                    addHeader("Content-Type", "application/json")
-                }) {
-                    response.status().shouldBe(HttpStatusCode.Forbidden)
-                    response.content.shouldMatchJson(ResponseError("403", "You are not allowed.").toJson())
                 }
             }
         }

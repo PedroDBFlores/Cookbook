@@ -5,9 +5,10 @@ import model.RecipeType
 import ports.RecipeTypeRepository
 
 class FindRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
-
     operator fun invoke(parameters: Parameters): RecipeType {
-        return recipeTypeRepository.find(parameters.recipeTypeId) ?: throw RecipeTypeNotFound(parameters.recipeTypeId)
+        val (recipeTypeId) = parameters
+
+        return recipeTypeRepository.find(recipeTypeId) ?: throw RecipeTypeNotFound(recipeTypeId)
     }
 
     data class Parameters(val recipeTypeId: Int)

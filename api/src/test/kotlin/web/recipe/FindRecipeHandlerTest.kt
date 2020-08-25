@@ -13,9 +13,9 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.FindRecipe
-import utils.DTOGenerator
 import utils.JsonHelpers.toJson
 
 internal class FindRecipeHandlerTest : DescribeSpec({
@@ -29,7 +29,17 @@ internal class FindRecipeHandlerTest : DescribeSpec({
 
     describe("Find recipe handler") {
         it("returns a recipe with status code 200") {
-            val expectedRecipe = DTOGenerator.generateRecipe()
+            val expectedRecipe = Recipe(
+                id = 1,
+                recipeTypeId = 1,
+                recipeTypeName = "Recipe type name",
+                userId = 1,
+                userName = "User name",
+                name = "Recipe Name",
+                description = "Recipe description",
+                ingredients = "Oh so many ingredients",
+                preparingSteps = "This will be so easy..."
+            )
             val findRecipe = mockk<FindRecipe> {
                 every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
             }

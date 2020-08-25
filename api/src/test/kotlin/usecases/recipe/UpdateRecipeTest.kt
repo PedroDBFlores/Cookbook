@@ -4,36 +4,47 @@ import errors.RecipeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.*
+import model.Recipe
 import ports.RecipeRepository
-import utils.DTOGenerator
 
 internal class UpdateRecipeTest : DescribeSpec({
     describe("Update recipe use case") {
+        val basicRecipe = Recipe(
+            id = 1,
+            recipeTypeId = 1,
+            recipeTypeName = "Recipe type name",
+            userId = 1,
+            userName = "User name",
+            name = "Recipe Name",
+            description = "Recipe description",
+            ingredients = "Oh so many ingredients",
+            preparingSteps = "This will be so easy..."
+        )
         it("updates an existing recipe") {
-            val currentRecipe = DTOGenerator.generateRecipe()
-            val updatedRecipe = currentRecipe.copy(name = "NOT", description = "EQUAL")
+            val updatedRecipe = basicRecipe.copy(name = "NOT", description = "EQUAL")
             val recipeRepository = mockk<RecipeRepository> {
+                every { find(updatedRecipe.id) } returns basicRecipe
                 every { update(updatedRecipe) } just runs
             }
             val updateRecipe = UpdateRecipe(recipeRepository)
 
-            updateRecipe(updatedRecipe)
+            updateRecipe(UpdateRecipe.Parameters( updatedRecipe))
 
             verify(exactly = 1) {
                 recipeRepository.update(updatedRecipe)
             }
         }
 
-        it("throws if the recipe doesn't exist") {
+        it("throws a 'RecipeNotFound' if the recipe doesn't exist") {
             val recipeRepository = mockk<RecipeRepository> {
-                every { update(any()) } throws RecipeNotFound(123)
+                every { find(basicRecipe.id) } returns null
             }
             val updateRecipe = UpdateRecipe(recipeRepository)
 
-            val act = { updateRecipe(DTOGenerator.generateRecipe()) }
+            val act = { updateRecipe(UpdateRecipe.Parameters(basicRecipe)) }
 
             shouldThrow<RecipeNotFound> { act() }
-            verify(exactly = 1) { recipeRepository.update(any()) }
+            verify(exactly = 1) { recipeRepository.find(basicRecipe.id) }
         }
     }
 })

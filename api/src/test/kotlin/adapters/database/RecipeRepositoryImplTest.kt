@@ -1,16 +1,9 @@
 package adapters.database
 
-import adapters.database.DatabaseTestHelper.createRecipe
-import adapters.database.DatabaseTestHelper.createRecipeType
-import adapters.database.DatabaseTestHelper.createRole
-import adapters.database.DatabaseTestHelper.createUser
-import adapters.database.DatabaseTestHelper.mapToRecipe
-import adapters.database.schema.RecipeTypes
-import adapters.database.schema.Recipes
-import adapters.database.schema.Roles
-import adapters.database.schema.UserRoles
-import adapters.database.schema.Users
-import com.github.javafaker.Faker
+import adapters.database.DatabaseTestHelper.createRecipeInDatabase
+import adapters.database.DatabaseTestHelper.createRecipeTypeInDatabase
+import adapters.database.DatabaseTestHelper.createUserInDatabase
+import adapters.database.schema.*
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -19,29 +12,32 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 import model.Recipe
-import model.parameters.SearchRecipeParameters
-import org.jetbrains.exposed.sql.SchemaUtils
+import model.RecipeType
+import model.User
+import model.parameters.SearchRecipeRequestBody
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import utils.DTOGenerator
-import java.lang.IllegalArgumentException
-import java.sql.SQLException
 
 internal class RecipeRepositoryImplTest : DescribeSpec({
-    val faker = Faker()
     val database = DatabaseTestHelper.database
-    var recipeTypeId = 0
-    var userId = 0
-    var extraUserId = 0
+    var firstRecipeType = RecipeType(id = 0, name = "First recipe type")
+    lateinit var firstUser: User
+    lateinit var secondUser: User
 
     beforeSpec {
         transaction(database) {
-            SchemaUtils.create(RecipeTypes, Recipes, Users, Roles, UserRoles)
-            recipeTypeId = createRecipeType().id
-            createRole("User", RoleCodes.USER)
-            userId = createUser("password", mockk(relaxed = true)).id
-            extraUserId = createUser("password2", mockk(relaxed = true)).id
+            firstRecipeType = createRecipeTypeInDatabase(firstRecipeType)
+            firstUser =
+                createUserInDatabase(
+                    User(id = 0, name = "firstUser", userName = "firstUsername"),
+                    "password",
+                    mockk(relaxed = true)
+                )
+            secondUser = createUserInDatabase(
+                User(id = 0, name = "secondUser", userName = "secondUsername"),
+                "password2",
+                mockk(relaxed = true)
+            )
         }
     }
 
@@ -60,20 +56,32 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
     }
 
     describe("Recipe repository") {
+        val basicRecipe = Recipe(
+            id = 0,
+            recipeTypeId = firstRecipeType.id,
+            recipeTypeName = firstRecipeType.name,
+            userId = firstUser.id,
+            userName = firstUser.name,
+            name = "Recipe Name",
+            description = "Recipe description",
+            ingredients = "Oh so many ingredients",
+            preparingSteps = "This will be so easy..."
+        )
+
         it("finds a recipe") {
-            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+            val expectedRecipe = createRecipeInDatabase(basicRecipe)
             val repo = RecipeRepositoryImpl(database = database)
-            val recipe = repo.find(id = createdRecipe.id)
+            val recipe = repo.find(id = expectedRecipe.id)
 
             recipe.shouldNotBeNull()
-            recipe.shouldBe(createdRecipe)
+            recipe.shouldBe(expectedRecipe)
         }
 
         describe("Get all") {
             it("gets all the recipe types") {
                 val createdRecipes = listOf(
-                    createRecipe(recipeTypeId = recipeTypeId, userId = userId),
-                    createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+                    createRecipeInDatabase(basicRecipe),
+                    createRecipeInDatabase(basicRecipe.copy(name = "Second Recipe Name"))
                 )
 
                 val repo = RecipeRepositoryImpl(database = database)
@@ -84,21 +92,22 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
             it("gets all the recipe types by userId") {
                 val createdRecipes = listOf(
-                    createRecipe(recipeTypeId = recipeTypeId, userId = userId),
-                    createRecipe(recipeTypeId = recipeTypeId, userId = extraUserId)
+                    createRecipeInDatabase(basicRecipe),
+                    createRecipeInDatabase(basicRecipe.copy(userId = secondUser.id, userName = secondUser.name))
                 )
 
                 val repo = RecipeRepositoryImpl(database = database)
-                val recipes = repo.getAll(extraUserId)
+                val recipes = repo.getAll(secondUser.id)
 
-                recipes.shouldBe(createdRecipes.filter { it.userId == extraUserId })
+                recipes.shouldBe(createdRecipes.filter { it.userId == secondUser.id })
             }
         }
 
         it("gets the recipe count") {
             val createdRecipes = listOf(
-                createRecipe(recipeTypeId = recipeTypeId, userId = userId),
-                createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+                createRecipeInDatabase(basicRecipe),
+                createRecipeInDatabase(basicRecipe),
+                createRecipeInDatabase(basicRecipe)
             )
             val repo = RecipeRepositoryImpl(database = database)
 
@@ -109,17 +118,17 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Search") {
             fun createRecipes(numberOfRecipes: Int = 20) = List(numberOfRecipes) {
-                createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+                createRecipeInDatabase(basicRecipe)
             }
 
             it("searches for a specific recipe name") {
                 createRecipes(numberOfRecipes = 10)
                 val pickedRecipe =
-                    createRecipe(DTOGenerator.generateRecipe(name = "Lichens", recipeTypeId = 1, userId = userId))
+                    createRecipeInDatabase(basicRecipe.copy(name = "Lichens with creamy sauce"))
                 val repo = RecipeRepositoryImpl(database = database)
-                val parameters = SearchRecipeParameters(name = pickedRecipe.name)
+                val parameters = SearchRecipeRequestBody(name = pickedRecipe.name)
 
-                val result = repo.search(parameters = parameters)
+                val result = repo.search(requestBody = parameters)
 
                 result.count.shouldBe(1)
                 result.numberOfPages.shouldBe(1)
@@ -130,17 +139,16 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
             it("searches for a specific recipe description") {
                 createRecipes(numberOfRecipes = 10)
                 val pickedRecipe =
-                    createRecipe(
-                        DTOGenerator.generateRecipe(
-                            description = "Very good",
-                            recipeTypeId = recipeTypeId,
-                            userId = userId
+                    createRecipeInDatabase(
+                        basicRecipe.copy(
+                            name = "Stone soup",
+                            description = "Hearthy stone soup for the winter times"
                         )
                     )
                 val repo = RecipeRepositoryImpl(database = database)
-                val parameters = SearchRecipeParameters(description = pickedRecipe.description)
+                val parameters = SearchRecipeRequestBody(description = pickedRecipe.description)
 
-                val result = repo.search(parameters = parameters)
+                val result = repo.search(requestBody = parameters)
 
                 result.count.shouldBe(1)
                 result.numberOfPages.shouldBe(1)
@@ -156,9 +164,9 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 it("returns the paginated results for page $pageNumber and $itemsPerPage items per page") {
                     val createdRecipes = createRecipes(100)
                     val repo = RecipeRepositoryImpl(database = database)
-                    val parameters = SearchRecipeParameters(pageNumber = pageNumber, itemsPerPage = itemsPerPage)
+                    val parameters = SearchRecipeRequestBody(pageNumber = pageNumber, itemsPerPage = itemsPerPage)
 
-                    val searchResult = repo.search(parameters = parameters)
+                    val searchResult = repo.search(requestBody = parameters)
 
                     with(searchResult) {
                         count.shouldBe(100)
@@ -172,46 +180,26 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Create") {
             it("creates a new recipe") {
-                val recipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId, userId = userId)
                 val repo = RecipeRepositoryImpl(database = database)
 
-                val createdRecipeId = repo.create(recipe = recipe)
+                val createdRecipeId = repo.create(recipe = basicRecipe)
 
                 createdRecipeId.shouldNotBeZero()
-                val createdRecipe = transaction(database) {
-                    Recipes.select { Recipes.id eq createdRecipeId }.map { row -> row.mapToRecipe() }.first()
-                }
-                createdRecipe.shouldBe(recipe.copy(id = createdRecipeId))
             }
         }
 
         describe("Update") {
             it("updates a recipe on the database") {
-                val createdRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+                val createdRecipe = createRecipeInDatabase(basicRecipe)
                 val repo = RecipeRepositoryImpl(database = database)
-                val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = faker.name().fullName())
+                val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = "I want to be renamed")
 
                 repo.update(recipeToBeUpdated)
-
-                val updatedRecipe = transaction(database) {
-                    Recipes.select { Recipes.id eq createdRecipe.id }.map { row -> row.mapToRecipe() }.first()
-                }
-                updatedRecipe.shouldBe(recipeToBeUpdated)
-            }
-
-            it("throws if an update has the same name of an existing one") {
-                val firstRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
-                val secondRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
-                val repo = RecipeRepositoryImpl(database = database)
-
-                val act = { repo.update(secondRecipe.copy(name = firstRecipe.name)) }
-
-                shouldThrow<SQLException> { act() }
             }
         }
 
         it("deletes a recipe type") {
-            val createdRecipe = createRecipe(recipeTypeId = recipeTypeId, userId = userId)
+            val createdRecipe = createRecipeInDatabase(basicRecipe)
             val repo = RecipeRepositoryImpl(database = database)
             val deleted = repo.delete(createdRecipe.id)
 
@@ -219,52 +207,18 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
         }
 
         describe("Recipe table constraints") {
-            it("throws if a recipe with the same name exists") {
-                val firstRecipe = DTOGenerator.generateRecipe(id = 0, recipeTypeId = recipeTypeId)
-                val secondRecipe = firstRecipe.copy(
-                    description = "NOT",
-                    ingredients = "THE",
-                    preparingSteps = "SAME"
-                )
-                val repo = RecipeRepositoryImpl(database = database)
-
-                val act = {
-                    repo.create(recipe = firstRecipe)
-                    repo.create(recipe = secondRecipe)
-                }
-
-                shouldThrow<SQLException> { act() }
-            }
-
             arrayOf(
                 row(
-                    DTOGenerator.generateRecipe(
-                        id = 0,
-                        recipeTypeId = recipeTypeId,
-                        name = faker.random().hex(129)
-                    ),
+                    basicRecipe.copy(name = "a".repeat(129)),
                     "name exceeds the size limit"
-                ),
-                row(
-                    DTOGenerator.generateRecipe(
-                        id = 0,
-                        recipeTypeId = recipeTypeId,
-                        description = faker.random().hex(257)
-                    ),
+                ), row(
+                    basicRecipe.copy(description = "b".repeat(257)),
                     "description exceeds the size limit"
                 ), row(
-                    DTOGenerator.generateRecipe(
-                        id = 0,
-                        recipeTypeId = recipeTypeId,
-                        ingredients = faker.random().hex(2049)
-                    ),
+                    basicRecipe.copy(ingredients = "c".repeat(2049)),
                     "ingredients exceeds the size limit"
                 ), row(
-                    DTOGenerator.generateRecipe(
-                        id = 0,
-                        recipeTypeId = recipeTypeId,
-                        preparingSteps = faker.random().hex(4097)
-                    ),
+                    basicRecipe.copy(preparingSteps = "d".repeat(4097)),
                     "preparingSteps exceeds the size limit"
                 )
             ).forEach { (recipe: Recipe, description: String) ->

@@ -25,11 +25,9 @@ class UserRolesRepositoryImpl(private val database: Database) : UserRolesReposit
     }
 
     override fun deleteRoleFromUser(userId: Int, roleId: Int): Boolean = transaction(database) {
-        val affectedRows = UserRoles.deleteWhere {
+        UserRoles.deleteWhere {
             (UserRoles.userId eq userId) and (UserRoles.roleId eq roleId)
-        }
-        check(affectedRows == 1) { throw UserRoleNotFound(userId, roleId) }
-        true
+        } > 0
     }
 
     private fun mapToUserRole(row: ResultRow): UserRole =

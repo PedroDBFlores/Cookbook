@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
 import io.ktor.auth.jwt.*
 import model.User
+import org.joda.time.DateTime
 import ports.JWTManager
 
 class JWTManagerImpl(
@@ -29,6 +30,7 @@ class JWTManagerImpl(
             .withIssuer(domain)
             .withAudience(audience)
             .withSubject(obj.id.toString())
+            .withExpiresAt(DateTime.now().plusDays(3).toDate())
             .withClaim("username", obj.userName)
             .withClaim("name", obj.name)
             .withArrayClaim("roles", obj.roles?.toTypedArray())
@@ -44,4 +46,5 @@ class JWTManagerImpl(
     }
 
     override fun decodeToken(token: String): DecodedJWT = JWT.decode(token)
+
 }

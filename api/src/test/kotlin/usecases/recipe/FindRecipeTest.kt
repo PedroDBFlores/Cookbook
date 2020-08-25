@@ -7,13 +7,23 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import ports.RecipeRepository
-import utils.DTOGenerator
 
 internal class FindRecipeTest : DescribeSpec({
     describe("Find recipe use case") {
         it("Find a recipe by id") {
-            val expectedRecipe = DTOGenerator.generateRecipe()
+            val expectedRecipe = Recipe(
+                id = 1,
+                recipeTypeId = 1,
+                recipeTypeName = "Recipe type name",
+                userId = 1,
+                userName = "User name",
+                name = "Recipe Name",
+                description = "Recipe description",
+                ingredients = "Oh so many ingredients",
+                preparingSteps = "This will be so easy..."
+            )
             val recipeRepository = mockk<RecipeRepository> {
                 every { find(expectedRecipe.id) } returns expectedRecipe
             }
@@ -33,7 +43,8 @@ internal class FindRecipeTest : DescribeSpec({
 
             val act = { findRecipe(FindRecipe.Parameters(9999)) }
 
-            shouldThrow<RecipeNotFound> { act() }
+            val recipeNotFound = shouldThrow<RecipeNotFound> { act() }
+            recipeNotFound.message.shouldBe("Recipe with id 9999 not found")
             verify(exactly = 1) { recipeRepository.find(any()) }
         }
     }

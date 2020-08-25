@@ -13,16 +13,16 @@ object JsonHelpers {
      * @param source The source object
      * @return A JSON representation of the source object
      */
-    fun convertToJSON(source: Any): String =
+    private fun convertToJSON(source: Any): String =
         ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(source)
 
     /**
      * Parses and removes a provided set of properties from a JSON object
-     * @param source The source JSON
+     * @param json The source JSON
      * @param properties The properties to be removed from the JSON object
      * @return A JSON object without the provided properties
      */
-    fun removeJSONProperties(json: String, vararg properties: String): String {
+    private fun removeJSONProperties(json: String, vararg properties: String): String {
         val jsonNode = ObjectMapper().readTree(json)
         with(jsonNode as ObjectNode) {
             remove(properties.toMutableList())
@@ -31,12 +31,12 @@ object JsonHelpers {
     }
 
     /**
-     * Parses and adds new properties to an exisitng JSON object
+     * Parses and adds new properties to an existing JSON object
      * @param json The current json file object
      * @param properties The properties to be inserted into the JSON object
      * @return A JSON object with tne new properties
      */
-    fun addJSONProperties(json: String, properties: Map<String, Any>): String {
+    private fun addJSONProperties(json: String, properties: Map<String, Any>): String {
         val jsonNode = ObjectMapper().readTree(json)
         with(jsonNode as ObjectNode) {
             properties.forEach {
@@ -58,6 +58,5 @@ object JsonHelpers {
 
     //Extension methods
     fun Any.toJson() = convertToJSON(this)
-    fun String.addPropertiesToJSON(properties: Map<String, Any>) = addJSONProperties(this, properties)
     fun String.removePropertiesFromJson(vararg properties: String) = removeJSONProperties(this, *properties)
 }

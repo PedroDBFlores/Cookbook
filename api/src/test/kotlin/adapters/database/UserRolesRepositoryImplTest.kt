@@ -1,5 +1,7 @@
 package adapters.database
 
+import adapters.database.DatabaseTestHelper.createRoleInDatabase
+import adapters.database.DatabaseTestHelper.createUserInDatabase
 import adapters.database.DatabaseTestHelper.mapToUserRole
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
@@ -10,24 +12,19 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.mockk.mockk
 import model.Role
 import model.User
 import model.UserRole
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import utils.DTOGenerator
 import java.sql.SQLException
 
 internal class UserRolesRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database
 
-    beforeSpec {
-        transaction(database) {
-            SchemaUtils.create(Users, Roles, UserRoles)
-        }
-    }
-
-    afterTest {
+    beforeTest {
         transaction(database) {
             UserRoles.deleteAll()
             Roles.deleteAll()
@@ -35,35 +32,19 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
         }
     }
 
-    fun createUser(): User {
-        val user = DTOGenerator.generateUser(id = 0)
-        val id = transaction(database) {
-            Users.insertAndGetId { createUser ->
-                createUser[name] = user.name
-                createUser[userName] = user.userName
-                createUser[passwordHash] = user.passwordHash
-            }
-        }.value
-        return user.copy(id = id)
-    }
-
-    fun createRole(): Role {
-        val role = DTOGenerator.generateRole(id = 0)
-        val id = transaction {
-            Roles.insertAndGetId { roleToInsert ->
-                roleToInsert[name] = role.name
-                roleToInsert[code] = role.code
-                roleToInsert[persistent] = role.persistent
-            }
-        }.value
-        return role.copy(id = id)
-    }
-
     describe("User roles repository") {
+        val basicUser = User(id = 0, name = "Fábio Silva", userName = "fab.silva")
+        val firstRole = Role(id = 0, name = "User", code = "USER", persistent = true)
+        val secondRole = Role(id = 0, name = "Admin", code = "ADMIN", persistent = true)
+
         describe("Get roles") {
             it("gets all the roles for a user") {
-                val user = createUser()
-                val createdRoles = arrayOf(createRole(), createRole())
+                val user = createUserInDatabase(basicUser, "password", mockk(relaxed = true))
+                val createdRoles = arrayOf(
+                    createRoleInDatabase(firstRole),
+                    createRoleInDatabase(secondRole)
+                )
+
                 val expectedUserRoles = createdRoles.map { role ->
                     UserRole(userId = user.id, roleId = role.id)
                 }
@@ -88,8 +69,8 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
 
         describe("Add role to user") {
             it("adds a role to a user") {
-                val user = createUser()
-                val role = createRole()
+                val user = createUserInDatabase(basicUser, "password", mockk(relaxed = true))
+                val role = createRoleInDatabase(firstRole)
                 val repo = UserRolesRepositoryImpl(database = database)
 
                 repo.addRoleToUser(userId = user.id, roleId = role.id)
@@ -98,14 +79,19 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
                     UserRoles.select { UserRoles.userId eq user.id }.map { row -> row.mapToUserRole() }
                         .first()
                 }
-                createdUserRole.shouldBe(UserRole(userId = user.id, roleId = role.id))
+                createdUserRole.shouldBe(UserRole(userId = user.id, roleId = role.id ))
             }
 
             arrayOf(
-                row(createUser(), null, "when there's no matching role"),
-                row(null, createRole(), "when there's no matching user")
-            ).forEach { (user, role, description) ->
+                row(
+                    { createUserInDatabase(basicUser, "password", mockk(relaxed = true)) },
+                    { null },
+                    "when there's no matching role"
+                ), row({ null }, { createRoleInDatabase(secondRole) }, "when there's no matching user")
+            ).forEach { (createUser: () -> User?, createRole: () -> Role?, description) ->
                 it("should throw $description") {
+                    val user = createUser()
+                    val role = createRole()
                     val repo = UserRolesRepositoryImpl(database = database)
 
                     val act = { repo.addRoleToUser(userId = user?.id ?: 777, roleId = role?.id ?: 888) }
@@ -117,30 +103,14 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
 
         describe("Delete role from user") {
             it("deletes a role from a user") {
-                val user = createUser()
-                val role = createRole()
+                val user = createUserInDatabase(basicUser, "password", mockk(relaxed = true))
+                val role = createRoleInDatabase(secondRole)
                 val repo = UserRolesRepositoryImpl(database = database)
                 repo.addRoleToUser(userId = user.id, roleId = role.id)
 
                 val deleted = repo.deleteRoleFromUser(userId = user.id, roleId = role.id)
 
                 deleted.shouldBe(true)
-            }
-
-            arrayOf(
-                row(null, 999, "when the role doesn't exist"),
-                row(999, null, "when the user doesn't exist")
-            ).forEach { (userId, roleId, description) ->
-                it("throws $description") {
-                    val user = createUser()
-                    val role = createRole()
-                    val repo = UserRolesRepositoryImpl(database = database)
-                    repo.addRoleToUser(userId = user.id, roleId = role.id)
-
-                    val act = { repo.deleteRoleFromUser(userId ?: user.id, roleId ?: role.id) }
-
-                    shouldThrow<UserRoleNotFound> { act() }
-                }
             }
         }
     }
