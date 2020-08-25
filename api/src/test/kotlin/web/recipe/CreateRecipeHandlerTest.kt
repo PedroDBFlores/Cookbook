@@ -17,7 +17,6 @@ import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.CreateRecipe
 import utils.JsonHelpers.createJSONObject
-import utils.JsonHelpers.removePropertiesFromJson
 import utils.JsonHelpers.toJson
 
 internal class CreateRecipeHandlerTest : DescribeSpec({

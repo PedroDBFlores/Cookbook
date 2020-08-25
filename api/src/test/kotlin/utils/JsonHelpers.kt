@@ -37,13 +37,12 @@ object JsonHelpers {
      * @return A JSON object with tne new properties
      */
     private fun addJSONProperties(json: String, properties: Map<String, Any>): String {
-        val jsonNode = ObjectMapper().readTree(json)
-        with(jsonNode as ObjectNode) {
+        with(ObjectMapper().readTree(json) as ObjectNode) {
             properties.forEach {
-                jsonNode.putPOJO(it.key, it.value)
+                putPOJO(it.key, it.value)
             }
+            return toString()
         }
-        return jsonNode.toString()
     }
 
     fun createJSONObject(properties: Map<String, Any>): String {

@@ -1,15 +1,11 @@
 package adapters.database
 
-import adapters.authentication.ApplicationRoles
-import adapters.database.DatabaseTestHelper.createRoleInDatabase
 import adapters.database.DatabaseTestHelper.createUserInDatabase
-import adapters.database.DatabaseTestHelper.mapToRole
 import adapters.database.DatabaseTestHelper.mapToUser
-import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
-import errors.WrongCredentials
 import errors.UserNotFound
+import errors.WrongCredentials
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -20,9 +16,9 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import model.Role
 import model.User
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
 import java.sql.SQLException

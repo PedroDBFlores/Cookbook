@@ -3,7 +3,6 @@ package adapters.database
 import adapters.database.DatabaseTestHelper.createRoleInDatabase
 import adapters.database.DatabaseTestHelper.mapToRole
 import adapters.database.schema.Roles
-import errors.RoleNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue

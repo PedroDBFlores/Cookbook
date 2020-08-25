@@ -24,4 +24,5 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveOrThrow(validations:
         val receivedBody = receive<T>()
         validations(receivedBody)
         receivedBody
-    }.onFailure { throw BadRequestException(it.message!!) }.getOrThrow()
+    }.onFailure{ throw BadRequestException(it.message!!) }.getOrThrow()
+

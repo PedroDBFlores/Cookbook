@@ -1,7 +1,6 @@
 package server
 
 import config.ConfigurationFile
-import io.ktor.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import model.User

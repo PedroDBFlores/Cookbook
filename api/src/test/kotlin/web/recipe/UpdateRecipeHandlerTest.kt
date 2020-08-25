@@ -8,7 +8,6 @@ import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
-import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.UpdateRecipe
 import utils.JsonHelpers.createJSONObject

@@ -13,7 +13,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import model.CreateResult
-import model.RecipeType
 import model.User
 import server.modules.contentNegotiationModule
 import usecases.user.CreateUser

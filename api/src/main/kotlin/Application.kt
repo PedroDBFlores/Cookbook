@@ -1,8 +1,6 @@
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
 import org.flywaydb.core.Flyway
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
 import server.CookbookApi
 
 fun main() {

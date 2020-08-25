@@ -1,11 +1,10 @@
 package adapters.database
 
-import adapters.authentication.ApplicationRoles
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
-import errors.WrongCredentials
 import errors.UserNotFound
+import errors.WrongCredentials
 import model.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

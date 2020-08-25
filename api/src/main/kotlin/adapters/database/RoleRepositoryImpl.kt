@@ -1,7 +1,6 @@
 package adapters.database
 
 import adapters.database.schema.Roles
-import errors.RoleNotFound
 import model.Role
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

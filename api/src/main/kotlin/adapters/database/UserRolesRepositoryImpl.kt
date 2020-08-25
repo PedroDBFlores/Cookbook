@@ -3,7 +3,6 @@ package adapters.database
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
 import errors.UserNotFound
-import errors.UserRoleNotFound
 import model.UserRole
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
