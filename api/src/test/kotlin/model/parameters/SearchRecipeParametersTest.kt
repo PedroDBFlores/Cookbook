@@ -49,7 +49,7 @@ internal class SearchRecipeParametersTest : DescribeSpec({
                     )
                 }
 
-                shouldThrow<ValidationError> { act() }
+                shouldThrow<ValidationError> (act)
             }
         }
     }

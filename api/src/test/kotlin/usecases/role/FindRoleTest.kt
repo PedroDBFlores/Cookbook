@@ -33,8 +33,8 @@ internal class FindRoleTest : DescribeSpec({
 
             val act = { findRole(FindRole.Parameters("OTHER")) }
 
-            val roleNotFound = shouldThrow<RoleNotFound> { act() }
-            roleNotFound.message.shouldBe("Role with code OTHER not found")
+            val roleNotFound = shouldThrow<RoleNotFound>(act)
+            roleNotFound.message.shouldBe("Role with code 'OTHER' not found")
             verify(exactly = 1) { roleRepository.find("OTHER") }
         }
     }

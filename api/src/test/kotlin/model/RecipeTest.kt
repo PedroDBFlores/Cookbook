@@ -64,7 +64,7 @@ internal class RecipeTest : DescribeSpec({
                     )
                 }
 
-                shouldThrow<ValidationError> { act() }
+                shouldThrow<ValidationError> (act)
             }
         }
     }

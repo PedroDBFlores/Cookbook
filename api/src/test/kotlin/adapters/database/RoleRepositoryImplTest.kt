@@ -1,7 +1,6 @@
 package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRoleInDatabase
-import adapters.database.DatabaseTestHelper.mapToRole
 import adapters.database.schema.Roles
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -11,7 +10,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import model.Role
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 
@@ -25,7 +23,7 @@ internal class RoleRepositoryImplTest : DescribeSpec({
     }
 
     describe("Role repository") {
-        val basicRole = Role(id = 0, name = "User", code = "USER")
+        val basicRole = Role(name = "User", code = "USER")
 
         it("finds a role by it's id") {
             val createdRole = createRoleInDatabase(basicRole)
@@ -66,8 +64,7 @@ internal class RoleRepositoryImplTest : DescribeSpec({
                 val id = repo.create(role = basicRole)
 
                 id.shouldNotBeZero()
-                val createdRole =
-                    transaction(database) { Roles.select { Roles.id eq id }.map { row -> row.mapToRole() }.first() }
+                val createdRole = repo.find(id)
                 createdRole.shouldBe(basicRole.copy(id = id))
             }
         }
@@ -79,9 +76,7 @@ internal class RoleRepositoryImplTest : DescribeSpec({
 
             repo.update(roleToUpdate)
 
-            val updatedRole = transaction(database) {
-                Roles.select { Roles.id eq createdRole.id }.map { row -> row.mapToRole() }.first()
-            }
+            val updatedRole = repo.find(createdRole.id)
             updatedRole.shouldBe(roleToUpdate)
         }
 
@@ -102,7 +97,7 @@ internal class RoleRepositoryImplTest : DescribeSpec({
 
                 val act = { repo.create(role = duplicateRole) }
 
-                shouldThrow<SQLException> { act() }
+                shouldThrow<SQLException> (act)
             }
         }
     }

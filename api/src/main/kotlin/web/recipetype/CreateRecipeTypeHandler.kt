@@ -19,6 +19,6 @@ class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : 
     }
 
     private data class CreateRecipeTypeRepresenter(val name: String) {
-        fun toRecipeType() = RecipeType(id = 0, name = name)
+        fun toRecipeType() = RecipeType(name = name)
     }
 }

@@ -1,5 +1,6 @@
 package server.modules
 
+import errors.OperationNotAllowed
 import errors.UserAlreadyExists
 import errors.ValidationError
 import io.kotest.assertions.json.shouldMatchJson
@@ -33,6 +34,12 @@ class ExceptionIntercepterModuleTest : DescribeSpec({
                 HttpStatusCode.BadRequest,
                 ResponseError(HttpStatusCode.BadRequest.value.toString(), "BAD_REQUEST"),
                 "a BadRequestException (Ktor) occurs"
+            ),
+            row(
+                { throw OperationNotAllowed("You are not allowed") },
+                HttpStatusCode.Forbidden,
+                ResponseError(HttpStatusCode.Forbidden.value.toString(), "You are not allowed"),
+                "a OperationNotAllowed occurs"
             ),
             row(
                 { throw NotFoundException() },

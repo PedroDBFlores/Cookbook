@@ -6,5 +6,5 @@ import org.jetbrains.exposed.sql.Column
 object Users : IntIdTable() {
     val name: Column<String> = varchar("name", 128)
     val userName: Column<String> = varchar("username", 255).uniqueIndex()
-    val passwordHash: Column<String> = varchar("passwordHash", 255)
+    val passwordHash: Column<String> = varchar("passwordhash", 255)
 }

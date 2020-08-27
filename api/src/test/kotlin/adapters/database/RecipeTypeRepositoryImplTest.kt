@@ -1,7 +1,6 @@
 package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRecipeTypeInDatabase
-import adapters.database.DatabaseTestHelper.mapToRecipeType
 import adapters.database.schema.RecipeTypes
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
@@ -10,7 +9,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import model.RecipeType
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 
@@ -24,7 +22,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
     }
 
     describe("RecipeType repository") {
-        val basicRecipeType = RecipeType(id = 0, name = "A new recipe type")
+        val basicRecipeType = RecipeType(name = "A new recipe type")
 
         describe("find by") {
             it("finds a recipe type by id") {
@@ -80,10 +78,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
                 val createdRecipeTypeId = repo.create(recipeType = basicRecipeType)
 
                 createdRecipeTypeId.shouldNotBeZero()
-                val createdRecipeType = transaction(database) {
-                    RecipeTypes.select { RecipeTypes.id eq createdRecipeTypeId }.map { row -> row.mapToRecipeType() }
-                        .first()
-                }
+                val createdRecipeType = repo.find(createdRecipeTypeId)
                 createdRecipeType.shouldBe(basicRecipeType.copy(id = createdRecipeTypeId))
             }
 
@@ -93,7 +88,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
                 val act = { repo.create(recipeType) }
 
-                shouldThrow<IllegalArgumentException> { act() }
+                shouldThrow<IllegalArgumentException>(act)
             }
         }
 
@@ -104,10 +99,8 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
                 repo.update(createdRecipeType.copy(name = "Arroz"))
 
-                val updatedRecipeType = transaction(database) {
-                    RecipeTypes.select { RecipeTypes.id eq createdRecipeType.id }.map { row -> row.mapToRecipeType() }
-                        .first()
-                }
+                val updatedRecipeType = repo.find(createdRecipeType.id)
+                updatedRecipeType.shouldNotBeNull()
                 updatedRecipeType.name.shouldBe("Arroz")
             }
 
@@ -131,7 +124,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
                     repo.create(basicRecipeType)
                 }
 
-                shouldThrow<SQLException> { act() }
+                shouldThrow<SQLException>(act)
             }
         }
     }

@@ -15,7 +15,7 @@ class LoginUserHandler(private val loginUser: LoginUser) : KtorHandler {
         try {
             val credentialsRepresenter = call.receiveOrThrow<CredentialsRepresenter>()
             val token = loginUser.invoke(LoginUser.Parameters(credentialsRepresenter.toCredentials()))
-            call.respond(HttpStatusCode.OK, token)
+            call.respond(HttpStatusCode.OK, mapOf("token" to token))
         } catch (notFoundEx: UserNotFound) {
             call.respond(HttpStatusCode.Forbidden)
         } catch (passMismatchEx: WrongCredentials) {

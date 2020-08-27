@@ -45,7 +45,7 @@ internal class JWTManagerImplTest : DescribeSpec({
 
             val act = { basicJwtManager.verifier.verify(token) }
 
-            shouldNotThrow<JWTVerificationException> { act() }
+            shouldNotThrow<JWTVerificationException> (act)
         }
 
         arrayOf(
@@ -75,7 +75,7 @@ internal class JWTManagerImplTest : DescribeSpec({
             it("should fail on token verification when $desc") {
                 val act = { basicJwtManager.verifier.verify(token) }
 
-                shouldThrow<JWTVerificationException> { act() }
+                shouldThrow<JWTVerificationException> (act)
             }
         }
     }

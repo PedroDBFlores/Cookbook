@@ -1,7 +1,6 @@
 package adapters.database
 
 import adapters.database.DatabaseTestHelper.createUserInDatabase
-import adapters.database.DatabaseTestHelper.mapToUser
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
 import errors.UserNotFound
@@ -18,7 +17,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import model.User
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
 import java.sql.SQLException
@@ -87,8 +85,7 @@ internal class UserRepositoryImplTest : DescribeSpec({
                 val id = repo.create(user = basicUser, userPassword = "PASSWORD")
 
                 id.shouldNotBeZero()
-                val createdUser =
-                    transaction(database) { Users.select { Users.id eq id }.map { row -> row.mapToUser() }.first() }
+                val createdUser = repo.find(id)
                 createdUser.shouldBe(basicUser.copy(id = id, passwordHash = basicHashingService.hash("PASSWORD")))
                 verify(exactly = 1) { hashingService.hash("PASSWORD") }
             }
@@ -104,19 +101,17 @@ internal class UserRepositoryImplTest : DescribeSpec({
                     )
                 val hashingService = mockk<HashingService>(relaxed = true)
                 val userToUpdate = createdUser.copy(name = "ABC")
-
                 val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
-                repo.update(user = userToUpdate)
-                val updatedUser = transaction(database) {
-                    Users.select { Users.id eq createdUser.id }.map { row -> row.mapToUser() }.first()
-                }
 
+                repo.update(user = userToUpdate)
+
+                val updatedUser = repo.find(createdUser.id)
                 updatedUser.shouldBe(userToUpdate.copy(passwordHash = basicHashingService.hash("PASSWORD")))
                 verify { hashingService wasNot called }
             }
 
             it("changes the password as well if both old and new password are provided") {
-                val currentUser =
+                val createdUser =
                     createUserInDatabase(
                         user = basicUser,
                         userPassword = "OLDPASSWORD",
@@ -131,12 +126,10 @@ internal class UserRepositoryImplTest : DescribeSpec({
                 }
                 val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
 
-                repo.update(user = currentUser, oldPassword = "OLDPASSWORD", newPassword = "NEWPASSWORD")
-                val updatedUser = transaction(database) {
-                    Users.select { Users.id eq currentUser.id }.map { row -> row.mapToUser() }.first()
-                }
+                repo.update(user = createdUser, oldPassword = "OLDPASSWORD", newPassword = "NEWPASSWORD")
 
-                updatedUser.shouldBe(currentUser.copy(passwordHash = basicHashingService.hash("NEWPASSWORD")))
+                val updatedUser = repo.find(createdUser.id)
+                updatedUser.shouldBe(createdUser.copy(passwordHash = basicHashingService.hash("NEWPASSWORD")))
                 verify(exactly = 1) {
                     hashingService.verify("OLDPASSWORD", "OLDPASSWORDHASH")
                     hashingService.hash("NEWPASSWORD")
@@ -154,7 +147,7 @@ internal class UserRepositoryImplTest : DescribeSpec({
 
                 val act = { repo.update(user = currentUser.copy(id = 99999)) }
 
-                shouldThrow<UserNotFound> { act() }
+                shouldThrow<UserNotFound>(act)
             }
 
             it("throws if a new password is provided but the old is not") {
@@ -168,7 +161,7 @@ internal class UserRepositoryImplTest : DescribeSpec({
 
                 val act = { repo.update(user = currentUser, oldPassword = null, newPassword = "newPassword") }
 
-                shouldThrow<IllegalArgumentException> { act() }
+                shouldThrow<IllegalArgumentException>(act)
             }
 
             it("throws if the old password doesn't match") {
@@ -188,7 +181,7 @@ internal class UserRepositoryImplTest : DescribeSpec({
                     )
                 }
 
-                shouldThrow<WrongCredentials> { act() }
+                shouldThrow<WrongCredentials>(act)
             }
         }
 
@@ -214,7 +207,7 @@ internal class UserRepositoryImplTest : DescribeSpec({
 
                 val act = { repo.create(secondUser, "OTHERPASSWORD") }
 
-                shouldThrow<SQLException> { act() }
+                shouldThrow<SQLException>(act)
             }
         }
     }

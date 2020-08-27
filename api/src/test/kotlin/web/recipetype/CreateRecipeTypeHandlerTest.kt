@@ -29,7 +29,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
     describe("Create recipe type handler") {
         it("creates a recipe type returning 201") {
-            val expectedRecipeType = RecipeType(id = 0, name = "Recipe type")
+            val expectedRecipeType = RecipeType(name = "Recipe type")
             val jsonBody = createJSONObject("name" to expectedRecipeType.name)
             val createRecipeTypeMock = mockk<CreateRecipeType> {
                 every { this@mockk(any()) } returns 1

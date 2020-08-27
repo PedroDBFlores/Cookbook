@@ -10,8 +10,6 @@ import ports.UserRolesRepository
 
 class UserRolesRepositoryImpl(private val database: Database) : UserRolesRepository {
     override fun getRolesForUser(userId: Int): List<UserRole> = transaction(database) {
-        require(Users.select { Users.id eq userId }.count() == 1L) { throw UserNotFound(userId) }
-
         UserRoles.select { UserRoles.userId eq userId }
             .mapNotNull(::mapToUserRole)
     }

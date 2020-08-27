@@ -33,7 +33,7 @@ internal class FindUserTest : DescribeSpec({
 
             val act = { findUser(FindUser.Parameters(userId = 1)) }
 
-            shouldThrow<UserNotFound> { act() }
+            shouldThrow<UserNotFound> (act)
         }
     }
 })

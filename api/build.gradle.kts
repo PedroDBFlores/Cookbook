@@ -1,10 +1,9 @@
-
-
 plugins {
     application
     kotlin("jvm") version "1.4.0"
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.29.0"
+    id("com.adarshr.test-logger") version "2.1.0"
 //    id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
 }
 

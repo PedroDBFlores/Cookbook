@@ -34,7 +34,7 @@ internal class FindRecipeTypeTest : DescribeSpec({
 
             val act = { findRecipeType(FindRecipeType.Parameters(1)) }
 
-            val recipeTypeNotFound = shouldThrow<RecipeTypeNotFound> { act() }
+            val recipeTypeNotFound = shouldThrow<RecipeTypeNotFound> (act)
             recipeTypeNotFound.message.shouldBe("Recipe type with id 1 not found")
             verify(exactly = 1) { recipeTypeRepository.find(ofType<Int>()) }
         }

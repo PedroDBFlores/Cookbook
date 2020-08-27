@@ -22,7 +22,7 @@ class UserRepositoryImpl(
     }
 
     override fun find(userName: String): User? = transaction(database) {
-        findQuery { this.select { Users.userName eq userName } }
+        findQuery { this.select { (Users.userName eq userName) } }
             .mapNotNull(::mapToUser)
             .firstOrNull()
     }
@@ -36,7 +36,7 @@ class UserRepositoryImpl(
             Roles.code.groupConcat(";")
         )
             .selectFilter()
-            .groupBy(Users.id, Users.name, Users.userName, Users.passwordHash, Roles.code)
+            .groupBy(Users.id, Users.name, Users.userName, Users.passwordHash)
 
     override fun create(user: User, userPassword: String): Int = transaction(database) {
         Users.insertAndGetId { userToCreate ->

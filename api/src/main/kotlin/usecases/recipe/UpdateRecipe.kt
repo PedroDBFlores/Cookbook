@@ -9,7 +9,7 @@ class UpdateRecipe(private val recipeRepository: RecipeRepository) {
         val (recipe) = parameters
 
         require(recipeRepository.find(recipe.id) != null) {
-            throw RecipeNotFound(recipeId = recipe.id)
+            throw RecipeNotFound(id = recipe.id)
         }
 
         recipeRepository.update(recipe)

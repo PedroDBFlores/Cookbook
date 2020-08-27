@@ -40,7 +40,6 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
 
         it("creates a recipe returning 201") {
             val expectedRecipe = Recipe(
-                id = 0,
                 recipeTypeId = 1,
                 userId = 1,
                 name = "name",

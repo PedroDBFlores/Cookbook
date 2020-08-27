@@ -25,7 +25,7 @@ internal class UserRoleTest : DescribeSpec({
             it("throws when $conditionDescription") {
                 val act = { UserRole(userId, roleId) }
 
-                shouldThrow<ValidationError> { act() }
+                shouldThrow<ValidationError> (act)
             }
         }
     }

@@ -20,21 +20,20 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class RecipeRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database
-    var firstRecipeType = RecipeType(id = 0, name = "First recipe type")
+    var firstRecipeType = RecipeType(name = "First recipe type")
     lateinit var firstUser: User
     lateinit var secondUser: User
 
     beforeSpec {
         transaction(database) {
             firstRecipeType = createRecipeTypeInDatabase(firstRecipeType)
-            firstUser =
-                createUserInDatabase(
-                    User(id = 0, name = "firstUser", userName = "firstUsername"),
-                    "password",
-                    mockk(relaxed = true)
-                )
+            firstUser = createUserInDatabase(
+                User(name = "firstUser", userName = "firstUsername"),
+                "password",
+                mockk(relaxed = true)
+            )
             secondUser = createUserInDatabase(
-                User(id = 0, name = "secondUser", userName = "secondUsername"),
+                User(name = "secondUser", userName = "secondUsername"),
                 "password2",
                 mockk(relaxed = true)
             )
@@ -57,7 +56,6 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
     describe("Recipe repository") {
         val basicRecipe = Recipe(
-            id = 0,
             recipeTypeId = firstRecipeType.id,
             recipeTypeName = firstRecipeType.name,
             userId = firstUser.id,
@@ -226,7 +224,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                     val repo = RecipeRepositoryImpl(database = database)
                     val act = { repo.create(recipe = recipe) }
 
-                    shouldThrow<IllegalArgumentException> { act() }
+                    shouldThrow<IllegalArgumentException>(act)
                 }
             }
         }

@@ -3,6 +3,7 @@ package usecases.recipe
 import errors.RecipeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -23,7 +24,7 @@ internal class DeleteRecipeTest : DescribeSpec({
             }
         }
 
-        it("throws if a recipe doesn't exist") {
+        it("throws 'RecipeNotFound' if no rows were affected") {
             val recipeRepository = mockk<RecipeRepository> {
                 every { delete(any()) } returns false
             }
@@ -31,7 +32,8 @@ internal class DeleteRecipeTest : DescribeSpec({
 
             val act = { deleteRecipe(DeleteRecipe.Parameters(1)) }
 
-            shouldThrow<RecipeNotFound> { act() }
+            val recipeNotFound = shouldThrow<RecipeNotFound> (act)
+            recipeNotFound.message.shouldBe(RecipeNotFound(1).message)
             verify(exactly = 1) { recipeRepository.delete(any()) }
         }
     }

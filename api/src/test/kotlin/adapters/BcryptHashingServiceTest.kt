@@ -3,6 +3,8 @@ package adapters
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldHaveLength
 import io.kotest.matchers.string.shouldStartWith
 
 internal class BcryptHashingServiceTest : DescribeSpec({

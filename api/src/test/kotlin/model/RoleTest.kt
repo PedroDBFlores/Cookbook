@@ -30,7 +30,7 @@ internal class RoleTest : DescribeSpec({
             it("throws when $conditionDescription") {
                 val act = { Role(id = id, name = name, code = code, persistent = true) }
 
-                shouldThrow<ValidationError> { act() }
+                shouldThrow<ValidationError> (act)
             }
         }
     }

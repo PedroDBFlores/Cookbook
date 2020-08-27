@@ -24,8 +24,7 @@ internal class LoginUserTest : DescribeSpec({
                 every { find(basicUser.userName) } returns basicUser
             }
             val hashingService = mockk<HashingService> {
-                every { hash("PASSWORD") } returns "PASSWORDHASH"
-                every { verify("PASSWORDHASH", basicUser.passwordHash) } returns true
+                every { verify("PASSWORD", basicUser.passwordHash) } returns true
             }
             val jwtManager = mockk<JWTManager<User>> {
                 every { generateToken(basicUser) } returns "JWT_TOKEN"
@@ -41,8 +40,7 @@ internal class LoginUserTest : DescribeSpec({
             jwtToken.shouldBe("JWT_TOKEN")
             verify {
                 userRepository.find(basicUser.userName)
-                hashingService.hash("PASSWORD")
-                hashingService.verify("PASSWORDHASH", basicUser.passwordHash)
+                hashingService.verify("PASSWORD", basicUser.passwordHash)
                 jwtManager.generateToken(basicUser)
             }
         }
@@ -62,7 +60,7 @@ internal class LoginUserTest : DescribeSpec({
 
             val act = { loginUser(LoginUser.Parameters(Credentials(basicUser.userName, "PASSWORD"))) }
 
-            shouldThrow<WrongCredentials> { act() }
+            shouldThrow<WrongCredentials> (act)
         }
 
         it("throws if the user is not found") {
@@ -79,7 +77,7 @@ internal class LoginUserTest : DescribeSpec({
 
             val act = { loginUser.invoke(LoginUser.Parameters(Credentials("username", "password"))) }
 
-            shouldThrow<UserNotFound> { act() }
+            shouldThrow<UserNotFound> (act)
             verify { hashingService wasNot called }
         }
     }

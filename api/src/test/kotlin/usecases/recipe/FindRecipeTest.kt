@@ -43,7 +43,7 @@ internal class FindRecipeTest : DescribeSpec({
 
             val act = { findRecipe(FindRecipe.Parameters(9999)) }
 
-            val recipeNotFound = shouldThrow<RecipeNotFound> { act() }
+            val recipeNotFound = shouldThrow<RecipeNotFound> (act)
             recipeNotFound.message.shouldBe("Recipe with id 9999 not found")
             verify(exactly = 1) { recipeRepository.find(any()) }
         }

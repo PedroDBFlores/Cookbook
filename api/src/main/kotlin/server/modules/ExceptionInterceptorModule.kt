@@ -1,5 +1,6 @@
 package server.modules
 
+import errors.OperationNotAllowed
 import errors.ResourceAlreadyExists
 import errors.ValidationError
 import io.ktor.application.*
@@ -16,6 +17,7 @@ fun Application.exceptionInterceptorModule() {
         } catch (unhandledException: Throwable) {
             val httpStatusCode = when (unhandledException) {
                 is BadRequestException, is ValidationError -> HttpStatusCode.BadRequest
+                is OperationNotAllowed -> HttpStatusCode.Forbidden
                 is NotFoundException -> HttpStatusCode.NotFound
                 is ResourceAlreadyExists -> HttpStatusCode.Conflict
                 is UnsupportedMediaTypeException -> HttpStatusCode.UnsupportedMediaType

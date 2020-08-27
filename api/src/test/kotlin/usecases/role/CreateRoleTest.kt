@@ -35,7 +35,7 @@ internal class CreateRoleTest : DescribeSpec({
 
             val act = { createRole(CreateRole.Parameters("Old Role", "OLDROLE")) }
 
-            val roleAlreadyExists = shouldThrow<RoleAlreadyExists> { act() }
+            val roleAlreadyExists = shouldThrow<RoleAlreadyExists> (act)
             roleAlreadyExists.message.shouldBe("A role with the code OLDROLE already exists")
             verify(exactly = 1) { roleRepository.find("OLDROLE") }
             verify(exactly = 0) { roleRepository.create(any()) }

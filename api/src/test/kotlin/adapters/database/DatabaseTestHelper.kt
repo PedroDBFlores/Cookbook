@@ -64,40 +64,4 @@ object DatabaseTestHelper {
         val id = repo.create(role = role)
         return role.copy(id = id)
     }
-
-    //region Map functions
-    fun ResultRow.mapToRecipeType() = RecipeType(
-        id = this[RecipeTypes.id].value,
-        name = this[RecipeTypes.name]
-    )
-
-    fun ResultRow.mapToRecipe() = Recipe(
-        id = this[Recipes.id].value,
-        recipeTypeId = this[Recipes.recipeTypeId],
-        userId = this[Recipes.userId],
-        name = this[Recipes.name],
-        description = this[Recipes.description],
-        ingredients = this[Recipes.ingredients],
-        preparingSteps = this[Recipes.preparingSteps]
-    )
-
-    fun ResultRow.mapToUser() = User(
-        id = this[Users.id].value,
-        name = this[Users.name],
-        userName = this[Users.userName],
-        passwordHash = this[Users.passwordHash]
-    )
-
-    fun ResultRow.mapToRole() = Role(
-        id = this[Roles.id].value,
-        name = this[Roles.name],
-        code = this[Roles.code],
-        persistent = this[Roles.persistent]
-    )
-
-    fun ResultRow.mapToUserRole() = UserRole(
-        userId = this[UserRoles.userId],
-        roleId = this[UserRoles.roleId]
-    )
-    //endregion
 }

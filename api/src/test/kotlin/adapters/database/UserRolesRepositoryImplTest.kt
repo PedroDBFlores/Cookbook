@@ -2,11 +2,9 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRoleInDatabase
 import adapters.database.DatabaseTestHelper.createUserInDatabase
-import adapters.database.DatabaseTestHelper.mapToUserRole
 import adapters.database.schema.Roles
 import adapters.database.schema.UserRoles
 import adapters.database.schema.Users
-import errors.UserNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -16,7 +14,6 @@ import model.Role
 import model.User
 import model.UserRole
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 
@@ -32,9 +29,9 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
     }
 
     describe("User roles repository") {
-        val basicUser = User(id = 0, name = "Fábio Silva", userName = "fab.silva")
-        val firstRole = Role(id = 0, name = "User", code = "USER", persistent = true)
-        val secondRole = Role(id = 0, name = "Admin", code = "ADMIN", persistent = true)
+        val basicUser = User(name = "Fábio Silva", userName = "fab.silva")
+        val firstRole = Role(name = "User", code = "USER", persistent = true)
+        val secondRole = Role(name = "Admin", code = "ADMIN", persistent = true)
 
         describe("Get roles") {
             it("gets all the roles for a user") {
@@ -56,14 +53,6 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
 
                 userRoles.shouldBe(expectedUserRoles)
             }
-
-            it("should throw UserNotFound if the user doesn't exist") {
-                val repo = UserRolesRepositoryImpl(database = database)
-
-                val act = { repo.getRolesForUser(88) }
-
-                shouldThrow<UserNotFound> { act() }
-            }
         }
 
         describe("Add role to user") {
@@ -74,10 +63,7 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
 
                 repo.addRoleToUser(userId = user.id, roleId = role.id)
 
-                val createdUserRole = transaction(database) {
-                    UserRoles.select { UserRoles.userId eq user.id }.map { row -> row.mapToUserRole() }
-                        .first()
-                }
+                val createdUserRole = repo.getRolesForUser(userId = user.id).first { ur -> ur.roleId == role.id }
                 createdUserRole.shouldBe(UserRole(userId = user.id, roleId = role.id ))
             }
 
@@ -95,7 +81,7 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
 
                     val act = { repo.addRoleToUser(userId = user?.id ?: 777, roleId = role?.id ?: 888) }
 
-                    shouldThrow<SQLException> { act() }
+                    shouldThrow<SQLException> (act)
                 }
             }
         }

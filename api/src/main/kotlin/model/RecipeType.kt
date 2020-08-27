@@ -3,7 +3,7 @@ package model
 import errors.ValidationError
 
 data class RecipeType(
-    val id: Int,
+    val id: Int = 0,
     val name: String
 ) {
     init {

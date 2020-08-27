@@ -17,12 +17,12 @@ class LoginUser(
         val (credentials) = parameters
 
         val user = userRepository.find(credentials.username)
-            ?: throw UserNotFound(userId = null, userName = credentials.username)
-        val passwordHash = hashingService.hash(credentials.password)
+            ?: throw UserNotFound(userName = credentials.username)
 
-        return when (hashingService.verify(passwordHash, user.passwordHash)) {
-            true -> jwtManager.generateToken(user)
-            false -> throw WrongCredentials()
+        return if (hashingService.verify(credentials.password, user.passwordHash)) {
+            jwtManager.generateToken(user)
+        } else {
+            throw WrongCredentials()
         }
     }
 

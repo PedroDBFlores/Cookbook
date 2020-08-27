@@ -12,7 +12,7 @@ import ports.RecipeTypeRepository
 
 internal class CreateRecipeTypeTest : DescribeSpec({
     describe("Create recipe type use case") {
-        val basicRecipeType = RecipeType(id = 0, name = "Recipe type")
+        val basicRecipeType = RecipeType(name = "Recipe type")
 
         it("creates a recipe type") {
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
@@ -38,7 +38,7 @@ internal class CreateRecipeTypeTest : DescribeSpec({
 
             val act = { createRecipeType(CreateRecipeType.Parameters(basicRecipeType)) }
 
-            val recipeTypeAlreadyExists = shouldThrow<RecipeTypeAlreadyExists> { act() }
+            val recipeTypeAlreadyExists = shouldThrow<RecipeTypeAlreadyExists> (act)
             recipeTypeAlreadyExists.message.shouldBe("A recipe type with the name 'Recipe type' already exists")
             verify(exactly = 1) { recipeTypeRepository.find("Recipe type") }
             verify(exactly = 0) { recipeTypeRepository.create(basicRecipeType) }

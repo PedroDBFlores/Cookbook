@@ -8,14 +8,17 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import usecases.recipe.*
 import usecases.recipetype.*
+import usecases.user.LoginUser
 import web.recipe.*
 import web.recipetype.*
+import web.user.LoginUserHandler
 
 fun Application.routingModule() {
     routing {
         healthCheckRoute()
         recipeTypeRoutes()
         recipeRoutes()
+        userRoutes()
 
         optionsRoutes()
     }
@@ -99,6 +102,15 @@ fun Routing.recipeRoutes() {
         delete("{id}") {
             val useCase by call.di().instance<DeleteRecipe>()
             DeleteRecipeHandler(useCase).handle(call)
+        }
+    }
+}
+
+fun Routing.userRoutes() {
+    route("user") {
+        post("login") {
+            val useCase by call.di().instance<LoginUser>()
+            LoginUserHandler(useCase).handle(call)
         }
     }
 }

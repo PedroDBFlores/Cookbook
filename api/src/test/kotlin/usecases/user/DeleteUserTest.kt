@@ -4,8 +4,10 @@ import errors.UserNotFound
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import ports.UserRepository
 
 internal class DeleteUserTest : DescribeSpec({
@@ -16,12 +18,12 @@ internal class DeleteUserTest : DescribeSpec({
             }
             val deleteUser = DeleteUser(userRepository)
 
-            val act = { deleteUser.invoke(DeleteUser.Parameters(userId = 1)) }
+            deleteUser.invoke(DeleteUser.Parameters(userId = 1))
 
-            shouldNotThrowAny { act() }
+            verify(exactly = 1) { userRepository.delete(1) }
         }
 
-        it("throws if a user isn't deleted") {
+        it("throws 'UserNotFound if no row is affected") {
             val userRepository = mockk<UserRepository> {
                 every { delete(any()) } returns false
             }
@@ -29,7 +31,9 @@ internal class DeleteUserTest : DescribeSpec({
 
             val act = { deleteUser.invoke(DeleteUser.Parameters(userId = 1)) }
 
-            shouldThrow<UserNotFound> { act() }
+            val userNotFound = shouldThrow<UserNotFound>(act)
+            userNotFound.message.shouldBe(UserNotFound(id = 1).message)
+            verify(exactly = 1) { userRepository.delete(1) }
         }
     }
 })

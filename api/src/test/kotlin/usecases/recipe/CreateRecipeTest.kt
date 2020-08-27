@@ -13,7 +13,6 @@ internal class CreateRecipeTest : DescribeSpec({
     describe("Create recipe use case") {
         it("creates a recipe") {
             val recipeToCreate = Recipe(
-                id = 0,
                 recipeTypeId = 1,
                 recipeTypeName = "Recipe type name",
                 userId = 1,

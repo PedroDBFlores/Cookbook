@@ -43,7 +43,7 @@ internal class UpdateRecipeTest : DescribeSpec({
 
             val act = { updateRecipe(UpdateRecipe.Parameters(basicRecipe)) }
 
-            shouldThrow<RecipeNotFound> { act() }
+            shouldThrow<RecipeNotFound> (act)
             verify(exactly = 1) { recipeRepository.find(basicRecipe.id) }
         }
     }

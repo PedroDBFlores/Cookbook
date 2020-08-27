@@ -29,7 +29,7 @@ internal class CredentialsTest : DescribeSpec({
             it("throws a ValidationError when $conditionDescription") {
                 val act = { Credentials(username = username, password = password) }
 
-                shouldThrow<ValidationError> { act() }
+                shouldThrow<ValidationError> (act)
             }
         }
     }
