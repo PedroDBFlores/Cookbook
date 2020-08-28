@@ -64,8 +64,6 @@ dependencies {
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion") // for kotest property test
     testImplementation("io.kotest:kotest-assertions-ktor-jvm:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
-    testImplementation("io.rest-assured:kotlin-extensions:$restAssuredVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

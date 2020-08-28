@@ -3,6 +3,7 @@ package server.modules
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.mockk.mockk
@@ -45,6 +46,14 @@ class RoutingModuleTest : DescribeSpec({
     fun createTestServer(): Application.() -> Unit = {
         contentNegotiationModule()
         injectTestDependencies()
+        install(Authentication) {
+            basic("user") {
+
+            }
+            basic("admin") {
+
+            }
+        }
         routingModule()
     }
 
