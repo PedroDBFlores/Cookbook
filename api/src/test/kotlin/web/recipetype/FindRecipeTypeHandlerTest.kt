@@ -42,19 +42,6 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
             }
         }
 
-        it("should return a 404 if the recipe type wasn't found") {
-            val getRecipeTypeMock = mockk<FindRecipeType> {
-                every { this@mockk(FindRecipeType.Parameters(9999)) } throws RecipeTypeNotFound(9999)
-            }
-
-            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/recipetype/9999")) {
-                    response.status().shouldBe(HttpStatusCode.NotFound)
-                    verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(9999)) }
-                }
-            }
-        }
-
         arrayOf(
             row(
                 "arroz",

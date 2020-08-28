@@ -2,6 +2,7 @@ package server.modules
 
 import errors.OperationNotAllowed
 import errors.UserAlreadyExists
+import errors.UserNotFound
 import errors.ValidationError
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
@@ -40,6 +41,12 @@ class ExceptionIntercepterModuleTest : DescribeSpec({
                 HttpStatusCode.Forbidden,
                 ResponseError(HttpStatusCode.Forbidden.value.toString(), "You are not allowed"),
                 "a OperationNotAllowed occurs"
+            ),
+            row(
+                { throw UserNotFound(1) },
+                HttpStatusCode.NotFound,
+                ResponseError(HttpStatusCode.NotFound.value.toString(), "User with id 1 not found"),
+                "a ResourceNotFound occurs"
             ),
             row(
                 { throw NotFoundException() },

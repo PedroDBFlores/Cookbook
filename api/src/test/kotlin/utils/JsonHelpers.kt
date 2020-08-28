@@ -36,7 +36,7 @@ object JsonHelpers {
      * @param properties The properties to be inserted into the JSON object
      * @return A JSON object with tne new properties
      */
-    private fun addJSONProperties(json: String, properties: Map<String, Any>): String {
+    private fun addJSONProperties(json: String, properties: Map<String, Any?>): String {
         with(ObjectMapper().readTree(json) as ObjectNode) {
             properties.forEach {
                 putPOJO(it.key, it.value)
@@ -45,7 +45,7 @@ object JsonHelpers {
         }
     }
 
-    fun createJSONObject(properties: Map<String, Any>): String {
+    fun createJSONObject(properties: Map<String, Any?>): String {
         val objectNode = ObjectMapper().createObjectNode()
         properties.forEach {
             objectNode.putPOJO(it.key, it.value)
@@ -53,7 +53,7 @@ object JsonHelpers {
         return objectNode.toString()
     }
 
-    fun createJSONObject(vararg properties: Pair<String, Any>) = createJSONObject(mapOf(*properties))
+    fun createJSONObject(vararg properties: Pair<String, Any?>) = createJSONObject(mapOf(*properties))
 
     //Extension methods
     fun Any.toJson() = convertToJSON(this)

@@ -8,7 +8,7 @@ class CreateUser(private val userRepository: UserRepository) {
     operator fun invoke(parameters: Parameters): Int {
         val (user, userPassword) = parameters
 
-        // TODO: Create a link for a default user!!
+        // TODO: Link the ROLE to every one
         require(userRepository.find(userName = user.userName) == null) {
             throw UserAlreadyExists(user.userName)
         }

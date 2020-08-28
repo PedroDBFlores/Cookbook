@@ -44,20 +44,6 @@ internal class FindUserHandlerTest : DescribeSpec({
             }
         }
 
-        it("should return 404 if the user is not found") {
-            val findUser = mockk<FindUser> {
-                every { this@mockk(FindUser.Parameters(9999)) } throws UserNotFound()
-            }
-            withTestApplication(moduleFunction = createTestServer(findUser)) {
-                with(handleRequest(HttpMethod.Get, "/user/9999") {
-                    addHeader("Content-Type", "application/json")
-                }) {
-                    response.status().shouldBe(HttpStatusCode.NotFound)
-                    verify(exactly = 1) { findUser(FindUser.Parameters(9999)) }
-                }
-            }
-        }
-
         arrayOf(
             row(
                 "arroz",

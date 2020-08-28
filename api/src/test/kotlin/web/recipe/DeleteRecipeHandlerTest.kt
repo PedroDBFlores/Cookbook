@@ -33,19 +33,6 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
             }
         }
 
-        it("should return a 404 if the recipe wasn't found") {
-            val deleteRecipeMock = mockk<DeleteRecipe> {
-                every { this@mockk(any()) } throws RecipeNotFound(9999)
-            }
-
-            withTestApplication(moduleFunction = createTestServer(deleteRecipeMock)) {
-                with(handleRequest(HttpMethod.Delete, "/recipe/9999")) {
-                    response.status().shouldBe(HttpStatusCode.NotFound)
-                    verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(9999)) }
-                }
-            }
-        }
-
         arrayOf(
             row(
                 "massa",

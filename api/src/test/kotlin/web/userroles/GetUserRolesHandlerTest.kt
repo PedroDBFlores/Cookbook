@@ -1,5 +1,6 @@
 package web.userroles
 
+import errors.UserNotFound
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -24,13 +25,13 @@ internal class GetUserRolesHandlerTest : DescribeSpec({
     }
 
     describe("Get user roles handler") {
-        it("gets the users roles"){
+        it("gets the users roles") {
             val userId = 8
             val expectedUserRoles = listOf(
                 UserRole(userId, 7),
-                UserRole(userId,9)
+                UserRole(userId, 9)
             )
-            val getUserRoles = mockk<GetUserRoles>{
+            val getUserRoles = mockk<GetUserRoles> {
                 every { this@mockk(GetUserRoles.Parameters(userId)) } returns expectedUserRoles
             }
 
