@@ -55,13 +55,13 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         bind<DeleteRecipe>() with singleton { DeleteRecipe(instance()) }
     }
 
-//    val userModule = DI.Module("userModule") {
-//        bind<UserRepository>() with singleton { UserRepositoryImpl(db, instance()) }
-//        bind<CreateUser>() with singleton { CreateUser(instance()) }
-//        bind<DeleteUser>() with singleton { DeleteUser(instance()) }
-//        bind<FindUser>() with singleton { FindUser(instance()) }
-//        bind<LoginUser>() with singleton { LoginUser(instance(), instance(), instance("userJWTManager")) }
-//    }
+    val userModule = DI.Module("userModule") {
+        bind<UserRepository>() with singleton { UserRepositoryImpl(db, instance()) }
+        bind<CreateUser>() with singleton { CreateUser(instance()) }
+        bind<DeleteUser>() with singleton { DeleteUser(instance()) }
+        bind<FindUser>() with singleton { FindUser(instance()) }
+        bind<LoginUser>() with singleton { LoginUser(instance(), instance(), instance("userJWTManager")) }
+    }
 
     di {
         //Common
@@ -92,6 +92,6 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
 
         import(recipeTypeModule)
         import(recipeModule)
-        //import(userModule)
+        import(userModule)
     }
 }

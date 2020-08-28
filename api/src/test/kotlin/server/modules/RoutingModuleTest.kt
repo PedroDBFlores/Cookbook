@@ -6,11 +6,16 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.mockk.mockk
+import org.h2.command.ddl.CreateUser
 import org.kodein.di.bind
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
 import usecases.recipe.*
 import usecases.recipetype.*
+import usecases.user.DeleteUser
+import usecases.user.FindUser
+import usecases.user.LoginUser
+import usecases.user.UpdateUser
 
 class RoutingModuleTest : DescribeSpec({
 
@@ -28,6 +33,12 @@ class RoutingModuleTest : DescribeSpec({
             bind<CreateRecipe>() with singleton { mockk(relaxed = true) }
             bind<UpdateRecipe>() with singleton { mockk(relaxed = true) }
             bind<DeleteRecipe>() with singleton { mockk(relaxed = true) }
+            // User
+            bind<CreateUser>() with singleton { mockk(relaxed = true) }
+            bind<LoginUser>() with singleton { mockk(relaxed = true) }
+            bind<FindUser>() with singleton { mockk(relaxed = true) }
+            bind<UpdateUser>() with singleton { mockk(relaxed = true) }
+            bind<DeleteUser>() with singleton { mockk(relaxed = true) }
         }
     }
 
@@ -84,5 +95,24 @@ class RoutingModuleTest : DescribeSpec({
             }
         }
 
+        it("checks that the routes for the user are mapped with OPTIONS handler") {
+            withTestApplication(moduleFunction = createTestServer()) {
+                with(handleRequest(HttpMethod.Options, "/user")) {
+                    with(response) {
+                        headers["Allow"].shouldBe("POST,PUT")
+                    }
+                }
+                with(handleRequest(HttpMethod.Options, "/user/123")) {
+                    with(response) {
+                        headers["Allow"].shouldBe("GET, DELETE")
+                    }
+                }
+                with(handleRequest(HttpMethod.Options, "/user/login")) {
+                    with(response) {
+                        headers["Allow"].shouldBe("POST")
+                    }
+                }
+            }
+        }
     }
 })

@@ -8,7 +8,7 @@ import ports.KtorHandler
 import server.extensions.receiveOrThrow
 import usecases.user.UpdateUser
 
-class UpdateUserHandler(val updateUser: UpdateUser) : KtorHandler {
+class UpdateUserHandler(private val updateUser: UpdateUser) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
         val updateUserRepresenter = call.receiveOrThrow<UpdateUserRepresenter> {
             check(it.id > 0) { "Field 'id' must be bigger than zero" }
