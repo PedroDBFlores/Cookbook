@@ -1,21 +1,36 @@
 package flows
 
-import kotlinx.coroutines.future.await
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
 object RecipeTypeFlows {
-    suspend fun getRecipeTypes(baseUrl: String, jwtToken: String? = null): HttpResponse<String> {
-        val createUserRequestBuilder = HttpRequest
-            .newBuilder()
-            .uri(URI("$baseUrl/recipetype"))
-            .GET()
+    suspend fun getRecipeType(baseUrl: String, id: String, jwtToken: String? = null) = executeGETRequest(
+        uri = URI("$baseUrl/recipetype/$id"),
+        headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
+    )
 
-        jwtToken?.let { createUserRequestBuilder.header("Authorization", "Bearer $jwtToken") }
+    suspend fun getRecipeTypes(baseUrl: String, jwtToken: String? = null): HttpResponse<String> = executeGETRequest(
+        uri = URI("$baseUrl/recipetype"),
+        headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
+    )
 
-        return HttpClient.newHttpClient()
-            .sendAsync(createUserRequestBuilder.build(), HttpResponse.BodyHandlers.ofString()).await()
-    }
+    suspend fun createRecipeType(baseUrl: String, requestBody: String, jwtToken: String? = null): HttpResponse<String> =
+        executePOSTRequest(
+            uri = URI("$baseUrl/recipetype"),
+            requestBody = requestBody,
+            headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
+        )
+
+    suspend fun updateRecipeType(baseUrl: String, requestBody: String, jwtToken: String? = null): HttpResponse<String> =
+        executePUTRequest(
+            uri = URI("$baseUrl/recipetype"),
+            requestBody = requestBody,
+            headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
+        )
+
+    suspend fun deleteRecipeType(baseUrl: String, id: String, jwtToken: String? = null) = executeDELETERequest(
+        uri = URI("$baseUrl/recipetype/$id"),
+        headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
+    )
+
 }

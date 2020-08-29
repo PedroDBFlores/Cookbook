@@ -63,7 +63,7 @@ object JsonHelpers {
         val jsonNode = objectMapper.readValue<JsonNode>(this)
 
         val value = jsonNode.findValue(key)
-        value.textValue()
+        value.asText()
     }
 
     //Extension methods
