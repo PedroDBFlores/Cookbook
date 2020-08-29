@@ -21,7 +21,7 @@ import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
 internal class LoginUserHandlerTest : DescribeSpec({
-    val credentials = Credentials(username = "username", password = "password")
+    val credentials = Credentials(userName = "username", password = "password")
     val jsonBody = credentials.toJson()
 
     fun createTestServer(loginUser: LoginUser): Application.() -> Unit = {
@@ -38,7 +38,7 @@ internal class LoginUserHandlerTest : DescribeSpec({
                     this@mockk(
                         LoginUser.Parameters(
                             Credentials(
-                                username = credentials.username,
+                                userName = credentials.userName,
                                 password = credentials.password
                             )
                         )
@@ -60,7 +60,7 @@ internal class LoginUserHandlerTest : DescribeSpec({
                         loginUser.invoke(
                             LoginUser.Parameters(
                                 Credentials(
-                                    username = credentials.username,
+                                    userName = credentials.userName,
                                     password = credentials.password
                                 )
                             )
@@ -86,7 +86,7 @@ internal class LoginUserHandlerTest : DescribeSpec({
                         loginUser.invoke(
                             LoginUser.Parameters(
                                 Credentials(
-                                    username = credentials.username,
+                                    userName = credentials.userName,
                                     password = credentials.password
                                 )
                             )
@@ -112,7 +112,7 @@ internal class LoginUserHandlerTest : DescribeSpec({
                         loginUser.invoke(
                             LoginUser.Parameters(
                                 Credentials(
-                                    username = credentials.username,
+                                    userName = credentials.userName,
                                     password = credentials.password
                                 )
                             )

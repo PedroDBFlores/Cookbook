@@ -66,6 +66,17 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
+sourceSets{
+    create("testIntegration"){
+        withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
+            kotlin.srcDir("src/testIntegration/kotlin")
+            resources.srcDir("src/testIntegration/resources")
+            compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+            runtimeClasspath += output + compileClasspath + sourceSets["test"].runtimeClasspath
+        }
+    }
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "11"
@@ -74,6 +85,14 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+task<Test>("testIntegration") {
+    description = "Runs the integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets["testIntegration"].output.classesDirs
+    classpath = sourceSets["testIntegration"].runtimeClasspath
+    // mustRunAfter(tasks["test"])
 }
 
 //ktlint {

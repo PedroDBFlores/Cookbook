@@ -3,10 +3,7 @@ package server.modules
 import adapters.BcryptHashingService
 import adapters.authentication.ApplicationRoles
 import adapters.authentication.JWTManagerImpl
-import adapters.database.RecipeRepositoryImpl
-import adapters.database.RecipeTypeRepositoryImpl
-import adapters.database.UserRepositoryImpl
-import adapters.database.UserRolesRepositoryImpl
+import adapters.database.*
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.application.*
@@ -20,6 +17,7 @@ import org.kodein.di.singleton
 import ports.*
 import usecases.recipe.*
 import usecases.recipetype.*
+import usecases.role.*
 import usecases.user.CreateUser
 import usecases.user.DeleteUser
 import usecases.user.FindUser
@@ -67,10 +65,19 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         bind<LoginUser>() with singleton { LoginUser(instance(), instance(), instance("userJWTManager")) }
     }
 
-    val userRolesModule = DI.Module("userRolesModule"){
+    val roleModule = DI.Module("rolesModule") {
+        bind<RoleRepository>() with singleton { RoleRepositoryImpl(db) }
+        bind<CreateRole>() with singleton { CreateRole(instance()) }
+        bind<FindRole>() with singleton { FindRole(instance()) }
+        bind<GetAllRoles>() with singleton { GetAllRoles(instance()) }
+        bind<UpdateRole>() with singleton { UpdateRole(instance()) }
+        bind<DeleteRole>() with singleton { DeleteRole(instance()) }
+    }
+
+    val userRolesModule = DI.Module("userRolesModule") {
         bind<UserRolesRepository>() with singleton { UserRolesRepositoryImpl(db) }
-        bind<GetUserRoles>() with singleton { GetUserRoles(instance(), instance()) }
         bind<AddRoleToUser>() with singleton { AddRoleToUser(instance(), instance(), instance()) }
+        bind<GetUserRoles>() with singleton { GetUserRoles(instance(), instance()) }
         bind<DeleteRoleFromUser>() with singleton { DeleteRoleFromUser(instance()) }
     }
 
@@ -104,6 +111,7 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         import(recipeTypeModule)
         import(recipeModule)
         import(userModule)
+        import(roleModule)
         import(userRolesModule)
     }
 }

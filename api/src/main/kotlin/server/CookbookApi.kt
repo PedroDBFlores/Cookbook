@@ -13,7 +13,7 @@ import server.modules.*
  * Defines the Cookbook API
  */
 class CookbookApi(
-    configuration: ConfigurationFile
+    private val configuration: ConfigurationFile
 ) : AutoCloseable {
     private val server = embeddedServer(Netty, configuration.api.port) {
         contentNegotiationModule()
@@ -26,11 +26,12 @@ class CookbookApi(
         defaultHeadersModule()
     }
 
-    init {
-        server.start(wait = true)
+    fun start() {
+        server.start(wait = !configuration.api.testing)
     }
 
     override fun close() {
-        server.stop(5000, 5500)
+        val graceStopPeriod = if (configuration.api.testing) 0 else 5000L
+        server.stop(graceStopPeriod, graceStopPeriod)
     }
 }

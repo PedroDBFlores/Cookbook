@@ -6,7 +6,7 @@ import server.CookbookApi
 fun main() {
     val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
     migrateDB(configuration)
-    CookbookApi(configuration = configuration)
+    CookbookApi(configuration = configuration).start()
 }
 
 private fun migrateDB(configuration: ConfigurationFile) {

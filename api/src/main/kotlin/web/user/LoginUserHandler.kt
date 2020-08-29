@@ -24,9 +24,9 @@ class LoginUserHandler(private val loginUser: LoginUser) : KtorHandler {
     }
 
     private data class CredentialsRepresenter(
-        val username: String,
+        val userName: String,
         val password: String
     ) {
-        fun toCredentials() = Credentials(username = username, password = password)
+        fun toCredentials() = Credentials(userName = userName, password = password)
     }
 }

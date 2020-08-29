@@ -12,9 +12,9 @@ internal class CredentialsTest : DescribeSpec({
             val username = "username"
             val password = "password"
 
-            val credentials = Credentials(username = username, password = password)
+            val credentials = Credentials(userName = username, password = password)
 
-            credentials.username.shouldBe(username)
+            credentials.userName.shouldBe(username)
             credentials.password.shouldBe(password)
         }
 
@@ -27,7 +27,7 @@ internal class CredentialsTest : DescribeSpec({
             )
         ).forEach { (username, password, conditionDescription) ->
             it("throws a ValidationError when $conditionDescription") {
-                val act = { Credentials(username = username, password = password) }
+                val act = { Credentials(userName = username, password = password) }
 
                 shouldThrow<ValidationError> (act)
             }

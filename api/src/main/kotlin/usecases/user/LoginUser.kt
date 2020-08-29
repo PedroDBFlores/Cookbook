@@ -16,8 +16,8 @@ class LoginUser(
     operator fun invoke(parameters: Parameters): String {
         val (credentials) = parameters
 
-        val user = userRepository.find(credentials.username)
-            ?: throw UserNotFound(userName = credentials.username)
+        val user = userRepository.find(credentials.userName)
+            ?: throw UserNotFound(userName = credentials.userName)
 
         return if (hashingService.verify(credentials.password, user.passwordHash)) {
             jwtManager.generateToken(user)
