@@ -2,6 +2,7 @@ package journey
 
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
+import flows.UserFlows
 import io.kotest.assertions.json.shouldContainJsonKey
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -15,7 +16,7 @@ import java.net.http.HttpClient.newHttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers.ofString
 
-class CreateAndLoginUserIT : BehaviorSpec({
+class CreateAndLoginUserJourney : BehaviorSpec({
     val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
     val baseUrl = "http://localhost:${configuration.api.port}"
     lateinit var cookbookAPI: CookbookApi
@@ -38,14 +39,8 @@ class CreateAndLoginUserIT : BehaviorSpec({
                     "userName" to "username",
                     "password" to "password"
                 )
-                val createUserRequest = HttpRequest
-                    .newBuilder()
-                    .uri(URI("$baseUrl/user"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(createUserRequestBody))
-                    .build()
 
-                val createUserResponse = newHttpClient().sendAsync(createUserRequest, ofString()).await()
+                val createUserResponse = UserFlows.createUser(baseUrl, createUserRequestBody)
 
                 createUserResponse.statusCode().shouldBe(HttpStatus.CREATED_201)
                 createUserResponse.body().shouldContainJsonKey("id")
@@ -56,14 +51,8 @@ class CreateAndLoginUserIT : BehaviorSpec({
                     "userName" to "username",
                     "password" to "password"
                 )
-                val loginUserRequest = HttpRequest
-                    .newBuilder()
-                    .uri(URI("$baseUrl/user/login"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(loginUserRequestBody))
-                    .build()
 
-                val loginUserResponse = newHttpClient().sendAsync(loginUserRequest, ofString()).await()
+                val loginUserResponse = UserFlows.loginUser(baseUrl, loginUserRequestBody)
 
                 loginUserResponse.statusCode().shouldBe(HttpStatus.OK_200)
                 loginUserResponse.body().shouldContainJsonKey("token")
@@ -76,14 +65,8 @@ class CreateAndLoginUserIT : BehaviorSpec({
                     "userName" to "non",
                     "password" to "existing"
                 )
-                val loginUserRequest = HttpRequest
-                    .newBuilder()
-                    .uri(URI("$baseUrl/user/login"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(loginUserRequestBody))
-                    .build()
 
-                val loginUserResponse = newHttpClient().sendAsync(loginUserRequest, ofString()).await()
+                val loginUserResponse = UserFlows.loginUser(baseUrl, loginUserRequestBody)
 
                 with(loginUserResponse) {
                     statusCode().shouldBe(HttpStatus.FORBIDDEN_403)

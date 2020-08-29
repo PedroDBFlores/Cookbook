@@ -91,7 +91,7 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
                     domain = domain,
                     audience = audience,
                     realm = realm,
-                    allowedRoles = listOf(ApplicationRoles.USER, ApplicationRoles.ADMIN),
+                    allowedRoles = listOf(ApplicationRoles.USER),
                     algorithmSecret = secret
                 )
             }

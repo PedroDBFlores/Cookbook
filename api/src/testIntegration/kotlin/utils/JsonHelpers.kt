@@ -1,8 +1,11 @@
 package utils
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 
 /**
  * Contains functions that help on manipulating JSONs in the tests
@@ -54,6 +57,14 @@ object JsonHelpers {
     }
 
     fun createJSONObject(vararg properties: Pair<String, Any?>) = createJSONObject(mapOf(*properties))
+
+    fun String.getJsonValue(key: String) = run {
+        val objectMapper = ObjectMapper().registerModule(KotlinModule())
+        val jsonNode = objectMapper.readValue<JsonNode>(this)
+
+        val value = jsonNode.findValue(key)
+        value.textValue()
+    }
 
     //Extension methods
     fun Any.toJson() = convertToJSON(this)

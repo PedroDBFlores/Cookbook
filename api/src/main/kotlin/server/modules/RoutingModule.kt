@@ -96,13 +96,15 @@ fun Routing.healthCheckRoute() {
 
 fun Routing.recipeTypeRoutes() {
     route("recipetype") {
-        get {
-            val useCase by call.di().instance<GetAllRecipeTypes>()
-            GetAllRecipeTypesHandler(useCase).handle(call)
-        }
-        get("{id}") {
-            val useCase by call.di().instance<FindRecipeType>()
-            FindRecipeTypeHandler(useCase).handle(call)
+        authenticate("user") {
+            get {
+                val useCase by call.di().instance<GetAllRecipeTypes>()
+                GetAllRecipeTypesHandler(useCase).handle(call)
+            }
+            get("{id}") {
+                val useCase by call.di().instance<FindRecipeType>()
+                FindRecipeTypeHandler(useCase).handle(call)
+            }
         }
         authenticate("admin") {
             post {

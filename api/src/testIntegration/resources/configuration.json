@@ -4,7 +4,7 @@
     "port": 8092
   },
   "jwt": {
-    "domain": "http://localhost",
+    "domain": "http://localhost:8092",
     "audience": "cookbook-jwt",
     "realm": "cookbook-integration",
     "secret": "48!mak$ap1mRtcv7p@8dg32u7&r$%0qz"
