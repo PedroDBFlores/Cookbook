@@ -6,6 +6,7 @@ import adapters.authentication.JWTManagerImpl
 import adapters.database.RecipeRepositoryImpl
 import adapters.database.RecipeTypeRepositoryImpl
 import adapters.database.UserRepositoryImpl
+import adapters.database.UserRolesRepositoryImpl
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.application.*
@@ -23,6 +24,9 @@ import usecases.user.CreateUser
 import usecases.user.DeleteUser
 import usecases.user.FindUser
 import usecases.user.LoginUser
+import usecases.userroles.AddRoleToUser
+import usecases.userroles.DeleteRoleFromUser
+import usecases.userroles.GetUserRoles
 
 fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
     val db by lazy {
@@ -63,6 +67,13 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         bind<LoginUser>() with singleton { LoginUser(instance(), instance(), instance("userJWTManager")) }
     }
 
+    val userRolesModule = DI.Module("userRolesModule"){
+        bind<UserRolesRepository>() with singleton { UserRolesRepositoryImpl(db) }
+        bind<GetUserRoles>() with singleton { GetUserRoles(instance(), instance()) }
+        bind<AddRoleToUser>() with singleton { AddRoleToUser(instance(), instance(), instance()) }
+        bind<DeleteRoleFromUser>() with singleton { DeleteRoleFromUser(instance()) }
+    }
+
     di {
         //Common
         bind<HashingService>() with singleton { BcryptHashingService() }
@@ -93,5 +104,6 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         import(recipeTypeModule)
         import(recipeModule)
         import(userModule)
+        import(userRolesModule)
     }
 }

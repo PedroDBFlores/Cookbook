@@ -47,12 +47,8 @@ class RoutingModuleTest : DescribeSpec({
         contentNegotiationModule()
         injectTestDependencies()
         install(Authentication) {
-            basic("user") {
-
-            }
-            basic("admin") {
-
-            }
+            basic("user") {}
+            basic("admin") {}
         }
         routingModule()
     }
@@ -119,6 +115,26 @@ class RoutingModuleTest : DescribeSpec({
                 with(handleRequest(HttpMethod.Options, "/user/login")) {
                     with(response) {
                         headers["Allow"].shouldBe("POST")
+                    }
+                }
+            }
+        }
+
+        it("checks that the routes for the user roles are mapped with OPTIONS handler") {
+            withTestApplication(moduleFunction = createTestServer()) {
+                with(handleRequest(HttpMethod.Options, "/userroles")) {
+                    with(response) {
+                        headers["Allow"].shouldBe("POST")
+                    }
+                }
+                with(handleRequest(HttpMethod.Options, "/userroles/123")) {
+                    with(response) {
+                        headers["Allow"].shouldBe("GET")
+                    }
+                }
+                with(handleRequest(HttpMethod.Options, "/userroles/123/456")) {
+                    with(response) {
+                        headers["Allow"].shouldBe("DELETE")
                     }
                 }
             }

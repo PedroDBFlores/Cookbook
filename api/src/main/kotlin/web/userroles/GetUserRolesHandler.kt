@@ -9,8 +9,8 @@ import usecases.userroles.GetUserRoles
 
 class GetUserRolesHandler(private val getUserRoles: GetUserRoles) : KtorHandler{
     override suspend fun handle(call: ApplicationCall) {
-        val id = call.parameters.getOrFail<Int>("id")
+        val userId = call.parameters.getOrFail<Int>("userId")
 
-        call.respond(HttpStatusCode.OK, getUserRoles(GetUserRoles.Parameters(id)))
+        call.respond(HttpStatusCode.OK, getUserRoles(GetUserRoles.Parameters(userId)))
     }
 }

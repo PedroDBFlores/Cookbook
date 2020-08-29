@@ -20,7 +20,7 @@ internal class GetUserRolesHandlerTest : DescribeSpec({
     fun createTestServer(getUserRoles: GetUserRoles): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            get("/userroles/{id}") { GetUserRolesHandler(getUserRoles).handle(call) }
+            get("/userroles/{userId}") { GetUserRolesHandler(getUserRoles).handle(call) }
         }
     }
 
