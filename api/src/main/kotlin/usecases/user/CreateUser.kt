@@ -6,14 +6,22 @@ import ports.UserRepository
 
 class CreateUser(private val userRepository: UserRepository) {
     operator fun invoke(parameters: Parameters): Int {
-        val (user, userPassword) = parameters
+        val (name, userName, password) = parameters
 
-        // TODO: Link the ROLE to every one
-        require(userRepository.find(userName = user.userName) == null) {
-            throw UserAlreadyExists(user.userName)
+        require(userRepository.find(userName = userName) == null) {
+            throw UserAlreadyExists(userName)
         }
-        return userRepository.create(user = user, userPassword = userPassword)
+        return userRepository.create(
+            user = User(
+                name = name,
+                userName = userName
+            ), userPassword = password
+        )
     }
 
-    data class Parameters(val user: User, val userPassword: String)
+    data class Parameters(
+        val name: String,
+        val userName: String,
+        val password: String
+    )
 }

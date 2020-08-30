@@ -5,7 +5,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import model.CreateResult
-import model.User
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
 import usecases.role.FindRole
@@ -18,13 +17,9 @@ class CreateUserHandler(
     private val addRoleToUser: AddRoleToUser
 ) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
-        val createUserRepresenter = call.receiveOrThrow<CreateUserRepresenter>()
-        val userId = createUser(
-            CreateUser.Parameters(
-                createUserRepresenter.asUser(),
-                createUserRepresenter.password
-            )
-        )
+        val parameters = call.receiveOrThrow<CreateUserRepresenter>()
+            .toParameters()
+        val userId = createUser(parameters)
         val roleId = findRole(FindRole.Parameters(ApplicationRoles.USER.name)).id
         addRoleToUser(AddRoleToUser.Parameters(userId, roleId))
         call.respond(HttpStatusCode.Created, CreateResult(userId))
@@ -35,16 +30,12 @@ class CreateUserHandler(
         val userName: String,
         val password: String,
     ) {
-        private val user = User(
-            id = 0,
-            name = name,
-            userName = userName
-        )
-
         init {
-            check(password.isNotEmpty()) { "Field 'password' must not be empty" }
+            check(name.isNotBlank()) { "Field 'name' must not be empty" }
+            check(userName.isNotBlank()) { "Field 'userName' must not be empty" }
+            check(password.isNotBlank()) { "Field 'password' must not be empty" }
         }
 
-        fun asUser() = user
+        fun toParameters() = CreateUser.Parameters(name, userName, password)
     }
 }

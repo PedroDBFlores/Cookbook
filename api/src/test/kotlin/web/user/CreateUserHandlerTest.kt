@@ -49,8 +49,9 @@ internal class CreateUserHandlerTest : DescribeSpec({
                 every {
                     this@mockk(
                         CreateUser.Parameters(
-                            basicUser.copy(id = 0, passwordHash = ""),
-                            "password"
+                            name = basicUser.name,
+                            userName = basicUser.userName,
+                            password = "password"
                         )
                     )
                 } returns basicUser.id
@@ -64,7 +65,11 @@ internal class CreateUserHandlerTest : DescribeSpec({
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(basicUser.id).toJson())
                     verify(exactly = 1) {
-                        createUser(CreateUser.Parameters(basicUser.copy(id = 0, passwordHash = ""), "password"))
+                        createUser(CreateUser.Parameters(
+                            name = basicUser.name,
+                            userName = basicUser.userName,
+                            password = "password"
+                        ))
                         findRole(FindRole.Parameters("USER"))
                         addRoleToUser(AddRoleToUser.Parameters(basicUser.id, basicRole.id))
                     }
@@ -80,13 +85,13 @@ internal class CreateUserHandlerTest : DescribeSpec({
 
         arrayOf(
             row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
-            row((createUserRepresenterMap + mapOf<String, Any>("name" to "")).toJson(), "the name field is invalid"),
+            row((createUserRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(), "the name field is invalid"),
             row(
-                (createUserRepresenterMap + mapOf<String, Any>("userName" to "")).toJson(),
+                (createUserRepresenterMap + mapOf<String, Any>("userName" to " ")).toJson(),
                 "the userName field is invalid"
             ),
             row(
-                (createUserRepresenterMap + mapOf<String, Any>("password" to "")).toJson(),
+                (createUserRepresenterMap + mapOf<String, Any>("password" to " ")).toJson(),
                 "the password field is invalid"
             )
         ).forEach { (jsonBody, description) ->

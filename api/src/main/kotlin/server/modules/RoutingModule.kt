@@ -28,6 +28,7 @@ fun Application.routingModule() {
         recipeTypeRoutes()
         recipeRoutes()
         userRoutes()
+        roleRoutes()
         userRolesRoutes()
 
         optionsRoutes()
