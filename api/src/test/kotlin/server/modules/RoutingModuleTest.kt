@@ -1,5 +1,6 @@
 package server.modules
 
+import io.kotest.assertions.ktor.shouldHaveHeader
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
@@ -68,14 +69,10 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the recipe types are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/recipetype")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("GET,POST,PUT")
-                    }
+                    response.shouldHaveHeader("Allow", "GET,POST,PUT")
                 }
                 with(handleRequest(HttpMethod.Options, "/recipetype/123")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("GET,DELETE")
-                    }
+                    response.shouldHaveHeader("Allow", "GET,DELETE")
                 }
             }
         }
@@ -83,19 +80,15 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the recipe are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/recipe")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("GET,POST,PUT")
-                    }
+                    response.shouldHaveHeader("Allow", "GET,POST,PUT")
+
                 }
                 with(handleRequest(HttpMethod.Options, "/recipe/123")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("GET,DELETE")
-                    }
+                    response.shouldHaveHeader("Allow", "GET,DELETE")
+
                 }
                 with(handleRequest(HttpMethod.Options, "/recipe/search")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("POST")
-                    }
+                    response.shouldHaveHeader("Allow", "POST")
                 }
             }
         }
@@ -103,19 +96,26 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the user are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/user")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("POST,PUT")
-                    }
+                    response.shouldHaveHeader("Allow", "POST,PUT")
                 }
                 with(handleRequest(HttpMethod.Options, "/user/123")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("GET, DELETE")
-                    }
+                    response.shouldHaveHeader("Allow", "GET,DELETE")
+
                 }
                 with(handleRequest(HttpMethod.Options, "/user/login")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("POST")
-                    }
+                    response.shouldHaveHeader("Allow", "POST")
+                }
+            }
+        }
+
+        it("checks that the routes for the roles are mapped with OPTIONS handler") {
+            withTestApplication(moduleFunction = createTestServer()) {
+                with(handleRequest(HttpMethod.Options, "/role")) {
+                    response.shouldHaveHeader("Allow", "GET,POST,PUT")
+
+                }
+                with(handleRequest(HttpMethod.Options, "/role/123")) {
+                    response.shouldHaveHeader("Allow", "GET,DELETE")
                 }
             }
         }
@@ -123,19 +123,13 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the user roles are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/userroles")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("POST")
-                    }
+                    response.shouldHaveHeader("Allow", "POST")
                 }
                 with(handleRequest(HttpMethod.Options, "/userroles/123")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("GET")
-                    }
+                    response.shouldHaveHeader("Allow", "GET")
                 }
                 with(handleRequest(HttpMethod.Options, "/userroles/123/456")) {
-                    with(response) {
-                        headers["Allow"].shouldBe("DELETE")
-                    }
+                    response.shouldHaveHeader("Allow", "DELETE")
                 }
             }
         }

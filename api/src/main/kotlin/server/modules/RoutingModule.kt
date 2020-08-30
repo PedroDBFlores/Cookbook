@@ -9,14 +9,14 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import usecases.recipe.*
 import usecases.recipetype.*
-import usecases.role.DeleteRole
-import usecases.role.FindRole
+import usecases.role.*
 import usecases.user.*
 import usecases.userroles.AddRoleToUser
 import usecases.userroles.DeleteRoleFromUser
 import usecases.userroles.GetUserRoles
 import web.recipe.*
 import web.recipetype.*
+import web.roles.*
 import web.user.*
 import web.userroles.AddRoleToUserHandler
 import web.userroles.DeleteRoleFromUserHandler
@@ -65,11 +65,21 @@ fun Routing.optionsRoutes() {
         call.respond(HttpStatusCode.OK)
     }
     options("user/{id}") {
-        call.response.header("Allow", "GET, DELETE")
+        call.response.header("Allow", "GET,DELETE")
         call.respond(HttpStatusCode.OK)
     }
     options("user/login") {
         call.response.header("Allow", "POST")
+        call.respond(HttpStatusCode.OK)
+    }
+
+    //Role
+    options("role") {
+        call.response.header("Allow", "GET,POST,PUT")
+        call.respond(HttpStatusCode.OK)
+    }
+    options("role/{id}") {
+        call.response.header("Allow", "GET,DELETE")
         call.respond(HttpStatusCode.OK)
     }
 
@@ -178,6 +188,33 @@ fun Routing.userRoutes() {
             delete("{id}") {
                 val useCase by call.di().instance<DeleteUser>()
                 DeleteUserHandler(useCase).handle(call)
+            }
+        }
+    }
+}
+
+fun Routing.roleRoutes() {
+    route("role") {
+        authenticate("admin") {
+            get {
+                val useCase by call.di().instance<GetAllRoles>()
+                GetAllRolesHandler(useCase).handle(call)
+            }
+            get("{id}") {
+                val useCase by call.di().instance<FindRole>()
+                FindRoleHandler(useCase).handle(call)
+            }
+            post {
+                val useCase by call.di().instance<CreateRole>()
+                CreateRoleHandler(useCase).handle(call)
+            }
+            put {
+                val useCase by call.di().instance<UpdateRole>()
+                UpdateRoleHandler(useCase).handle(call)
+            }
+            delete("{id}") {
+                val useCase by call.di().instance<DeleteRole>()
+                DeleteRoleHandler(useCase).handle(call)
             }
         }
     }

@@ -20,7 +20,6 @@ internal class UserTest : DescribeSpec({
             user.id.shouldBe(id)
             user.name.shouldBe(name)
             user.userName.shouldBe(userName)
-            user.passwordHash.shouldBe(passwordHash)
             user.roles.shouldBe(roles)
         }
 

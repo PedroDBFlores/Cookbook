@@ -7,16 +7,15 @@ import ports.RoleRepository
 
 class UpdateRole(private val roleRepository: RoleRepository) {
     operator fun invoke(parameters: Parameters) {
-        val (role) = parameters
+        val (id, name, code) = parameters
 
-        roleRepository.find(role.id)?.let {
-            require(!it.persistent){
+        roleRepository.find(id)?.let {
+            require(!it.persistent) {
                 throw OperationNotAllowed("Cannot update a persistent role")
             }
-        } ?: throw RoleNotFound(id = role.id)
-
-        roleRepository.update(role)
+            roleRepository.update(it.copy(name = name, code = code))
+        } ?: throw RoleNotFound(id = id)
     }
 
-    data class Parameters(val role: Role)
+    data class Parameters(val id: Int, val name: String, val code: String)
 }

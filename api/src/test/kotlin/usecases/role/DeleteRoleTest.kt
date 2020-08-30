@@ -13,7 +13,7 @@ import ports.RoleRepository
 
 internal class DeleteRoleTest : DescribeSpec({
     describe("Delete role use case") {
-        it("delete role") {
+        it("deletes a role") {
             val roleId = 7
             val roleRepository = mockk<RoleRepository> {
                 every { find(roleId) } returns Role(id = 7, name = "ROLE", code = "CODE", persistent = false)
@@ -21,9 +21,8 @@ internal class DeleteRoleTest : DescribeSpec({
             }
             val deleteRole = DeleteRole(roleRepository)
 
-            val deleted = deleteRole(DeleteRole.Parameters(roleId))
+            deleteRole(DeleteRole.Parameters(roleId))
 
-            deleted.shouldBe(true)
             verify {
                 roleRepository.find(roleId)
                 roleRepository.delete(roleId)

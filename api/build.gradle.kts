@@ -11,6 +11,7 @@ group = "pt.pedro"
 
 application {
     mainClassName = "ApplicationKt"
+    applicationName = "Cookbook API"
 }
 
 repositories {
