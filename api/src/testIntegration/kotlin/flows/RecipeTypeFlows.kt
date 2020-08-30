@@ -4,7 +4,7 @@ import java.net.URI
 import java.net.http.HttpResponse
 
 object RecipeTypeFlows {
-    suspend fun getRecipeType(baseUrl: String, id: String, jwtToken: String? = null) = executeGETRequest(
+    suspend fun getRecipeType(baseUrl: String, id: Int, jwtToken: String? = null) = executeGETRequest(
         uri = URI("$baseUrl/recipetype/$id"),
         headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
     )
@@ -28,7 +28,7 @@ object RecipeTypeFlows {
             headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
         )
 
-    suspend fun deleteRecipeType(baseUrl: String, id: String, jwtToken: String? = null) = executeDELETERequest(
+    suspend fun deleteRecipeType(baseUrl: String, id: Int, jwtToken: String? = null) = executeDELETERequest(
         uri = URI("$baseUrl/recipetype/$id"),
         headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
     )

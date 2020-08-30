@@ -58,6 +58,9 @@ object JsonHelpers {
 
     fun createJSONObject(vararg properties: Pair<String, Any?>) = createJSONObject(mapOf(*properties))
 
+    //Extension methods
+    inline fun <reified T> String.transformInto() = ObjectMapper().registerModule(KotlinModule()).readValue<T>(this)
+
     fun String.getJsonValue(key: String) = run {
         val objectMapper = ObjectMapper().registerModule(KotlinModule())
         val jsonNode = objectMapper.readValue<JsonNode>(this)
@@ -66,7 +69,6 @@ object JsonHelpers {
         value.asText()
     }
 
-    //Extension methods
     fun Any.toJson() = convertToJSON(this)
     fun String.removePropertiesFromJson(vararg properties: String) = removeJSONProperties(this, *properties)
 }
