@@ -7,7 +7,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import model.Recipe
 import model.SearchResult
-import model.parameters.SearchRecipeRequestBody
 import ports.RecipeRepository
 
 internal class SearchRecipeTest : DescribeSpec({
@@ -26,20 +25,24 @@ internal class SearchRecipeTest : DescribeSpec({
                     preparingSteps = "This will be so easy..."
                 )
             )
-            val searchRecipeRequestBody = SearchRecipeRequestBody(name = "Cake")
+
             val repo = mockk<RecipeRepository> {
-                every { search(searchRecipeRequestBody) } returns SearchResult(1, 1, listOf(expectedRecipes.first()))
+                every { search(name = "Cake", any(), any(), any(), any()) } returns SearchResult(
+                    1,
+                    1,
+                    listOf(expectedRecipes.first())
+                )
             }
             val searchRecipe = SearchRecipe(recipeRepository = repo)
 
-            val searchResults = searchRecipe(SearchRecipe.Parameters(searchRecipeRequestBody))
+            val searchResults = searchRecipe(SearchRecipe.Parameters(name = "Cake"))
 
             with(searchResults) {
                 count.shouldBe(1)
                 numberOfPages.shouldBe(1)
                 results.shouldBe(listOf(expectedRecipes.first()))
             }
-            verify { repo.search(requestBody = searchRecipeRequestBody) }
+            verify { repo.search(name = "Cake", any(), any(), any(), any()) }
         }
     }
 })

@@ -64,19 +64,19 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                 "the userId field is invalid"
             ),
             row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("name" to "")).toJson(),
+                (updateRecipeRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(),
                 "the name field is invalid"
             ),
             row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("description" to "")).toJson(),
+                (updateRecipeRepresenterMap + mapOf<String, Any>("description" to " ")).toJson(),
                 "the description field is invalid"
             ),
             row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("ingredients" to "")).toJson(),
+                (updateRecipeRepresenterMap + mapOf<String, Any>("ingredients" to " ")).toJson(),
                 "the ingredients field is invalid"
             ),
             row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to "")).toJson(),
+                (updateRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to " ")).toJson(),
                 "the preparingSteps field is invalid"
             )
         ).forEach { (jsonBody, description) ->

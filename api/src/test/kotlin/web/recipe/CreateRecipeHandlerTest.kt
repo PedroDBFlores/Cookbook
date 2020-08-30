@@ -39,7 +39,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
         )
 
         it("creates a recipe returning 201") {
-            val expectedRecipe = Recipe(
+            val expectedParameters = CreateRecipe.Parameters(
                 recipeTypeId = 1,
                 userId = 1,
                 name = "name",
@@ -48,7 +48,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                 preparingSteps = "preparingSteps"
             )
             val createRecipe = mockk<CreateRecipe> {
-                every { this@mockk(any()) } returns 1
+                every { this@mockk(expectedParameters) } returns 1
             }
 
             withTestApplication(moduleFunction = createTestServer(createRecipe)) {
@@ -59,7 +59,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                 {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
-                    verify(exactly = 1) { createRecipe(CreateRecipe.Parameters(expectedRecipe)) }
+                    verify(exactly = 1) { createRecipe(expectedParameters) }
                 }
             }
         }
@@ -75,19 +75,19 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                 "the userId field is invalid"
             ),
             row(
-                (createRecipeRepresenterMap + mapOf<String, Any>("name" to "")).toJson(),
+                (createRecipeRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(),
                 "the name field is invalid"
             ),
             row(
-                (createRecipeRepresenterMap + mapOf<String, Any>("description" to "")).toJson(),
+                (createRecipeRepresenterMap + mapOf<String, Any>("description" to " ")).toJson(),
                 "the description field is invalid"
             ),
             row(
-                (createRecipeRepresenterMap + mapOf<String, Any>("ingredients" to "")).toJson(),
+                (createRecipeRepresenterMap + mapOf<String, Any>("ingredients" to " ")).toJson(),
                 "the ingredients field is invalid"
             ),
             row(
-                (createRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to "")).toJson(),
+                (createRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to " ")).toJson(),
                 "the preparingSteps field is invalid"
             )
         ).forEach { (jsonBody, description) ->

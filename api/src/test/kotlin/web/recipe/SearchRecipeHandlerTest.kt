@@ -12,11 +12,10 @@ import io.mockk.mockk
 import io.mockk.verify
 import model.Recipe
 import model.SearchResult
-import model.parameters.SearchRecipeRequestBody
 import server.modules.contentNegotiationModule
 import usecases.recipe.SearchRecipe
+import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
-
 
 internal class SearchRecipeHandlerTest : DescribeSpec({
 
@@ -49,20 +48,21 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
                     basicRecipe.copy(id = 2)
                 )
             )
-            val searchRecipeRequestBody = SearchRecipeRequestBody()
+            val requestBody = createJSONObject("name" to "name")
+
             val searchRecipe = mockk<SearchRecipe> {
-                every { this@mockk(SearchRecipe.Parameters(searchRecipeRequestBody)) } returns expectedSearchResult
+                every { this@mockk(SearchRecipe.Parameters(name = "name")) } returns expectedSearchResult
             }
 
             withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
                 with(handleRequest(HttpMethod.Post, "/recipe/search") {
-                    setBody(searchRecipeRequestBody.toJson())
+                    setBody(requestBody)
                     addHeader("Content-Type", "application/json")
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedSearchResult.toJson())
-                    verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(searchRecipeRequestBody)) }
+                    verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(name = "name")) }
                 }
             }
         }

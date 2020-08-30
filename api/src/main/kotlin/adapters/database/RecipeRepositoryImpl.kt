@@ -5,7 +5,6 @@ import adapters.database.schema.Recipes
 import adapters.database.schema.Users
 import model.Recipe
 import model.SearchResult
-import model.parameters.SearchRecipeRequestBody
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
@@ -37,32 +36,36 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         Recipes.selectAll().count()
     }
 
-    override fun search(requestBody: SearchRecipeRequestBody): SearchResult<Recipe> = transaction(database) {
+    override fun search(
+        name: String?,
+        description: String?,
+        recipeTypeId: Int?,
+        pageNumber: Int,
+        itemsPerPage: Int
+    ): SearchResult<Recipe> = transaction(database) {
         val query = (Recipes innerJoin RecipeTypes innerJoin Users)
             .select {
                 (Recipes.recipeTypeId eq RecipeTypes.id)
                     .and((Recipes.userId eq Users.id))
             }
 
-        with(requestBody) {
-            name?.let { nameParam ->
-                query.andWhere { Recipes.name like nameParam }
-            }
-            description?.let { descriptionParam ->
-                query.andWhere { Recipes.description like descriptionParam }
-            }
+        name?.let { nameParam ->
+            query.andWhere { Recipes.name like nameParam }
+        }
+        description?.let { descriptionParam ->
+            query.andWhere { Recipes.description like descriptionParam }
         }
 
         val count = query.count()
-        requestBody.itemsPerPage.let { itemsPerPage ->
-            val offset = requestBody.pageNumber.toLong().minus(1) * itemsPerPage
+        itemsPerPage.let { itemsPerPage ->
+            val offset = pageNumber.toLong().minus(1) * itemsPerPage
             query.limit(
                 n = itemsPerPage,
                 offset = offset
             )
         }
 
-        val numberOfPages = ceil(count.toDouble() / requestBody.itemsPerPage).toInt()
+        val numberOfPages = ceil(count.toDouble() / itemsPerPage).toInt()
         val results = query.map(::mapToRecipe)
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }

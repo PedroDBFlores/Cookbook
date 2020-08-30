@@ -73,11 +73,8 @@ internal class UpdateRoleHandlerTest : DescribeSpec({
                 JsonHelpers.createJSONObject("non" to "conformant"),
                 "the provided body doesn't match the required JSON"
             ),
-            row((updateRoleRequestMap + mapOf("id" to null)).toJson(), "the id is null"),
             row((updateRoleRequestMap + mapOf("id" to 0)).toJson(), "the id is invalid"),
-            row((updateRoleRequestMap + mapOf("name" to null)).toJson(), "the name is null"),
             row((updateRoleRequestMap + mapOf("name" to "")).toJson(), "the name is empty"),
-            row((updateRoleRequestMap + mapOf("code" to null)).toJson(), "the code is null"),
             row((updateRoleRequestMap + mapOf("code" to "")).toJson(), "the code is empty")
         ).forEach { (requestBody, description) ->
             it("returns 400 when $description") {

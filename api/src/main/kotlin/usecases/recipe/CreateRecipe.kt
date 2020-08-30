@@ -5,10 +5,24 @@ import ports.RecipeRepository
 
 class CreateRecipe(private val recipeRepository: RecipeRepository) {
     operator fun invoke(parameters: Parameters): Int {
-        val (recipe) = parameters
-
-        return recipeRepository.create(recipe)
+        return recipeRepository.create(parameters.toRecipe())
     }
 
-    data class Parameters(val recipe: Recipe)
+    data class Parameters(
+        val recipeTypeId: Int,
+        val userId: Int,
+        val name: String,
+        val description: String,
+        val ingredients: String,
+        val preparingSteps: String
+    ) {
+        fun toRecipe() = Recipe(
+            recipeTypeId = recipeTypeId,
+            userId = userId,
+            name = name,
+            description = description,
+            ingredients = ingredients,
+            preparingSteps = preparingSteps
+        )
+    }
 }

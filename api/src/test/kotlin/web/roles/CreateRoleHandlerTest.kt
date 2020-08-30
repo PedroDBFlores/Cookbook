@@ -60,9 +60,7 @@ internal class CreateRoleHandlerTest : DescribeSpec({
 
         arrayOf(
             row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
-            row((createRoleRequestMap + mapOf("name" to null)).toJson(), "the name is null"),
             row((createRoleRequestMap + mapOf("name" to "")).toJson(), "the name is empty"),
-            row((createRoleRequestMap + mapOf("code" to null)).toJson(), "the code is null"),
             row((createRoleRequestMap + mapOf("code" to "")).toJson(), "the code is empty")
         ).forEach { (requestBody, description) ->
             it("returns 400 when $description") {

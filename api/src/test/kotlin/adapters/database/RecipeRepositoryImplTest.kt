@@ -14,7 +14,6 @@ import io.mockk.mockk
 import model.Recipe
 import model.RecipeType
 import model.User
-import model.parameters.SearchRecipeRequestBody
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -124,9 +123,14 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 val pickedRecipe =
                     createRecipeInDatabase(basicRecipe.copy(name = "Lichens with creamy sauce"))
                 val repo = RecipeRepositoryImpl(database = database)
-                val parameters = SearchRecipeRequestBody(name = pickedRecipe.name)
 
-                val result = repo.search(requestBody = parameters)
+                val result = repo.search(
+                    name = pickedRecipe.name,
+                    description = null,
+                    recipeTypeId = null,
+                    pageNumber = 1,
+                    itemsPerPage = 18
+                )
 
                 result.count.shouldBe(1)
                 result.numberOfPages.shouldBe(1)
@@ -144,9 +148,14 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                         )
                     )
                 val repo = RecipeRepositoryImpl(database = database)
-                val parameters = SearchRecipeRequestBody(description = pickedRecipe.description)
 
-                val result = repo.search(requestBody = parameters)
+                val result = repo.search(
+                    description = pickedRecipe.description,
+                    name = null,
+                    recipeTypeId = null,
+                    pageNumber = 1,
+                    itemsPerPage = 18
+                )
 
                 result.count.shouldBe(1)
                 result.numberOfPages.shouldBe(1)
@@ -162,9 +171,13 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 it("returns the paginated results for page $pageNumber and $itemsPerPage items per page") {
                     val createdRecipes = createRecipes(100)
                     val repo = RecipeRepositoryImpl(database = database)
-                    val parameters = SearchRecipeRequestBody(pageNumber = pageNumber, itemsPerPage = itemsPerPage)
 
-                    val searchResult = repo.search(requestBody = parameters)
+                    val searchResult = repo.search(
+                        pageNumber = pageNumber, itemsPerPage = itemsPerPage,
+                        name = null,
+                        description = null,
+                        recipeTypeId = null
+                    )
 
                     with(searchResult) {
                         count.shouldBe(100)
