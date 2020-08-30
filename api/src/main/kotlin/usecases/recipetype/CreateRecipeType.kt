@@ -6,13 +6,13 @@ import ports.RecipeTypeRepository
 
 class CreateRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
     operator fun invoke(parameters: Parameters): Int {
-        val (recipeType) = parameters
+        val (name) = parameters
 
-        require(recipeTypeRepository.find(recipeType.name) == null) {
-            throw RecipeTypeAlreadyExists(recipeType.name)
+        require(recipeTypeRepository.find(name) == null) {
+            throw RecipeTypeAlreadyExists(name)
         }
-        return recipeTypeRepository.create(recipeType)
+        return recipeTypeRepository.create(RecipeType(name = name))
     }
 
-    data class Parameters(val recipeType: RecipeType)
+    data class Parameters(val name: String)
 }

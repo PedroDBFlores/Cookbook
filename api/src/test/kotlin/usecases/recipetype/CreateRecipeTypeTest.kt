@@ -21,7 +21,7 @@ internal class CreateRecipeTypeTest : DescribeSpec({
             }
             val createRecipeType = CreateRecipeType(recipeTypeRepository)
 
-            val recipeTypeId = createRecipeType(CreateRecipeType.Parameters(basicRecipeType))
+            val recipeTypeId = createRecipeType(CreateRecipeType.Parameters("Recipe type"))
 
             recipeTypeId.shouldBe(1)
             verify(exactly = 1) {
@@ -36,9 +36,9 @@ internal class CreateRecipeTypeTest : DescribeSpec({
             }
             val createRecipeType = CreateRecipeType(recipeTypeRepository)
 
-            val act = { createRecipeType(CreateRecipeType.Parameters(basicRecipeType)) }
+            val act = { createRecipeType(CreateRecipeType.Parameters("Recipe type")) }
 
-            val recipeTypeAlreadyExists = shouldThrow<RecipeTypeAlreadyExists> (act)
+            val recipeTypeAlreadyExists = shouldThrow<RecipeTypeAlreadyExists>(act)
             recipeTypeAlreadyExists.message.shouldBe("A recipe type with the name 'Recipe type' already exists")
             verify(exactly = 1) { recipeTypeRepository.find("Recipe type") }
             verify(exactly = 0) { recipeTypeRepository.create(basicRecipeType) }

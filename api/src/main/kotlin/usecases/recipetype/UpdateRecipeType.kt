@@ -6,14 +6,14 @@ import ports.RecipeTypeRepository
 
 class UpdateRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
     operator fun invoke(parameters: Parameters) {
-        val (recipeType) = parameters
+        val (id, name) = parameters
 
-        require(recipeTypeRepository.find(recipeType.id) != null) {
-            throw RecipeTypeNotFound(id = recipeType.id)
+        require(recipeTypeRepository.find(id) != null) {
+            throw RecipeTypeNotFound(id = id)
         }
 
-        recipeTypeRepository.update(recipeType)
+        recipeTypeRepository.update(RecipeType(id, name))
     }
 
-    data class Parameters(val recipeType: RecipeType)
+    data class Parameters(val id: Int, val name: String)
 }

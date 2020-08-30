@@ -9,33 +9,45 @@ import ports.RecipeTypeRepository
 
 internal class UpdateRecipeTypeTest : DescribeSpec({
     describe("Update recipe type use case") {
-        val basicRecipeType = RecipeType(id = 1, name = "Recipe type")
+        val currentRecipeType = RecipeType(id = 1, name = "Recipe type")
 
         it("updates a recipe type") {
-            val recipeTypeToUpdate = basicRecipeType.copy(name = "Cake")
+            val expectedRecipeType = currentRecipeType.copy(name = "Cake")
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(recipeTypeToUpdate.id) } returns basicRecipeType
-                every { update(recipeTypeToUpdate) } just runs
+                every { find(expectedRecipeType.id) } returns currentRecipeType
+                every { update(expectedRecipeType) } just runs
             }
             val updateRecipeType = UpdateRecipeType(recipeTypeRepository)
 
-            updateRecipeType(UpdateRecipeType.Parameters(recipeTypeToUpdate))
+            updateRecipeType(
+                UpdateRecipeType.Parameters(
+                    id = expectedRecipeType.id,
+                    name = expectedRecipeType.name
+                )
+            )
 
             verify(exactly = 1) {
-                recipeTypeRepository.update(recipeTypeToUpdate)
+                recipeTypeRepository.update(expectedRecipeType)
             }
         }
 
         it("throws if the recipe type doesn't exist") {
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(basicRecipeType.id) } returns null
+                every { find(currentRecipeType.id) } returns null
             }
             val updateRecipeType = UpdateRecipeType(recipeTypeRepository)
 
-            val act = { updateRecipeType(UpdateRecipeType.Parameters(basicRecipeType.copy(name = "New recipe type"))) }
+            val act = {
+                updateRecipeType(
+                    UpdateRecipeType.Parameters(
+                        id = currentRecipeType.id,
+                        name = "New recipe type"
+                    )
+                )
+            }
 
-            shouldThrow<RecipeTypeNotFound> (act)
-            verify(exactly = 1) { recipeTypeRepository.find(basicRecipeType.id) }
+            shouldThrow<RecipeTypeNotFound>(act)
+            verify(exactly = 1) { recipeTypeRepository.find(currentRecipeType.id) }
         }
     }
 })

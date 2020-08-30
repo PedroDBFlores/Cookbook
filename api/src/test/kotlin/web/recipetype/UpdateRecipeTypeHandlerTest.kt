@@ -25,19 +25,22 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
     describe("Update recipe type handler") {
         it("updates a recipe type returning 200") {
-            val recipeTypeToUpdate = RecipeType(id = 1, name = "Recipe type")
+            val requestBody = createJSONObject(
+                "id" to 1,
+                "name" to "update recipe type"
+            )
             val updateRecipeTypeMock = mockk<UpdateRecipeType> {
                 every { this@mockk(any()) } just runs
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
                 with(handleRequest(HttpMethod.Put, "/recipetype") {
-                    setBody(recipeTypeToUpdate.toJson())
+                    setBody(requestBody)
                     addHeader("Content-Type", "application/json")
                 })
                 {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipeTypeMock(UpdateRecipeType.Parameters(recipeTypeToUpdate)) }
+                    verify(exactly = 1) { updateRecipeTypeMock(UpdateRecipeType.Parameters(1, "update recipe type")) }
                 }
             }
         }
@@ -52,7 +55,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 "the id is invalid"
             ),
             row(
-                createJSONObject("id" to 1, "name" to ""),
+                createJSONObject("id" to 1, "name" to " "),
                 "the name is invalid"
             )
         ).forEach { (jsonBody, description) ->

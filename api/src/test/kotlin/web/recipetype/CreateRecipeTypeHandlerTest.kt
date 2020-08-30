@@ -2,6 +2,7 @@ package web.recipetype
 
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
 import io.ktor.http.*
@@ -29,8 +30,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
     describe("Create recipe type handler") {
         it("creates a recipe type returning 201") {
-            val expectedRecipeType = RecipeType(name = "Recipe type")
-            val jsonBody = createJSONObject("name" to expectedRecipeType.name)
+            val jsonBody = createJSONObject("name" to "Recipe type")
             val createRecipeTypeMock = mockk<CreateRecipeType> {
                 every { this@mockk(any()) } returns 1
             }
@@ -43,24 +43,30 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
                 {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
-                    verify(exactly = 1) { createRecipeTypeMock(CreateRecipeType.Parameters(expectedRecipeType)) }
+                    verify(exactly = 1) { createRecipeTypeMock(CreateRecipeType.Parameters("Recipe type")) }
                 }
             }
         }
 
-        it("returns 400 when the provided body doesn't match the required JSON") {
-            val createRecipeType = mockk<CreateRecipeType>()
+        arrayOf(
+            row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
+            row(createJSONObject("name" to " "), "the name is invalid")
+        ).forEach { (requestBody, description) ->
+            it("returns 400 when $description") {
+                val createRecipeType = mockk<CreateRecipeType>()
 
-            withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
-                with(handleRequest(HttpMethod.Post, "/recipetype") {
-                    setBody(createJSONObject("non" to "conformant"))
-                    addHeader("Content-Type", "application/json")
+                withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
+                    with(handleRequest(HttpMethod.Post, "/recipetype") {
+                        setBody(requestBody)
+                        addHeader("Content-Type", "application/json")
 
-                }) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
-                    verify { createRecipeType wasNot called}
+                    }) {
+                        response.status().shouldBe(HttpStatusCode.BadRequest)
+                        verify { createRecipeType wasNot called }
+                    }
                 }
             }
         }
+
     }
 })
