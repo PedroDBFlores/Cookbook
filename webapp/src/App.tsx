@@ -9,7 +9,9 @@ import RecipeTypeDetails from "./features/recipetype/details/details"
 import EditRecipeType from "./features/recipetype/edit/edit"
 import {ThemeProvider, createMuiTheme} from "@material-ui/core"
 import {green, purple} from "@material-ui/core/colors"
-import {SnackbarProvider} from "notistack";
+import {SnackbarProvider} from "notistack"
+import createRecipeTypeService from "./services/recipe-type-service"
+import ApiHandler from "./services/api-handler"
 
 const theme = createMuiTheme({
     palette: {
@@ -22,18 +24,21 @@ const theme = createMuiTheme({
     },
 })
 
-const App: React.FC<unknown> = () => (
-    <ThemeProvider theme={theme}>
+
+const App: React.FC<unknown> = () => {
+    const recipeTypeService = createRecipeTypeService(ApiHandler("http://localhost:9000"))
+
+    return <ThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={4}>
             <BrowserRouter>
                 <Layout>
                     <Switch>
-                        <Route exact path="/recipetype" render={() => <RecipeTypeListPage/>}/>
-                        <Route exact path="/recipetype/new" render={() => <CreateRecipeType/>}/>
+                        <Route exact path="/recipetype" render={() => <RecipeTypeListPage recipeTypeService={recipeTypeService}/>}/>
+                        <Route exact path="/recipetype/new" render={() => <CreateRecipeType recipeTypeService={recipeTypeService}/>}/>
                         <Route path="/recipetype/:id"
-                               render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}/>}/>
+                               render={(x) => <RecipeTypeDetails recipeTypeService={recipeTypeService} id={Number(x.match.params.id)}/>}/>
                         <Route path="/recipetype/:id/edit"
-                               render={(x) => <EditRecipeType id={Number(x.match.params.id)}/>}/>
+                               render={(x) => <EditRecipeType recipeTypeService={recipeTypeService} id={Number(x.match.params.id)}/>}/>
                         <Route path="/test">
                             <BasicModalDialog title={"a"} content={"B"} dismiss={{
                                 text: "OK", onDismiss: () => {
@@ -46,6 +51,6 @@ const App: React.FC<unknown> = () => (
             </BrowserRouter>
         </SnackbarProvider>
     </ThemeProvider>
-)
+}
 
 export default App

@@ -1,15 +1,21 @@
 import React from "react"
 import {render, screen, fireEvent, waitFor} from "@testing-library/react"
 import CreateRecipeType from "../../../../src/features/recipetype/create/create"
-import {createRecipeType} from "../../../../src/services/recipe-type-service"
+import {RecipeTypeService} from "../../../../src/services/recipe-type-service"
 import {renderWithRoutes} from "../../../render"
 
-jest.mock("../../../../src/services/recipe-type-service")
-const createRecipeTypeMock = createRecipeType as jest.MockedFunction<typeof createRecipeType>
+const createRecipeTypeMock = jest.fn()
+const recipeTypeServiceMock = {
+    getAll: jest.fn(),
+    delete:  jest.fn(),
+    update: jest.fn(),
+    create :createRecipeTypeMock,
+    find:  jest.fn()
+} as RecipeTypeService
 
 describe("Create recipe type", () => {
     it("renders the initial form", () => {
-        render(<CreateRecipeType/>)
+        render(<CreateRecipeType recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
         expect(screen.getByText(/name/i)).toBeInTheDocument()
@@ -19,7 +25,7 @@ describe("Create recipe type", () => {
     })
 
     it("displays an error when the name is empty on submitting", async () => {
-        render(<CreateRecipeType/>)
+        render(<CreateRecipeType recipeTypeService={recipeTypeServiceMock}/>)
 
         const submitButton = screen.getByLabelText(/create recipe type/i)
         fireEvent.submit(submitButton)
@@ -33,7 +39,7 @@ describe("Create recipe type", () => {
         createRecipeTypeMock.mockResolvedValueOnce({id: 1})
 
         renderWithRoutes({
-            "/recipetype/new": () => <CreateRecipeType/>,
+            "/recipetype/new": () => <CreateRecipeType recipeTypeService={recipeTypeServiceMock}/>,
             "/recipetype/1": () => <div>I'm the recipe type details page for id 1</div>
         }, "/recipetype/new")
 

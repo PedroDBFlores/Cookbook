@@ -1,10 +1,10 @@
 import React, {useRef} from "react"
-import {RecipeType} from "../../../dto"
+import {RecipeType} from "../../../model"
 import PropTypes from "prop-types"
 import * as yup from "yup"
 import {Button, FormControl, Grid, Input, InputLabel, Typography} from "@material-ui/core"
 import FormHelperText from "@material-ui/core/FormHelperText"
-import {findRecipeType, updateRecipeType} from "../../../services/recipe-type-service"
+import {RecipeTypeService} from "../../../services/recipe-type-service"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {Formik, FormikValues} from "formik"
 import If from "../../../components/flow-control/if"
@@ -13,6 +13,7 @@ import {useSnackbar} from "notistack"
 
 interface EditRecipeTypeProps {
     id: number
+    recipeTypeService: RecipeTypeService
 }
 
 const schema = yup.object({
@@ -20,16 +21,16 @@ const schema = yup.object({
         .min(1, "Name is required")
 })
 
-const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id}) => {
+const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, recipeTypeService}) => {
     const {enqueueSnackbar} = useSnackbar()
     const history = useHistory()
-    const findPromiseRef = useRef(() => findRecipeType(id))
+    const findPromiseRef = useRef(() => recipeTypeService.find(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
     const onSubmit = (values: FormikValues) => {
-        updateRecipeType({...values} as RecipeType)
+        recipeTypeService.update({...values} as RecipeType)
             .then(() => history.push(`/recipetype/${id}`))
             .catch(() => enqueueSnackbar("An error occurred while updating the recipe type"))
     }
@@ -88,7 +89,8 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id}) => {
 }
 
 EditRecipeType.propTypes = {
-    id: PropTypes.number.isRequired
+    id: PropTypes.number.isRequired,
+    recipeTypeService: PropTypes.any.isRequired
 }
 
 export default EditRecipeType

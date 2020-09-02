@@ -1,8 +1,9 @@
 import React from "react"
+import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import {Formik} from "formik"
 import * as yup from "yup"
-import {createRecipeType} from "../../../services/recipe-type-service"
+import {RecipeTypeService} from "../../../services/recipe-type-service"
 import {Button, FormControl, InputLabel, Input, Grid, Typography} from "@material-ui/core"
 import FormHelperText from "@material-ui/core/FormHelperText"
 import If from "../../../components/flow-control/if"
@@ -15,11 +16,11 @@ const schema = yup.object({
     name: yup.string().required("Name is required").min(1, "Name is required")
 })
 
-const CreateRecipeType: React.FC<unknown> = () => {
+const CreateRecipeType: React.FC<{ recipeTypeService: RecipeTypeService }> = ({ recipeTypeService }) => {
     const history = useHistory()
 
     const onSubmit = (data: CreateRecipeFormData) => {
-        createRecipeType({name: data.name})
+        recipeTypeService.create({name: data.name})
             .then(recipeType => history.push(`/recipetype/${recipeType.id}`))
 
     }
@@ -67,4 +68,7 @@ const CreateRecipeType: React.FC<unknown> = () => {
     </Grid>
 }
 
+CreateRecipeType.propTypes = {
+    recipeTypeService: PropTypes.any.isRequired
+}
 export default CreateRecipeType

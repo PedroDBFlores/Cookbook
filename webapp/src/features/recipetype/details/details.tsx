@@ -1,7 +1,7 @@
 import React, {useRef, useState} from "react"
-import {RecipeType} from "../../../dto"
+import {RecipeType} from "../../../model"
 import PropTypes from "prop-types"
-import {deleteRecipeType, findRecipeType} from "../../../services/recipe-type-service"
+import {RecipeTypeService} from "../../../services/recipe-type-service"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
 import {Button} from "@material-ui/core"
@@ -11,17 +11,18 @@ import If from "../../../components/flow-control/if"
 
 interface RecipeTypeDetailsProps {
     id: number
+    recipeTypeService: RecipeTypeService
 }
 
-const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id}) => {
+const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, recipeTypeService}) => {
     const history = useHistory()
-    const findPromiseRef = useRef(() => findRecipeType(id))
+    const findPromiseRef = useRef(() => recipeTypeService.find(id))
     const [showModal, setShowModal] = useState<boolean>(false)
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
-    const onDelete = (id: number) => deleteRecipeType(id)
+    const onDelete = (id: number) => recipeTypeService.delete(id)
         .then(() => history.push("/recipetype"))
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
@@ -67,6 +68,7 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id}) => {
 
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired,
+    recipeTypeService: PropTypes.any.isRequired
 }
 
 export default RecipeTypeDetails

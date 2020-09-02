@@ -1,14 +1,20 @@
 import React, {useEffect} from "react"
 import {render, screen, waitFor, fireEvent} from "@testing-library/react"
 import RecipeTypeDetails from "../../../../src/features/recipetype/details/details"
-import {deleteRecipeType, findRecipeType} from "../../../../src/services/recipe-type-service"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
 import BasicModalDialog from "../../../../src/components/modal/basic-modal-dialog"
 import {renderWithRoutes} from "../../../render"
+import {RecipeTypeService} from "../../../../src/services/recipe-type-service"
 
-jest.mock("../../../../src/services/recipe-type-service")
-const findRecipeTypeMock = findRecipeType as jest.MockedFunction<typeof findRecipeType>
-const deleteRecipeTypeMock = deleteRecipeType as jest.MockedFunction<typeof deleteRecipeType>
+const findRecipeTypeMock = jest.fn()
+const deleteRecipeTypeMock = jest.fn()
+const recipeTypeServiceMock = {
+    getAll: jest.fn(),
+    delete: deleteRecipeTypeMock,
+    update: jest.fn(),
+    create: jest.fn(),
+    find: findRecipeTypeMock
+} as RecipeTypeService
 
 jest.mock("../../../../src/components/modal/basic-modal-dialog", () => {
     return {
@@ -22,7 +28,7 @@ describe("Recipe type details", () => {
     it("renders the recipe type details", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(<RecipeTypeDetails id={99}/>)
+        render(<RecipeTypeDetails id={99} recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
@@ -37,7 +43,7 @@ describe("Recipe type details", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(<RecipeTypeDetails id={99}/>)
+        render(<RecipeTypeDetails id={99} recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
@@ -50,7 +56,8 @@ describe("Recipe type details", () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         renderWithRoutes({
-            [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}/>,
+            [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}
+                                                                               recipeTypeService={recipeTypeServiceMock}/>,
             [`/recipetype/${expectedRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
         }, `/recipetype/${expectedRecipeType.id}`)
 
@@ -67,14 +74,17 @@ describe("Recipe type details", () => {
     it("deletes the user", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        deleteRecipeTypeMock.mockResolvedValueOnce()
+        deleteRecipeTypeMock.mockResolvedValueOnce({})
         basicModalDialogMock.mockImplementationOnce(({dismiss}) => {
-            useEffect(() => {dismiss.onDismiss()}, [])
+            useEffect(() => {
+                dismiss.onDismiss()
+            }, [])
             return <div>Are you sure you want to delete this recipe type?</div>
         })
 
         renderWithRoutes({
-            [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}/>,
+            [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}
+                                                                               recipeTypeService={recipeTypeServiceMock}/>,
             "/recipetype": () => <div>I'm the recipe type list page</div>
         }, `/recipetype/${expectedRecipeType.id}`)
 

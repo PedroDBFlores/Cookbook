@@ -1,14 +1,21 @@
 import React, {useEffect} from "react"
 import {render, screen, waitFor, fireEvent} from "@testing-library/react"
 import RecipeTypeListPage from "../../../../src/features/recipetype/list/list-page"
-import {deleteRecipeType, getAllRecipeTypes} from "../../../../src/services/recipe-type-service"
 import RecipeTypeList from "../../../../src/features/recipetype/list/list"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
 import {renderWithRoutes} from "../../../render"
+import {RecipeTypeService} from "../../../../src/services/recipe-type-service"
 
-jest.mock("../../../../src/services/recipe-type-service")
-const getAllRecipeTypesMock = getAllRecipeTypes as jest.MockedFunction<typeof getAllRecipeTypes>
-const deleteRecipeTypeMock = deleteRecipeType as jest.MockedFunction<typeof deleteRecipeType>
+const getAllRecipeTypesMock = jest.fn()
+const deleteRecipeTypeMock = jest.fn()
+const recipeTypeServiceMock = {
+    getAll: getAllRecipeTypesMock,
+    delete: deleteRecipeTypeMock,
+    update: jest.fn(),
+    create: jest.fn(),
+    find: jest.fn()
+} as RecipeTypeService
+
 
 jest.mock("../../../../src/features/recipetype/list/list", () => {
     return {
@@ -21,7 +28,8 @@ const recipeTypeListMock = RecipeTypeList as jest.MockedFunction<typeof RecipeTy
 describe("Recipe type list page", () => {
     it("has the required content and gets the recipe types", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
-        render(<RecipeTypeListPage/>)
+        render(<RecipeTypeListPage
+            recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -34,7 +42,7 @@ describe("Recipe type list page", () => {
 
     it("shows the error", async () => {
         getAllRecipeTypesMock.mockRejectedValueOnce({code: "YELLOW", message: "Database error"})
-        render(<RecipeTypeListPage/>)
+        render(<RecipeTypeListPage recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await screen.findByText(/error: database error/i)
@@ -51,7 +59,7 @@ describe("Recipe type list page", () => {
             }, [])
             return <></>
         })
-        render(<RecipeTypeListPage/>)
+        render(<RecipeTypeListPage recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
@@ -63,7 +71,7 @@ describe("Recipe type list page", () => {
     it("navigates to the recipe type create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
-            "/recipetype": () => <RecipeTypeListPage/>,
+            "/recipetype": () => <RecipeTypeListPage recipeTypeService={recipeTypeServiceMock}/>,
             "/recipetype/new": () => <>I'm the recipe type create page</>
         }, "/recipetype")
         await waitFor(() => expect(screen.getByLabelText(/create new recipe type/i)).toBeInTheDocument())

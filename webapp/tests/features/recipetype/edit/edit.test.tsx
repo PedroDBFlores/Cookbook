@@ -1,14 +1,20 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import React from "react"
 import EditRecipeType from "../../../../src/features/recipetype/edit/edit"
-import {findRecipeType, updateRecipeType} from "../../../../src/services/recipe-type-service"
+import {RecipeTypeService} from "../../../../src/services/recipe-type-service"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
 import {renderWithRoutes} from "../../../render"
 import {SnackbarProvider} from "notistack"
 
-jest.mock("../../../../src/services/recipe-type-service")
-const findRecipeTypeMock = findRecipeType as jest.MockedFunction<typeof findRecipeType>
-const updateRecipeTypeMock = updateRecipeType as jest.MockedFunction<typeof updateRecipeType>
+const findRecipeTypeMock = jest.fn()
+const updateRecipeTypeMock = jest.fn()
+const recipeTypeServiceMock = {
+    getAll: jest.fn(),
+    delete: jest.fn(),
+    update: updateRecipeTypeMock,
+    create: jest.fn(),
+    find: findRecipeTypeMock
+} as RecipeTypeService
 
 const wrappedEditComponent = (children: React.ReactNode) =>
     <SnackbarProvider maxSnack={4}>
@@ -19,7 +25,7 @@ describe("Edit recipe type", () => {
     it("renders the initial form", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>))
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id} recipeTypeService={recipeTypeServiceMock}/>))
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
@@ -36,7 +42,7 @@ describe("Edit recipe type", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(wrappedEditComponent(<EditRecipeType id={99}/>))
+        render(wrappedEditComponent(<EditRecipeType id={99} recipeTypeService={recipeTypeServiceMock}/>))
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
@@ -48,7 +54,7 @@ describe("Edit recipe type", () => {
     it("displays an error when the name is empty on submitting", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>))
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id} recipeTypeService={recipeTypeServiceMock}/>))
 
         await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
 
@@ -66,10 +72,10 @@ describe("Edit recipe type", () => {
     it("updates the recipe type in the Cookbook API and navigates to the details", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        updateRecipeTypeMock.mockResolvedValueOnce()
+        updateRecipeTypeMock.mockResolvedValueOnce({})
 
         renderWithRoutes({
-            [`/recipetype/${expectedRecipeType.id}/edit`]: () => wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>),
+            [`/recipetype/${expectedRecipeType.id}/edit`]: () => wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}  recipeTypeService={recipeTypeServiceMock}/>),
             [`/recipetype/${expectedRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
         }, `/recipetype/${expectedRecipeType.id}/edit`)
 
@@ -92,7 +98,7 @@ describe("Edit recipe type", () => {
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         updateRecipeTypeMock.mockRejectedValueOnce({})
 
-        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}/>))
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id} recipeTypeService={recipeTypeServiceMock}/>))
 
         await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
 
