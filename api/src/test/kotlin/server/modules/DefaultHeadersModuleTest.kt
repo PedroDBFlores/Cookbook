@@ -1,5 +1,6 @@
 package server.modules
 
+import io.kotest.assertions.ktor.shouldHaveHeader
 import io.kotest.assertions.ktor.shouldHaveStatus
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -24,11 +25,14 @@ class DefaultHeadersModuleTest : DescribeSpec({
                 with(handleRequest(HttpMethod.Get, "/route")) {
                     response shouldHaveStatus HttpStatusCode.OK
                     response.status().shouldBe(HttpStatusCode.OK)
-                    with(response.headers){
-                        get("Date").shouldNotBeEmpty()
-                        get("Server").shouldBe("Cookbook Ktor Server")
-                        get("X-CreatedBy").shouldBe("Mr. Flowers")
-                    }
+                    response.headers.get("Date").shouldNotBeEmpty()
+                    response.shouldHaveHeader("Server", "Cookbook Ktor Server")
+                    response.shouldHaveHeader("X-CreatedBy", "Mr. Flowers")
+                    response.shouldHaveHeader("Access-Control-Allow-Origin", "http://localhost:8080")
+                    response.shouldHaveHeader(
+                        "Access-Control-Allow-Headers",
+                        "Authorization, Origin, X-Requested-With, Content-Type, Accept"
+                    )
                 }
             }
         }

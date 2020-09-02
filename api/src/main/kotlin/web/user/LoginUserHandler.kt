@@ -14,6 +14,7 @@ class LoginUserHandler(private val loginUser: LoginUser) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
         try {
             val credentialsRepresenter = call.receiveOrThrow<CredentialsRepresenter>()
+            println(credentialsRepresenter)
             val token = loginUser.invoke(LoginUser.Parameters(credentialsRepresenter.toCredentials()))
             call.respond(HttpStatusCode.OK, mapOf("token" to token))
         } catch (notFoundEx: UserNotFound) {

@@ -69,10 +69,10 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the recipe types are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/recipetype")) {
-                    response.shouldHaveHeader("Allow", "GET,POST,PUT")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,POST,PUT")
                 }
                 with(handleRequest(HttpMethod.Options, "/recipetype/123")) {
-                    response.shouldHaveHeader("Allow", "GET,DELETE")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")
                 }
             }
         }
@@ -80,15 +80,13 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the recipe are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/recipe")) {
-                    response.shouldHaveHeader("Allow", "GET,POST,PUT")
-
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,POST,PUT")
                 }
                 with(handleRequest(HttpMethod.Options, "/recipe/123")) {
-                    response.shouldHaveHeader("Allow", "GET,DELETE")
-
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")
                 }
                 with(handleRequest(HttpMethod.Options, "/recipe/search")) {
-                    response.shouldHaveHeader("Allow", "POST")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "POST")
                 }
             }
         }
@@ -96,14 +94,13 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the user are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/user")) {
-                    response.shouldHaveHeader("Allow", "POST,PUT")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "POST,PUT")
                 }
                 with(handleRequest(HttpMethod.Options, "/user/123")) {
-                    response.shouldHaveHeader("Allow", "GET,DELETE")
-
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")
                 }
                 with(handleRequest(HttpMethod.Options, "/user/login")) {
-                    response.shouldHaveHeader("Allow", "POST")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "POST")
                 }
             }
         }
@@ -111,11 +108,11 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the roles are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/role")) {
-                    response.shouldHaveHeader("Allow", "GET,POST,PUT")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,POST,PUT")
 
                 }
                 with(handleRequest(HttpMethod.Options, "/role/123")) {
-                    response.shouldHaveHeader("Allow", "GET,DELETE")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")
                 }
             }
         }
@@ -123,13 +120,13 @@ class RoutingModuleTest : DescribeSpec({
         it("checks that the routes for the user roles are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/userroles")) {
-                    response.shouldHaveHeader("Allow", "POST")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "POST")
                 }
                 with(handleRequest(HttpMethod.Options, "/userroles/123")) {
-                    response.shouldHaveHeader("Allow", "GET")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET")
                 }
                 with(handleRequest(HttpMethod.Options, "/userroles/123/456")) {
-                    response.shouldHaveHeader("Allow", "DELETE")
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "DELETE")
                 }
             }
         }

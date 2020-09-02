@@ -5,6 +5,7 @@ import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import usecases.recipe.*
@@ -36,66 +37,58 @@ fun Application.routingModule() {
 }
 
 fun Routing.optionsRoutes() {
+    suspend fun ApplicationCall.handleOptionsHeaders(allowedMethods: String) {
+        response.header("Access-Control-Allow-Methods", allowedMethods)
+        respond(HttpStatusCode.OK)
+    }
+    
     //Recipe type
     options("recipetype") {
-        call.response.header("Allow", "GET,POST,PUT")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders("GET,POST,PUT")
     }
     options("recipetype/{id}") {
-        call.response.header("Allow", "GET,DELETE")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "GET,DELETE")
     }
 
     //Recipe
     options("recipe") {
-        call.response.header("Allow", "GET,POST,PUT")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "GET,POST,PUT")
     }
     options("recipe/{id}") {
-        call.response.header("Allow", "GET,DELETE")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders("GET,DELETE")
     }
     options("recipe/search") {
-        call.response.header("Allow", "POST")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "POST")
     }
 
     //User
     options("user") {
-        call.response.header("Allow", "POST,PUT")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "POST,PUT")
     }
     options("user/{id}") {
-        call.response.header("Allow", "GET,DELETE")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "GET,DELETE")
     }
     options("user/login") {
-        call.response.header("Allow", "POST")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders("POST")
     }
 
     //Role
     options("role") {
-        call.response.header("Allow", "GET,POST,PUT")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "GET,POST,PUT")
     }
     options("role/{id}") {
-        call.response.header("Allow", "GET,DELETE")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "GET,DELETE")
     }
 
     //User roles
     options("userroles") {
-        call.response.header("Allow", "POST")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "POST")
     }
     options("userroles/{userId}") {
-        call.response.header("Allow", "GET")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "GET")
     }
     options("userroles/{userId}/{roleId}") {
-        call.response.header("Allow", "DELETE")
-        call.respond(HttpStatusCode.OK)
+        call.handleOptionsHeaders( "DELETE")
     }
 }
 
