@@ -34,6 +34,7 @@ describe("Recipe type details", () => {
 
         await waitFor(() => {
             expect(findRecipeTypeMock).toHaveBeenCalled()
+            expect(screen.getByText(/recipe type details/i)).toBeInTheDocument()
             expect(screen.getByText(/Id:/i)).toBeInTheDocument()
             expect(screen.getByText(/Name:/i)).toBeInTheDocument()
             expect(screen.getByText(expectedRecipeType.id.toString())).toBeInTheDocument()

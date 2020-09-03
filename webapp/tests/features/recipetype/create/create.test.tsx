@@ -18,7 +18,6 @@ describe("Create recipe type", () => {
         render(<CreateRecipeType recipeTypeService={recipeTypeServiceMock}/>)
 
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
-        expect(screen.getByText(/name/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
         const submitButton = screen.getByLabelText(/create recipe type/i)
         expect(submitButton).toHaveAttribute("type", "submit")

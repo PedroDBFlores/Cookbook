@@ -1,12 +1,13 @@
 import React, {useState} from "react"
 import PropTypes from "prop-types"
-import "../../styles/layout.css"
 import ApplicationToolbar from "./application-toolbar"
-import "./layout.css"
-import {Container, CssBaseline, Grid} from "@material-ui/core"
-import {makeStyles} from "@material-ui/core/styles"
 import Drawer from "./drawer"
-import {List, Home} from "@material-ui/icons"
+import List from "@material-ui/icons/List"
+import Home from "@material-ui/icons/Home"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import Container from "@material-ui/core/Container"
+import Grid from "@material-ui/core/Grid"
+import makeStyles from "@material-ui/core/styles/makeStyles"
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -62,7 +63,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({children}) => {
                 <div className={classes.appBarSpacer} style={{minHeight: "64px"}}/>
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
-                        {children || null}
+                            {children || null}
                     </Grid>
                 </Container>
             </main>

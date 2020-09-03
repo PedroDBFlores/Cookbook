@@ -1,9 +1,14 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {AppBar, Toolbar, IconButton, Typography, Theme} from "@material-ui/core"
+import AppBar from "@material-ui/core/AppBar"
+import Toolbar from "@material-ui/core/Toolbar"
+import IconButton from "@material-ui/core/IconButton"
+import Typography from "@material-ui/core/Typography"
+import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import MenuIcon from "@material-ui/icons/Menu"
-import {makeStyles} from "@material-ui/core/styles"
+import makeStyles from "@material-ui/core/styles/makeStyles"
 import clsx from "clsx"
+import UserArea from "../user-area/user-area"
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>((theme) =>
     ({
@@ -68,6 +73,7 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                     {title}
                 </Typography>
+                <UserArea/>
             </Toolbar>
         </AppBar>)
 }

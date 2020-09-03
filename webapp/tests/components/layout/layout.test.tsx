@@ -1,7 +1,7 @@
 import React from "react"
 import Layout from "../../../src/components/layout/layout"
-import {renderWithRouter, renderWithRoutes} from "../../render"
-import {screen, fireEvent, waitFor} from "@testing-library/react"
+import {renderWithRouter} from "../../render"
+import {screen} from "@testing-library/react"
 
 describe("Application layout", () => {
     it("renders the navbar", () => {

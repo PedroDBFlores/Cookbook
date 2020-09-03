@@ -4,8 +4,10 @@ import {RecipeTypeService} from "../../../services/recipe-type-service"
 import {RecipeType} from "../../../model"
 import {useAsync, IfPending, IfRejected, IfFulfilled} from "react-async"
 import {useHistory} from "react-router-dom"
-import {Button, Grid, Typography} from "@material-ui/core"
 import PropTypes from "prop-types"
+import Typography from "@material-ui/core/Typography"
+import Grid from "@material-ui/core/Grid"
+import Button from "@material-ui/core/Button"
 
 const RecipeTypeListPage: React.FC<{ recipeTypeService: RecipeTypeService }> =
     ({recipeTypeService}) => {
@@ -23,7 +25,7 @@ const RecipeTypeListPage: React.FC<{ recipeTypeService: RecipeTypeService }> =
                 <Typography variant="h4">Recipe types</Typography>
             </Grid>
             <Grid item xs={1}>
-                <Button variant="contained" aria-label="Create new recipe type"
+                <Button variant="contained" color="primary" aria-label="Create new recipe type"
                         onClick={navigateToCreateRecipeType}>Create</Button>
             </Grid>
             <Grid item xs={12}>

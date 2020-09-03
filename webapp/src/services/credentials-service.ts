@@ -10,7 +10,10 @@ export interface CredentialsService {
 
 const login = async (credentials: Credentials): Promise<void> => {
     try {
-        const response = await axios.post<LoginResult>("/user/login", credentials)
+        const response = await axios.post<LoginResult>("/user/login", credentials,
+            {
+                baseURL: "http://localhost:9000",
+            })
         localStorage.setItem("token", response.data.token)
     } catch (err) {
         throw handleApiError(err)

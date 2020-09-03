@@ -1,10 +1,15 @@
 import React from "react"
-import {Drawer as DrawerMUI, IconButton, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core"
-import {ChevronLeft} from "@material-ui/icons"
+import DrawerMUI from "@material-ui/core/Drawer"
+import ChevronLeft from "@material-ui/icons/ChevronLeft"
 import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import clsx from "clsx"
-import {makeStyles} from "@material-ui/core/styles"
+import makeStyles from "@material-ui/core/styles/makeStyles"
+import IconButton from "@material-ui/core/IconButton"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import ListItemText from "@material-ui/core/ListItemText"
 
 interface DrawerProps {
     isOpen: boolean

@@ -8,6 +8,7 @@ const prodConfig = merge(commonConfig, {
         maxEntrypointSize: 500000
     },
     optimization:{
+        usedExports: true,
         splitChunks:{
             chunks: "all",
             maxSize: 500000
