@@ -6,13 +6,7 @@ const devConfig = merge(commonConfig, {
     devServer: {
         contentBase: "./",
         historyApiFallback: true,
-        port: 8080,
-        proxy: {
-            "/api": {
-                target: "http://localhost:9000",
-                secure: false
-            }
-        }
+        port: 8080
     }
 })
 
