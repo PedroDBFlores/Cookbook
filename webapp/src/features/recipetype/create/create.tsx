@@ -13,7 +13,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
-
+import {CreateResult, RecipeType} from "../../../model"
 
 interface CreateRecipeFormData {
     name: string
@@ -32,12 +32,16 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const CreateRecipeType: React.FC<{ recipeTypeService: RecipeTypeService }> = ({recipeTypeService}) => {
+interface CreateRecipeTypeProps {
+    createFn: (recipe: Omit<RecipeType, "id">) => Promise<CreateResult>
+}
+
+const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({createFn}) => {
     const history = useHistory()
     const classes = useStyles()
 
     const onSubmit = (data: CreateRecipeFormData) => {
-        recipeTypeService.create({name: data.name})
+        createFn({name: data.name})
             .then(recipeType => history.push(`/recipetype/${recipeType.id}`))
 
     }
@@ -63,19 +67,16 @@ const CreateRecipeType: React.FC<{ recipeTypeService: RecipeTypeService }> = ({r
                             <form onSubmit={event => handleSubmit(event)}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12}>
-                                        <FormControl error={!!errors.name}>
-                                            <TextField
-                                                id="name"
-                                                name="name"
-                                                value={values.name}
-                                                onChange={handleChange}
-                                                aria-describedby="component-error-text-name"
-                                                label="Name"
-                                                variant="outlined"
-                                                error={!!errors?.name}
-                                                helperText={!!errors?.name && "Name is required"}
-                                            />
-                                        </FormControl>
+                                        <TextField
+                                            id="name"
+                                            label="Name"
+                                            name="name"
+                                            value={values.name}
+                                            onChange={handleChange}
+                                            variant="outlined"
+                                            error={!!errors?.name}
+                                            helperText={!!errors?.name && "Name is required"}
+                                        />
                                     </Grid>
                                     <Grid item xs={1}>
                                         <Button variant="contained" aria-label="Create recipe type"
@@ -92,6 +93,6 @@ const CreateRecipeType: React.FC<{ recipeTypeService: RecipeTypeService }> = ({r
 }
 
 CreateRecipeType.propTypes = {
-    recipeTypeService: PropTypes.any.isRequired
+    createFn: PropTypes.func.isRequired
 }
 export default CreateRecipeType

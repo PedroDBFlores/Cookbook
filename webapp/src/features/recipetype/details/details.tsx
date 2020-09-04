@@ -1,7 +1,6 @@
 import React, {useRef, useState} from "react"
 import PropTypes from "prop-types"
 import {RecipeType} from "../../../model"
-import {RecipeTypeService} from "../../../services/recipe-type-service"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Button from "@material-ui/core/Button"
 import Delete from "@material-ui/icons/Delete"
@@ -19,7 +18,8 @@ import {Theme} from "@material-ui/core/styles/createMuiTheme"
 
 interface RecipeTypeDetailsProps {
     id: number
-    recipeTypeService: RecipeTypeService
+    findFn: (id:number) => Promise<RecipeType>
+    deleteFn: (id:number) => Promise<void>
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,17 +31,17 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, recipeTypeService}) => {
+const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, findFn, deleteFn}) => {
     const history = useHistory()
     const classes = useStyles()
 
-    const findPromiseRef = useRef(() => recipeTypeService.find(id))
+    const findPromiseRef = useRef(() => findFn(id))
     const [showModal, setShowModal] = useState<boolean>(false)
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
-    const onDelete = (id: number) => recipeTypeService.delete(id)
+    const onDelete = (id: number) => deleteFn(id)
         .then(() => history.push("/recipetype"))
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
@@ -98,7 +98,8 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, recipeTypeServ
 
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired,
-    recipeTypeService: PropTypes.any.isRequired
+    findFn: PropTypes.func.isRequired,
+    deleteFn: PropTypes.func.isRequired
 }
 
 export default RecipeTypeDetails

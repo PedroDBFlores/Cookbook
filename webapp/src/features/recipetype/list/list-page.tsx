@@ -1,6 +1,5 @@
 import React, {useRef} from "react"
 import RecipeTypeList from "./list"
-import {RecipeTypeService} from "../../../services/recipe-type-service"
 import {RecipeType} from "../../../model"
 import {useAsync, IfPending, IfRejected, IfFulfilled} from "react-async"
 import {useHistory} from "react-router-dom"
@@ -9,11 +8,16 @@ import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button"
 
-const RecipeTypeListPage: React.FC<{ recipeTypeService: RecipeTypeService }> =
-    ({recipeTypeService}) => {
+interface RecipeTypeListPageProps {
+    getAllFn: () => Promise<Array<RecipeType>>
+    deleteFn: (id: number) => Promise<void>
+}
+
+const RecipeTypeListPage: React.FC<RecipeTypeListPageProps> =
+    ({getAllFn, deleteFn}) => {
         const history = useHistory()
-        const getPromiseRef = useRef(() => recipeTypeService.getAll())
-        const onDelete = (id: number) => recipeTypeService.delete(id)
+        const getPromiseRef = useRef(() => getAllFn())
+        const onDelete = (id: number) => deleteFn(id)
         const state = useAsync<Array<RecipeType>>({
             promiseFn: getPromiseRef.current
         })
@@ -44,6 +48,7 @@ const RecipeTypeListPage: React.FC<{ recipeTypeService: RecipeTypeService }> =
     }
 
 RecipeTypeListPage.propTypes = {
-    recipeTypeService: PropTypes.any.isRequired
+    getAllFn: PropTypes.func.isRequired,
+    deleteFn: PropTypes.func.isRequired
 }
 export default RecipeTypeListPage

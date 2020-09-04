@@ -1,15 +1,18 @@
 import React from "react"
 import {screen, render, fireEvent, waitFor} from "@testing-library/react"
-import UserArea from "../../../src/components/user-area/user-area"
-import {localStorageMock} from "../../utils/mocks"
+import UserArea from "../../../src/components/layout/user-area"
 import {renderWithRoutes} from "../../render"
-
-Object.defineProperty(window, "localStorage", {value: localStorageMock})
+import AuthContext, {AuthInfo} from "../../../src/contexts/auth-context"
 
 describe("User area component", () => {
-    describe("when the user has no token", () => {
+    const wrapUserAreaInContext = (authInfo: AuthInfo = {isLoggedIn: false}) =>
+        <AuthContext.Provider value={authInfo}>
+            <UserArea/>
+        </AuthContext.Provider>
+
+    describe("when the user isn't logged in", () => {
         it("renders the login button", () => {
-            render(<UserArea/>)
+            render(wrapUserAreaInContext())
 
             expect(screen.getByLabelText(/login/i, {selector: "button"})).toBeInTheDocument()
             expect(screen.getByText(/login/i)).toBeInTheDocument()
@@ -18,7 +21,7 @@ describe("User area component", () => {
         it("does the login action", async () => {
             renderWithRoutes({
                 "/login": () => <>I'm the login page</>,
-                "/": () => <UserArea/>
+                "/": () => wrapUserAreaInContext()
             }, "/")
             fireEvent.click(screen.getByLabelText(/login/i, {selector: "button"}))
 
@@ -28,24 +31,22 @@ describe("User area component", () => {
         })
     })
 
-    describe("when the user has token", () => {
-        beforeEach(() => {
-            localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-        })
+    describe("when the user is logged in", () => {
+        const loggedUserAuthInfo: AuthInfo = {isLoggedIn: true, userName: "johndoe"}
 
         it("renders the greeting with a logout button", () => {
-            render(<UserArea/>)
+            render(wrapUserAreaInContext(loggedUserAuthInfo))
 
-            expect(screen.getByText(/welcome john doe/i)).toBeInTheDocument()
-            expect(screen.getByLabelText(/logout john doe/i, {selector: "button"})).toBeInTheDocument()
+            expect(screen.getByText(/welcome johndoe/i)).toBeInTheDocument()
+            expect(screen.getByLabelText(/logout johndoe/i, {selector: "button"})).toBeInTheDocument()
         })
 
         it("does the logout action", async () => {
             renderWithRoutes({
                 "/logout": () => <>I'm the logout page</>,
-                "/": () => <UserArea/>
+                "/": () => wrapUserAreaInContext(loggedUserAuthInfo)
             }, "/")
-            fireEvent.click(screen.getByLabelText(/logout john doe/i, {selector: "button"}))
+            fireEvent.click(screen.getByLabelText(/logout johndoe/i, {selector: "button"}))
 
             await waitFor(() => {
                 expect(screen.getByText(/i'm the logout page/i)).toBeInTheDocument()
