@@ -8,7 +8,11 @@ import {renderWithRoutes} from "../../../render"
 const getAllRecipeTypesMock = jest.fn()
 const deleteRecipeTypeMock = jest.fn()
 
+<<<<<<< HEAD
 jest.mock("../../../../src/features/recipetype/search/search", () => {
+=======
+jest.mock("../../../../src/features/recipetype/list/list", () => {
+>>>>>>> 969d51cbca092bbaa77ec85338a9f9dda730bfd3
     return {
         __esModule: true,
         default: jest.fn(() => <>Mock Recipe Type list</>)
@@ -16,7 +20,11 @@ jest.mock("../../../../src/features/recipetype/search/search", () => {
 })
 const recipeTypeListMock = RecipeTypeList as jest.MockedFunction<typeof RecipeTypeList>
 
+<<<<<<< HEAD
 describe("Recipe type search page", () => {
+=======
+describe("Recipe type list page", () => {
+>>>>>>> 969d51cbca092bbaa77ec85338a9f9dda730bfd3
     beforeEach(() => {
         jest.clearAllMocks()
     })
