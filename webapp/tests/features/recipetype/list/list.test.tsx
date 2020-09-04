@@ -7,7 +7,7 @@ import { renderWithRoutes } from "../../../render"
 
 const onDeleteStub = jest.fn()
 
-describe("Recipe type list", () => {
+describe("Recipe type list component", () => {
     describe("Render", () => {
         it("shows 'No recipes types.' if there are none", async () => {
             render(<RecipeTypeList recipeTypes={[]} onDelete={onDeleteStub} />)

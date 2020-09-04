@@ -8,7 +8,7 @@ import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import MenuIcon from "@material-ui/icons/Menu"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import clsx from "clsx"
-import UserArea from "../user-area/user-area"
+import UserArea from "./user-area"
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>((theme) =>
     ({

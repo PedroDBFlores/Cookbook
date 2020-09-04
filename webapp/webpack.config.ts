@@ -1,11 +1,11 @@
 import HtmlWebpackPlugin from "html-webpack-plugin"
-import * as webpack from "webpack"
-import * as path from "path"
+import {Configuration} from "webpack"
+import {resolve} from "path"
 
-const commonConfig: webpack.Configuration = {
+const commonConfig: Configuration = {
     entry: "./index.js",
     output: {
-        path: path.resolve(__dirname, "dist"),
+        path: resolve(__dirname, "dist"),
         filename: "index_bundle.js",
         publicPath: "/"
     },

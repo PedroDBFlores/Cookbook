@@ -1,39 +1,50 @@
 import React from "react"
 import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import Login from "../../../../src/features/user/login/login"
-import {CredentialsService} from "../../../../src/services/credentials-service"
-import clearAllMocks = jest.clearAllMocks;
 import {renderWithRoutes} from "../../../render"
 import {Link} from "react-router-dom"
+import AuthContext, {AuthInfo} from "../../../../src/contexts/auth-context"
 
 const loginMock = jest.fn()
-const credentialsServiceMock = {
-    login: loginMock,
-    logout: jest.fn()
-} as CredentialsService
+const updateAuthContextMock = jest.fn()
 
 describe("Login component", () => {
     beforeEach(() => {
-        clearAllMocks()
+        jest.clearAllMocks()
     })
 
+    const wrapLoginInContext = (authInfo: AuthInfo = {isLoggedIn: false}) =>
+        <AuthContext.Provider value={authInfo}>
+            <Login loginFn={loginMock} updateAuthContextFn={updateAuthContextMock}/>
+        </AuthContext.Provider>
+
     it("renders the initial component", () => {
-        render(<Login credentialsService={credentialsServiceMock}/>)
+        render(wrapLoginInContext())
 
         expect(screen.getByText(/login user/i)).toBeInTheDocument()
-        expect(screen.getByText(/username/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/username/i)).toBeInTheDocument()
-        expect(screen.getByText(/password/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
         const submitButton = screen.getByLabelText(/login to application/i)
         expect(submitButton).toHaveAttribute("type", "submit")
+    })
+
+    it("displays 'You are already logged in as X' if you're already logged in", async () => {
+        render(
+            wrapLoginInContext({
+                    isLoggedIn: true,
+                    userName: "jac"
+                }
+            )
+        )
+
+        expect(screen.getByText(/you are already logged in as jac/i)).toBeInTheDocument()
     })
 
     test.each([
         ["the username is undefined or empty", undefined, "password", "Username is required"],
         ["the password is undefined or empty", "username", undefined, "Password is required"]
     ])("displays an error when %s", async (_, userName, password, expectedMessage) => {
-        render(<Login credentialsService={credentialsServiceMock}/>)
+        render(wrapLoginInContext())
         const userNameInput = screen.getByLabelText(/username/i)
         const passwordInput = screen.getByLabelText(/password/i)
         const submitButton = screen.getByLabelText(/login to application/i)
@@ -48,7 +59,7 @@ describe("Login component", () => {
     it("logs in to the application and navigates back from where you came from", async () => {
         loginMock.mockResolvedValueOnce({})
         renderWithRoutes({
-            "/login": () => <Login credentialsService={credentialsServiceMock}/>,
+            "/login": () => wrapLoginInContext(),
             "/recipetype": () => <>
                 <div>I'm the recipe type page</div>
                 <Link to="/login" aria-label="Go to login">Go to login</Link></>
@@ -65,6 +76,7 @@ describe("Login component", () => {
 
         await waitFor(() => {
             expect(loginMock).toHaveBeenCalledWith({userName: "username", password: "password"})
+            expect(updateAuthContextMock).toHaveBeenCalledWith({isLoggedIn: true, userName: "username"})
             expect(screen.getByText(/I'm the recipe type page/i)).toBeInTheDocument()
         })
     })
