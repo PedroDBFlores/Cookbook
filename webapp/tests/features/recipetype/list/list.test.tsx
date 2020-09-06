@@ -5,18 +5,16 @@ import { generateRecipeType } from "../../../helpers/generators/dto-generators"
 import userEvent from "@testing-library/user-event"
 import { renderWithRoutes } from "../../../render"
 
-const onDeleteStub = jest.fn()
-
 describe("Recipe type list component", () => {
     describe("Render", () => {
         it("shows 'No recipes types.' if there are none", async () => {
-            render(<RecipeTypeList recipeTypes={[]} onDelete={onDeleteStub} />)
+            render(<RecipeTypeList recipeTypes={[]} onDelete={jest.fn()} />)
 
             expect(screen.getByText(/No recipe types/i)).toBeInTheDocument()
         })
 
         it("shows a table with the required headers", async () => {
-            render(<RecipeTypeList recipeTypes={[generateRecipeType()]} onDelete={onDeleteStub} />)
+            render(<RecipeTypeList recipeTypes={[generateRecipeType()]} onDelete={jest.fn()} />)
 
             expect(screen.getByText(/id/i)).toBeInTheDocument()
             expect(screen.getByText(/name/i)).toBeInTheDocument()
@@ -29,7 +27,7 @@ describe("Recipe type list component", () => {
                 generateRecipeType()
             ]
 
-            render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />)
+            render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />)
 
             recipeTypes.forEach(element => {
                 expect(screen.getByText(element.id.toString())).toBeInTheDocument()
@@ -39,12 +37,13 @@ describe("Recipe type list component", () => {
     })
 
     describe("Actions", () => {
+        const recipeTypes = [
+            generateRecipeType(),
+            generateRecipeType()
+        ]
+
         it("has a set of actions for the recipe type", async () => {
-            const recipeTypes = [
-                generateRecipeType(),
-                generateRecipeType()
-            ]
-            render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />)
+            render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />)
 
             const detailButton = screen.getByLabelText(`Recipe type details for id ${recipeTypes[0].id}`, {
                 selector: "button"
@@ -63,10 +62,9 @@ describe("Recipe type list component", () => {
 
 
         it("navigates to the recipe type details", async () => {
-            const recipeTypes = [generateRecipeType()]
             const firstRecipeType = recipeTypes[0]
             renderWithRoutes({
-                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
+                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />,
                 [`/recipetype/${firstRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
             }, "/recipetype")
             const detailsButton = screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
@@ -79,10 +77,9 @@ describe("Recipe type list component", () => {
         })
 
         it("navigates to the recipe type edit page", async () => {
-            const recipeTypes = [generateRecipeType()]
             const firstRecipeType = recipeTypes[0]
             renderWithRoutes({
-                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteStub} />,
+                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />,
                 [`/recipetype/${firstRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
             }, "/recipetype")
             const editButton = screen.getByLabelText(`Edit Recipe type with id ${firstRecipeType.id}`, {
@@ -95,9 +92,8 @@ describe("Recipe type list component", () => {
         })
 
         it("deletes a recipe type", async () => {
-            const recipeTypes = [generateRecipeType()]
-            const firstRecipeType = recipeTypes[0]
             const onDeleteMock = jest.fn()
+            const firstRecipeType = recipeTypes[0]
             render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteMock} />)
             const deleteButton = screen.getByLabelText(`Delete Recipe type with id ${firstRecipeType.id}`, {
                 selector: "button"

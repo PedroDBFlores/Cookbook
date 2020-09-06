@@ -18,8 +18,8 @@ import {Theme} from "@material-ui/core/styles/createMuiTheme"
 
 interface RecipeTypeDetailsProps {
     id: number
-    findFn: (id:number) => Promise<RecipeType>
-    deleteFn: (id:number) => Promise<void>
+    onFind: (id:number) => Promise<RecipeType>
+    onDelete: (id:number) => Promise<void>
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,17 +31,17 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, findFn, deleteFn}) => {
+const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, onFind, onDelete}) => {
     const history = useHistory()
     const classes = useStyles()
 
-    const findPromiseRef = useRef(() => findFn(id))
+    const findPromiseRef = useRef(() => onFind(id))
     const [showModal, setShowModal] = useState<boolean>(false)
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
-    const onDelete = (id: number) => deleteFn(id)
+    const handleDelete = (id: number) => onDelete(id)
         .then(() => history.push("/recipetype"))
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
@@ -86,7 +86,7 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, findFn, delete
                                           content="Are you sure you want to delete this recipe type?"
                                           dismiss={{
                                               text: "Delete",
-                                              onDismiss: () => onDelete(data.id)
+                                              onDismiss: () => handleDelete(data.id)
                                           }}
                                           onClose={() => setShowModal(false)}/>
                     </If>
@@ -98,8 +98,8 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, findFn, delete
 
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired,
-    findFn: PropTypes.func.isRequired,
-    deleteFn: PropTypes.func.isRequired
+    onFind: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
 }
 
 export default RecipeTypeDetails

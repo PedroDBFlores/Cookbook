@@ -1,3 +1,3 @@
-export interface LoginResult {
+export default interface LoginResult {
     token:string
 }

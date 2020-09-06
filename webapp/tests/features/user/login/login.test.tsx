@@ -15,7 +15,7 @@ describe("Login component", () => {
 
     const wrapLoginInContext = (authInfo: AuthInfo = {isLoggedIn: false}) =>
         <AuthContext.Provider value={authInfo}>
-            <Login loginFn={loginMock} updateAuthContextFn={updateAuthContextMock}/>
+            <Login loginFn={loginMock} onUpdateAuth={updateAuthContextMock}/>
         </AuthContext.Provider>
 
     it("renders the initial component", () => {

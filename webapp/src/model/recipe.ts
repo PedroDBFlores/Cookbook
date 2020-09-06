@@ -1,11 +1,14 @@
-export interface Recipe {
+export default interface Recipe {
     id: number
     recipeTypeId: number
-    recipeTypeName?: string
     userId : number
-    userName ?: string
     name: string
     description: string
     ingredients: string
     preparingSteps: string
+}
+
+export interface RecipeDetails extends Recipe{
+    recipeTypeName: string
+    userName : string
 }

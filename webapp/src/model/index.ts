@@ -1,8 +1,9 @@
-import {User} from "./user"
-import {RecipeType} from "./recipe-type"
-import {Recipe} from "./recipe"
-import {CreateResult} from "./create-result"
-import {Credentials} from "./credentials"
-import {SearchRecipeRepresenter} from "./search-recipe-representer"
+import User from "./user"
+import RecipeType from "./recipe-type"
+import Recipe, {RecipeDetails} from "./recipe"
+import CreateResult from "./create-result"
+import Credentials from "./credentials"
+import SearchRecipeParameters from "./search-recipe-parameters"
+import LoginResult from "./login-result"
 
-export {User, RecipeType, Recipe, CreateResult, Credentials, SearchRecipeRepresenter}
+export {User, RecipeType, Recipe, RecipeDetails, CreateResult, LoginResult, Credentials, SearchRecipeParameters}

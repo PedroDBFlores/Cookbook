@@ -1,6 +1,5 @@
 import axios from "axios"
-import {Credentials} from "../model"
-import {LoginResult} from "../model/login-result"
+import {Credentials, LoginResult} from "../model"
 import handleApiError from "../utils/error-handling"
 
 export interface CredentialsService {

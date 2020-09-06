@@ -1,5 +1,6 @@
-import {User, RecipeType, Recipe} from "../../../src/model"
+import {User, RecipeType} from "../../../src/model"
 import { name, internet, random } from "faker"
+import Recipe, {RecipeDetails} from "../../../src/model/recipe"
 
 /**
  * Provides a User with random data
@@ -21,12 +22,17 @@ export const generateRecipeType = (props?: Record<string, unknown>): RecipeType 
 export const generateRecipe = (props?: Record<string, unknown>): Recipe => ({
     id: random.number(),
     recipeTypeId: random.number(),
-    recipeTypeName: random.word(),
     userId: random.number(),
-    userName: name.firstName(),
     name: random.word(),
     description: random.word(),
     ingredients: random.word(),
     preparingSteps: random.word(),
+    ...props
+})
+
+export const generateRecipeDetails = (props?: Record<string, unknown>): RecipeDetails => ({
+    ...generateRecipe(),
+    recipeTypeName: random.word(),
+    userName: name.firstName(),
     ...props
 })

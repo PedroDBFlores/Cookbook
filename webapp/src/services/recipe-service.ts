@@ -1,13 +1,13 @@
-import {CreateResult, Recipe, SearchRecipeRepresenter} from "../model"
+import {CreateResult, Recipe, RecipeDetails, SearchRecipeParameters} from "../model"
 import {AxiosInstance} from "axios"
 import handleApiError from "../utils/error-handling"
 
 export interface RecipeService {
-    find(id: number): Promise<Recipe>
+    find(id: number): Promise<RecipeDetails>
 
-    search(searchParameters: SearchRecipeRepresenter): Promise<Array<Recipe>>
+    search(searchParameters: SearchRecipeParameters): Promise<Array<RecipeDetails>>
 
-    getAll(): Promise<Array<Recipe>>
+    getAll(): Promise<Array<RecipeDetails>>
 
     create(recipe: Omit<Recipe, "id">): Promise<CreateResult>
 
@@ -16,27 +16,27 @@ export interface RecipeService {
     delete(id: number): Promise<void>
 }
 
-const findRecipe = (instance: AxiosInstance) => async (id: number): Promise<Recipe> => {
+const findRecipe = (instance: AxiosInstance) => async (id: number): Promise<RecipeDetails> => {
     try {
-        const response = await instance.get<Recipe>(`/recipe/${id}`)
+        const response = await instance.get<RecipeDetails>(`/recipe/${id}`)
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const searchRecipes = (instance: AxiosInstance) => async (searchParameters: SearchRecipeRepresenter): Promise<Array<Recipe>> => {
+const searchRecipes = (instance: AxiosInstance) => async (searchParameters: SearchRecipeParameters): Promise<Array<RecipeDetails>> => {
     try {
-        const response = await instance.post<Array<Recipe>>("/recipe/search", searchParameters)
+        const response = await instance.post<Array<RecipeDetails>>("/recipe/search", searchParameters)
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const getAllRecipes = (instance: AxiosInstance) => async (): Promise<Array<Recipe>> => {
+const getAllRecipes = (instance: AxiosInstance) => async (): Promise<Array<RecipeDetails>> => {
     try {
-        const response = await instance.get<Array<Recipe>>("/recipe")
+        const response = await instance.get<Array<RecipeDetails>>("/recipe")
         return response.data
     } catch (err) {
         throw handleApiError(err)

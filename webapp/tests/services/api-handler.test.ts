@@ -1,7 +1,6 @@
 import axios, {AxiosRequestConfig} from "axios"
 import MockAdapter from "axios-mock-adapter"
 import ApiHandler from "../../src/services/api-handler"
-import clearAllMocks = jest.clearAllMocks;
 import {localStorageMock} from "../utils/mocks"
 
 const mockedAxios = new MockAdapter(axios)
@@ -32,7 +31,7 @@ describe("API handler", () => {
         }
 
         beforeEach(() => {
-            clearAllMocks()
+            jest.clearAllMocks()
             mockedAxios.reset()
         })
 

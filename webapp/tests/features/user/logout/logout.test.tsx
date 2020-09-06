@@ -18,7 +18,7 @@ describe("Logout component", () => {
 
     const wrapLogoutInContext = (authInfo: AuthInfo = {isLoggedIn: true, userName: "username"}) =>
         <AuthContext.Provider value={authInfo}>
-            <Logout logoutFn={logoutMock} updateAuthContextFn={updateAuthContextMock}/>
+            <Logout onLogout={logoutMock} onUpdateAuth={updateAuthContextMock}/>
         </AuthContext.Provider>
 
     it("ends your session", async () => {

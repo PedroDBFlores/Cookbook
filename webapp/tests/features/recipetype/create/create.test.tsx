@@ -11,7 +11,7 @@ describe("Create recipe type", () => {
     })
 
     it("renders the initial form", () => {
-        render(<CreateRecipeType createFn={createRecipeTypeMock}/>)
+        render(<CreateRecipeType onCreate={createRecipeTypeMock}/>)
 
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
@@ -20,7 +20,7 @@ describe("Create recipe type", () => {
     })
 
     it("displays an error when the name is empty on submitting", async () => {
-        render(<CreateRecipeType createFn={createRecipeTypeMock}/>)
+        render(<CreateRecipeType onCreate={createRecipeTypeMock}/>)
 
         const submitButton = screen.getByLabelText(/create recipe type/i)
         fireEvent.submit(submitButton)
@@ -34,7 +34,7 @@ describe("Create recipe type", () => {
         createRecipeTypeMock.mockResolvedValueOnce({id: 1})
 
         renderWithRoutes({
-            "/recipetype/new": () => <CreateRecipeType createFn={createRecipeTypeMock}/>,
+            "/recipetype/new": () => <CreateRecipeType onCreate={createRecipeTypeMock}/>,
             "/recipetype/1": () => <div>I'm the recipe type details page for id 1</div>
         }, "/recipetype/new")
 

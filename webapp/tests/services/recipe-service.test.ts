@@ -1,11 +1,11 @@
 import axios from "axios"
-import {generateRecipe} from "../helpers/generators/dto-generators"
+import {generateRecipe, generateRecipeDetails} from "../helpers/generators/dto-generators"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "../../src/utils/error-handling"
 import createRecipeService from "../../src/services/recipe-service"
 import ApiHandler from "../../src/services/api-handler"
 import {random} from "faker"
-import {SearchRecipeRepresenter} from "../../src/model"
+import {SearchRecipeParameters} from "../../src/model"
 
 const mockedAxios = new MockAdapter(axios)
 const handleErrorsSpy = jest.spyOn(errorHandler, "default")
@@ -22,7 +22,7 @@ describe("Recipe service", () => {
 
     describe("Find recipe", () => {
         it("finds a recipe by it's id", async () => {
-            const expectedRecipe = generateRecipe()
+            const expectedRecipe = generateRecipeDetails()
             mockedAxios.onGet(`/recipe/${expectedRecipe.id}`)
                 .replyOnce(200, expectedRecipe)
 
@@ -52,8 +52,8 @@ describe("Recipe service", () => {
                 name: "Tikka Masala",
                 pageNumber: 1,
                 itemsPerPage: 10
-            } as SearchRecipeRepresenter
-            const expectedResponse = [generateRecipe({name: "Tikka Masala"})]
+            } as SearchRecipeParameters
+            const expectedResponse = [generateRecipeDetails({name: "Tikka Masala"})]
             mockedAxios.onPost("/recipe/search", searchParameters)
                 .replyOnce(200, expectedResponse)
 
@@ -83,7 +83,7 @@ describe("Recipe service", () => {
 
     describe("Get all recipes", () => {
         it("gets all the recipes", async () => {
-            const expectedRecipes = [generateRecipe(), generateRecipe()]
+            const expectedRecipes = [generateRecipeDetails(), generateRecipeDetails()]
             mockedAxios.onGet("/recipe")
                 .replyOnce(200, expectedRecipes)
 

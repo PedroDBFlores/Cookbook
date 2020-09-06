@@ -24,7 +24,7 @@ describe("Recipe type details", () => {
     it("renders the recipe type details", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(<RecipeTypeDetails id={99} findFn={findRecipeTypeMock} deleteFn={deleteRecipeTypeMock}/>)
+        render(<RecipeTypeDetails id={99} onFind={findRecipeTypeMock} onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
@@ -40,7 +40,7 @@ describe("Recipe type details", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(<RecipeTypeDetails id={99} findFn={findRecipeTypeMock} deleteFn={deleteRecipeTypeMock}/>)
+        render(<RecipeTypeDetails id={99} onFind={findRecipeTypeMock} onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
@@ -54,8 +54,8 @@ describe("Recipe type details", () => {
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         renderWithRoutes({
             [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}
-                                                                               findFn={findRecipeTypeMock}
-                                                                               deleteFn={deleteRecipeTypeMock}/>,
+                                                                               onFind={findRecipeTypeMock}
+                                                                               onDelete={deleteRecipeTypeMock}/>,
             [`/recipetype/${expectedRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
         }, `/recipetype/${expectedRecipeType.id}`)
 
@@ -82,8 +82,8 @@ describe("Recipe type details", () => {
 
         renderWithRoutes({
             [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}
-                                                                               findFn={findRecipeTypeMock}
-                                                                               deleteFn={deleteRecipeTypeMock}/>,
+                                                                               onFind={findRecipeTypeMock}
+                                                                               onDelete={deleteRecipeTypeMock}/>,
             "/recipetype": () => <div>I'm the recipe type list page</div>
         }, `/recipetype/${expectedRecipeType.id}`)
 

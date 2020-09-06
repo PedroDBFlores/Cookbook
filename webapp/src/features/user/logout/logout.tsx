@@ -5,16 +5,16 @@ import {AuthInfo} from "../../../contexts/auth-context"
 import Typography from "@material-ui/core/Typography"
 
 interface LogoutProps {
-    logoutFn: () => Promise<void>
-    updateAuthContextFn: (authInfo: AuthInfo) => void
+    onLogout: () => Promise<void>
+    onUpdateAuth: (authInfo: AuthInfo) => void
 }
 
-const Logout: React.FC<LogoutProps> = ({logoutFn, updateAuthContextFn}) => {
+const Logout: React.FC<LogoutProps> = ({onLogout, onUpdateAuth}) => {
     const history = useHistory()
 
     useEffect(() => {
-        logoutFn().then(() => {
-            updateAuthContextFn({isLoggedIn: false, userName: undefined})
+        onLogout().then(() => {
+            onUpdateAuth({isLoggedIn: false, userName: undefined})
             history.push("/")
         })
     }, [])
@@ -22,8 +22,8 @@ const Logout: React.FC<LogoutProps> = ({logoutFn, updateAuthContextFn}) => {
     return <Typography variant="h4">Logging you out</Typography>
 }
 Logout.propTypes = {
-    logoutFn: PropTypes.func.isRequired,
-    updateAuthContextFn: PropTypes.func.isRequired
+    onLogout: PropTypes.func.isRequired,
+    onUpdateAuth: PropTypes.func.isRequired
 }
 
 export default Logout

@@ -8,11 +8,7 @@ import {renderWithRoutes} from "../../../render"
 const getAllRecipeTypesMock = jest.fn()
 const deleteRecipeTypeMock = jest.fn()
 
-<<<<<<< HEAD
-jest.mock("../../../../src/features/recipetype/search/search", () => {
-=======
 jest.mock("../../../../src/features/recipetype/list/list", () => {
->>>>>>> 969d51cbca092bbaa77ec85338a9f9dda730bfd3
     return {
         __esModule: true,
         default: jest.fn(() => <>Mock Recipe Type list</>)
@@ -20,19 +16,15 @@ jest.mock("../../../../src/features/recipetype/list/list", () => {
 })
 const recipeTypeListMock = RecipeTypeList as jest.MockedFunction<typeof RecipeTypeList>
 
-<<<<<<< HEAD
-describe("Recipe type search page", () => {
-=======
 describe("Recipe type list page", () => {
->>>>>>> 969d51cbca092bbaa77ec85338a9f9dda730bfd3
     beforeEach(() => {
         jest.clearAllMocks()
     })
 
     it("has the required content and gets the recipe types", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
-        render(<RecipeTypeListPage getAllFn={getAllRecipeTypesMock}
-         deleteFn={deleteRecipeTypeMock}/>)
+        render(<RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+         onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -45,8 +37,8 @@ describe("Recipe type list page", () => {
 
     it("shows the error", async () => {
         getAllRecipeTypesMock.mockRejectedValueOnce({code: "YELLOW", message: "Database error"})
-        render(<RecipeTypeListPage getAllFn={getAllRecipeTypesMock}
-                                   deleteFn={deleteRecipeTypeMock}/>)
+        render(<RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+                                   onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await screen.findByText(/error: database error/i)
@@ -63,8 +55,8 @@ describe("Recipe type list page", () => {
             }, [])
             return <></>
         })
-        render(<RecipeTypeListPage getAllFn={getAllRecipeTypesMock}
-                                   deleteFn={deleteRecipeTypeMock}/>)
+        render(<RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+                                   onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
@@ -76,8 +68,8 @@ describe("Recipe type list page", () => {
     it("navigates to the recipe type create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
-            "/recipetype": () => <RecipeTypeListPage getAllFn={getAllRecipeTypesMock}
-                                                     deleteFn={deleteRecipeTypeMock}/>,
+            "/recipetype": () => <RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+                                                     onDelete={deleteRecipeTypeMock}/>,
             "/recipetype/new": () => <>I'm the recipe type create page</>
         }, "/recipetype")
         await waitFor(() => expect(screen.getByLabelText(/create new recipe type/i)).toBeInTheDocument())

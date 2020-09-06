@@ -17,8 +17,8 @@ import InputLabel from "@material-ui/core/InputLabel"
 
 interface EditRecipeTypeProps {
     id: number
-    findFn: (id: number) => Promise<RecipeType>
-    updateFn: (recipeType: RecipeType) => Promise<void>
+    onFind: (id: number) => Promise<RecipeType>
+    onUpdate: (recipeType: RecipeType) => Promise<void>
 }
 
 const schema = yup.object({
@@ -26,16 +26,16 @@ const schema = yup.object({
         .min(1, "Name is required")
 })
 
-const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, findFn, updateFn}) => {
+const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, onFind, onUpdate}) => {
     const {enqueueSnackbar} = useSnackbar()
     const history = useHistory()
-    const findPromiseRef = useRef(() => findFn(id))
+    const findPromiseRef = useRef(() => onFind(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
     const onSubmit = (values: FormikValues) => {
-        updateFn({...values} as RecipeType)
+        onUpdate({...values} as RecipeType)
             .then(() => history.push(`/recipetype/${id}`))
             .catch(() => enqueueSnackbar("An error occurred while updating the recipe type"))
     }
@@ -95,8 +95,8 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, findFn, updateFn}) =
 
 EditRecipeType.propTypes = {
     id: PropTypes.number.isRequired,
-    findFn: PropTypes.func.isRequired,
-    updateFn: PropTypes.func.isRequired
+    onFind: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired
 }
 
 export default EditRecipeType

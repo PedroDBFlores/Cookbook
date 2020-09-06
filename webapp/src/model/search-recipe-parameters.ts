@@ -1,4 +1,4 @@
-export interface SearchRecipeRepresenter {
+export default interface SearchRecipeParameters {
     name?: string
     description?: number
     recipeTypeId?: number

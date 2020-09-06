@@ -17,8 +17,8 @@ describe("Edit recipe type", () => {
     it("renders the initial form", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id} findFn={findRecipeTypeMock}
-                                                    updateFn={updateRecipeTypeMock}/>))
+        render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id} onFind={findRecipeTypeMock}
+                                                    onUpdate={updateRecipeTypeMock}/>))
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
@@ -35,8 +35,8 @@ describe("Edit recipe type", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(wrappedEditComponent(<EditRecipeType id={99} findFn={findRecipeTypeMock}
-                                                    updateFn={updateRecipeTypeMock}/>))
+        render(wrappedEditComponent(<EditRecipeType id={99} onFind={findRecipeTypeMock}
+                                                    onUpdate={updateRecipeTypeMock}/>))
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
@@ -49,8 +49,8 @@ describe("Edit recipe type", () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}
-                                                    findFn={findRecipeTypeMock}
-                                                    updateFn={updateRecipeTypeMock}/>))
+                                                    onFind={findRecipeTypeMock}
+                                                    onUpdate={updateRecipeTypeMock}/>))
 
         await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
 
@@ -72,8 +72,8 @@ describe("Edit recipe type", () => {
 
         renderWithRoutes({
             [`/recipetype/${expectedRecipeType.id}/edit`]: () => wrappedEditComponent(<EditRecipeType
-                id={expectedRecipeType.id} findFn={findRecipeTypeMock}
-                updateFn={updateRecipeTypeMock}/>),
+                id={expectedRecipeType.id} onFind={findRecipeTypeMock}
+                onUpdate={updateRecipeTypeMock}/>),
             [`/recipetype/${expectedRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
         }, `/recipetype/${expectedRecipeType.id}/edit`)
 
@@ -97,8 +97,8 @@ describe("Edit recipe type", () => {
         updateRecipeTypeMock.mockRejectedValueOnce({})
 
         render(wrappedEditComponent(<EditRecipeType id={expectedRecipeType.id}
-                                                    findFn={findRecipeTypeMock}
-                                                    updateFn={updateRecipeTypeMock}/>))
+                                                    onFind={findRecipeTypeMock}
+                                                    onUpdate={updateRecipeTypeMock}/>))
 
         await waitFor(() => expect(screen.getByText(/edit a recipe type/i)).toBeInTheDocument())
 

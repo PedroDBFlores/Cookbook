@@ -15,6 +15,7 @@ import "fontsource-roboto"
 import {ThemeProvider} from "@material-ui/core/styles"
 import Logout from "./features/user/logout/logout"
 import AuthContext, {AuthInfo} from "./contexts/auth-context"
+import RecipeSearchPage from "./features/recipe/search/search-page";
 
 const theme = createMuiTheme({
     palette: {
@@ -50,23 +51,28 @@ const App: React.FC<unknown> = () => {
                         <Layout>
                             <Switch>
                                 <Route exact path="/recipetype"
-                                       render={() => <RecipeTypeListPage getAllFn={recipeTypeService.getAll}
-                                                                         deleteFn={recipeTypeService.delete}/>}/>
+                                       render={() => <RecipeTypeListPage onGetAll={recipeTypeService.getAll}
+                                                                         onDelete={recipeTypeService.delete}/>}/>
                                 <Route exact path="/recipetype/new"
-                                       render={() => <CreateRecipeType createFn={recipeTypeService.create}/>}/>
+                                       render={() => <CreateRecipeType onCreate={recipeTypeService.create}/>}/>
                                 <Route path="/recipetype/:id"
-                                       render={(x) => <RecipeTypeDetails findFn={recipeTypeService.find}
-                                                                         deleteFn={recipeTypeService.delete}
-                                                                         id={Number(x.match.params.id)}/>}/>
+                                       render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}
+                                                                         onFind={recipeTypeService.find}
+                                                                         onDelete={recipeTypeService.delete}/>}/>
                                 <Route path="/recipetype/:id/edit"
-                                       render={(x) => <EditRecipeType findFn={recipeTypeService.find}
-                                                                      updateFn={recipeTypeService.update}
-                                                                      id={Number(x.match.params.id)}/>}/>
+                                       render={(x) => <EditRecipeType id={Number(x.match.params.id)}
+                                                                      onFind={recipeTypeService.find}
+                                                                      onUpdate={recipeTypeService.update}/>
+                                       }/>
+
+                                <Route path="/recipe" render={() => <RecipeSearchPage/>}/>
+
                                 <Route path="/login">
-                                    <Login loginFn={credentialsService.login} updateAuthContextFn={updateAuthContext}/>
+                                    <Login loginFn={credentialsService.login} onUpdateAuth={updateAuthContext}/>
                                 </Route>
                                 <Route path="/logout">
-                                    <Logout logoutFn={credentialsService.logout} updateAuthContextFn={updateAuthContext}/>
+                                    <Logout onLogout={credentialsService.logout}
+                                            onUpdateAuth={updateAuthContext}/>
                                 </Route>
                             </Switch>
                         </Layout>

@@ -36,10 +36,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface LoginProps {
     loginFn: (credentials: Credentials) => Promise<void>
-    updateAuthContextFn: (authInfo: AuthInfo) => void
+    onUpdateAuth: (authInfo: AuthInfo) => void
 }
 
-const Login: React.FC<LoginProps> = ({loginFn, updateAuthContextFn}) => {
+const Login: React.FC<LoginProps> = ({loginFn, onUpdateAuth}) => {
     const history = useHistory()
     const classes = useStyles()
     const {isLoggedIn, userName} = useContext(AuthContext)
@@ -47,7 +47,7 @@ const Login: React.FC<LoginProps> = ({loginFn, updateAuthContextFn}) => {
     const onSubmit = (data: LoginFormData) => {
         loginFn({...data})
             .then(() => {
-                updateAuthContextFn({isLoggedIn: true, userName: data.userName})
+                onUpdateAuth({isLoggedIn: true, userName: data.userName})
                 history.goBack()
             })
     }
@@ -118,7 +118,7 @@ const Login: React.FC<LoginProps> = ({loginFn, updateAuthContextFn}) => {
 
 Login.propTypes = {
     loginFn: PropTypes.func.isRequired,
-    updateAuthContextFn: PropTypes.func.isRequired
+    onUpdateAuth: PropTypes.func.isRequired
 }
 
 export default Login

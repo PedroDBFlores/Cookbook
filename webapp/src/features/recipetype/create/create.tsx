@@ -33,15 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface CreateRecipeTypeProps {
-    createFn: (recipe: Omit<RecipeType, "id">) => Promise<CreateResult>
+    onCreate: (recipe: Omit<RecipeType, "id">) => Promise<CreateResult>
 }
 
-const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({createFn}) => {
+const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
     const history = useHistory()
     const classes = useStyles()
 
     const onSubmit = (data: CreateRecipeFormData) => {
-        createFn({name: data.name})
+        onCreate({name: data.name})
             .then(recipeType => history.push(`/recipetype/${recipeType.id}`))
 
     }
@@ -93,6 +93,6 @@ const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({createFn}) => {
 }
 
 CreateRecipeType.propTypes = {
-    createFn: PropTypes.func.isRequired
+    onCreate: PropTypes.func.isRequired
 }
 export default CreateRecipeType
