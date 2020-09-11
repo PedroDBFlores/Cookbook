@@ -24,7 +24,7 @@ class SearchRecipeHandler(private val searchRecipe: SearchRecipe) : KtorHandler 
     ) {
         init {
             recipeTypeId?.let { check(it > 0) { "Field 'recipeTypeId' must be bigger than 0" } }
-            check(pageNumber > 0) { "Field 'pageNumber' must be bigger than 0" }
+            check(pageNumber > -1) { "Field 'pageNumber' must be 0 or bigger" }
             check(itemsPerPage > 0) { "Field 'itemsPerPage' must be bigger than 0" }
         }
 

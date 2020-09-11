@@ -2,11 +2,13 @@ package web.recipe
 
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
+import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -63,6 +65,27 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedSearchResult.toJson())
                     verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(name = "name")) }
+                }
+            }
+        }
+
+        arrayOf(
+            row(createJSONObject("recipeTypeId" to 0), "the recipeTypeId field is invalid"),
+            row(createJSONObject("pageNumber" to -1), "the pageNumber field is invalid"),
+            row(createJSONObject("itemsPerPage" to 0), "the itemsPerPage field is invalid")
+        ).forEach { (jsonBody, description) ->
+            it("returns 400 when $description") {
+                val searchRecipe = mockk<SearchRecipe>()
+
+                withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
+                    with(handleRequest(HttpMethod.Post, "/recipe/search") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    })
+                    {
+                        response.status().shouldBe(HttpStatusCode.BadRequest)
+                        verify { searchRecipe wasNot Called }
+                    }
                 }
             }
         }

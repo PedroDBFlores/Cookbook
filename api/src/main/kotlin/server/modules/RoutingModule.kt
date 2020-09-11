@@ -137,6 +137,10 @@ fun Routing.recipeRoutes() {
             val useCase by call.di().instance<FindRecipe>()
             FindRecipeHandler(useCase).handle(call)
         }
+        post("search"){
+            val useCase by call.di().instance<SearchRecipe>()
+            SearchRecipeHandler(useCase).handle(call)
+        }
         post {
             val useCase by call.di().instance<CreateRecipe>()
             CreateRecipeHandler(useCase).handle(call)

@@ -51,6 +51,7 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
     val recipeModule = DI.Module("recipeModule") {
         bind<RecipeRepository>() with singleton { RecipeRepositoryImpl(db) }
         bind<FindRecipe>() with singleton { FindRecipe(instance()) }
+        bind<SearchRecipe>() with singleton { SearchRecipe(instance()) }
         bind<GetAllRecipes>() with singleton { GetAllRecipes(instance()) }
         bind<CreateRecipe>() with singleton { CreateRecipe(instance()) }
         bind<UpdateRecipe>() with singleton { UpdateRecipe(instance()) }
