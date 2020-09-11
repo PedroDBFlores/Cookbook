@@ -128,7 +128,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                     name = pickedRecipe.name,
                     description = null,
                     recipeTypeId = null,
-                    pageNumber = 1,
+                    pageNumber = 0,
                     itemsPerPage = 18
                 )
 
@@ -153,7 +153,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                     description = pickedRecipe.description,
                     name = null,
                     recipeTypeId = null,
-                    pageNumber = 1,
+                    pageNumber = 0,
                     itemsPerPage = 18
                 )
 
@@ -163,10 +163,10 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
             }
 
             arrayOf(
-                row(1, 5),
-                row(3, 20),
-                row(10, 5),
-                row(2, 50)
+                row(0, 5),
+                row(2, 20),
+                row(9, 5),
+                row(1, 50)
             ).forEach { (pageNumber, itemsPerPage) ->
                 it("returns the paginated results for page $pageNumber and $itemsPerPage items per page") {
                     val createdRecipes = createRecipes(100)
@@ -182,7 +182,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                     with(searchResult) {
                         count.shouldBe(100)
                         numberOfPages.shouldBe(100 / itemsPerPage)
-                        val offset = pageNumber.minus(1) * itemsPerPage
+                        val offset = pageNumber * itemsPerPage
                         createdRecipes.subList(offset, offset + itemsPerPage).shouldBe(results)
                     }
                 }

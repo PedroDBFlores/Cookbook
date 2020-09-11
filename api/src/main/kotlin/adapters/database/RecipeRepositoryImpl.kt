@@ -58,7 +58,7 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
         val count = query.count()
         itemsPerPage.let { itemsPerPage ->
-            val offset = pageNumber.toLong().minus(1) * itemsPerPage
+            val offset = pageNumber.toLong() * itemsPerPage
             query.limit(
                 n = itemsPerPage,
                 offset = offset
