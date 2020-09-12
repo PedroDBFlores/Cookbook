@@ -49,6 +49,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
+    implementation("mysql:mysql-connector-java:8.0.21")
     implementation("com.zaxxer:HikariCP:3.4.5")
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
