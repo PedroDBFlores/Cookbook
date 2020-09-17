@@ -15,7 +15,8 @@ import "fontsource-roboto"
 import {ThemeProvider} from "@material-ui/core/styles"
 import Logout from "./features/user/logout/logout"
 import AuthContext, {AuthInfo} from "./contexts/auth-context"
-import RecipeSearchPage from "./features/recipe/search/search-page";
+import RecipeSearchPage from "./features/recipe/search/search-page"
+import createRecipeService from "./services/recipe-service"
 
 const theme = createMuiTheme({
     palette: {
@@ -41,6 +42,7 @@ const App: React.FC<unknown> = () => {
     const updateAuthContext = (update: AuthInfo): void => setAuth({...auth, ...update})
 
     const recipeTypeService = createRecipeTypeService(ApiHandler("http://localhost:9000"))
+    const recipeService = createRecipeService(ApiHandler("http://localhost:9000"))
     const credentialsService = createCredentialsService()
 
     return (
@@ -65,7 +67,10 @@ const App: React.FC<unknown> = () => {
                                                                       onUpdate={recipeTypeService.update}/>
                                        }/>
 
-                                <Route path="/recipe" render={() => <RecipeSearchPage/>}/>
+                                <Route path="/recipe" render={() => <RecipeSearchPage
+                                    searchFn={recipeService.search}
+                                    getAllRecipeTypesFn={recipeTypeService.getAll}/>}
+                                />
 
                                 <Route path="/login">
                                     <Login loginFn={credentialsService.login} onUpdateAuth={updateAuthContext}/>

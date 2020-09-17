@@ -8,6 +8,8 @@ services:
       dockerfile: ./dockerfiles/cookbook-api.Dockerfile
     ports:
       - 9000:9000
+    networks:
+      - cookbook-network
   cookbook-database:
     container_name: cookbook-db
     image: mysql:8.0
@@ -17,10 +19,17 @@ services:
     environment:
       MYSQL_DATABASE: cookbook
       MYSQL_ROOT_PASSWORD: am!28--zQ
-  cookbook-webapp:
-    container_name: cookbook-webapp
-    build:
-      context: ../
-      dockerfile: ./dockerfiles/cookbook-webapp.Dockerfile
-    ports:
-      - 8080:8080
+    networks:
+      - cookbook-network
+  # cookbook-webapp:
+  #   container_name: cookbook-webapp
+  #   build:
+  #     context: ../
+  #     dockerfile: ./dockerfiles/cookbook-webapp.Dockerfile
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     - cookbook-network
+networks:
+  cookbook-network:
+    name: "cookbook-network"

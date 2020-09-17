@@ -1,8 +1,8 @@
 import axios from "axios"
-import { generateRecipeType } from "../helpers/generators/dto-generators"
+import {generateRecipeType} from "../helpers/generators/dto-generators"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "../../src/utils/error-handling"
-import * as faker from "faker"
+import {name, random} from "faker"
 import createRecipeTypeService from "../../src/services/recipe-type-service"
 import ApiHandler from "../../src/services/api-handler"
 
@@ -71,8 +71,8 @@ describe("Recipe type service", () => {
 
     describe("Create", () => {
         it("creates a recipe", async () => {
-            const recipeTypeToCreate = { name: faker.name.lastName() }
-            const expectedResponse = { id: faker.random.number() }
+            const recipeTypeToCreate = {name: name.lastName()}
+            const expectedResponse = {id: random.number()}
             mockedAxios.onPost("/recipetype", recipeTypeToCreate)
                 .replyOnce(201, expectedResponse)
 
@@ -90,7 +90,7 @@ describe("Recipe type service", () => {
                     message: "Database Error"
                 })
 
-            await service.create({ name: "" }).catch(() => {
+            await service.create({name: ""}).catch(() => {
                 expect(handleErrorsSpy).toHaveBeenCalled()
             })
         })
@@ -116,7 +116,7 @@ describe("Recipe type service", () => {
                     message: "Database Error"
                 })
 
-            await service.update({ id: 123, name: "" }).catch(() => {
+            await service.update({id: 123, name: ""}).catch(() => {
                 expect(handleErrorsSpy).toHaveBeenCalled()
             })
         })
@@ -124,7 +124,7 @@ describe("Recipe type service", () => {
 
     describe("Delete", () => {
         it("deletes a recipe type", async () => {
-            const idToDelete = faker.random.number()
+            const idToDelete = random.number()
             mockedAxios.onDelete(`/recipetype/${idToDelete}`)
                 .replyOnce(204)
 

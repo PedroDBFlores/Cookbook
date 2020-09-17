@@ -1,7 +1,7 @@
 import axios from "axios"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "../../src/utils/error-handling"
-import * as faker from "faker"
+import {internet} from "faker"
 import {Credentials} from "../../src/model"
 import {localStorageMock} from "../utils/mocks"
 import createCredentialsService from "../../src/services/credentials-service"
@@ -22,8 +22,8 @@ describe("Credentials service", () => {
 
     describe("Login", () => {
         const credentials = {
-            userName: faker.internet.userName(),
-            password: faker.internet.password()
+            userName: internet.userName(),
+            password: internet.password()
         } as Credentials
 
         it("logs in the API and saves the JWT Token", async () => {

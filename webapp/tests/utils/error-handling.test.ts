@@ -1,7 +1,7 @@
 import { AxiosError } from "axios"
 import "jest-chain"
 import "jest-extended"
-import handleApiError, { ApiError } from "../../src/utils/error-handling"
+import handleApiError from "../../src/utils/error-handling"
 
 describe("Error handling", () => {
     it("handles the errors provided by the API", async () => {
@@ -15,6 +15,6 @@ describe("Error handling", () => {
             }
         } as AxiosError
 
-        expect(() => handleApiError(axiosError)).toThrowError(ApiError)
+        expect(() => handleApiError(axiosError)).toThrow()
     })
 })

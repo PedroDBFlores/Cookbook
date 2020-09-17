@@ -3,17 +3,13 @@ import {RecipeType} from "../../../model"
 import PropTypes from "prop-types"
 import * as yup from "yup"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
-import {Formik, FormikValues} from "formik"
-import If from "../../../components/flow-control/if"
+import {Field, Formik, FormikValues, Form} from "formik"
 import {useHistory} from "react-router-dom"
 import {useSnackbar} from "notistack"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
-import FormControl from "@material-ui/core/FormControl"
-import FormHelperText from "@material-ui/core/FormHelperText"
-import Input from "@material-ui/core/Input"
 import Button from "@material-ui/core/Button"
-import InputLabel from "@material-ui/core/InputLabel"
+import {TextField} from "formik-material-ui"
 
 interface EditRecipeTypeProps {
     id: number
@@ -58,34 +54,20 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, onFind, onUpdate}) =
                     onSubmit={onSubmit}
                     validationSchema={schema}>
                     {
-                        ({
-                             values,
-                             errors,
-                             handleChange,
-                             handleSubmit
-                         }) => (
-                            <form onSubmit={event => handleSubmit(event)}>
-                                <Grid item xs={12}>
-                                    <FormControl>
-                                        <InputLabel htmlFor="name">Name</InputLabel>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            value={values.name}
-                                            onChange={handleChange}
-                                            aria-describedby="component-error-text-name"
-                                        />
-                                        <If condition={!!errors?.name}>
-                                            <FormHelperText id="component-error-text-name">Name is
-                                                required</FormHelperText>
-                                        </If>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Button variant="contained" aria-label="Edit recipe type"
-                                            type="submit">Edit</Button>
-                                </Grid>
-                            </form>)}
+                        () => <Form>
+                            <Grid item xs={12}>
+                                <Field
+                                    component={TextField}
+                                    id="name"
+                                    label="Name"
+                                    name="name"/>
+                            </Grid>
+                            <Grid item xs={1}>
+                                <Button variant="contained" aria-label="Edit recipe type"
+                                        type="submit">Edit</Button>
+                            </Grid>
+                        </Form>
+                    }
                 </Formik>
             </Grid>
             }

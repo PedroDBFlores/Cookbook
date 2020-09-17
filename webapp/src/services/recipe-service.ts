@@ -1,11 +1,11 @@
-import {CreateResult, Recipe, RecipeDetails, SearchRecipeParameters} from "../model"
+import {CreateResult, Recipe, RecipeDetails, SearchRecipeParameters, SearchResult} from "../model"
 import {AxiosInstance} from "axios"
 import handleApiError from "../utils/error-handling"
 
 export interface RecipeService {
     find(id: number): Promise<RecipeDetails>
 
-    search(searchParameters: SearchRecipeParameters): Promise<Array<RecipeDetails>>
+    search(searchParameters: SearchRecipeParameters): Promise<SearchResult<RecipeDetails>>
 
     getAll(): Promise<Array<RecipeDetails>>
 
@@ -25,9 +25,9 @@ const findRecipe = (instance: AxiosInstance) => async (id: number): Promise<Reci
     }
 }
 
-const searchRecipes = (instance: AxiosInstance) => async (searchParameters: SearchRecipeParameters): Promise<Array<RecipeDetails>> => {
+const searchRecipes = (instance: AxiosInstance) => async (searchParameters: SearchRecipeParameters): Promise<SearchResult<RecipeDetails>> => {
     try {
-        const response = await instance.post<Array<RecipeDetails>>("/recipe/search", searchParameters)
+        const response = await instance.post<SearchResult<RecipeDetails>>("/recipe/search", searchParameters)
         return response.data
     } catch (err) {
         throw handleApiError(err)

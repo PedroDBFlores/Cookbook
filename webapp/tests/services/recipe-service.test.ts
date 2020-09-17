@@ -5,7 +5,7 @@ import * as errorHandler from "../../src/utils/error-handling"
 import createRecipeService from "../../src/services/recipe-service"
 import ApiHandler from "../../src/services/api-handler"
 import {random} from "faker"
-import {SearchRecipeParameters} from "../../src/model"
+import {RecipeDetails, SearchRecipeParameters, SearchResult} from "../../src/model"
 
 const mockedAxios = new MockAdapter(axios)
 const handleErrorsSpy = jest.spyOn(errorHandler, "default")
@@ -53,7 +53,11 @@ describe("Recipe service", () => {
                 pageNumber: 1,
                 itemsPerPage: 10
             } as SearchRecipeParameters
-            const expectedResponse = [generateRecipeDetails({name: "Tikka Masala"})]
+            const expectedResponse = {
+                count: 1,
+                numberOfPages: 1,
+                results: [generateRecipeDetails({name: "Tikka Masala"})]
+            } as SearchResult<RecipeDetails>
             mockedAxios.onPost("/recipe/search", searchParameters)
                 .replyOnce(200, expectedResponse)
 
@@ -63,6 +67,7 @@ describe("Recipe service", () => {
             expect(mockedAxios.history.post[0].url).toBe("/recipe/search")
             expect(result).toStrictEqual(expectedResponse)
         })
+
         it("calls the error handler", async () => {
             mockedAxios.onPost("/recipe/search")
                 .replyOnce(500, {
