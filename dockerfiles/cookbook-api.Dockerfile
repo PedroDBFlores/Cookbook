@@ -1,9 +1,15 @@
-FROM gradle:6.6-jdk11 as build
+FROM gradle:6.6-jdk11 as cache
+RUN mkdir -p /home/gradle/cache_home
+ENV GRADLE_USER_HOME /home/gradle/cache_home
 RUN mkdir -p /usr/src/app/cookbook-api
 COPY ./api/build.gradle.kts /usr/src/app/cookbook-api
 COPY ./api/gradle.properties /usr/src/app/cookbook-api
 WORKDIR /usr/src/app/cookbook-api
-RUN gradle clean build -i --stacktrace
+RUN gradle build -i --stacktrace
+
+FROM gradle:6.6-jdk11 as build
+COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
+WORKDIR /usr/src/app/cookbook-api
 COPY ./api ./
 RUN gradle shadowJar -i --stacktrace
 
