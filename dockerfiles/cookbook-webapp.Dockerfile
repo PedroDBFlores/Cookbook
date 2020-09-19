@@ -1,12 +1,10 @@
-FROM node:current as install
+FROM node:current as build
 RUN mkdir -p /usr/src/app/cookbook-webapp
 COPY ./webapp/package.json /usr/src/app/cookbook-webapp
 WORKDIR /usr/src/app/cookbook-webapp
 RUN npm i
-
-FROM node:current as build
-WORKDIR /usr/src/app/cookbook-webapp
-RUN npm build
+COPY ./webapp ./
+RUN npm run build
 
 FROM nginx:stable as server
 WORKDIR /usr/src/app/cookbook-webapp

@@ -21,15 +21,15 @@ services:
       - 40000:3306
     networks:
       - cookbook-network
-  # cookbook-webapp:
-  #   container_name: cookbook-webapp
-  #   build:
-  #     context: ../
-  #     dockerfile: ./dockerfiles/cookbook-webapp.Dockerfile
-  #   ports:
-  #     - 8080:8080
-  #   networks:
-  #     - cookbook-network
+  cookbook-webapp:
+    container_name: cookbook-webapp
+    build:
+      context: ../
+      dockerfile: ./dockerfiles/cookbook-webapp.Dockerfile
+    ports:
+      - 8080:80
+    networks:
+      - cookbook-network
 networks:
   cookbook-network:
     name: "cookbook-network"

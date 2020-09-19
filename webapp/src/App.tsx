@@ -17,6 +17,7 @@ import Logout from "./features/user/logout/logout"
 import AuthContext, {AuthInfo} from "./contexts/auth-context"
 import RecipeSearchPage from "./features/recipe/search/search-page"
 import createRecipeService from "./services/recipe-service"
+import CreateRecipe from "./features/recipe/create/create";
 
 const theme = createMuiTheme({
     palette: {
@@ -67,9 +68,12 @@ const App: React.FC<unknown> = () => {
                                                                       onUpdate={recipeTypeService.update}/>
                                        }/>
 
-                                <Route path="/recipe" render={() => <RecipeSearchPage
+                                <Route exact path="/recipe" render={() => <RecipeSearchPage
                                     searchFn={recipeService.search}
                                     getAllRecipeTypesFn={recipeTypeService.getAll}/>}
+                                />
+                                <Route exact path="/recipe/new" render={() => <CreateRecipe
+                                    getRecipeTypes={recipeTypeService.getAll}/>}
                                 />
 
                                 <Route path="/login">
