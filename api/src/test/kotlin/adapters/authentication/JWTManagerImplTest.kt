@@ -32,8 +32,8 @@ internal class JWTManagerImplTest : DescribeSpec({
                 issuer.shouldBe("http://my-domain")
                 audience.shouldContain("my-audience")
                 subject.shouldBe(user.id.toString())
-                claims.shouldContainKeys("username", "name", "roles", "iss")
-                claims.getValue("username").asString().shouldBe(user.userName)
+                claims.shouldContainKeys("userName", "name", "roles", "iss")
+                claims.getValue("userName").asString().shouldBe(user.userName)
                 claims.getValue("name").asString().shouldBe(user.name)
                 claims.getValue("roles").asArray(String::class.java).shouldBe(user.roles)
             }

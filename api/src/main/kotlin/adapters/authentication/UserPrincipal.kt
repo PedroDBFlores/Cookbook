@@ -13,6 +13,6 @@ class UserPrincipal(
 fun JWTCredential.toUserPrincipal() = UserPrincipal(
     userId = this.payload.subject.toInt(),
     name = this.payload.getClaim("name").asString(),
-    userName = this.payload.getClaim("username").asString(),
+    userName = this.payload.getClaim("userName").asString(),
     roles = this.payload.getClaim("roles").asList(String::class.java)
 )

@@ -31,7 +31,7 @@ class JWTManagerImpl(
             .withAudience(audience)
             .withSubject(obj.id.toString())
             .withExpiresAt(DateTime.now().plusDays(3).toDate())
-            .withClaim("username", obj.userName)
+            .withClaim("userName", obj.userName)
             .withClaim("name", obj.name)
             .withArrayClaim("roles", obj.roles?.toTypedArray())
         return token.sign(algorithm)
