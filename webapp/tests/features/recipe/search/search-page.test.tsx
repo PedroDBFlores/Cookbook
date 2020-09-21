@@ -3,11 +3,11 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "../../../../src/features/recipe/search/search-page"
 import RecipeSearchList from "../../../../src/features/recipe/search/search-list"
 import RecipeSearchForm from "../../../../src/features/recipe/search/search-form"
-import RecipeType from "../../../../src/model/recipe-type"
-import SearchResult from "../../../../src/model/search-result"
-import {RecipeDetails} from "../../../../src/model"
 import {generateRecipeDetails} from "../../../helpers/generators/dto-generators"
 import Button from "@material-ui/core/Button"
+import {SearchResult} from "../../../../src/model"
+import {RecipeDetails} from "../../../../src/services/recipe-service"
+import {RecipeType} from "../../../../src/services/recipe-type-service"
 
 jest.mock("../../../../src/features/recipe/search/search-form", () => {
     return {
@@ -43,7 +43,6 @@ jest.mock("../../../../src/features/recipe/search/search-list", () => {
         )
     }
 })
-const recipeSearchListMock = RecipeSearchList as jest.MockedFunction<typeof RecipeSearchList>
 
 const getAllRecipeTypesMock = jest.fn().mockImplementation(() => Promise.resolve([
     {id: 1, name: "Die erste"},
@@ -80,34 +79,38 @@ describe("Search recipe page component", () => {
         })
     })
 
-    it("calls the search function with the parameters from the form", async () => {
-        recipeSearchFormMock.mockImplementationOnce(({recipeTypes, onSearch}) => {
-            useEffect(() => {
-                if (recipeTypes) {
-                    onSearch({name: "One", description: "Two", recipeTypeId: 1})
-                }
-            }, [])
+    test.each([
+        ["with a valid recipeTypeId", 1, 1],
+        ["with an unset recipeTypeId", 0, undefined]
+    ])("calls the search function with the parameters from the form %s",
+        async (_, recipeTypeId, expectedOnSearchRecipeTypeId) => {
+            recipeSearchFormMock.mockImplementationOnce(({recipeTypes, onSearch}) => {
+                useEffect(() => {
+                    if (recipeTypes) {
+                        onSearch({name: "One", description: "Two", recipeTypeId})
+                    }
+                }, [])
 
-            return <></>
-        })
-
-        render(<RecipeSearchPage
-            getAllRecipeTypesFn={getAllRecipeTypesMock}
-            searchFn={searchRecipesMock}/>)
-
-        await waitFor(() => {
-            expect(searchRecipesMock).toHaveBeenCalledWith({
-                name: "One",
-                description: "Two",
-                recipeTypeId: 1,
-                pageNumber: 0,
-                itemsPerPage: 10
+                return <></>
             })
 
-            basicRecipes.forEach(recipeDetail => {
-                expect(screen.getByText(recipeDetail.name)).toBeInTheDocument()
+            render(<RecipeSearchPage
+                getAllRecipeTypesFn={getAllRecipeTypesMock}
+                searchFn={searchRecipesMock}/>)
+
+            await waitFor(() => {
+                expect(searchRecipesMock).toHaveBeenCalledWith({
+                    name: "One",
+                    description: "Two",
+                    recipeTypeId: expectedOnSearchRecipeTypeId,
+                    pageNumber: 0,
+                    itemsPerPage: 10
+                })
+
+                basicRecipes.forEach(recipeDetail => {
+                    expect(screen.getByText(recipeDetail.name)).toBeInTheDocument()
+                })
             })
-        })
     })
 
     it("calls the search function and persists the form info even if the pages change", async () => {

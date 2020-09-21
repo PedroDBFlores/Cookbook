@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useRef, useState} from "react"
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import Layout from "./components/layout/layout"
 import RecipeTypeListPage from "./features/recipetype/list/list-page"
@@ -10,14 +10,14 @@ import {SnackbarProvider} from "notistack"
 import createRecipeTypeService from "./services/recipe-type-service"
 import ApiHandler from "./services/api-handler"
 import Login from "./features/user/login/login"
-import createCredentialsService from "./services/credentials-service"
+import createCredentialsService, {AuthContext, AuthInfo} from "./services/credentials-service"
 import "fontsource-roboto"
 import {ThemeProvider} from "@material-ui/core/styles"
 import Logout from "./features/user/logout/logout"
-import AuthContext, {AuthInfo} from "./contexts/auth-context"
 import RecipeSearchPage from "./features/recipe/search/search-page"
 import createRecipeService from "./services/recipe-service"
-import CreateRecipe from "./features/recipe/create/create";
+import CreateRecipe from "./features/recipe/create/create"
+import jwt_decode from "jwt-decode"
 
 const theme = createMuiTheme({
     palette: {
@@ -37,10 +37,18 @@ const theme = createMuiTheme({
 })
 
 const App: React.FC<unknown> = () => {
-    const [auth, setAuth] = useState<AuthInfo>({
-        isLoggedIn: false
-    })
-    const updateAuthContext = (update: AuthInfo): void => setAuth({...auth, ...update})
+    const [authInfo, setAuthInfo] = useState<AuthInfo | undefined>(undefined)
+    const updateAuthContext = (newAuthInfo: AuthInfo | undefined): void => {
+        setAuthInfo(newAuthInfo)
+    }
+
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+        if(token && !authInfo) {
+            const {sub, name, userName} = jwt_decode(token)
+            setAuthInfo({userId: Number(sub), name, userName})
+        }
+    }, [])
 
     const recipeTypeService = createRecipeTypeService(ApiHandler("http://localhost:9000"))
     const recipeService = createRecipeService(ApiHandler("http://localhost:9000"))
@@ -49,12 +57,12 @@ const App: React.FC<unknown> = () => {
     return (
         <ThemeProvider theme={theme}>
             <SnackbarProvider maxSnack={4}>
-                <AuthContext.Provider value={auth}>
+                <AuthContext.Provider value={authInfo}>
                     <BrowserRouter>
                         <Layout>
                             <Switch>
                                 <Route exact path="/recipetype"
-                                       render={() => <RecipeTypeListPage onGetAll={recipeTypeService.getAll}
+                                       render={() => <RecipeTypeListPage getAllRecipeTypes={recipeTypeService.getAll}
                                                                          onDelete={recipeTypeService.delete}/>}/>
                                 <Route exact path="/recipetype/new"
                                        render={() => <CreateRecipeType onCreate={recipeTypeService.create}/>}/>
@@ -73,6 +81,7 @@ const App: React.FC<unknown> = () => {
                                     getAllRecipeTypesFn={recipeTypeService.getAll}/>}
                                 />
                                 <Route exact path="/recipe/new" render={() => <CreateRecipe
+                                    onCreate={recipeService.create}
                                     getRecipeTypes={recipeTypeService.getAll}/>}
                                 />
 

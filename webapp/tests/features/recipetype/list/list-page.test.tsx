@@ -23,7 +23,7 @@ describe("Recipe type list page", () => {
 
     it("has the required content and gets the recipe types", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
-        render(<RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+        render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
          onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
@@ -37,7 +37,7 @@ describe("Recipe type list page", () => {
 
     it("shows the error", async () => {
         getAllRecipeTypesMock.mockRejectedValueOnce({code: "YELLOW", message: "Database error"})
-        render(<RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+        render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
                                    onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -55,7 +55,7 @@ describe("Recipe type list page", () => {
             }, [])
             return <></>
         })
-        render(<RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+        render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
                                    onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -68,7 +68,7 @@ describe("Recipe type list page", () => {
     it("navigates to the recipe type create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
-            "/recipetype": () => <RecipeTypeListPage onGetAll={getAllRecipeTypesMock}
+            "/recipetype": () => <RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
                                                      onDelete={deleteRecipeTypeMock}/>,
             "/recipetype/new": () => <>I'm the recipe type create page</>
         }, "/recipetype")

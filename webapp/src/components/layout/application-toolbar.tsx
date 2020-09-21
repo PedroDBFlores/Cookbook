@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
 import IconButton from "@material-ui/core/IconButton"
@@ -76,13 +75,6 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 <UserArea/>
             </Toolbar>
         </AppBar>)
-}
-
-ApplicationToolbar.propTypes = {
-    title: PropTypes.string.isRequired,
-    onMenuClick: PropTypes.func.isRequired,
-    drawerWidth: PropTypes.number.isRequired,
-    isDrawerOpen: PropTypes.bool.isRequired
 }
 
 export default ApplicationToolbar

@@ -1,6 +1,4 @@
 import React, {useRef} from "react"
-import {RecipeType} from "../../../model"
-import PropTypes from "prop-types"
 import * as yup from "yup"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {Field, Formik, FormikValues, Form} from "formik"
@@ -10,6 +8,7 @@ import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
 import {TextField} from "formik-material-ui"
+import {RecipeType} from "../../../services/recipe-type-service"
 
 interface EditRecipeTypeProps {
     id: number
@@ -73,12 +72,6 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, onFind, onUpdate}) =
             }
         </IfFulfilled>
     </>
-}
-
-EditRecipeType.propTypes = {
-    id: PropTypes.number.isRequired,
-    onFind: PropTypes.func.isRequired,
-    onUpdate: PropTypes.func.isRequired
 }
 
 export default EditRecipeType

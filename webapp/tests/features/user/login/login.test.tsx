@@ -3,7 +3,7 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import Login from "../../../../src/features/user/login/login"
 import {renderWithRoutes} from "../../../render"
 import {Link} from "react-router-dom"
-import AuthContext, {AuthInfo} from "../../../../src/contexts/auth-context"
+import {AuthContext, AuthInfo} from "../../../../src/services/credentials-service"
 
 const loginMock = jest.fn()
 const updateAuthContextMock = jest.fn()
@@ -13,7 +13,7 @@ describe("Login component", () => {
         jest.clearAllMocks()
     })
 
-    const wrapLoginInContext = (authInfo: AuthInfo = {isLoggedIn: false}) =>
+    const wrapLoginInContext = (authInfo: AuthInfo | undefined = undefined) =>
         <AuthContext.Provider value={authInfo}>
             <Login loginFn={loginMock} onUpdateAuth={updateAuthContextMock}/>
         </AuthContext.Provider>
@@ -31,13 +31,14 @@ describe("Login component", () => {
     it("displays 'You are already logged in as X' if you're already logged in", async () => {
         render(
             wrapLoginInContext({
-                    isLoggedIn: true,
+                    userId: 1,
+                    name: "Jacinto",
                     userName: "jac"
                 }
             )
         )
 
-        expect(screen.getByText(/you are already logged in as jac/i)).toBeInTheDocument()
+        expect(screen.getByText(/you are already logged in as Jacinto \(jac\)/i)).toBeInTheDocument()
     })
 
     test.each([
@@ -57,7 +58,11 @@ describe("Login component", () => {
     })
 
     it("logs in to the application and navigates back from where you came from", async () => {
-        loginMock.mockResolvedValueOnce({})
+        loginMock.mockResolvedValueOnce({
+            userId: 1,
+            name: "Jacinto",
+            userName: "jac"
+        })
         renderWithRoutes({
             "/login": () => wrapLoginInContext(),
             "/recipetype": () => <>
@@ -70,13 +75,17 @@ describe("Login component", () => {
         const passwordInput = screen.getByLabelText(/password/i)
         const submitButton = screen.getByLabelText(/login to application/i)
 
-        fireEvent.change(userNameInput, {target: {value: "username"}})
+        fireEvent.change(userNameInput, {target: {value: "jac"}})
         fireEvent.change(passwordInput, {target: {value: "password"}})
         fireEvent.submit(submitButton)
 
         await waitFor(() => {
-            expect(loginMock).toHaveBeenCalledWith({userName: "username", password: "password"})
-            expect(updateAuthContextMock).toHaveBeenCalledWith({isLoggedIn: true, userName: "username"})
+            expect(loginMock).toHaveBeenCalledWith({userName: "jac", password: "password"})
+            expect(updateAuthContextMock).toHaveBeenCalledWith({
+                userId: 1,
+                name: "Jacinto",
+                userName: "jac"
+            })
             expect(screen.getByText(/I'm the recipe type page/i)).toBeInTheDocument()
         })
     })

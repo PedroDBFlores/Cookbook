@@ -1,5 +1,4 @@
 import React, {useState} from "react"
-import PropTypes from "prop-types"
 import ApplicationToolbar from "./application-toolbar"
 import Drawer from "./drawer"
 import List from "@material-ui/icons/List"
@@ -69,10 +68,6 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({children}) => {
             </main>
         </div>
     )
-}
-
-Layout.propTypes = {
-    children: PropTypes.node
 }
 
 export default Layout

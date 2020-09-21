@@ -1,6 +1,4 @@
 import React, {useRef, useState} from "react"
-import PropTypes from "prop-types"
-import {RecipeType} from "../../../model"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Button from "@material-ui/core/Button"
 import Delete from "@material-ui/icons/Delete"
@@ -15,6 +13,7 @@ import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
 import createStyles from "@material-ui/core/styles/createStyles"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
+import {RecipeType} from "../../../services/recipe-type-service"
 
 interface RecipeTypeDetailsProps {
     id: number
@@ -94,12 +93,6 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, onFind, onDele
             )}
         </IfFulfilled>
     </>
-}
-
-RecipeTypeDetails.propTypes = {
-    id: PropTypes.number.isRequired,
-    onFind: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired
 }
 
 export default RecipeTypeDetails

@@ -1,6 +1,5 @@
 import React, {useState} from "react"
-import PropTypes from "prop-types"
-import {RecipeDetails, SearchResult} from "../../../model"
+import {SearchResult} from "../../../model"
 import Paper from "@material-ui/core/Paper"
 import Table from "@material-ui/core/Table"
 import TableHead from "@material-ui/core/TableHead"
@@ -17,6 +16,7 @@ import {useHistory} from "react-router-dom"
 import TablePagination from "@material-ui/core/TablePagination"
 import TableFooter from "@material-ui/core/TableFooter"
 import TablePaginationActions from "../../../components/table-pagination-actions/table-pagination-actions"
+import {RecipeDetails} from "../../../services/recipe-service"
 
 interface RecipeSearchListProps {
     searchResult: SearchResult<RecipeDetails>
@@ -101,11 +101,6 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
             </TableFooter>
         </Table>
     </TableContainer>
-}
-RecipeSearchList.propTypes = {
-    searchResult: PropTypes.any.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onPageChange: PropTypes.func.isRequired
 }
 
 export default RecipeSearchList

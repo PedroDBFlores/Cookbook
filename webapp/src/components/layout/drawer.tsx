@@ -1,7 +1,6 @@
 import React from "react"
 import DrawerMUI from "@material-ui/core/Drawer"
 import ChevronLeft from "@material-ui/icons/ChevronLeft"
-import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import clsx from "clsx"
 import makeStyles from "@material-ui/core/styles/makeStyles"
@@ -79,12 +78,6 @@ const Drawer: React.FC<DrawerProps> = ({isOpen, items, onClose}) => {
             }
         </List>
     </DrawerMUI>
-}
-
-Drawer.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    items: PropTypes.array.isRequired,
-    onClose: PropTypes.func.isRequired
 }
 
 export default Drawer

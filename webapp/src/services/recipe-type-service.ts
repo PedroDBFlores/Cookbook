@@ -1,5 +1,5 @@
 import {AxiosInstance} from "axios"
-import {RecipeType, CreateResult} from "../model"
+import {CreateResult} from "../model"
 import handleApiError from "../utils/error-handling"
 
 export interface RecipeTypeService {
@@ -64,4 +64,10 @@ const createRecipeTypeService = (instance: AxiosInstance): RecipeTypeService => 
     update: updateRecipeType(instance),
     delete: deleteRecipeType(instance)
 })
+
+export interface RecipeType{
+    id: number
+    name: string
+}
+
 export default createRecipeTypeService

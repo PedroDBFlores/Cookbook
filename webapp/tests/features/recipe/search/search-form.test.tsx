@@ -24,7 +24,7 @@ describe("Recipe search form", () => {
             expect(onSearchMock).toHaveBeenCalledWith({
                 name: "",
                 description: "",
-                recipeTypeId: undefined
+                recipeTypeId: 0
             })
         })
     })
@@ -33,12 +33,12 @@ describe("Recipe search form", () => {
         ["name is filled", {
             name: "a name",
             description: "",
-            recipeTypeId: undefined
+            recipeTypeId: 0
         }, undefined],
         ["description is filled", {
             name: "",
             description: "a description",
-            recipeTypeId: undefined
+            recipeTypeId: 0
         }, undefined],
         ["recipe type id is changed", {
             name: "",

@@ -1,5 +1,4 @@
 import React, {useContext} from "react"
-import PropTypes from "prop-types"
 import Button from "@material-ui/core/Button"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -7,13 +6,12 @@ import * as yup from "yup"
 import {Field, Formik, Form} from "formik"
 import If from "../../../components/flow-control/if"
 import {useHistory} from "react-router-dom"
-import {Credentials} from "../../../model"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
-import AuthContext, {AuthInfo} from "../../../contexts/auth-context"
 import {TextField} from "formik-material-ui"
+import {Credentials, AuthInfo, AuthContext} from "../../../services/credentials-service"
 
 interface LoginFormData {
     userName: string
@@ -35,27 +33,27 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface LoginProps {
-    loginFn: (credentials: Credentials) => Promise<void>
+    loginFn: (credentials: Credentials) => Promise<AuthInfo>
     onUpdateAuth: (authInfo: AuthInfo) => void
 }
 
 const Login: React.FC<LoginProps> = ({loginFn, onUpdateAuth}) => {
     const history = useHistory()
     const classes = useStyles()
-    const {isLoggedIn, userName} = useContext(AuthContext)
+    const authContext = useContext(AuthContext)
 
     const onSubmit = (data: LoginFormData) => {
         loginFn({...data})
-            .then(() => {
-                onUpdateAuth({isLoggedIn: true, userName: data.userName})
+            .then((authInfo) => {
+                onUpdateAuth(authInfo)
                 history.goBack()
             })
     }
 
-    const AlreadyLoggedIn = () => <Typography variant="h4">{`You are already logged in as ${userName}`}</Typography>
+    const AlreadyLoggedIn = () => authContext ? <Typography variant="h4">{`You are already logged in as ${authContext.name} (${authContext.userName})`}</Typography> : null
 
     return <Grid container spacing={3}>
-        <If condition={!isLoggedIn}
+        <If condition={authContext === undefined}
             elseRender={<AlreadyLoggedIn/>}>
             <Grid item xs={12}>
                 <Typography variant="h4">Login user</Typography>
@@ -96,11 +94,6 @@ const Login: React.FC<LoginProps> = ({loginFn, onUpdateAuth}) => {
             </Grid>
         </If>
     </Grid>
-}
-
-Login.propTypes = {
-    loginFn: PropTypes.func.isRequired,
-    onUpdateAuth: PropTypes.func.isRequired
 }
 
 export default Login

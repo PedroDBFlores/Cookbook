@@ -3,7 +3,7 @@ import {renderWithRoutes} from "../../../render"
 import Logout from "../../../../src/features/user/logout/logout"
 import {fireEvent, screen, waitFor} from "@testing-library/react"
 import {Link} from "react-router-dom"
-import AuthContext, {AuthInfo} from "../../../../src/contexts/auth-context"
+import {AuthContext, AuthInfo} from "../../../../src/services/credentials-service"
 
 const logoutMock = jest.fn().mockImplementation(() => {
     localStorage.removeItem("token")
@@ -16,7 +16,11 @@ describe("Logout component", () => {
         jest.clearAllMocks()
     })
 
-    const wrapLogoutInContext = (authInfo: AuthInfo = {isLoggedIn: true, userName: "username"}) =>
+    const wrapLogoutInContext = (authInfo: AuthInfo = {
+        userId: 1,
+        name: "name",
+        userName: "username"
+    }) =>
         <AuthContext.Provider value={authInfo}>
             <Logout onLogout={logoutMock} onUpdateAuth={updateAuthContextMock}/>
         </AuthContext.Provider>
@@ -37,7 +41,7 @@ describe("Logout component", () => {
         expect(screen.getByText(/logging you out/i)).toBeInTheDocument()
         await waitFor(() => {
             expect(logoutMock).toHaveBeenCalled()
-            expect(updateAuthContextMock).toHaveBeenCalledWith({isLoggedIn: false, userName: undefined})
+            expect(updateAuthContextMock).toHaveBeenCalledWith(undefined)
             expect(screen.getByText(/logged out/i)).toBeInTheDocument()
         })
     })

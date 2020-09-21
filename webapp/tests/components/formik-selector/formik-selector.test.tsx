@@ -6,8 +6,9 @@ import Button from "@material-ui/core/Button"
 
 describe("Formik selector component", () => {
     const getFormWrappedSelector = (
-        initialValues: { formValue?: number } = {formValue: undefined},
-        onSubmit: (data: { formValue?: number }) => void = jest.fn()) => {
+        initialValues: { formValue?: number } = {formValue: 0},
+        onSubmit: (data: { formValue?: number }) => void = jest.fn(),
+        error: string | undefined = undefined) => {
 
         const handleSubmit = (data: { formValue?: number }) => onSubmit && onSubmit(data)
 
@@ -20,6 +21,7 @@ describe("Formik selector component", () => {
                     label="Form value"
                     formName="formValue"
                     ariaLabel="Form value selector"
+                    error={error}
                 />
                 <Button type="submit">Submit</Button>
             </Form>
@@ -39,6 +41,12 @@ describe("Formik selector component", () => {
         render(getFormWrappedSelector({formValue: 2}))
 
         expect(screen.getByText("DEF")).toBeInTheDocument()
+    })
+
+    it("renders an error if provided", () => {
+        render(getFormWrappedSelector({formValue: 0}, jest.fn(), "an error"))
+
+        expect(screen.getByText("an error")).toBeInTheDocument()
     })
 
     it("returns the expected value on submission", async () => {

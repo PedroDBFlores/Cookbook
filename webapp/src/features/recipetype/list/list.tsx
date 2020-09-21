@@ -1,6 +1,4 @@
 import React from "react"
-import {RecipeType} from "../../../model"
-import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
@@ -17,6 +15,7 @@ import Button from "@material-ui/core/Button"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
+import {RecipeType} from "../../../services/recipe-type-service"
 
 interface RecipeTypeListProps {
     recipeTypes: Array<RecipeType>
@@ -81,8 +80,3 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes, onDelete}) 
         </TableContainer>
 }
 export default RecipeTypeList
-
-RecipeTypeList.propTypes = {
-    recipeTypes: PropTypes.array.isRequired,
-    onDelete: PropTypes.func.isRequired
-}

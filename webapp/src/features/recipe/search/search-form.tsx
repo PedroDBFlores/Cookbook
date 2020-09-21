@@ -1,6 +1,5 @@
 import React from "react"
-import PropTypes from "prop-types"
-import {Formik, Field, Form, FormikHelpers, FormikValues} from "formik"
+import {Formik, Field, Form, FormikHelpers} from "formik"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
@@ -9,13 +8,13 @@ import Grid from "@material-ui/core/Grid"
 import Paper from "@material-ui/core/Paper"
 import Button from "@material-ui/core/Button"
 import {TextField} from "formik-material-ui"
-import RecipeType from "../../../model/recipe-type"
 import FormikSelector from "../../../components/formik-selector/formik-selector"
+import {RecipeType} from "../../../services/recipe-type-service"
 
 export interface RecipeSearchFormData {
-    name?: string
-    description?: string
-    recipeTypeId?: number
+    name: string | undefined
+    description: string | undefined
+    recipeTypeId: number
 }
 
 interface RecipeSearchFormProps {
@@ -42,7 +41,7 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
                           {setSubmitting}: FormikHelpers<{
                               name: string
                               description: string
-                              recipeTypeId: undefined
+                              recipeTypeId: number
                           }>): void => {
         onSearch(values)
         setSubmitting(false)
@@ -51,7 +50,7 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
     return <Paper className={classes.paper}>
         <Typography variant="subtitle1">Parameters</Typography>
         <Formik
-            initialValues={{name: "", description: "", recipeTypeId: undefined}}
+            initialValues={{name: "", description: "", recipeTypeId: 0}}
             validateOnBlur={true}
             onSubmit={
                 (values, helpers) =>
@@ -91,10 +90,6 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
             </Form>
         </Formik>
     </Paper>
-}
-RecipeSearchForm.propTypes = {
-    recipeTypes: PropTypes.array.isRequired,
-    onSearch: PropTypes.func.isRequired
 }
 
 export default RecipeSearchForm

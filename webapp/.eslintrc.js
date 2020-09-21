@@ -47,7 +47,8 @@ module.exports = {
               delimiter: "semi",    // 'semi' or 'comma'
               requireLast: false,
             },
-          }]
+          }],
+        "react/prop-types": 0
     },
     "overrides": [
         {

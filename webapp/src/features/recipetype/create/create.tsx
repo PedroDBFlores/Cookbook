@@ -1,24 +1,27 @@
 import React from "react"
-import PropTypes from "prop-types"
-import {useHistory} from "react-router-dom"
-import {Formik, Field, Form} from "formik"
+import { useHistory } from "react-router-dom"
+import { Formik, Field, Form } from "formik"
 import * as yup from "yup"
 import Button from "@material-ui/core/Button"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/core/styles/makeStyles"
-import {Theme} from "@material-ui/core/styles/createMuiTheme"
+import { Theme } from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
-import {TextField} from "formik-material-ui"
-import {CreateResult, RecipeType} from "../../../model"
+import { TextField } from "formik-material-ui"
+import { CreateResult } from "../../../model"
+import {RecipeType} from "../../../services/recipe-type-service"
 
-interface CreateRecipeFormData {
+interface CreateRecipeTypeFormData {
     name: string
 }
 
 const schema = yup.object({
-    name: yup.string().required("Name is required").min(1, "Name is required")
+    name: yup.string()
+        .required("Name is required")
+        .min(1, "Name is required")
+        .max(64, "Name exceeds the character limit")
 })
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,12 +37,12 @@ interface CreateRecipeTypeProps {
     onCreate: (recipe: Omit<RecipeType, "id">) => Promise<CreateResult>
 }
 
-const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
+const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({ onCreate }) => {
     const history = useHistory()
     const classes = useStyles()
 
-    const onSubmit = ({name}: CreateRecipeFormData) => {
-        onCreate({name})
+    const handleOnSubmit = ({ name }: CreateRecipeTypeFormData) => {
+        onCreate({ name })
             .then(recipeType => history.push(`/recipetype/${recipeType.id}`))
 
     }
@@ -51,9 +54,9 @@ const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
         <Grid item xs={12}>
             <Paper className={classes.paper}>
                 <Formik
-                    initialValues={{name: ""}}
+                    initialValues={{ name: "" }}
                     validateOnBlur={true}
-                    onSubmit={onSubmit}
+                    onSubmit={handleOnSubmit}
                     validationSchema={schema}>
                     {
                         () => <Form>
@@ -63,11 +66,11 @@ const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
                                         component={TextField}
                                         id="name"
                                         label="Name"
-                                        name="name"/>
+                                        name="name" />
                                 </Grid>
                                 <Grid item xs={1}>
                                     <Button variant="contained" aria-label="Create recipe type"
-                                            type="submit">Create</Button>
+                                        type="submit">Create</Button>
                                 </Grid>
                             </Grid>
                         </Form>
@@ -78,7 +81,4 @@ const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
     </Grid>
 }
 
-CreateRecipeType.propTypes = {
-    onCreate: PropTypes.func.isRequired
-}
 export default CreateRecipeType

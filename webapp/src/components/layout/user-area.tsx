@@ -3,7 +3,7 @@ import {useHistory} from "react-router-dom"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/core/styles/makeStyles"
-import AuthContext from "../../contexts/auth-context"
+import {AuthContext} from "../../services/credentials-service"
 
 const useStyles = makeStyles({
     greeting: {
@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 const UserArea: React.FC<unknown> = () => {
     const history = useHistory()
     const classes = useStyles()
-    const {isLoggedIn, userName} = useContext(AuthContext)
+    const authContext = useContext(AuthContext)
 
     const onLogin = () => {
         history.push("/login")
@@ -26,10 +26,10 @@ const UserArea: React.FC<unknown> = () => {
 
     return <>
         {
-            isLoggedIn ?
+            authContext ?
                 <>
-                    <Typography className={classes.greeting}>Welcome {userName}</Typography>
-                    <Button variant="contained" aria-label={`Logout ${userName}`} color="secondary"
+                    <Typography className={classes.greeting}>Welcome {authContext.name}</Typography>
+                    <Button variant="contained" aria-label={`Logout ${authContext.name}`} color="secondary"
                             onClick={() => onLogout()}>Logout</Button>
                 </>
                 :

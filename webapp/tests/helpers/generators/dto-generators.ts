@@ -1,6 +1,7 @@
-import {User, RecipeType} from "../../../src/model"
-import { name, internet, random } from "faker"
-import Recipe, {RecipeDetails} from "../../../src/model/recipe"
+import {name, internet, random} from "faker"
+import {User} from "../../../src/model"
+import {RecipeType} from "../../../src/services/recipe-type-service"
+import {Recipe, RecipeDetails} from "../../../src/services/recipe-service"
 
 /**
  * Provides a User with random data

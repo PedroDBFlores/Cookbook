@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import useTheme from "@material-ui/core/styles/useTheme"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
@@ -75,12 +74,6 @@ const TablePaginationActions: React.FC<TablePaginationActionsProps> = ({count, p
             {isRtl ? <FirstPage/> : <LastPage/>}
         </IconButton>
     </div>
-}
-TablePaginationActions.propTypes = {
-    count: PropTypes.number.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
-    onChangePage: PropTypes.func.isRequired
 }
 
 export default TablePaginationActions

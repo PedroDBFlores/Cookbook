@@ -1,4 +1,4 @@
-import {CreateResult, Recipe, RecipeDetails, SearchRecipeParameters, SearchResult} from "../model"
+import {CreateResult, SearchResult} from "../model"
 import {AxiosInstance} from "axios"
 import handleApiError from "../utils/error-handling"
 
@@ -68,7 +68,6 @@ const deleteRecipe = (instance: AxiosInstance) => async (id: number): Promise<vo
     }
 }
 
-
 const createRecipeService = (instance: AxiosInstance): RecipeService => ({
     find: findRecipe(instance),
     search: searchRecipes(instance),
@@ -77,4 +76,28 @@ const createRecipeService = (instance: AxiosInstance): RecipeService => ({
     update: updateRecipe(instance),
     delete: deleteRecipe(instance)
 })
+
+export interface Recipe {
+    id: number
+    recipeTypeId: number
+    userId: number
+    name: string
+    description: string
+    ingredients: string
+    preparingSteps: string
+}
+
+export interface RecipeDetails extends Recipe {
+    recipeTypeName: string
+    userName: string
+}
+
+export interface SearchRecipeParameters {
+    name?: string
+    description?: string
+    recipeTypeId?: number
+    pageNumber: number
+    itemsPerPage: number
+}
+
 export default createRecipeService

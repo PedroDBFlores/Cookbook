@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import Dialog from "@material-ui/core/Dialog"
 import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogContent from "@material-ui/core/DialogContent"
@@ -30,15 +29,5 @@ const BasicModalDialog: React.FC<ModalProps> = ({
         <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
     </DialogActions>
 </Dialog>
-
-BasicModalDialog.propTypes = {
-    title: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    dismiss: PropTypes.shape({
-        text: PropTypes.string.isRequired,
-        onDismiss: PropTypes.func.isRequired
-    }).isRequired,
-    onClose: PropTypes.func.isRequired
-}
 
 export default BasicModalDialog
