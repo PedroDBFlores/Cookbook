@@ -45,7 +45,7 @@ describe("Recipe type list page", () => {
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
     })
 
-    it("passed the onDelete function to the 'RecipeTypeList' component ", async () => {
+    it("passed the onDelete function to the 'RecipeTypeList' component", async () => {
         const expectedRecipeType = generateRecipeType()
         getAllRecipeTypesMock.mockResolvedValueOnce([expectedRecipeType])
         deleteRecipeTypeMock.mockResolvedValueOnce(void (0))

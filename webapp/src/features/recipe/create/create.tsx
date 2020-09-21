@@ -71,7 +71,6 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({getRecipeTypes, onCreate}) =
     }, [])
 
     const handleOnSubmit = (data: CreateRecipeFormData) => {
-        console.log(authContext)
         if (authContext) {
             const userId = authContext.userId
             onCreate({

@@ -17,8 +17,8 @@ import {RecipeType} from "../../../services/recipe-type-service"
 
 interface RecipeTypeDetailsProps {
     id: number
-    onFind: (id:number) => Promise<RecipeType>
-    onDelete: (id:number) => Promise<void>
+    onFind: (id: number) => Promise<RecipeType>
+    onDelete: (id: number) => Promise<void>
 }
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -31,6 +31,7 @@ describe("API handler", () => {
         }
 
         beforeEach(() => {
+            localStorage.clear()
             jest.clearAllMocks()
             mockedAxios.reset()
         })
