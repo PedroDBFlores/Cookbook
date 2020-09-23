@@ -137,7 +137,6 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 result.results.first().shouldBe(pickedRecipe)
             }
 
-            // THESE ARE FLAWED, we need to control at least one of them
             it("searches for a specific recipe description") {
                 createRecipes(numberOfRecipes = 10)
                 val pickedRecipe =
@@ -160,6 +159,27 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 result.count.shouldBe(1)
                 result.numberOfPages.shouldBe(1)
                 result.results.first().shouldBe(pickedRecipe)
+            }
+
+            arrayOf(
+                row("", null, "when the name is empty"),
+                row(null, "", "when the description is empty")
+            ).forEach { (name, description, testDescription) ->
+                it("returns all the values $testDescription"){
+                    val createdRecipes = createRecipes(5)
+
+                    val repo = RecipeRepositoryImpl(database = database)
+
+                    val searchResult = repo.search(
+                        pageNumber = 0, itemsPerPage = 10,
+                        name = name,
+                        description = description,
+                        recipeTypeId = null
+                    )
+
+                    searchResult.count.shouldBe(5)
+                    searchResult.results.shouldBe(createdRecipes)
+                }
             }
 
             arrayOf(

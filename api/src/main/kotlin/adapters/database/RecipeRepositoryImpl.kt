@@ -49,11 +49,12 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
                     .and((Recipes.userId eq Users.id))
             }
 
-        name?.let { nameParam ->
-            query.andWhere { Recipes.name like nameParam }
+        if (name?.isNotEmpty() == true) {
+            query.andWhere { Recipes.name like name }
         }
-        description?.let { descriptionParam ->
-            query.andWhere { Recipes.description like descriptionParam }
+
+        if (description?.isNotEmpty() == true) {
+            query.andWhere { Recipes.description like description }
         }
 
         val count = query.count()
