@@ -1,13 +1,13 @@
 import React, {useEffect} from "react"
 import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "../../../../src/features/recipe/search/search-page"
-import RecipeSearchList from "../../../../src/features/recipe/search/search-list"
 import RecipeSearchForm from "../../../../src/features/recipe/search/search-form"
 import {generateRecipeDetails} from "../../../helpers/generators/dto-generators"
 import Button from "@material-ui/core/Button"
 import {SearchResult} from "../../../../src/model"
 import {RecipeDetails} from "../../../../src/services/recipe-service"
 import {RecipeType} from "../../../../src/services/recipe-type-service"
+import {renderWithRoutes} from "../../../render"
 
 jest.mock("../../../../src/features/recipe/search/search-form", () => {
     return {
@@ -111,7 +111,7 @@ describe("Search recipe page component", () => {
                     expect(screen.getByText(recipeDetail.name)).toBeInTheDocument()
                 })
             })
-    })
+        })
 
     it("calls the search function and persists the form info even if the pages change", async () => {
         recipeSearchFormMock.mockImplementationOnce(({recipeTypes, onSearch}) => {
@@ -149,5 +149,21 @@ describe("Search recipe page component", () => {
                 itemsPerPage: 10
             })
         })
+    })
+
+    it("navigates to the recipe create page on click", async () => {
+        getAllRecipeTypesMock.mockResolvedValueOnce([])
+        renderWithRoutes({
+            "/recipe": () => <RecipeSearchPage
+                getAllRecipeTypesFn={getAllRecipeTypesMock}
+                searchFn={searchRecipesMock}/>,
+            "/recipe/new": () => <>I'm the recipe create page</>
+        }, "/recipe")
+        await waitFor(() => expect(screen.getByLabelText(/create new recipe/i)).toBeInTheDocument())
+
+        const createButton = screen.getByLabelText(/create new recipe/i)
+        fireEvent.click(createButton)
+
+        await waitFor(() => expect(screen.getByText(/I'm the recipe create page/i)).toBeInTheDocument())
     })
 })

@@ -153,7 +153,7 @@ describe("Create recipe component", () => {
                 userId: 666,
                 ingredients: "ingredients",
                 preparingSteps: "preparing steps"
-            } as Omit<Recipe, "id">)
+            })
         })
     })
 })

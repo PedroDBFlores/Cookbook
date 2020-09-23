@@ -9,6 +9,8 @@ import createStyles from "@material-ui/core/styles/createStyles"
 import RecipeSearchForm, {RecipeSearchFormData} from "./search-form"
 import {RecipeDetails, SearchRecipeParameters} from "../../../services/recipe-service"
 import {RecipeType} from "../../../services/recipe-type-service"
+import Button from "@material-ui/core/Button"
+import { useHistory } from "react-router-dom"
 
 interface RecipeSearchPageProps {
     getAllRecipeTypesFn: () => Promise<Array<RecipeType>>
@@ -37,6 +39,7 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
     })
 
     const classes = useStyles()
+    const history = useHistory()
 
     const handleOnFormSearch = ({name, description, recipeTypeId}: RecipeSearchFormData) => {
         setFormData({name, description, recipeTypeId})
@@ -57,6 +60,8 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
         }).then(setRecipes)
     }
 
+    const navigateToCreateRecipe = () => history.push("/recipe/new")
+
     useEffect(() => {
         getAllRecipeTypesFn().then(setRecipeTypes)
     }, [])
@@ -64,6 +69,10 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
     return <Grid className={classes.base} container spacing={3}>
         <Grid item xs={11}>
             <Typography variant="h4">Search recipes</Typography>
+        </Grid>
+        <Grid item xs={1}>
+            <Button variant="contained" color="primary" aria-label="Create new recipe"
+                    onClick={navigateToCreateRecipe}>Create</Button>
         </Grid>
         <Grid item xs={12}>
             <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
