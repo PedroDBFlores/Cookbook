@@ -1,8 +1,6 @@
 package adapters.database
 
 import adapters.database.schema.UserRoles
-import adapters.database.schema.Users
-import errors.UserNotFound
 import model.UserRole
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -27,9 +25,8 @@ class UserRolesRepositoryImpl(private val database: Database) : UserRolesReposit
         } > 0
     }
 
-    private fun mapToUserRole(row: ResultRow): UserRole =
-        UserRole(
-            userId = row[UserRoles.userId],
-            roleId = row[UserRoles.roleId]
+    private fun mapToUserRole(row: ResultRow): UserRole = UserRole(
+            userId = row[UserRoles.userId].value,
+            roleId = row[UserRoles.roleId].value
         )
 }

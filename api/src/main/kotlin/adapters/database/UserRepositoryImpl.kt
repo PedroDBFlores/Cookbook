@@ -1,12 +1,11 @@
 package adapters.database
 
-import adapters.database.schema.Roles
-import adapters.database.schema.UserRoles
+import adapters.database.schema.UserEntity
 import adapters.database.schema.Users
 import errors.UserNotFound
 import errors.WrongCredentials
 import model.User
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.HashingService
 import ports.UserRepository
@@ -16,38 +15,25 @@ class UserRepositoryImpl(
     private val hashingService: HashingService
 ) : UserRepository {
     override fun find(id: Int): User? = transaction(database) {
-        findQuery { this.select { Users.id eq id } }
-            .mapNotNull(::mapToUser)
-            .firstOrNull()
+        UserEntity.findById(id)?.let(::mapToUser)
     }
 
     override fun find(userName: String): User? = transaction(database) {
-        findQuery { this.select { (Users.userName eq userName) } }
-            .mapNotNull(::mapToUser)
+        UserEntity.find { (Users.userName eq userName) }
+            .map(::mapToUser)
             .firstOrNull()
     }
 
-    private fun findQuery(selectFilter: FieldSet.() -> Query) =
-        (Users leftJoin UserRoles leftJoin Roles).slice(
-            Users.id,
-            Users.name,
-            Users.userName,
-            Users.passwordHash,
-            Roles.code.groupConcat(";")
-        )
-            .selectFilter()
-            .groupBy(Users.id, Users.name, Users.userName, Users.passwordHash)
-
     override fun create(user: User, userPassword: String): Int = transaction(database) {
-        Users.insertAndGetId { userToCreate ->
-            userToCreate[name] = user.name
-            userToCreate[userName] = user.userName
-            userToCreate[passwordHash] = hashingService.hash(userPassword)
-        }.value
+        UserEntity.new {
+            name = user.name
+            userName= user.userName
+            passwordHash = hashingService.hash(userPassword)
+        }.id.value
     }
 
     override fun update(user: User, oldPassword: String?, newPassword: String?): Unit = transaction(database) {
-        val currentUser = find(user.id)
+        val currentUser = UserEntity.findById(user.id)
         require(currentUser != null) { throw UserNotFound(user.id) }
 
         val passwordHashToUpdate = newPassword?.let {
@@ -59,24 +45,22 @@ class UserRepositoryImpl(
             hashingService.hash(newPassword)
         } ?: currentUser.passwordHash
 
-        Users.update({ Users.id eq user.id }) { userToUpdate ->
-            userToUpdate[name] = user.name
-            userToUpdate[passwordHash] = passwordHashToUpdate
-        }
+        currentUser.name = user.name
+        currentUser.passwordHash = passwordHashToUpdate
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
-        UserRoles.deleteWhere { UserRoles.userId eq id }
-        Users.deleteWhere { Users.id eq id } > 0
+        UserEntity.findById(id)?.let {
+            it.delete()
+            true
+        } ?: false
     }
 
-    private fun mapToUser(row: ResultRow) = User(
-        id = row[Users.id].value,
-        name = row[Users.name],
-        userName = row[Users.userName],
-        passwordHash = row[Users.passwordHash],
-        roles = row.getOrNull(Roles.code.groupConcat(";"))?.run {
-            split(";")
-        } ?: listOf()
+    private fun mapToUser(entity: UserEntity) = User(
+        id = entity.id.value,
+        name = entity.name,
+        userName = entity.userName,
+        passwordHash = entity.passwordHash,
+        roles = entity.roles.map { it.code }
     )
 }

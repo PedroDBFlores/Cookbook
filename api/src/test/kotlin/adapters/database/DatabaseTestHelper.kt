@@ -1,14 +1,14 @@
 package adapters.database
 
-import adapters.database.schema.*
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
-import model.*
+import model.Recipe
 import model.RecipeType
+import model.Role
+import model.User
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
 import ports.HashingService
 
 /**

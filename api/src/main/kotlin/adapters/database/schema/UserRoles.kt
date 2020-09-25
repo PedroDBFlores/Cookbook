@@ -1,8 +1,9 @@
 package adapters.database.schema
 
-import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Table
 
-object UserRoles : IntIdTable() {
-    val userId = integer("userid").references(Users.id)
-    val roleId = integer("roleid").references(Roles.id)
+object UserRoles : Table() {
+    val userId = reference("userid", Users)
+    val roleId = reference("roleid", Roles)
+    override val primaryKey = PrimaryKey(userId, roleId, name = "PK_UserRoles_userId_roleId")
 }

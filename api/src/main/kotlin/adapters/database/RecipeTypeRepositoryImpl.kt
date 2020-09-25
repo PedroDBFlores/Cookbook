@@ -25,7 +25,7 @@ class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepos
     }
 
     override fun count(): Long = transaction(database) {
-        RecipeTypeEntity.all().count()
+        RecipeTypeEntity.count()
     }
 
     override fun create(recipeType: RecipeType): Int = transaction(database) {

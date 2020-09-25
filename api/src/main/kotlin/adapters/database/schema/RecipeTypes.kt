@@ -13,4 +13,6 @@ object RecipeTypes : IntIdTable() {
 class RecipeTypeEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<RecipeTypeEntity>(RecipeTypes)
     var name by RecipeTypes.name
+
+    val recipes by RecipeEntity referrersOn Recipes.recipeType
 }

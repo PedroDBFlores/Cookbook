@@ -9,9 +9,7 @@ import ports.RoleRepository
 
 class RoleRepositoryImpl(private val database: Database) : RoleRepository {
     override fun find(id: Int): Role? = transaction(database) {
-        RoleEntity.findById(id).run {
-            this?.let(::mapToRole)
-        }
+        RoleEntity.findById(id)?.let(::mapToRole)
     }
 
     override fun find(code: String): Role? = transaction(database) {

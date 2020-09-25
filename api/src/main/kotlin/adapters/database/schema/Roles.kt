@@ -16,4 +16,6 @@ class RoleEntity (id: EntityID<Int>) : IntEntity(id) {
     var name by Roles.name
     var code by Roles.code
     var persistent by Roles.persistent
+
+    var users by UserEntity via UserRoles
 }

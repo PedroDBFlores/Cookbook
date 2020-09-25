@@ -17,4 +17,7 @@ class UserEntity (id: EntityID<Int>) : IntEntity(id) {
     var name by Users.name
     var userName by Users.userName
     var passwordHash by Users.passwordHash
+
+    val recipes by RecipeEntity referrersOn Recipes.user
+    var roles by RoleEntity via UserRoles
 }

@@ -1,11 +1,10 @@
 package adapters.database
 
-import adapters.database.schema.RecipeTypes
-import adapters.database.schema.Recipes
-import adapters.database.schema.Users
+import adapters.database.schema.*
 import model.Recipe
 import model.SearchResult
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
 import kotlin.math.ceil
@@ -13,27 +12,19 @@ import kotlin.math.ceil
 class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
     override fun find(id: Int): Recipe? = transaction(database) {
-        (Recipes innerJoin RecipeTypes innerJoin Users)
-            .select {
-                (Recipes.recipeTypeId eq RecipeTypes.id)
-                    .and((Recipes.userId eq Users.id))
-                    .and(Recipes.id eq id)
-            }
-            .mapNotNull(::mapToRecipe)
-            .firstOrNull()
+        RecipeEntity.findById(id)?.let(::mapToRecipe)
     }
 
     override fun getAll(): List<Recipe> = transaction(database) {
-        (Recipes innerJoin RecipeTypes innerJoin Users).selectAll().map(::mapToRecipe)
+        RecipeEntity.all().map(::mapToRecipe)
     }
 
     override fun getAll(userId: Int): List<Recipe> = transaction(database) {
-        (Recipes innerJoin RecipeTypes innerJoin Users).select { Recipes.userId eq userId }
-            .map(::mapToRecipe)
+        RecipeEntity.find { Recipes.user eq userId }.map(::mapToRecipe)
     }
 
     override fun count(): Long = transaction(database) {
-        Recipes.selectAll().count()
+        RecipeEntity.count()
     }
 
     override fun search(
@@ -43,68 +34,70 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         pageNumber: Int,
         itemsPerPage: Int
     ): SearchResult<Recipe> = transaction(database) {
-        val query = (Recipes innerJoin RecipeTypes innerJoin Users)
-            .select {
-                (Recipes.recipeTypeId eq RecipeTypes.id)
-                    .and((Recipes.userId eq Users.id))
+        val recipes = RecipeEntity.find {
+            
+            val op = (Recipes.recipeType eq RecipeTypes.id)
+                .and(Recipes.user eq Users.id)
+
+            if (name?.isNotEmpty() == true) {
+                op.and(Op.build { Recipes.name like name })
             }
 
-        if (name?.isNotEmpty() == true) {
-            query.andWhere { Recipes.name like name }
+            if (description?.isNotEmpty() == true) {
+                op.and(Op.build { Recipes.description like description })
+            }
+
+            op
         }
 
-        if (description?.isNotEmpty() == true) {
-            query.andWhere { Recipes.description like description }
-        }
-
-        val count = query.count()
         itemsPerPage.let { itemsPerPage ->
             val offset = pageNumber.toLong() * itemsPerPage
-            query.limit(
-                n = itemsPerPage,
-                offset = offset
-            )
+            recipes.limit(n = itemsPerPage, offset = offset)
         }
 
-        val numberOfPages = ceil(count.toDouble() / itemsPerPage).toInt()
-        val results = query.map(::mapToRecipe)
+        val count = recipes.count()
+        val numberOfPages = ceil(recipes.count().toDouble() / itemsPerPage).toInt()
+        val results = recipes.map(::mapToRecipe)
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }
 
     override fun create(recipe: Recipe): Int = transaction(database) {
-        Recipes.insertAndGetId { recipeToCreate ->
-            recipeToCreate[recipeTypeId] = recipe.recipeTypeId
-            recipeToCreate[userId] = recipe.userId
-            recipeToCreate[name] = recipe.name
-            recipeToCreate[description] = recipe.description
-            recipeToCreate[ingredients] = recipe.ingredients
-            recipeToCreate[preparingSteps] = recipe.preparingSteps
-        }.value
+        RecipeEntity.new {
+            recipeType = RecipeTypeEntity.findById(recipe.recipeTypeId)!!
+            user = UserEntity.findById(recipe.userId)!!
+            name = recipe.name
+            description = recipe.description
+            ingredients = recipe.ingredients
+            preparingSteps = recipe.preparingSteps
+        }.id.value
     }
 
     override fun update(recipe: Recipe): Unit = transaction(database) {
-        Recipes.update({ Recipes.id eq recipe.id }) { recipeToUpdate ->
-            recipeToUpdate[recipeTypeId] = recipe.recipeTypeId
-            recipeToUpdate[name] = recipe.name
-            recipeToUpdate[description] = recipe.description
-            recipeToUpdate[ingredients] = recipe.ingredients
-            recipeToUpdate[preparingSteps] = recipe.preparingSteps
+        RecipeEntity.findById(recipe.id)?.let {
+            it.recipeType = RecipeTypeEntity.findById(recipe.recipeTypeId)!!
+            it.name = recipe.name
+            it.description = recipe.description
+            it.ingredients = recipe.ingredients
+            it.preparingSteps = recipe.preparingSteps
         }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
-        Recipes.deleteWhere { Recipes.id eq id } > 0
+        RecipeEntity.findById(id)?.let {
+            it.delete()
+            true
+        } ?: false
     }
 
-    private fun mapToRecipe(row: ResultRow) = Recipe(
-        id = row[Recipes.id].value,
-        recipeTypeId = row[Recipes.recipeTypeId],
-        recipeTypeName = row[RecipeTypes.name],
-        userId = row[Recipes.userId],
-        userName = row[Users.name],
-        name = row[Recipes.name],
-        description = row[Recipes.description],
-        ingredients = row[Recipes.ingredients],
-        preparingSteps = row[Recipes.preparingSteps]
+    private fun mapToRecipe(entity: RecipeEntity) = Recipe(
+        id = entity.id.value,
+        recipeTypeId = entity.recipeType.id.value,
+        recipeTypeName = entity.recipeType.name,
+        userId = entity.user.id.value,
+        userName = entity.user.name,
+        name = entity.name,
+        description = entity.description,
+        ingredients = entity.ingredients,
+        preparingSteps = entity.preparingSteps
     )
 }
