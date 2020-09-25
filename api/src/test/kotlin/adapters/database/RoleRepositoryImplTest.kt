@@ -2,6 +2,7 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRoleInDatabase
 import adapters.database.schema.Roles
+import adapters.database.schema.UserRoles
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -18,12 +19,13 @@ internal class RoleRepositoryImplTest : DescribeSpec({
 
     afterTest {
         transaction(database) {
+            UserRoles.deleteAll()
             Roles.deleteAll()
         }
     }
 
     describe("Role repository") {
-        val basicRole = Role(name = "User", code = "USER")
+        val basicRole = Role(name = "Marco", code = "POLO")
 
         it("finds a role by it's id") {
             val createdRole = createRoleInDatabase(basicRole)
@@ -48,7 +50,7 @@ internal class RoleRepositoryImplTest : DescribeSpec({
         it("gets all the roles") {
             val createdRoles = arrayOf(
                 createRoleInDatabase(basicRole),
-                createRoleInDatabase(basicRole.copy(name = "Admin", code = "ADMIN"))
+                createRoleInDatabase(basicRole.copy(name = "Supervisor", code = "SUP"))
             )
             val repo = RoleRepositoryImpl(database = database)
 
