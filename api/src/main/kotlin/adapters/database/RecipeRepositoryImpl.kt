@@ -34,30 +34,31 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         pageNumber: Int,
         itemsPerPage: Int
     ): SearchResult<Recipe> = transaction(database) {
-        val recipes = RecipeEntity.find {
-            
-            val op = (Recipes.recipeType eq RecipeTypes.id)
-                .and(Recipes.user eq Users.id)
-
-            if (name?.isNotEmpty() == true) {
-                op.and(Op.build { Recipes.name like name })
+        val query = (Recipes innerJoin RecipeTypes innerJoin Users)
+            .select {
+                (Recipes.recipeType eq RecipeTypes.id)
+                    .and((Recipes.user eq Users.id))
             }
 
-            if (description?.isNotEmpty() == true) {
-                op.and(Op.build { Recipes.description like description })
-            }
-
-            op
+        if (name?.isNotEmpty() == true) {
+            query.andWhere { Recipes.name like name }
         }
 
+        if (description?.isNotEmpty() == true) {
+            query.andWhere { Recipes.description like description }
+        }
+
+        val count = query.count()
         itemsPerPage.let { itemsPerPage ->
             val offset = pageNumber.toLong() * itemsPerPage
-            recipes.limit(n = itemsPerPage, offset = offset)
+            query.limit(
+                n = itemsPerPage,
+                offset = offset
+            )
         }
 
-        val count = recipes.count()
-        val numberOfPages = ceil(recipes.count().toDouble() / itemsPerPage).toInt()
-        val results = recipes.map(::mapToRecipe)
+        val numberOfPages = ceil(count.toDouble() / itemsPerPage).toInt()
+        val results = RecipeEntity.wrapRows(query).map(::mapToRecipe)
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }
 
