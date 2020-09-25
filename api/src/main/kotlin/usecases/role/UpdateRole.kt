@@ -2,7 +2,6 @@ package usecases.role
 
 import errors.OperationNotAllowed
 import errors.RoleNotFound
-import model.Role
 import ports.RoleRepository
 
 class UpdateRole(private val roleRepository: RoleRepository) {

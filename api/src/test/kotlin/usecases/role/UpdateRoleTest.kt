@@ -14,7 +14,7 @@ internal class UpdateRoleTest : DescribeSpec({
         val basicRole = Role(id = 9, name = "Updated role", code = "NEWCODE", persistent = false)
 
         it("updates a role") {
-            val roleRepository = mockk<RoleRepository>() {
+            val roleRepository = mockk<RoleRepository> {
                 every { find(basicRole.id) } returns basicRole.copy(name = "Original role", code = "OLDCODE")
                 every { update(basicRole) } just Runs
             }
@@ -33,7 +33,7 @@ internal class UpdateRoleTest : DescribeSpec({
         }
 
         it("should throw 'RoleNotFound' if the role doesn't exist") {
-            val roleRepository = mockk<RoleRepository>() {
+            val roleRepository = mockk<RoleRepository> {
                 every { find(basicRole.id) } returns null
             }
             val updateRole = UpdateRole(roleRepository)
@@ -51,7 +51,7 @@ internal class UpdateRoleTest : DescribeSpec({
         }
 
         it("should throw 'OperationNotAllowed' if the found role is persistent") {
-            val roleRepository = mockk<RoleRepository>() {
+            val roleRepository = mockk<RoleRepository> {
                 every { find(basicRole.id) } returns basicRole.copy(
                     name = "Original role",
                     code = "OLDCODE",

@@ -3,8 +3,10 @@ package adapters.database
 import adapters.database.schema.*
 import model.Recipe
 import model.SearchResult
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
 import kotlin.math.ceil
@@ -12,7 +14,7 @@ import kotlin.math.ceil
 class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
     override fun find(id: Int): Recipe? = transaction(database) {
-        RecipeEntity.findById(id)?.let(::mapToRecipe)
+        RecipeEntity.findById(id)?.run(::mapToRecipe)
     }
 
     override fun getAll(): List<Recipe> = transaction(database) {
@@ -64,8 +66,8 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
 
     override fun create(recipe: Recipe): Int = transaction(database) {
         RecipeEntity.new {
-            recipeType = RecipeTypeEntity.findById(recipe.recipeTypeId)!!
-            user = UserEntity.findById(recipe.userId)!!
+            recipeType = RecipeTypeEntity[recipe.recipeTypeId]
+            user = UserEntity[recipe.userId]
             name = recipe.name
             description = recipe.description
             ingredients = recipe.ingredients
@@ -74,18 +76,18 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
     }
 
     override fun update(recipe: Recipe): Unit = transaction(database) {
-        RecipeEntity.findById(recipe.id)?.let {
-            it.recipeType = RecipeTypeEntity.findById(recipe.recipeTypeId)!!
-            it.name = recipe.name
-            it.description = recipe.description
-            it.ingredients = recipe.ingredients
-            it.preparingSteps = recipe.preparingSteps
+        RecipeEntity.findById(recipe.id)?.run {
+            recipeType = RecipeTypeEntity[recipe.recipeTypeId]
+            name = recipe.name
+            description = recipe.description
+            ingredients = recipe.ingredients
+            preparingSteps = recipe.preparingSteps
         }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
-        RecipeEntity.findById(id)?.let {
-            it.delete()
+        RecipeEntity.findById(id)?.run {
+            delete()
             true
         } ?: false
     }

@@ -6,7 +6,6 @@ import io.ktor.response.*
 import model.CreateResult
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
-import usecases.recipe.CreateRecipe
 import usecases.recipetype.CreateRecipeType
 
 class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : KtorHandler {

@@ -9,9 +9,7 @@ import ports.RecipeTypeRepository
 
 class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepository {
     override fun find(id: Int): RecipeType? = transaction(database) {
-        RecipeTypeEntity.findById(id).run {
-            this?.let(::mapToRecipeType)
-        }
+        RecipeTypeEntity.findById(id)?.run(::mapToRecipeType)
     }
 
     override fun find(name: String): RecipeType? = transaction(database) {
@@ -35,13 +33,12 @@ class RecipeTypeRepositoryImpl(private val database: Database) : RecipeTypeRepos
     }
 
     override fun update(recipeType: RecipeType): Unit = transaction(database) {
-        RecipeTypeEntity.findById(recipeType.id)
-            ?.run { name = recipeType.name }
+        RecipeTypeEntity.findById(recipeType.id)?.run { name = recipeType.name }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
-        RecipeTypeEntity.findById(id)?.let {
-            it.delete()
+        RecipeTypeEntity.findById(id)?.run {
+            delete()
             true
         } ?: false
     }

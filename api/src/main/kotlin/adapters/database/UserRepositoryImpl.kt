@@ -15,7 +15,7 @@ class UserRepositoryImpl(
     private val hashingService: HashingService
 ) : UserRepository {
     override fun find(id: Int): User? = transaction(database) {
-        UserEntity.findById(id)?.let(::mapToUser)
+        UserEntity.findById(id)?.run(::mapToUser)
     }
 
     override fun find(userName: String): User? = transaction(database) {
@@ -36,7 +36,7 @@ class UserRepositoryImpl(
         val currentUser = UserEntity.findById(user.id)
         require(currentUser != null) { throw UserNotFound(user.id) }
 
-        val passwordHashToUpdate = newPassword?.let {
+        val passwordHashToUpdate = newPassword?.run {
             require(oldPassword != null)
             if (!hashingService.verify(oldPassword, currentUser.passwordHash)) {
                 throw WrongCredentials()
@@ -50,8 +50,8 @@ class UserRepositoryImpl(
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
-        UserEntity.findById(id)?.let {
-            it.delete()
+        UserEntity.findById(id)?.run {
+            delete()
             true
         } ?: false
     }

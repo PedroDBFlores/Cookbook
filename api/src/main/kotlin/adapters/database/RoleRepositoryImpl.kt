@@ -9,7 +9,7 @@ import ports.RoleRepository
 
 class RoleRepositoryImpl(private val database: Database) : RoleRepository {
     override fun find(id: Int): Role? = transaction(database) {
-        RoleEntity.findById(id)?.let(::mapToRole)
+        RoleEntity.findById(id)?.run(::mapToRole)
     }
 
     override fun find(code: String): Role? = transaction(database) {
@@ -31,19 +31,17 @@ class RoleRepositoryImpl(private val database: Database) : RoleRepository {
     }
 
     override fun update(role: Role): Unit = transaction(database) {
-        RoleEntity.findById(role.id).run {
-            this?.let {
-                name = role.name
-                code = role.code
-            }
+        RoleEntity.findById(role.id)?.run {
+            name = role.name
+            code = role.code
         }
     }
 
     override fun delete(id: Int): Boolean = transaction(database) {
-       RoleEntity.findById(id)?.let {
-           it.delete()
-           true
-       } ?: false
+        RoleEntity.findById(id)?.run {
+            delete()
+            true
+        } ?: false
     }
 
     private fun mapToRole(entity: RoleEntity) = Role(

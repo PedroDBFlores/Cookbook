@@ -2,11 +2,9 @@ package web.roles
 
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
-import usecases.role.CreateRole
 import usecases.role.UpdateRole
 
 class UpdateRoleHandler(private val updateRole: UpdateRole) : KtorHandler {

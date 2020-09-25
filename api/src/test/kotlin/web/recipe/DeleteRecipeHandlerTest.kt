@@ -1,6 +1,5 @@
 package web.recipe
 
-import errors.RecipeNotFound
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
