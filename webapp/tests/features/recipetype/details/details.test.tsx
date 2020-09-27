@@ -4,9 +4,7 @@ import RecipeTypeDetails from "../../../../src/features/recipetype/details/detai
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
 import BasicModalDialog from "../../../../src/components/modal/basic-modal-dialog"
 import {renderWithRoutes} from "../../../render"
-
-const findRecipeTypeMock = jest.fn()
-const deleteRecipeTypeMock = jest.fn()
+import {SnackbarProvider} from "notistack"
 
 jest.mock("../../../../src/components/modal/basic-modal-dialog", () => {
     return {
@@ -17,14 +15,19 @@ jest.mock("../../../../src/components/modal/basic-modal-dialog", () => {
 const basicModalDialogMock = BasicModalDialog as jest.MockedFunction<typeof BasicModalDialog>
 
 describe("Recipe type details", () => {
-    beforeEach(() => {
-        jest.clearAllMocks()
-    })
+    const findRecipeTypeMock = jest.fn()
+    const deleteRecipeTypeMock = jest.fn()
+    beforeEach(() => jest.clearAllMocks())
+
+    const WrappedDetailsComponent: React.FC<{ id: number }> = ({id}) =>
+        <SnackbarProvider maxSnack={2}>
+            <RecipeTypeDetails id={id} onFind={findRecipeTypeMock} onDelete={deleteRecipeTypeMock}/>
+        </SnackbarProvider>
 
     it("renders the recipe type details", async () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-        render(<RecipeTypeDetails id={99} onFind={findRecipeTypeMock} onDelete={deleteRecipeTypeMock}/>)
+        render(<WrappedDetailsComponent id={99}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
@@ -40,7 +43,7 @@ describe("Recipe type details", () => {
 
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
-        render(<RecipeTypeDetails id={99} onFind={findRecipeTypeMock} onDelete={deleteRecipeTypeMock}/>)
+        render(<WrappedDetailsComponent id={99}/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await waitFor(() => {
@@ -53,9 +56,7 @@ describe("Recipe type details", () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         renderWithRoutes({
-            [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}
-                                                                               onFind={findRecipeTypeMock}
-                                                                               onDelete={deleteRecipeTypeMock}/>,
+            [`/recipetype/${expectedRecipeType.id}`]: () => <WrappedDetailsComponent id={expectedRecipeType.id}/>,
             [`/recipetype/${expectedRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
         }, `/recipetype/${expectedRecipeType.id}`)
 
@@ -81,9 +82,7 @@ describe("Recipe type details", () => {
         })
 
         renderWithRoutes({
-            [`/recipetype/${expectedRecipeType.id}`]: () => <RecipeTypeDetails id={expectedRecipeType.id}
-                                                                               onFind={findRecipeTypeMock}
-                                                                               onDelete={deleteRecipeTypeMock}/>,
+            [`/recipetype/${expectedRecipeType.id}`]: () => <WrappedDetailsComponent id={expectedRecipeType.id}/>,
             "/recipetype": () => <div>I'm the recipe type list page</div>
         }, `/recipetype/${expectedRecipeType.id}`)
 

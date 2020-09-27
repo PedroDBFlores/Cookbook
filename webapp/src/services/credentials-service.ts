@@ -1,7 +1,7 @@
 import axios from "axios"
 import handleApiError from "../utils/error-handling"
 import jwt_decode from "jwt-decode"
-import React from "react";
+import React from "react"
 
 export interface CredentialsService {
     login(credentials: Credentials): Promise<AuthInfo>
@@ -14,8 +14,8 @@ interface LoginResult {
 }
 
 export interface AuthInfo {
-    userId: number,
-    name: string,
+    userId: number
+    name: string
     userName: string
 }
 

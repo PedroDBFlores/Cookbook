@@ -66,11 +66,11 @@ const App: React.FC<unknown> = () => {
                                                                          onDelete={recipeTypeService.delete}/>}/>
                                 <Route exact path="/recipetype/new"
                                        render={() => <CreateRecipeType onCreate={recipeTypeService.create}/>}/>
-                                <Route path="/recipetype/:id"
+                                <Route exact path="/recipetype/:id"
                                        render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}
                                                                          onFind={recipeTypeService.find}
                                                                          onDelete={recipeTypeService.delete}/>}/>
-                                <Route path="/recipetype/:id/edit"
+                                <Route exact path="/recipetype/:id/edit"
                                        render={(x) => <EditRecipeType id={Number(x.match.params.id)}
                                                                       onFind={recipeTypeService.find}
                                                                       onUpdate={recipeTypeService.update}/>

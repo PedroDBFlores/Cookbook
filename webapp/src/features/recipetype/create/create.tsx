@@ -1,17 +1,18 @@
 import React from "react"
-import { useHistory } from "react-router-dom"
-import { Formik, Field, Form } from "formik"
+import {useHistory} from "react-router-dom"
+import {Formik, Field, Form} from "formik"
 import * as yup from "yup"
 import Button from "@material-ui/core/Button"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/core/styles/makeStyles"
-import { Theme } from "@material-ui/core/styles/createMuiTheme"
+import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
-import { TextField } from "formik-material-ui"
-import { CreateResult } from "../../../model"
+import {TextField} from "formik-material-ui"
+import {CreateResult} from "../../../model"
 import {RecipeType} from "../../../services/recipe-type-service"
+import {useSnackbar} from "notistack"
 
 interface CreateRecipeTypeFormData {
     name: string
@@ -30,21 +31,31 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(2),
             color: theme.palette.text.primary,
         },
+        buttonArea: {
+            "& > *": {
+                margin: theme.spacing(1),
+            },
+        }
     }),
 )
 
 interface CreateRecipeTypeProps {
-    onCreate: (recipe: Omit<RecipeType, "id">) => Promise<CreateResult>
+    onCreate: (recipeType: Omit<RecipeType, "id">) => Promise<CreateResult>
 }
 
-const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({ onCreate }) => {
+const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
+    const {enqueueSnackbar} = useSnackbar()
     const history = useHistory()
     const classes = useStyles()
 
-    const handleOnSubmit = ({ name }: CreateRecipeTypeFormData) => {
-        onCreate({ name })
-            .then(recipeType => history.push(`/recipetype/${recipeType.id}`))
-
+    const handleOnSubmit = async ({name}: CreateRecipeTypeFormData) => {
+        try {
+            const recipeType = await onCreate({name})
+            enqueueSnackbar(`Recipe type ${name} created successfully!`)
+            history.push(`/recipetype/${recipeType.id}`)
+        } catch ({message}) {
+            enqueueSnackbar(`An error occurred while creating the recipe type: ${message}`, {variant: "error"})
+        }
     }
 
     return <Grid container spacing={3}>
@@ -54,27 +65,27 @@ const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({ onCreate }) => {
         <Grid item xs={12}>
             <Paper className={classes.paper}>
                 <Formik
-                    initialValues={{ name: "" }}
+                    initialValues={{name: ""}}
                     validateOnBlur={true}
                     onSubmit={handleOnSubmit}
                     validationSchema={schema}>
-                    {
-                        () => <Form>
-                            <Grid container spacing={3}>
-                                <Grid item xs={12}>
-                                    <Field
-                                        component={TextField}
-                                        id="name"
-                                        label="Name"
-                                        name="name" />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Button variant="contained" aria-label="Create recipe type"
-                                        type="submit">Create</Button>
-                                </Grid>
+                    <Form>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Field
+                                    component={TextField}
+                                    id="name"
+                                    label="Name"
+                                    name="name"/>
                             </Grid>
-                        </Form>
-                    }
+                            <Grid item className={classes.buttonArea}>
+                                <Button color="primary" variant="contained" aria-label="Create recipe type"
+                                        type="submit">Create</Button>
+                                <Button variant="contained" aria-label="Reset form"
+                                        type="reset">Reset</Button>
+                            </Grid>
+                        </Grid>
+                    </Form>
                 </Formik>
             </Paper>
         </Grid>

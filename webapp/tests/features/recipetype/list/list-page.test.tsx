@@ -24,7 +24,7 @@ describe("Recipe type list page", () => {
     it("has the required content and gets the recipe types", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
-         onDelete={deleteRecipeTypeMock}/>)
+                                   onDelete={deleteRecipeTypeMock}/>)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()

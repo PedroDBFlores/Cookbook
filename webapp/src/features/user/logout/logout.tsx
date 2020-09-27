@@ -1,7 +1,7 @@
 import React, {useEffect} from "react"
 import {useHistory} from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
-import {AuthInfo} from "../../../services/credentials-service";
+import {AuthInfo} from "../../../services/credentials-service"
 
 interface LogoutProps {
     onLogout: () => Promise<void>

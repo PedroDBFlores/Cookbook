@@ -5,6 +5,7 @@ import {Recipe} from "../../../../src/services/recipe-service"
 import {CreateResult} from "../../../../src/model"
 import {RecipeType} from "../../../../src/services/recipe-type-service"
 import {AuthContext} from "../../../../src/services/credentials-service"
+import {renderWithRoutes} from "../../../render"
 
 describe("Create recipe component", () => {
     const getRecipeTypesMock = jest.fn().mockImplementation(() =>
@@ -119,7 +120,11 @@ describe("Create recipe component", () => {
 
     it("calls the 'createRecipe' function on submit", async () => {
         const onCreateMock = jest.fn().mockResolvedValueOnce({id: 1})
-        render(wrapCreateRecipe(onCreateMock))
+
+        renderWithRoutes({
+            "/recipe/new": () => wrapCreateRecipe(onCreateMock),
+            "/recipe/1": () => <div>I'm he recipe details page for id 1</div>
+        }, "/recipe/new")
 
         await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
 
@@ -154,6 +159,7 @@ describe("Create recipe component", () => {
                 ingredients: "ingredients",
                 preparingSteps: "preparing steps"
             })
+            expect(screen.getByText(/i'm he recipe details page for id 1/i)).toBeInTheDocument()
         })
     })
 })

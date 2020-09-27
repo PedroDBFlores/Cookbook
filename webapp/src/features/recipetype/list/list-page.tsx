@@ -5,7 +5,7 @@ import {useHistory} from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button"
-import {RecipeType} from "../../../services/recipe-type-service";
+import {RecipeType} from "../../../services/recipe-type-service"
 
 interface RecipeTypeListPageProps {
     getAllRecipeTypes: () => Promise<Array<RecipeType>>

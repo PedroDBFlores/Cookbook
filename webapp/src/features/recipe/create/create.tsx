@@ -13,6 +13,7 @@ import {CreateResult} from "../../../model"
 import {RecipeType} from "../../../services/recipe-type-service"
 import {Recipe} from "../../../services/recipe-service"
 import {AuthContext} from "../../../services/credentials-service"
+import { useHistory } from "react-router-dom"
 
 interface CreateRecipeFormData {
     name: string
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface CreateRecipeProps {
-    getRecipeTypes: () => Promise<Array<RecipeType>>,
+    getRecipeTypes: () => Promise<Array<RecipeType>>
     onCreate: (recipe: Omit<Recipe, "id">) => Promise<CreateResult>
 }
 
@@ -65,6 +66,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({getRecipeTypes, onCreate}) =
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
     const classes = useStyles()
     const authContext = useContext(AuthContext)
+    const history = useHistory()
 
     useEffect(() => {
         getRecipeTypes().then(setRecipeTypes)
@@ -80,7 +82,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({getRecipeTypes, onCreate}) =
                 ingredients: data.ingredients,
                 preparingSteps: data.preparingSteps,
                 userId
-            })
+            }).then(({id}) => history.push(`/recipe/${id}`))
         }
     }
 

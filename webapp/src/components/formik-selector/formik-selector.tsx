@@ -12,7 +12,7 @@ interface FormikSelectorProps {
     label: string
     formName: string
     ariaLabel?: string
-    className?: string,
+    className?: string
     error?: string | undefined
 }
 
