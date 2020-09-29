@@ -54,7 +54,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:3.4.5")
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
-    implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
     implementation("org.flywaydb:flyway-core:6.5.5")
 

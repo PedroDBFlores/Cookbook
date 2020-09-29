@@ -19,7 +19,7 @@ object DatabaseTestHelper {
      * Create a single instance for the database tests, data is cleared between tests
      */
     val database: Database by lazy {
-        val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
+        val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/application.conf")
         val dataSource = HikariDataSource()
         with(configuration.database) {
             dataSource.driverClassName = driver

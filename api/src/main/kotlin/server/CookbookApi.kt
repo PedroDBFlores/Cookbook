@@ -27,11 +27,13 @@ class CookbookApi(
     }
 
     fun start() {
+        println("Cookbook API started at port ${configuration.api.port}")
         server.start(wait = !configuration.api.testing)
     }
 
     override fun close() {
         val graceStopPeriod = if (configuration.api.testing) 0 else 5000L
         server.stop(graceStopPeriod, graceStopPeriod)
+        println("Cookbook API stopped")
     }
 }

@@ -10,6 +10,8 @@ services:
       - 9000:9000
     networks:
       - cookbook-network
+    environment:
+      - COOKBOOK_API_PORT=9000
   cookbook-database:
     container_name: cookbook-database
     image: mysql:8.0

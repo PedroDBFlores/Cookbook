@@ -20,7 +20,7 @@ import utils.JsonHelpers.toJson
 import utils.JsonHelpers.transformInto
 
 class RecipeTypeJourney : BehaviorSpec({
-    val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/configuration.json")
+    val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/application.conf")
     val baseUrl = "http://localhost:${configuration.api.port}"
     lateinit var cookbookAPI: CookbookApi
     lateinit var userJWTToken: String
