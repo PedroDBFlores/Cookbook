@@ -10,13 +10,17 @@ import model.User
 import org.joda.time.DateTime
 import ports.JWTManager
 
+/**
+ * The implementation for [JWTManager]
+ * @param algorithmSecret The secret to generate/decode a JWT token
+ */
 class JWTManagerImpl(
     override val domain: String,
     override val audience: String,
     override val realm: String,
     override val allowedRoles: List<ApplicationRoles>,
     algorithmSecret: String
-) : JWTManager<User> {
+) : JWTManager {
     private val algorithm: Algorithm = Algorithm.HMAC512(algorithmSecret)
 
     override val verifier: JWTVerifier = JWT.require(algorithm)
@@ -25,15 +29,15 @@ class JWTManagerImpl(
         .withArrayClaim("roles", *allowedRoles.map { it.name }.toTypedArray())
         .build()
 
-    override fun generateToken(obj: User): String {
+    override fun generateToken(user: User): String {
         val token: JWTCreator.Builder = JWT.create()
             .withIssuer(domain)
             .withAudience(audience)
-            .withSubject(obj.id.toString())
+            .withSubject(user.id.toString())
             .withExpiresAt(DateTime.now().plusDays(3).toDate())
-            .withClaim("userName", obj.userName)
-            .withClaim("name", obj.name)
-            .withArrayClaim("roles", obj.roles?.toTypedArray())
+            .withClaim("userName", user.userName)
+            .withClaim("name", user.name)
+            .withArrayClaim("roles", user.roles?.toTypedArray())
         return token.sign(algorithm)
     }
 

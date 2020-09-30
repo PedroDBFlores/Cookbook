@@ -3,6 +3,13 @@ package adapters.authentication
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 
+/**
+ * The [Principal] used throughout the application.
+ * @param userId The user's Id
+ * @param name The user's name
+ * @param userName The user's username
+ * @param roles The roles that this user has.
+ */
 class UserPrincipal(
     val userId: Int,
     val name: String,

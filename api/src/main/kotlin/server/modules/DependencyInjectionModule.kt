@@ -86,7 +86,7 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         //Common
         bind<HashingService>() with singleton { BcryptHashingService() }
         bind<ConfigurationFile>() with singleton { configuration }
-        bind<JWTManager<User>>("userJWTManager") with singleton {
+        bind<JWTManager>("userJWTManager") with singleton {
             with(configuration.jwt) {
                 JWTManagerImpl(
                     domain = domain,
@@ -97,7 +97,7 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
                 )
             }
         }
-        bind<JWTManager<User>>("adminJWTManager") with singleton {
+        bind<JWTManager>("adminJWTManager") with singleton {
             with(configuration.jwt) {
                 JWTManagerImpl(
                     domain = domain,

@@ -26,7 +26,7 @@ internal class LoginUserTest : DescribeSpec({
             val hashingService = mockk<HashingService> {
                 every { verify("PASSWORD", basicUser.passwordHash) } returns true
             }
-            val jwtManager = mockk<JWTManager<User>> {
+            val jwtManager = mockk<JWTManager> {
                 every { generateToken(basicUser) } returns "JWT_TOKEN"
             }
             val loginUser = LoginUser(

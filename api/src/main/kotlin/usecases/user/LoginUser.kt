@@ -11,7 +11,7 @@ import ports.UserRepository
 class LoginUser(
     private val userRepository: UserRepository,
     private val hashingService: HashingService,
-    private val jwtManager: JWTManager<User>
+    private val jwtManager: JWTManager
 ) {
     operator fun invoke(parameters: Parameters): String {
         val (credentials) = parameters

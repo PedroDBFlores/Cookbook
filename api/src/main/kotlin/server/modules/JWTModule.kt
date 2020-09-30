@@ -8,7 +8,7 @@ import io.ktor.response.*
 import model.User
 import ports.JWTManager
 
-fun Application.jwtModule(userJwtManager: JWTManager<User>, adminJWTManager: JWTManager<User>) {
+fun Application.jwtModule(userJwtManager: JWTManager, adminJWTManager: JWTManager) {
     install(Authentication) {
         jwt("user") {
             realm = userJwtManager.realm
