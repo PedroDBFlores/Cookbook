@@ -1,4 +1,5 @@
 import React, {useContext} from "react"
+import PropTypes from "prop-types"
 import Button from "@material-ui/core/Button"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -50,7 +51,8 @@ const Login: React.FC<LoginProps> = ({loginFn, onUpdateAuth}) => {
             })
     }
 
-    const AlreadyLoggedIn = () => authContext ? <Typography variant="h4">{`You are already logged in as ${authContext.name} (${authContext.userName})`}</Typography> : null
+    const AlreadyLoggedIn = () => authContext ? <Typography
+        variant="h4">{`You are already logged in as ${authContext.name} (${authContext.userName})`}</Typography> : null
 
     return <Grid container spacing={3}>
         <If condition={authContext === undefined}
@@ -94,6 +96,10 @@ const Login: React.FC<LoginProps> = ({loginFn, onUpdateAuth}) => {
             </Grid>
         </If>
     </Grid>
+}
+Login.propTypes = {
+    loginFn: PropTypes.func.isRequired,
+    onUpdateAuth: PropTypes.func.isRequired
 }
 
 export default Login

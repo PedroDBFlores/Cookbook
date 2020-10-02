@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from "axios"
+import React from "react"
 
 const ApiHandler = (baseURL: string): AxiosInstance => {
     const api = axios.create({
@@ -47,3 +48,4 @@ const interceptResponseRejectedHandler = (error: AxiosError): Promise<AxiosError
 }
 
 export default ApiHandler
+export const ApiHandlerContext = React.createContext<AxiosInstance>(ApiHandler("localhost:9000"))

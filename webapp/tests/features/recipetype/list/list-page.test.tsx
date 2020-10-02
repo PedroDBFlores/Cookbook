@@ -1,12 +1,13 @@
 import React, {useEffect} from "react"
-import {render, screen, waitFor, fireEvent} from "@testing-library/react"
+import {screen, waitFor, fireEvent} from "@testing-library/react"
 import RecipeTypeListPage from "../../../../src/features/recipetype/list/list-page"
 import RecipeTypeList from "../../../../src/features/recipetype/list/list"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
-import {renderWithRoutes} from "../../../render"
+import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../render"
+import createRecipeTypeService from "../../../../src/services/recipe-type-service"
 
-const getAllRecipeTypesMock = jest.fn()
-const deleteRecipeTypeMock = jest.fn()
+jest.mock("../../../../src/services/recipe-type-service")
+const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 
 jest.mock("../../../../src/features/recipetype/list/list", () => {
     return {
@@ -17,17 +18,28 @@ jest.mock("../../../../src/features/recipetype/list/list", () => {
 const recipeTypeListMock = RecipeTypeList as jest.MockedFunction<typeof RecipeTypeList>
 
 describe("Recipe type list page", () => {
-    beforeEach(() => {
-        jest.clearAllMocks()
+    const getAllRecipeTypesMock = jest.fn()
+    const deleteRecipeTypeMock = jest.fn()
+    createRecipeTypeServiceMock.mockImplementation(() => {
+        return {
+            getAll: getAllRecipeTypesMock,
+            update: jest.fn(),
+            find: jest.fn(),
+            delete: deleteRecipeTypeMock,
+            create: jest.fn()
+        }
     })
 
+    beforeEach(() => jest.clearAllMocks())
+
     it("has the required content and gets the recipe types", async () => {
+        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
         getAllRecipeTypesMock.mockResolvedValueOnce([])
-        render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
-                                   onDelete={deleteRecipeTypeMock}/>)
+        renderWrappedInCommonContexts(<RecipeTypeListPage/>, apiHandlerMock)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         await waitFor(() => {
             expect(screen.getByLabelText("Create new recipe type")).toBeInTheDocument()
@@ -37,8 +49,7 @@ describe("Recipe type list page", () => {
 
     it("shows the error", async () => {
         getAllRecipeTypesMock.mockRejectedValueOnce({code: "YELLOW", message: "Database error"})
-        render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
-                                   onDelete={deleteRecipeTypeMock}/>)
+        renderWrappedInCommonContexts(<RecipeTypeListPage/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await screen.findByText(/error: database error/i)
@@ -55,21 +66,20 @@ describe("Recipe type list page", () => {
             }, [])
             return <></>
         })
-        render(<RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
-                                   onDelete={deleteRecipeTypeMock}/>)
+        renderWrappedInCommonContexts(<RecipeTypeListPage/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         await waitFor(() => {
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
+            expect(screen.getByText(`Recipe type ${expectedRecipeType.id} was deleted`)).toBeInTheDocument()
         })
     })
 
     it("navigates to the recipe type create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
-            "/recipetype": () => <RecipeTypeListPage getAllRecipeTypes={getAllRecipeTypesMock}
-                                                     onDelete={deleteRecipeTypeMock}/>,
+            "/recipetype": () => <RecipeTypeListPage/>,
             "/recipetype/new": () => <>I'm the recipe type create page</>
         }, "/recipetype")
         await waitFor(() => expect(screen.getByLabelText(/create new recipe type/i)).toBeInTheDocument())

@@ -11,7 +11,7 @@ const useStyles = makeStyles({
     }
 })
 
-const UserArea: React.FC<unknown> = () => {
+const UserArea : React.FC = () => {
     const history = useHistory()
     const classes = useStyles()
     const authContext = useContext(AuthContext)

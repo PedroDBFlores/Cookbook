@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import {SearchResult} from "../../../model"
 import RecipeSearchList from "./search-list"
 import Grid from "@material-ui/core/Grid"
@@ -7,15 +7,11 @@ import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import RecipeSearchForm, {RecipeSearchFormData} from "./search-form"
-import {RecipeDetails, SearchRecipeParameters} from "../../../services/recipe-service"
-import {RecipeType} from "../../../services/recipe-type-service"
+import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import Button from "@material-ui/core/Button"
-import { useHistory } from "react-router-dom"
-
-interface RecipeSearchPageProps {
-    getAllRecipeTypesFn: () => Promise<Array<RecipeType>>
-    searchFn: (parameters: SearchRecipeParameters) => Promise<SearchResult<RecipeDetails>>
-}
+import {useHistory} from "react-router-dom"
+import {ApiHandlerContext} from "../../../services/api-handler"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -25,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn, searchFn}) => {
+const RecipeSearchPage: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
     const [formData, setFormData] = useState<RecipeSearchFormData>({
         name: undefined,
@@ -41,9 +37,12 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
     const classes = useStyles()
     const history = useHistory()
 
+    const {search, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
+    const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
+
     const handleOnFormSearch = ({name, description, recipeTypeId}: RecipeSearchFormData) => {
         setFormData({name, description, recipeTypeId})
-        searchFn({
+        search({
             name,
             description,
             recipeTypeId: recipeTypeId > 0 ? recipeTypeId : undefined,
@@ -53,7 +52,7 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
     }
 
     const handleOnPageChange = (page: number) => {
-        searchFn({
+        search({
             ...formData,
             pageNumber: page,
             itemsPerPage: 10
@@ -63,7 +62,7 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
     const navigateToCreateRecipe = () => history.push("/recipe/new")
 
     useEffect(() => {
-        getAllRecipeTypesFn().then(setRecipeTypes)
+        getAllRecipeTypes().then(setRecipeTypes)
     }, [])
 
     return <Grid className={classes.base} container spacing={3}>
@@ -78,8 +77,8 @@ const RecipeSearchPage: React.FC<RecipeSearchPageProps> = ({getAllRecipeTypesFn,
             <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
         </Grid>
         <Grid item xs={12}>
-            <RecipeSearchList searchResult={recipes} onDelete={() => {
-            }} onPageChange={handleOnPageChange}/>
+            <RecipeSearchList searchResult={recipes} onDelete={(id) => deleteRecipe(id)}
+                              onPageChange={handleOnPageChange}/>
         </Grid>
     </Grid>
 }

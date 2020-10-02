@@ -1,4 +1,5 @@
-import React, {useRef, useState} from "react"
+import React, {useContext, useRef, useState} from "react"
+import PropTypes from "prop-types"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Button from "@material-ui/core/Button"
 import Delete from "@material-ui/icons/Delete"
@@ -13,13 +14,9 @@ import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
 import createStyles from "@material-ui/core/styles/createStyles"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
-import {RecipeType} from "../../../services/recipe-type-service"
-
-interface RecipeTypeDetailsProps {
-    id: number
-    onFind: (id: number) => Promise<RecipeType>
-    onDelete: (id: number) => Promise<void>
-}
+import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
+import {useSnackbar} from "notistack"
+import {ApiHandlerContext} from "../../../services/api-handler"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -30,18 +27,24 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, onFind, onDelete}) => {
+const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
+    const [showModal, setShowModal] = useState<boolean>(false)
+
     const history = useHistory()
     const classes = useStyles()
+    const {enqueueSnackbar} = useSnackbar()
 
-    const findPromiseRef = useRef(() => onFind(id))
-    const [showModal, setShowModal] = useState<boolean>(false)
+    const {find, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
+    const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
-    const handleDelete = (id: number) => onDelete(id)
-        .then(() => history.push("/recipetype"))
+    const handleDelete = (id: number) => deleteRecipeType(id)
+        .then(() => {
+            enqueueSnackbar(`Recipe type ${id} was deleted`, {variant: "success"})
+            history.push("/recipetype")
+        })
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
 
@@ -93,6 +96,9 @@ const RecipeTypeDetails: React.FC<RecipeTypeDetailsProps> = ({id, onFind, onDele
             )}
         </IfFulfilled>
     </>
+}
+RecipeTypeDetails.propTypes = {
+    id: PropTypes.number.isRequired
 }
 
 export default RecipeTypeDetails

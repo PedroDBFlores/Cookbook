@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import {Formik, Field, Form, FormikHelpers} from "formik"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
@@ -90,6 +91,10 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
             </Form>
         </Formik>
     </Paper>
+}
+RecipeSearchForm.propTypes = {
+    recipeTypes: PropTypes.array.isRequired,
+    onSearch: PropTypes.func.isRequired
 }
 
 export default RecipeSearchForm

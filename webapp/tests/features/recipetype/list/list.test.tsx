@@ -65,7 +65,7 @@ describe("Recipe type list component", () => {
             const firstRecipeType = recipeTypes[0]
             renderWithRoutes({
                 "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />,
-                [`/recipetype/${firstRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
+                [`/recipetype/${firstRecipeType.id}/details`]: () => <div>I'm the recipe type details page</div>
             }, "/recipetype")
             const detailsButton = screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
                 selector: "button"

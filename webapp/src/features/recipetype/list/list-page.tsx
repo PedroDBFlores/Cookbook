@@ -1,21 +1,21 @@
-import React, {useRef} from "react"
+import React, {useContext, useRef} from "react"
 import RecipeTypeList from "./list"
 import {useAsync, IfPending, IfRejected, IfFulfilled} from "react-async"
 import {useHistory} from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button"
-import {RecipeType} from "../../../services/recipe-type-service"
+import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
+import {useSnackbar} from "notistack"
+import {ApiHandlerContext} from "../../../services/api-handler"
 
-interface RecipeTypeListPageProps {
-    getAllRecipeTypes: () => Promise<Array<RecipeType>>
-    onDelete: (id: number) => Promise<void>
-}
-
-const RecipeTypeListPage: React.FC<RecipeTypeListPageProps> = ({getAllRecipeTypes, onDelete}) => {
+const RecipeTypeListPage: React.FC = () => {
+    const {getAll, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
     const history = useHistory()
-    const getPromiseRef = useRef(() => getAllRecipeTypes())
-    const handleDelete = (id: number) => onDelete(id)
+    const {enqueueSnackbar} = useSnackbar()
+
+    const getPromiseRef = useRef(() => getAll())
+    const handleDelete = (id: number) => deleteRecipeType(id).then(() => enqueueSnackbar(`Recipe type ${id} was deleted`, {variant: "success"}))
     const state = useAsync<Array<RecipeType>>({
         promiseFn: getPromiseRef.current
     })

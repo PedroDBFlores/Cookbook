@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
@@ -35,7 +36,7 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes, onDelete}) 
     const history = useHistory()
     const classes = useStyles()
 
-    const navigateToDetails = (id: number): void => history.push(`/recipetype/${id}`)
+    const navigateToDetails = (id: number): void => history.push(`/recipetype/${id}/details`)
     const navigateToEdit = (id: number): void => history.push(`/recipetype/${id}/edit`)
 
     return !recipeTypes?.length ?
@@ -79,4 +80,9 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes, onDelete}) 
             </Table>
         </TableContainer>
 }
+RecipeTypeList.propTypes = {
+    recipeTypes: PropTypes.array.isRequired,
+    onDelete: PropTypes.func.isRequired
+}
+
 export default RecipeTypeList

@@ -1,4 +1,5 @@
 import React, {useState} from "react"
+import PropTypes from "prop-types"
 import {SearchResult} from "../../../model"
 import Paper from "@material-ui/core/Paper"
 import Table from "@material-ui/core/Table"
@@ -101,6 +102,15 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
             </TableFooter>
         </Table>
     </TableContainer>
+}
+RecipeSearchList.propTypes = {
+    searchResult: PropTypes.shape({
+        count: PropTypes.number.isRequired,
+        numberOfPages: PropTypes.number.isRequired,
+        results: PropTypes.array.isRequired
+    }).isRequired,
+    onPageChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
 }
 
 export default RecipeSearchList

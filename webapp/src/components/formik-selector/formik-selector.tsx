@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import {Field} from "formik"
 import {Select} from "formik-material-ui"
 import InputLabel from "@material-ui/core/InputLabel"
@@ -13,7 +14,7 @@ interface FormikSelectorProps {
     formName: string
     ariaLabel?: string
     className?: string
-    error?: string | undefined
+    error?: string
 }
 
 const FormikSelector: React.FC<FormikSelectorProps> = ({
@@ -45,6 +46,14 @@ const FormikSelector: React.FC<FormikSelectorProps> = ({
             <FormHelperText>{error}</FormHelperText>
         </If>
     </FormControl>
+}
+FormikSelector.propTypes = {
+    options: PropTypes.array.isRequired,
+    label: PropTypes.string.isRequired,
+    formName: PropTypes.string.isRequired,
+    ariaLabel: PropTypes.string,
+    className: PropTypes.string,
+    error: PropTypes.string
 }
 
 export default FormikSelector

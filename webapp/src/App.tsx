@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import Layout from "./components/layout/layout"
 import RecipeTypeListPage from "./features/recipetype/list/list-page"
@@ -7,15 +7,13 @@ import RecipeTypeDetails from "./features/recipetype/details/details"
 import EditRecipeType from "./features/recipetype/edit/edit"
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme"
 import {SnackbarProvider} from "notistack"
-import createRecipeTypeService from "./services/recipe-type-service"
-import ApiHandler from "./services/api-handler"
+import ApiHandler, {ApiHandlerContext} from "./services/api-handler"
 import Login from "./features/user/login/login"
 import createCredentialsService, {AuthContext, AuthInfo} from "./services/credentials-service"
 import "fontsource-roboto"
 import {ThemeProvider} from "@material-ui/core/styles"
 import Logout from "./features/user/logout/logout"
 import RecipeSearchPage from "./features/recipe/search/search-page"
-import createRecipeService from "./services/recipe-service"
 import CreateRecipe from "./features/recipe/create/create"
 import jwt_decode from "jwt-decode"
 
@@ -44,61 +42,52 @@ const App: React.FC<unknown> = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token")
-        if(token && !authInfo) {
+        if (token && !authInfo) {
             const {sub, name, userName} = jwt_decode(token)
             setAuthInfo({userId: Number(sub), name, userName})
         }
     }, [])
 
-    const recipeTypeService = createRecipeTypeService(ApiHandler("http://localhost:9000"))
-    const recipeService = createRecipeService(ApiHandler("http://localhost:9000"))
     const credentialsService = createCredentialsService()
 
     return (
-        <ThemeProvider theme={theme}>
-            <SnackbarProvider maxSnack={4}>
-                <AuthContext.Provider value={authInfo}>
-                    <BrowserRouter>
-                        <Layout>
-                            <Switch>
-                                <Route exact path="/recipetype"
-                                       render={() => <RecipeTypeListPage getAllRecipeTypes={recipeTypeService.getAll}
-                                                                         onDelete={recipeTypeService.delete}/>}/>
-                                <Route exact path="/recipetype/new"
-                                       render={() => <CreateRecipeType onCreate={recipeTypeService.create}/>}/>
-                                <Route exact path="/recipetype/:id"
-                                       render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}
-                                                                         onFind={recipeTypeService.find}
-                                                                         onDelete={recipeTypeService.delete}/>}/>
-                                <Route exact path="/recipetype/:id/edit"
-                                       render={(x) => <EditRecipeType id={Number(x.match.params.id)}
-                                                                      onFind={recipeTypeService.find}
-                                                                      onUpdate={recipeTypeService.update}/>
-                                       }/>
-
-                                <Route exact path="/recipe" render={() => <RecipeSearchPage
-                                    searchFn={recipeService.search}
-                                    getAllRecipeTypesFn={recipeTypeService.getAll}/>}
-                                />
-                                <Route exact path="/recipe/new" render={() => <CreateRecipe
-                                    onCreate={recipeService.create}
-                                    getRecipeTypes={recipeTypeService.getAll}/>}
-                                />
-
-                                <Route path="/login">
-                                    <Login loginFn={credentialsService.login} onUpdateAuth={updateAuthContext}/>
-                                </Route>
-                                <Route path="/logout">
-                                    <Logout onLogout={credentialsService.logout}
-                                            onUpdateAuth={updateAuthContext}/>
-                                </Route>
-                            </Switch>
-                        </Layout>
-                    </BrowserRouter>
-                </AuthContext.Provider>
-            </SnackbarProvider>
-        </ThemeProvider>
+        <ApiHandlerContext.Provider value={ApiHandler("http://localhost:9000")}>
+            <AuthContext.Provider value={authInfo}>
+                <SnackbarProvider maxSnack={4}>
+                    <ThemeProvider theme={theme}>
+                        <BrowserRouter>
+                            <Layout>
+                                <Switch>
+                                    <Route exact path="/login">
+                                        <Login loginFn={credentialsService.login} onUpdateAuth={updateAuthContext}/>
+                                    </Route>
+                                    <Route exact path="/logout">
+                                        <Logout onLogout={credentialsService.logout}
+                                                onUpdateAuth={updateAuthContext}/>
+                                    </Route>
+                                    <RecipeTypeRoutes/>
+                                    <RecipeRoutes/>
+                                </Switch>
+                            </Layout>
+                        </BrowserRouter>
+                    </ThemeProvider>
+                </SnackbarProvider>
+            </AuthContext.Provider>
+        </ApiHandlerContext.Provider>
     )
 }
+
+const RecipeTypeRoutes = () => <>
+    <Route exact path="/recipetype" render={() => <RecipeTypeListPage/>}/>
+    <Route exact path="/recipetype/new" render={() => <CreateRecipeType/>}/>
+    <Route exact path="/recipetype/:id/details" render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}/>}/>
+    <Route exact path="/recipetype/:id/edit"
+           render={(x) => <EditRecipeType id={Number(x.match.params.id)}/>}/>
+</>
+
+const RecipeRoutes = () => <>
+    <Route exact path="/recipe" render={() => <RecipeSearchPage/>}/>
+    <Route exact path="/recipe/new" render={() => <CreateRecipe/>}/>
+</>
 
 export default App

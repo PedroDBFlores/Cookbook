@@ -1,13 +1,18 @@
 import React, {useEffect} from "react"
-import {fireEvent, render, screen, waitFor} from "@testing-library/react"
+import {fireEvent, screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "../../../../src/features/recipe/search/search-page"
 import RecipeSearchForm from "../../../../src/features/recipe/search/search-form"
 import {generateRecipeDetails} from "../../../helpers/generators/dto-generators"
 import Button from "@material-ui/core/Button"
 import {SearchResult} from "../../../../src/model"
-import {RecipeDetails} from "../../../../src/services/recipe-service"
-import {RecipeType} from "../../../../src/services/recipe-type-service"
-import {renderWithRoutes} from "../../../render"
+import createRecipeService, {RecipeDetails} from "../../../../src/services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "../../../../src/services/recipe-type-service"
+import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../render"
+
+jest.mock("../../../../src/services/recipe-type-service")
+jest.mock("../../../../src/services/recipe-service")
+const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
+const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeof createRecipeService>
 
 jest.mock("../../../../src/features/recipe/search/search-form", () => {
     return {
@@ -44,37 +49,52 @@ jest.mock("../../../../src/features/recipe/search/search-list", () => {
     }
 })
 
-const getAllRecipeTypesMock = jest.fn().mockImplementation(() => Promise.resolve([
-    {id: 1, name: "Die erste"},
-    {id: 2, name: "Die zweite"}
-]))
-
-const basicRecipes = [
-    generateRecipeDetails({id: 1, recipeTypeId: 1}),
-    generateRecipeDetails({id: 2, recipeTypeId: 1})
-]
-const searchRecipesMock = jest.fn().mockImplementation(() =>
-    Promise.resolve({
-        count: 2,
-        numberOfPages: 1,
-        results: basicRecipes
-    } as SearchResult<RecipeDetails>)
-)
-
 describe("Search recipe page component", () => {
+    const getAllRecipeTypesMock = jest.fn().mockImplementation(() => Promise.resolve([
+        {id: 1, name: "Die erste"},
+        {id: 2, name: "Die zweite"}
+    ]))
+    const basicRecipes = [
+        generateRecipeDetails({id: 1, recipeTypeId: 1}),
+        generateRecipeDetails({id: 2, recipeTypeId: 1})
+    ]
+    const searchRecipesMock = jest.fn().mockImplementation(() =>
+        Promise.resolve({
+            count: 2,
+            numberOfPages: 1,
+            results: basicRecipes
+        } as SearchResult<RecipeDetails>)
+    )
+    createRecipeTypeServiceMock.mockImplementation(() => ({
+        getAll: getAllRecipeTypesMock,
+        update: jest.fn(),
+        find: jest.fn(),
+        delete: jest.fn(),
+        create: jest.fn()
+    }))
+    createRecipeServiceMock.mockImplementation(() => ({
+        create: jest.fn(),
+        search: searchRecipesMock,
+        find: jest.fn(),
+        delete: jest.fn(),
+        update: jest.fn(),
+        getAll: jest.fn()
+    }))
+
     beforeEach(() => {
         jest.clearAllMocks()
     })
 
     it("renders the initial component", async () => {
-        render(<RecipeSearchPage
-            getAllRecipeTypesFn={getAllRecipeTypesMock}
-            searchFn={searchRecipesMock}/>)
+        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
+        renderWrappedInCommonContexts(<RecipeSearchPage/>, apiHandlerMock)
 
         expect(screen.getByText(/search recipes/i)).toBeInTheDocument()
         expect(screen.getByText(/no matching recipes/i)).toBeInTheDocument()
         await waitFor(() => {
             expect(getAllRecipeTypesMock).toHaveBeenCalled()
+            expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+            expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
             expect(screen.getByText("Die erste")).toBeInTheDocument()
         })
     })
@@ -94,9 +114,7 @@ describe("Search recipe page component", () => {
                 return <></>
             })
 
-            render(<RecipeSearchPage
-                getAllRecipeTypesFn={getAllRecipeTypesMock}
-                searchFn={searchRecipesMock}/>)
+            renderWrappedInCommonContexts(<RecipeSearchPage />)
 
             await waitFor(() => {
                 expect(searchRecipesMock).toHaveBeenCalledWith({
@@ -124,9 +142,7 @@ describe("Search recipe page component", () => {
             return <></>
         })
 
-        render(<RecipeSearchPage
-            getAllRecipeTypesFn={getAllRecipeTypesMock}
-            searchFn={searchRecipesMock}/>)
+        renderWrappedInCommonContexts(<RecipeSearchPage />)
 
         await waitFor(() => {
             expect(searchRecipesMock).toHaveBeenNthCalledWith(1, {
@@ -154,9 +170,7 @@ describe("Search recipe page component", () => {
     it("navigates to the recipe create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
-            "/recipe": () => <RecipeSearchPage
-                getAllRecipeTypesFn={getAllRecipeTypesMock}
-                searchFn={searchRecipesMock}/>,
+            "/recipe": () => <RecipeSearchPage />,
             "/recipe/new": () => <>I'm the recipe create page</>
         }, "/recipe")
         await waitFor(() => expect(screen.getByLabelText(/create new recipe/i)).toBeInTheDocument())

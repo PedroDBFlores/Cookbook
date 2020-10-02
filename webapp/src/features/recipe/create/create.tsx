@@ -9,11 +9,12 @@ import {Field, Form, Formik} from "formik"
 import {TextField} from "formik-material-ui"
 import FormikSelector from "../../../components/formik-selector/formik-selector"
 import * as yup from "yup"
-import {CreateResult} from "../../../model"
-import {RecipeType} from "../../../services/recipe-type-service"
-import {Recipe} from "../../../services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
+import createRecipeService from "../../../services/recipe-service"
 import {AuthContext} from "../../../services/credentials-service"
-import { useHistory } from "react-router-dom"
+import {useHistory} from "react-router-dom"
+import {ApiHandlerContext} from "../../../services/api-handler"
+import {useSnackbar} from "notistack"
 
 interface CreateRecipeFormData {
     name: string
@@ -57,32 +58,34 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-interface CreateRecipeProps {
-    getRecipeTypes: () => Promise<Array<RecipeType>>
-    onCreate: (recipe: Omit<Recipe, "id">) => Promise<CreateResult>
-}
-
-const CreateRecipe: React.FC<CreateRecipeProps> = ({getRecipeTypes, onCreate}) => {
+const CreateRecipe: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
     const classes = useStyles()
     const authContext = useContext(AuthContext)
     const history = useHistory()
+    const {enqueueSnackbar} = useSnackbar()
+
+    const {create} = createRecipeService(useContext(ApiHandlerContext))
+    const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
 
     useEffect(() => {
-        getRecipeTypes().then(setRecipeTypes)
+        getAllRecipeTypes().then(setRecipeTypes)
     }, [])
 
     const handleOnSubmit = (data: CreateRecipeFormData) => {
         if (authContext) {
             const userId = authContext.userId
-            onCreate({
+            create({
                 name: data.name,
                 description: data.description,
                 recipeTypeId: data.recipeTypeId,
                 ingredients: data.ingredients,
                 preparingSteps: data.preparingSteps,
                 userId
-            }).then(({id}) => history.push(`/recipe/${id}`))
+            }).then(({id}) => {
+                enqueueSnackbar(`Recipe '${data.name}' created successfully!`)
+                history.push(`/recipe/${id}`)
+            })
         }
     }
 

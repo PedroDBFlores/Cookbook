@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useContext} from "react"
 import {useHistory} from "react-router-dom"
 import {Formik, Field, Form} from "formik"
 import * as yup from "yup"
@@ -10,9 +10,9 @@ import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
 import {TextField} from "formik-material-ui"
-import {CreateResult} from "../../../model"
-import {RecipeType} from "../../../services/recipe-type-service"
+import createRecipeTypeService from "../../../services/recipe-type-service"
 import {useSnackbar} from "notistack"
+import {ApiHandlerContext} from "../../../services/api-handler"
 
 interface CreateRecipeTypeFormData {
     name: string
@@ -39,19 +39,16 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-interface CreateRecipeTypeProps {
-    onCreate: (recipeType: Omit<RecipeType, "id">) => Promise<CreateResult>
-}
-
-const CreateRecipeType: React.FC<CreateRecipeTypeProps> = ({onCreate}) => {
+const CreateRecipeType: React.FC = () => {
+    const {create} = createRecipeTypeService(useContext(ApiHandlerContext))
     const {enqueueSnackbar} = useSnackbar()
     const history = useHistory()
     const classes = useStyles()
 
     const handleOnSubmit = async ({name}: CreateRecipeTypeFormData) => {
         try {
-            const recipeType = await onCreate({name})
-            enqueueSnackbar(`Recipe type ${name} created successfully!`)
+            const recipeType = await create({name})
+            enqueueSnackbar(`Recipe type '${name}' created successfully!`)
             history.push(`/recipetype/${recipeType.id}`)
         } catch ({message}) {
             enqueueSnackbar(`An error occurred while creating the recipe type: ${message}`, {variant: "error"})

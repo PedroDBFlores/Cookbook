@@ -1,29 +1,44 @@
 import React from "react"
-import {fireEvent, render, screen, waitFor, within} from "@testing-library/react"
+import {fireEvent, screen, waitFor, within} from "@testing-library/react"
 import CreateRecipe from "../../../../src/features/recipe/create/create"
-import {Recipe} from "../../../../src/services/recipe-service"
-import {CreateResult} from "../../../../src/model"
-import {RecipeType} from "../../../../src/services/recipe-type-service"
-import {AuthContext} from "../../../../src/services/credentials-service"
-import {renderWithRoutes} from "../../../render"
+import createRecipeService from "../../../../src/services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "../../../../src/services/recipe-type-service"
+import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../render"
+
+jest.mock("../../../../src/services/recipe-type-service")
+jest.mock("../../../../src/services/recipe-service")
+const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
+const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeof createRecipeService>
+
 
 describe("Create recipe component", () => {
+    const createRecipeMock = jest.fn()
     const getRecipeTypesMock = jest.fn().mockImplementation(() =>
         Promise.resolve([
             {id: 1, name: "ABC"}
         ] as Array<RecipeType>))
 
+    createRecipeTypeServiceMock.mockImplementation(() => ({
+        getAll: getRecipeTypesMock,
+        update: jest.fn(),
+        find: jest.fn(),
+        delete: jest.fn(),
+        create: jest.fn()
+    }))
+    createRecipeServiceMock.mockImplementation(() => ({
+        create: createRecipeMock,
+        search: jest.fn(),
+        find: jest.fn(),
+        delete: jest.fn(),
+        update: jest.fn(),
+        getAll: jest.fn()
+    }))
+
     beforeEach(() => getRecipeTypesMock.mockClear())
 
-    const wrapCreateRecipe = (
-        onCreate: (recipe: Omit<Recipe, "id">) => Promise<CreateResult> = jest.fn()
-    ) =>
-        <AuthContext.Provider value={{userId: 666, name: "ALARMA", userName: "alarma"}}>
-            <CreateRecipe getRecipeTypes={getRecipeTypesMock} onCreate={onCreate}/>
-        </AuthContext.Provider>
-
     it("renders the initial form", async () => {
-        render(wrapCreateRecipe())
+        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
+        renderWrappedInCommonContexts(<CreateRecipe/>, apiHandlerMock)
 
         expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
@@ -35,6 +50,8 @@ describe("Create recipe component", () => {
         expect(submitButton).toHaveAttribute("type", "submit")
 
         await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
+        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
     })
 
     describe("Form validation", () => {
@@ -42,7 +59,7 @@ describe("Create recipe component", () => {
             ["Name is required", ""],
             ["Name exceeds the character limit", "a".repeat(129)],
         ])("it displays an error when '%s'", async (message, name) => {
-            render(wrapCreateRecipe())
+            renderWrappedInCommonContexts(<CreateRecipe/>)
 
             const nameInput = screen.getByLabelText("Name")
             fireEvent.change(nameInput, {target: {value: name}})
@@ -59,7 +76,7 @@ describe("Create recipe component", () => {
             ["Description is required", ""],
             ["Description exceeds the character limit", "b".repeat(257)],
         ])("it displays an error when '%s'", async (message, description) => {
-            render(wrapCreateRecipe())
+            renderWrappedInCommonContexts(<CreateRecipe/>)
 
             const descriptionInput = screen.getByLabelText("Description")
             fireEvent.change(descriptionInput, {target: {value: description}})
@@ -73,7 +90,7 @@ describe("Create recipe component", () => {
         })
 
         it("displays an error if no recipe type is selected", async () => {
-            render(wrapCreateRecipe())
+            renderWrappedInCommonContexts(<CreateRecipe/>)
 
             await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
 
@@ -87,7 +104,7 @@ describe("Create recipe component", () => {
             ["Ingredients is required", ""],
             ["Ingredients exceeds the character limit", "i".repeat(2049)],
         ])("it displays an error when '%s'", async (message, ingredients) => {
-            render(wrapCreateRecipe())
+            renderWrappedInCommonContexts(<CreateRecipe/>)
 
             const ingredientsInput = screen.getByLabelText("Ingredients")
             fireEvent.change(ingredientsInput, {target: {value: ingredients}})
@@ -104,7 +121,7 @@ describe("Create recipe component", () => {
             ["Preparing steps is required", ""],
             ["Preparing steps exceeds the character limit", "i".repeat(4099)],
         ])("it displays an error when '%s'", async (message, preparingSteps) => {
-            render(wrapCreateRecipe())
+            renderWrappedInCommonContexts(<CreateRecipe/>)
 
             const preparingStepsInput = screen.getByLabelText("Preparing steps")
             fireEvent.change(preparingStepsInput, {target: {value: preparingSteps}})
@@ -119,11 +136,11 @@ describe("Create recipe component", () => {
     })
 
     it("calls the 'createRecipe' function on submit", async () => {
-        const onCreateMock = jest.fn().mockResolvedValueOnce({id: 1})
+        createRecipeMock.mockResolvedValueOnce({id: 1})
 
         renderWithRoutes({
-            "/recipe/new": () => wrapCreateRecipe(onCreateMock),
-            "/recipe/1": () => <div>I'm he recipe details page for id 1</div>
+            "/recipe/new": () => <CreateRecipe/>,
+            "/recipe/1": () => <div>I'm the recipe details page for id 1</div>
         }, "/recipe/new")
 
         await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
@@ -151,7 +168,7 @@ describe("Create recipe component", () => {
         fireEvent.submit(submitButton)
 
         await waitFor(() => {
-            expect(onCreateMock).toHaveBeenCalledWith({
+            expect(createRecipeMock).toHaveBeenCalledWith({
                 name: "name",
                 description: "description",
                 recipeTypeId: 1,
@@ -159,7 +176,8 @@ describe("Create recipe component", () => {
                 ingredients: "ingredients",
                 preparingSteps: "preparing steps"
             })
-            expect(screen.getByText(/i'm he recipe details page for id 1/i)).toBeInTheDocument()
+            expect(screen.getByText(/^recipe 'Name' created successfully!$/i)).toBeInTheDocument()
+            expect(screen.getByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
         })
     })
 })

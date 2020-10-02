@@ -1,4 +1,5 @@
-import React, {useRef} from "react"
+import React, {useContext, useRef} from "react"
+import PropTypes from "prop-types"
 import * as yup from "yup"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {Field, Formik, FormikValues, Form} from "formik"
@@ -8,17 +9,12 @@ import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
 import {TextField} from "formik-material-ui"
-import {RecipeType} from "../../../services/recipe-type-service"
+import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
-
-interface EditRecipeTypeProps {
-    id: number
-    onFind: (id: number) => Promise<RecipeType>
-    onUpdate: (recipeType: RecipeType) => Promise<void>
-}
+import {ApiHandlerContext} from "../../../services/api-handler"
 
 const schema = yup.object({
     name: yup.string().required("Name is required")
@@ -40,18 +36,20 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, onFind, onUpdate}) => {
+const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     const {enqueueSnackbar} = useSnackbar()
     const classes = useStyles()
     const history = useHistory()
-    const findPromiseRef = useRef(() => onFind(id))
+
+    const {find, update} = createRecipeTypeService(useContext(ApiHandlerContext))
+    const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current
     })
 
     const handleOnSubmit = async (values: FormikValues) => {
         try {
-            await onUpdate({...values} as RecipeType)
+            await update({...values} as RecipeType)
             history.push(`/recipetype/${id}`)
         } catch ({message}) {
             enqueueSnackbar(`An error occurred while updating the recipe type: ${message}`, {variant: "error"})
@@ -100,6 +98,9 @@ const EditRecipeType: React.FC<EditRecipeTypeProps> = ({id, onFind, onUpdate}) =
             }
         </IfFulfilled>
     </Grid>
+}
+EditRecipeType.propTypes = {
+    id: PropTypes.number.isRequired
 }
 
 export default EditRecipeType
