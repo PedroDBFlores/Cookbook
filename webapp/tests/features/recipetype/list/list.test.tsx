@@ -16,9 +16,9 @@ describe("Recipe type list component", () => {
         it("shows a table with the required headers", async () => {
             render(<RecipeTypeList recipeTypes={[generateRecipeType()]} onDelete={jest.fn()} />)
 
-            expect(screen.getByText(/id/i)).toBeInTheDocument()
-            expect(screen.getByText(/name/i)).toBeInTheDocument()
-            expect(screen.getByText(/actions/i)).toBeInTheDocument()
+            expect(screen.getByText(/^id$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^name$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^actions$/i)).toBeInTheDocument()
         })
 
         it("shows the provided data", async () => {

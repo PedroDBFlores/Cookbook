@@ -100,8 +100,8 @@ describe("Recipe type details", () => {
 
         await waitFor(() => {
             expect(findRecipeTypeMock).toHaveBeenCalled()
-            expect(screen.getByText(/Id:/i)).toBeInTheDocument()
-            expect(screen.getByText(/Name:/i)).toBeInTheDocument()
+            expect(screen.getByText(/^Id:$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^Name:$/i)).toBeInTheDocument()
         })
 
         const deleteButton = screen.getByLabelText(`Delete recipe type with id ${expectedRecipeType.id}`)

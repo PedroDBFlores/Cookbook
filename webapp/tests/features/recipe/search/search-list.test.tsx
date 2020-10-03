@@ -28,11 +28,11 @@ describe("Recipe search list component", () => {
                 results: [generateRecipeDetails()]
             }} onDelete={jest.fn()} onPageChange={jest.fn()}/>)
 
-            expect(screen.getByText(/id/i)).toBeInTheDocument()
-            expect(screen.getByText(/name/i)).toBeInTheDocument()
-            expect(screen.getByText(/recipe type/i)).toBeInTheDocument()
-            expect(screen.getByText(/user/i)).toBeInTheDocument()
-            expect(screen.getByText(/actions/i)).toBeInTheDocument()
+            expect(screen.getByText(/^id$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^name$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^recipe type$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^user$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^actions$/i)).toBeInTheDocument()
         })
 
         it("shows the provided data", () => {
