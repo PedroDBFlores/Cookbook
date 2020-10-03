@@ -47,7 +47,8 @@ module.exports = {
         delimiter: "semi",    // 'semi' or 'comma'
         requireLast: false,
       },
-    }]
+    }],
+    "@typescript-eslint/ban-ts-comment": 0
   },
   "overrides": [
     {

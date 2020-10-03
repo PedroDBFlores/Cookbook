@@ -1,6 +1,6 @@
 import React, {useContext, useRef} from "react"
 import RecipeTypeList from "./list"
-import {useAsync, IfPending, IfRejected, IfFulfilled} from "react-async"
+import {useAsync} from "react-async"
 import {useHistory} from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
@@ -8,10 +8,25 @@ import Button from "@material-ui/core/Button"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useSnackbar} from "notistack"
 import {ApiHandlerContext} from "../../../services/api-handler"
+import makeStyles from "@material-ui/core/styles/makeStyles"
+import {Theme} from "@material-ui/core/styles/createMuiTheme"
+import createStyles from "@material-ui/core/styles/createStyles"
+import Paper from "@material-ui/core/Paper"
+import {Choose, When} from "../../../components/flow-control/choose"
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        paper: {
+            padding: theme.spacing(2),
+            color: theme.palette.text.primary,
+        },
+    }),
+)
 
 const RecipeTypeListPage: React.FC = () => {
     const {getAll, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
     const history = useHistory()
+    const classes = useStyles()
     const {enqueueSnackbar} = useSnackbar()
 
     const getPromiseRef = useRef(() => getAll())
@@ -31,16 +46,19 @@ const RecipeTypeListPage: React.FC = () => {
                     onClick={navigateToCreateRecipeType}>Create</Button>
         </Grid>
         <Grid item xs={12}>
-            <IfPending state={state}>
-                <span>Loading...</span>
-            </IfPending>
-            <IfRejected state={state}>
-                {(error) => <span>Error: {error.message}</span>}
-            </IfRejected>
-            <IfFulfilled state={state}>
-                {(data) =>
-                    <RecipeTypeList recipeTypes={data} onDelete={(id => handleDelete(id))}/>}
-            </IfFulfilled>
+            <Paper className={classes.paper}>
+                <Choose>
+                    <When condition={state.isPending}>
+                        <span>Loading...</span>
+                    </When>
+                    <When condition={state.isRejected}>
+                        <span>Error: {state.error?.message}</span>
+                    </When>
+                    <When condition={state.isFulfilled}>
+                        <RecipeTypeList recipeTypes={state.data || []} onDelete={(id => handleDelete(id))}/>
+                    </When>
+                </Choose>
+            </Paper>
         </Grid>
     </Grid>
 }

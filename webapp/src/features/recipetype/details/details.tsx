@@ -1,6 +1,6 @@
 import React, {useContext, useRef, useState} from "react"
 import PropTypes from "prop-types"
-import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
+import {useAsync} from "react-async"
 import Button from "@material-ui/core/Button"
 import Delete from "@material-ui/icons/Delete"
 import Edit from "@material-ui/icons/Edit"
@@ -17,6 +17,7 @@ import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useSnackbar} from "notistack"
 import {ApiHandlerContext} from "../../../services/api-handler"
+import {Choose, When} from "../../../components/flow-control/choose"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -29,7 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
     const [showModal, setShowModal] = useState<boolean>(false)
-
     const history = useHistory()
     const classes = useStyles()
     const {enqueueSnackbar} = useSnackbar()
@@ -48,16 +48,15 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
 
-    return <>
-        <IfPending state={state}>
+    return <Choose>
+        <When condition={state.isLoading}>
             <span>Loading...</span>
-        </IfPending>
-        <IfRejected state={state}>
-            {(error) => <span>Error: {error.message}</span>}
-        </IfRejected>
-        <IfFulfilled state={state}>
-            {(data) => (
-                <Grid container spacing={3}>
+        </When>
+        <When condition={state.isRejected}>
+            <span>Error: {state.error?.message}</span>
+        </When>
+        <When condition={state.isFulfilled}>
+            <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h4">Recipe type details</Typography>
                     </Grid>
@@ -66,17 +65,17 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                             <Grid container component="dl" spacing={2}>
                                 <Grid item xs={12}>
                                     <Typography component="dt" variant="h6">Id:</Typography>
-                                    <Typography component='dd' variant='body2'>{data.id}</Typography>
+                                    <Typography component='dd' variant='body2'>{state.data?.id}</Typography>
                                     <Typography component="dt" variant="h6">Name:</Typography>
-                                    <Typography component='dd' variant='body2'>{data.name}</Typography>
+                                    <Typography component='dd' variant='body2'>{state.data?.name}</Typography>
                                 </Grid>
                             </Grid>
                             <ButtonGroup>
-                                <Button aria-label={`Edit recipe type with id ${data.id}`}
-                                        onClick={() => onEdit(data.id)}>
+                                <Button aria-label={`Edit recipe type with id ${state.data?.id}`}
+                                        onClick={() => onEdit(Number(state.data?.id))}>
                                     <Edit/>
                                 </Button>
-                                <Button aria-label={`Delete recipe type with id ${data.id}`}
+                                <Button aria-label={`Delete recipe type with id ${state.data?.id}`}
                                         onClick={() => setShowModal(true)}>
                                     <Delete/>
                                 </Button>
@@ -88,14 +87,13 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                                           content="Are you sure you want to delete this recipe type?"
                                           dismiss={{
                                               text: "Delete",
-                                              onDismiss: () => handleDelete(data.id)
+                                              onDismiss: () => handleDelete(Number(state.data?.id))
                                           }}
                                           onClose={() => setShowModal(false)}/>
                     </If>
                 </Grid>
-            )}
-        </IfFulfilled>
-    </>
+        </When>
+    </Choose>
 }
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired

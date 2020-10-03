@@ -45,6 +45,7 @@ describe("Recipe type list page", () => {
             expect(screen.getByLabelText("Create new recipe type")).toBeInTheDocument()
             expect(screen.getByText(/^mock recipe type list$/i)).toBeInTheDocument()
         })
+        screen.debug()
     })
 
     it("shows the error", async () => {

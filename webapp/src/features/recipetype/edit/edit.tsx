@@ -1,7 +1,7 @@
 import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
 import * as yup from "yup"
-import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
+import {useAsync} from "react-async"
 import {Field, Formik, FormikValues, Form} from "formik"
 import {useHistory} from "react-router-dom"
 import {useSnackbar} from "notistack"
@@ -15,6 +15,7 @@ import {Theme} from "@material-ui/core/styles/createMuiTheme"
 import createStyles from "@material-ui/core/styles/createStyles"
 import Paper from "@material-ui/core/Paper"
 import {ApiHandlerContext} from "../../../services/api-handler"
+import {Choose, When} from "../../../components/flow-control/choose"
 
 const schema = yup.object({
     name: yup.string().required("Name is required")
@@ -57,46 +58,47 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     }
 
     return <Grid container spacing={3}>
-        <IfPending state={state}>
-            <span>Loading...</span>
-        </IfPending>
-        <IfRejected state={state}>
-            {(error) => <span>Error: {error.message}</span>}
-        </IfRejected>
-        <IfFulfilled state={state}>
-            {(data) => <>
-                <Grid item xs={12}>
-                    <Typography variant="h4">Edit a recipe type</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Paper className={classes.paper}>
-                        <Formik
-                            initialValues={{...data}}
-                            validateOnBlur={true}
-                            onSubmit={handleOnSubmit}
-                            validationSchema={schema}>
-                            <Form>
-                                <Grid container spacing={3}/>
-                                <Grid item xs={12}>
-                                    <Field
-                                        component={TextField}
-                                        id="name"
-                                        label="Name"
-                                        name="name"/>
-                                </Grid>
-                                <Grid item className={classes.buttonArea}>
-                                    <Button color="primary" variant="contained" aria-label="Edit recipe type"
-                                            type="submit">Edit</Button>
-                                    <Button variant="contained" aria-label="Reset form"
-                                            type="reset">Reset</Button>
-                                </Grid>
-                            </Form>
-                        </Formik>
-                    </Paper>
-                </Grid>
-            </>
-            }
-        </IfFulfilled>
+        <Choose>
+            <When condition={state.isPending}>
+                <span>Loading...</span>
+            </When>
+            <When condition={state.isRejected}>
+                <span>Error: {state.error?.message}</span>
+            </When>
+            <When condition={state.isFulfilled}>
+                <>
+                    <Grid item xs={12}>
+                        <Typography variant="h4">Edit a recipe type</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Paper className={classes.paper}>
+                            <Formik
+                                initialValues={{...state.data}}
+                                validateOnBlur={true}
+                                onSubmit={handleOnSubmit}
+                                validationSchema={schema}>
+                                <Form>
+                                    <Grid container spacing={3}/>
+                                    <Grid item xs={12}>
+                                        <Field
+                                            component={TextField}
+                                            id="name"
+                                            label="Name"
+                                            name="name"/>
+                                    </Grid>
+                                    <Grid item className={classes.buttonArea}>
+                                        <Button color="primary" variant="contained" aria-label="Edit recipe type"
+                                                type="submit">Edit</Button>
+                                        <Button variant="contained" aria-label="Reset form"
+                                                type="reset">Reset</Button>
+                                    </Grid>
+                                </Form>
+                            </Formik>
+                        </Paper>
+                    </Grid>
+                </>
+            </When>
+        </Choose>
     </Grid>
 }
 EditRecipeType.propTypes = {
