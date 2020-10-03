@@ -1,7 +1,8 @@
-import {fireEvent, render, screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import React from "react"
 import TablePaginationActions from "../../../src/components/table-pagination-actions/table-pagination-actions"
 import "jest-chain"
+import userEvent from "@testing-library/user-event"
 
 describe("Table pagination actions", () => {
     it("renders the basic elements", () => {
@@ -30,8 +31,7 @@ describe("Table pagination actions", () => {
             rowsPerPage={10}
             onChangePage={onChangePageMock}/>)
 
-        const button = screen.getByLabelText(label)
-        fireEvent.click(button)
+        userEvent.click(screen.getByLabelText(label))
 
         expect(onChangePageMock).toHaveBeenCalledWith(expect.anything(), expectedPage)
     })

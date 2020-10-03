@@ -1,8 +1,9 @@
 import React from "react"
-import {screen, render, fireEvent, waitFor} from "@testing-library/react"
+import {screen, render} from "@testing-library/react"
 import UserArea from "../../../src/components/layout/user-area"
 import {renderWithRoutes} from "../../render"
 import {AuthContext, AuthInfo} from "../../../src/services/credentials-service"
+import userEvent from "@testing-library/user-event"
 
 describe("User area component", () => {
     const wrapUserAreaInContext = (authInfo: AuthInfo | undefined = undefined) =>
@@ -23,11 +24,9 @@ describe("User area component", () => {
                 "/login": () => <>I'm the login page</>,
                 "/": () => wrapUserAreaInContext()
             }, "/")
-            fireEvent.click(screen.getByLabelText(/login/i, {selector: "button"}))
+            userEvent.click(screen.getByLabelText(/login/i, {selector: "button"}))
 
-            await waitFor(() => {
-                expect(screen.getByText(/i'm the login page/i)).toBeInTheDocument()
-            })
+            expect(await screen.findByText(/i'm the login page/i)).toBeInTheDocument()
         })
     })
 
@@ -50,11 +49,9 @@ describe("User area component", () => {
                 "/logout": () => <>I'm the logout page</>,
                 "/": () => wrapUserAreaInContext(loggedUserAuthInfo)
             }, "/")
-            fireEvent.click(screen.getByLabelText(/logout John Doe/i, {selector: "button"}))
+            userEvent.click(screen.getByLabelText(/logout John Doe/i, {selector: "button"}))
 
-            await waitFor(() => {
-                expect(screen.getByText(/i'm the logout page/i)).toBeInTheDocument()
-            })
+            expect(await screen.findByText(/i'm the logout page/i)).toBeInTheDocument()
         })
     })
 })

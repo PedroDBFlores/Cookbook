@@ -1,5 +1,5 @@
 import React from "react"
-import {fireEvent, render, screen, waitFor} from "@testing-library/react"
+import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchList from "../../../../src/features/recipe/search/search-list"
 import {generateRecipeDetails} from "../../../helpers/generators/dto-generators"
 import {renderWithRoutes} from "../../../render"
@@ -111,7 +111,7 @@ describe("Recipe search list component", () => {
                     onDelete={jest.fn()}
                     onPageChange={onPageChangeMock}/>)
 
-                buttonLabels.forEach(label => fireEvent.click(screen.getByLabelText(label)))
+                buttonLabels.forEach(label => userEvent.click(screen.getByLabelText(label)))
 
                 expect(onPageChangeMock).toHaveBeenLastCalledWith(expectedPageNumber)
             })
@@ -156,11 +156,10 @@ describe("Recipe search list component", () => {
                                                    onPageChange={jest.fn()}/>,
                 [`/recipe/${firstRecipe.id}`]: () => <div>I'm the recipe details page</div>
             }, "/recipe")
-            const detailsButton = screen.getByLabelText(`Recipe details for id ${firstRecipe.id}`, {
-                selector: "button"
-            })
 
-            fireEvent.click(detailsButton)
+            userEvent.click(screen.getByLabelText(`Recipe details for id ${firstRecipe.id}`, {
+                selector: "button"
+            }))
 
             expect(await screen.findByText(/i'm the recipe details page/i)).toBeInTheDocument()
         })
@@ -172,11 +171,10 @@ describe("Recipe search list component", () => {
                                                    onPageChange={jest.fn()}/>,
                 [`/recipe/${firstRecipe.id}/edit`]: () => <div>I'm the recipe edit page</div>
             }, "/recipe")
-            const editButton = screen.getByLabelText(`Edit Recipe with id ${firstRecipe.id}`, {
-                selector: "button"
-            })
 
-            fireEvent.click(editButton)
+            userEvent.click(screen.getByLabelText(`Edit Recipe with id ${firstRecipe.id}`, {
+                selector: "button"
+            }))
 
             expect(await screen.findByText(/i'm the recipe edit page/i)).toBeInTheDocument()
         })
@@ -185,11 +183,10 @@ describe("Recipe search list component", () => {
             const onDeleteMock = jest.fn()
             const firstRecipe = recipes[0]
             render(<RecipeSearchList searchResult={searchResult} onDelete={onDeleteMock} onPageChange={jest.fn()}/>)
-            const deleteButton = screen.getByLabelText(`Delete Recipe with id ${firstRecipe.id}`, {
-                selector: "button"
-            })
 
-            userEvent.click(deleteButton)
+            userEvent.click(screen.getByLabelText(`Delete Recipe with id ${firstRecipe.id}`, {
+                selector: "button"
+            }))
 
             await waitFor(() => {
                 expect(onDeleteMock).toHaveBeenCalledWith(firstRecipe.id)

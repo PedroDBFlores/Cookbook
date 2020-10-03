@@ -1,8 +1,9 @@
 import React from "react"
 import {Formik, Form} from "formik"
-import {render, screen, fireEvent, waitFor} from "@testing-library/react"
+import {render, screen, waitFor} from "@testing-library/react"
 import FormikSelector from "../../../src/components/formik-selector/formik-selector"
 import Button from "@material-ui/core/Button"
+import userEvent from "@testing-library/user-event"
 
 describe("Formik selector component", () => {
     const getFormWrappedSelector = (
@@ -53,9 +54,8 @@ describe("Formik selector component", () => {
         const onSubmitMock = jest.fn()
         render(getFormWrappedSelector({formValue: 1}, onSubmitMock))
 
-        fireEvent.submit(screen.getByText("Submit"))
+        userEvent.click(screen.getByText("Submit"))
 
-        await waitFor(() =>
-            expect(onSubmitMock).toHaveBeenCalledWith({formValue: 1}))
+        await waitFor(() => expect(onSubmitMock).toHaveBeenCalledWith({formValue: 1}))
     })
 })

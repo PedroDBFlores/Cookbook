@@ -1,15 +1,15 @@
 import React from "react"
-import {fireEvent, screen, waitFor, within} from "@testing-library/react"
+import {screen, within} from "@testing-library/react"
 import CreateRecipe from "../../../../src/features/recipe/create/create"
 import createRecipeService from "../../../../src/services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../../src/services/recipe-type-service"
 import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../render"
+import userEvent from "@testing-library/user-event"
 
 jest.mock("../../../../src/services/recipe-type-service")
 jest.mock("../../../../src/services/recipe-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeof createRecipeService>
-
 
 describe("Create recipe component", () => {
     const createRecipeMock = jest.fn()
@@ -38,20 +38,22 @@ describe("Create recipe component", () => {
 
     it("renders the initial form", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
+
         renderWrappedInCommonContexts(<CreateRecipe/>, apiHandlerMock)
 
         expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/description/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/recipe type parameter/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/ingredients/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/preparing steps/i)).toBeInTheDocument()
-        const submitButton = screen.getByLabelText(/create recipe/i)
-        expect(submitButton).toHaveAttribute("type", "submit")
+        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
 
-        await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
+        expect(await screen.findByLabelText(/^name$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^description$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^recipe type parameter$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^ingredients$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^preparing steps$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^create recipe$/i)).toHaveAttribute("type", "submit")
+
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+        expect(getRecipeTypesMock).toHaveBeenCalled()
     })
 
     describe("Form validation", () => {
@@ -61,15 +63,10 @@ describe("Create recipe component", () => {
         ])("it displays an error when '%s'", async (message, name) => {
             renderWrappedInCommonContexts(<CreateRecipe/>)
 
-            const nameInput = screen.getByLabelText("Name")
-            fireEvent.change(nameInput, {target: {value: name}})
+            await userEvent.paste(await screen.findByLabelText(/^name$/i), name)
+            userEvent.click(screen.getByLabelText(/create recipe/i))
 
-            const submitButton = screen.getByLabelText(/create recipe/i)
-            fireEvent.submit(submitButton)
-
-            await waitFor(() => {
-                expect(screen.getByText(message)).toBeInTheDocument()
-            })
+            expect(await screen.findByText(message)).toBeInTheDocument()
         })
 
         test.each([
@@ -78,26 +75,18 @@ describe("Create recipe component", () => {
         ])("it displays an error when '%s'", async (message, description) => {
             renderWrappedInCommonContexts(<CreateRecipe/>)
 
-            const descriptionInput = screen.getByLabelText("Description")
-            fireEvent.change(descriptionInput, {target: {value: description}})
+            await userEvent.paste(await screen.findByLabelText(/^description$/i), description)
+            userEvent.click(screen.getByLabelText(/create recipe/i))
 
-            const submitButton = screen.getByLabelText(/create recipe/i)
-            fireEvent.submit(submitButton)
-
-            await waitFor(() => {
-                expect(screen.getByText(message)).toBeInTheDocument()
-            })
+            expect(await screen.findByText(message)).toBeInTheDocument()
         })
 
         it("displays an error if no recipe type is selected", async () => {
             renderWrappedInCommonContexts(<CreateRecipe/>)
 
-            await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
+            userEvent.click(await screen.findByLabelText(/create recipe/i))
 
-            const submitButton = screen.getByLabelText(/create recipe/i)
-            fireEvent.submit(submitButton)
-
-            await waitFor(() => expect(screen.getByText("Recipe type is required")))
+            expect(await screen.findByText("Recipe type is required")).toBeInTheDocument()
         })
 
         test.each([
@@ -106,15 +95,10 @@ describe("Create recipe component", () => {
         ])("it displays an error when '%s'", async (message, ingredients) => {
             renderWrappedInCommonContexts(<CreateRecipe/>)
 
-            const ingredientsInput = screen.getByLabelText("Ingredients")
-            fireEvent.change(ingredientsInput, {target: {value: ingredients}})
+            await userEvent.paste(await screen.findByLabelText(/^ingredients$/i), ingredients)
+            userEvent.click(screen.getByLabelText(/create recipe/i))
 
-            const submitButton = screen.getByLabelText(/create recipe/i)
-            fireEvent.submit(submitButton)
-
-            await waitFor(() => {
-                expect(screen.getByText(message)).toBeInTheDocument()
-            })
+            expect(await screen.findByText(message)).toBeInTheDocument()
         })
 
         test.each([
@@ -123,61 +107,41 @@ describe("Create recipe component", () => {
         ])("it displays an error when '%s'", async (message, preparingSteps) => {
             renderWrappedInCommonContexts(<CreateRecipe/>)
 
-            const preparingStepsInput = screen.getByLabelText("Preparing steps")
-            fireEvent.change(preparingStepsInput, {target: {value: preparingSteps}})
+            await userEvent.paste(await screen.findByLabelText(/^preparing steps$/i), preparingSteps)
+            userEvent.click(screen.getByLabelText(/create recipe/i))
 
-            const submitButton = screen.getByLabelText(/create recipe/i)
-            fireEvent.submit(submitButton)
-
-            await waitFor(() => {
-                expect(screen.getByText(message)).toBeInTheDocument()
-            })
+            expect(await screen.findByText(message)).toBeInTheDocument()
         })
     })
 
     it("calls the 'createRecipe' function on submit", async () => {
         createRecipeMock.mockResolvedValueOnce({id: 1})
-
         renderWithRoutes({
             "/recipe/new": () => <CreateRecipe/>,
             "/recipe/1": () => <div>I'm the recipe details page for id 1</div>
         }, "/recipe/new")
 
-        await waitFor(() => expect(getRecipeTypesMock).toHaveBeenCalled())
+        await userEvent.type(await screen.findByLabelText(/^name$/i), "name")
+        await userEvent.type(await screen.findByLabelText(/^description$/i), "description")
 
-        const nameInput = screen.getByLabelText("Name")
-        fireEvent.change(nameInput, {target: {value: "name"}})
-        const descriptionInput = screen.getByLabelText("Description")
-        fireEvent.change(descriptionInput, {target: {value: "description"}})
-
-        const selectElement = screen.getByText("Recipe type")
-            .closest("div")
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        fireEvent.mouseDown(within(selectElement).getByRole("button"))
-        fireEvent.click(screen.getByText("ABC"))
+        userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
+        userEvent.click(screen.getByText("ABC"))
 
-        const ingredientsInput = screen.getByLabelText("Ingredients")
-        fireEvent.change(ingredientsInput, {target: {value: "ingredients"}})
-        const preparingStepsInput = screen.getByLabelText("Preparing steps")
-        fireEvent.change(preparingStepsInput, {
-            target: {value: "preparing steps"}
-        })
+        await userEvent.type(await screen.findByLabelText(/^ingredients$/i), "ingredients")
+        await userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
 
-        const submitButton = screen.getByLabelText(/create recipe/i)
-        fireEvent.submit(submitButton)
+        userEvent.click(screen.getByLabelText(/create recipe/i))
 
-        await waitFor(() => {
-            expect(createRecipeMock).toHaveBeenCalledWith({
-                name: "name",
-                description: "description",
-                recipeTypeId: 1,
-                userId: 666,
-                ingredients: "ingredients",
-                preparingSteps: "preparing steps"
-            })
-            expect(screen.getByText(/^recipe 'Name' created successfully!$/i)).toBeInTheDocument()
-            expect(screen.getByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^recipe 'Name' created successfully!$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
+        expect(createRecipeMock).toHaveBeenCalledWith({
+            name: "name",
+            description: "description",
+            recipeTypeId: 1,
+            userId: 666,
+            ingredients: "ingredients",
+            preparingSteps: "preparing steps"
         })
     })
 })

@@ -1,8 +1,9 @@
 import React from "react"
-import {screen, fireEvent, waitFor} from "@testing-library/react"
+import {screen} from "@testing-library/react"
 import CreateRecipeType from "../../../../src/features/recipetype/create/create"
 import {renderWrappedInCommonContexts, renderWithRoutes} from "../../../render"
 import createRecipeTypeService from "../../../../src/services/recipe-type-service"
+import userEvent from "@testing-library/user-event"
 
 jest.mock("../../../../src/services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
@@ -39,25 +40,18 @@ describe("Create recipe type", () => {
         it("displays an error when the name is empty on submitting", async () => {
             renderWrappedInCommonContexts(<CreateRecipeType/>)
 
-            const submitButton = screen.getByLabelText(/create recipe type/i)
-            fireEvent.submit(submitButton)
+            userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-            await waitFor(() =>
-                expect(screen.getByText(/name is required/i)).toBeInTheDocument()
-            )
+            expect(await screen.findByText(/name is required/i)).toBeInTheDocument()
         })
 
         it("displays an error when the name exceeds 64 characters", async () => {
             renderWrappedInCommonContexts(<CreateRecipeType/>)
 
-            const nameInput = screen.getByLabelText(/name/i)
-            fireEvent.change(nameInput, {target: {value: "a".repeat(65)}})
-            const submitButton = screen.getByLabelText(/create recipe type/i)
-            fireEvent.submit(submitButton)
+            await userEvent.type(screen.getByLabelText(/^name$/i), "a".repeat(65))
+            userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-            await waitFor(() =>
-                expect(screen.getByText(/name exceeds the character limit/i)).toBeInTheDocument()
-            )
+            expect(await screen.findByText(/name exceeds the character limit/i)).toBeInTheDocument()
         })
     })
 
@@ -68,30 +62,22 @@ describe("Create recipe type", () => {
             "/recipetype/1": () => <div>I'm the recipe type details page for id 1</div>
         }, "/recipetype/new")
 
-        const nameInput = screen.getByLabelText(/name/i)
-        fireEvent.change(nameInput, {target: {value: "Fish"}})
-        const submitButton = screen.getByLabelText(/create recipe type/i)
-        fireEvent.submit(submitButton)
+        await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
+        userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-        await waitFor(() => {
-            expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
-            expect(screen.getByText(/^recipe type 'Fish' created successfully!$/i)).toBeInTheDocument()
-            expect(screen.getByText(/i'm the recipe type details page for id 1/i)).toBeInTheDocument()
-        })
+        expect(await screen.findByText(/^recipe type 'Fish' created successfully!$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/i'm the recipe type details page for id 1/i)).toBeInTheDocument()
+        expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
     })
 
     it("shows an error message if the create API call fails", async () => {
         createRecipeTypeMock.mockRejectedValueOnce({message: "Duplicate recipe type"})
         renderWrappedInCommonContexts(<CreateRecipeType/>)
 
-        const nameInput = screen.getByLabelText(/name/i)
-        fireEvent.change(nameInput, {target: {value: "Fish"}})
-        const submitButton = screen.getByLabelText(/create recipe type/i)
-        fireEvent.submit(submitButton)
+        await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
+        userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-        await waitFor(() => {
-            expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
-            expect(screen.getByText(/an error occurred while creating the recipe type: duplicate recipe type/i)).toBeInTheDocument()
-        })
+        expect(await screen.findByText(/an error occurred while creating the recipe type: duplicate recipe type/i)).toBeInTheDocument()
+        expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
     })
 })

@@ -1,8 +1,9 @@
 import React from "react"
 import ApplicationToolbar from "../../../src/components/layout/application-toolbar"
 import {renderWithRouter} from "../../render"
-import {screen, fireEvent} from "@testing-library/react"
+import {screen} from "@testing-library/react"
 import {random} from "faker"
+import userEvent from "@testing-library/user-event"
 
 describe("Application Toolbar", () => {
     describe("Layout", () => {
@@ -19,8 +20,7 @@ describe("Application Toolbar", () => {
             renderWithRouter(<ApplicationToolbar title="Title" onMenuClick={menuClickFn} drawerWidth={0}
                                                  isDrawerOpen={false}/>)
 
-            const menuButton = screen.getByLabelText("menu")
-            fireEvent.click(menuButton)
+            userEvent.click(screen.getByLabelText("menu"))
 
             expect(menuClickFn).toHaveBeenCalled()
         })

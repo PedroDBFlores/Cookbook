@@ -1,10 +1,11 @@
 import React, {useEffect} from "react"
-import {screen, waitFor, fireEvent} from "@testing-library/react"
+import {screen} from "@testing-library/react"
 import RecipeTypeListPage from "../../../../src/features/recipetype/list/list-page"
 import RecipeTypeList from "../../../../src/features/recipetype/list/list"
 import {generateRecipeType} from "../../../helpers/generators/dto-generators"
 import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../render"
 import createRecipeTypeService from "../../../../src/services/recipe-type-service"
+import userEvent from "@testing-library/user-event"
 
 jest.mock("../../../../src/services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
@@ -35,16 +36,15 @@ describe("Recipe type list page", () => {
     it("has the required content and gets the recipe types", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
         getAllRecipeTypesMock.mockResolvedValueOnce([])
+
         renderWrappedInCommonContexts(<RecipeTypeListPage/>, apiHandlerMock)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
-        await waitFor(() => {
-            expect(screen.getByLabelText("Create new recipe type")).toBeInTheDocument()
-            expect(screen.getByText(/^mock recipe type list$/i)).toBeInTheDocument()
-        })
+        expect(await screen.findByLabelText("Create new recipe type")).toBeInTheDocument()
+        expect(await screen.findByText(/^mock recipe type list$/i)).toBeInTheDocument()
     })
 
     it("shows the error", async () => {
@@ -66,14 +66,13 @@ describe("Recipe type list page", () => {
             }, [])
             return <></>
         })
+
         renderWrappedInCommonContexts(<RecipeTypeListPage/>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
-        await waitFor(() => {
-            expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
-            expect(screen.getByText(`Recipe type ${expectedRecipeType.id} was deleted`)).toBeInTheDocument()
-        })
+        expect(await screen.findByText(`Recipe type ${expectedRecipeType.id} was deleted`)).toBeInTheDocument()
+        expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
     })
 
     it("navigates to the recipe type create page on click", async () => {
@@ -82,11 +81,9 @@ describe("Recipe type list page", () => {
             "/recipetype": () => <RecipeTypeListPage/>,
             "/recipetype/new": () => <>I'm the recipe type create page</>
         }, "/recipetype")
-        await waitFor(() => expect(screen.getByLabelText(/create new recipe type/i)).toBeInTheDocument())
 
-        const createButton = screen.getByLabelText(/create new recipe type/i)
-        fireEvent.click(createButton)
+        userEvent.click(await screen.findByLabelText(/create new recipe type/i))
 
-        await waitFor(() => expect(screen.getByText(/I'm the recipe type create page/i)).toBeInTheDocument())
+        expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
     })
 })

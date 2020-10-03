@@ -1,6 +1,7 @@
 import React from "react"
-import {render, screen, fireEvent, waitFor, within} from "@testing-library/react"
+import {render, screen, waitFor, within} from "@testing-library/react"
 import RecipeSearchForm from "../../../../src/features/recipe/search/search-form"
+import userEvent from "@testing-library/user-event"
 
 describe("Recipe search form", () => {
     it("renders the layout", () => {
@@ -10,15 +11,14 @@ describe("Recipe search form", () => {
         expect(screen.getByLabelText(/recipe name parameter/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/recipe description parameter/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/recipe type parameter/i)).toBeInTheDocument()
-        const submitButton = screen.getByLabelText(/search recipe with parameters/i)
-        expect(submitButton).toHaveAttribute("type", "submit")
+        expect(screen.getByLabelText(/search recipe with parameters/i)).toHaveAttribute("type", "submit")
     })
 
     it("allows a search to be performed with no parameters provided", async () => {
         const onSearchMock = jest.fn()
         render(<RecipeSearchForm onSearch={onSearchMock} recipeTypes={[]}/>)
 
-        fireEvent.submit(screen.getByLabelText(/search recipe with parameters/i))
+        userEvent.click(screen.getByLabelText(/search recipe with parameters/i))
 
         await waitFor(() => {
             expect(onSearchMock).toHaveBeenCalledWith({
@@ -52,22 +52,16 @@ describe("Recipe search form", () => {
             {id: 2, name: "new recipe type"}
         ]}/>)
 
-        fireEvent.change(screen.getByLabelText("Name"),
-            {target: {value: name}})
-        fireEvent.change(screen.getByLabelText("Description"),
-            {target: {value: description}})
+        await userEvent.type(screen.getByLabelText(/^name$/i), name)
+        await userEvent.type(screen.getByLabelText(/^description$/i), description)
 
-        if(recipeTypeText) {
-            const selectElement = screen.getByText("Recipe type")
-                .closest("div")
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        if (recipeTypeText) {
             // @ts-ignore
-            fireEvent.mouseDown(within(selectElement).getByRole("button"))
-            fireEvent.click(screen.getByText(recipeTypeText))
+            userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
+            userEvent.click(screen.getByText(recipeTypeText))
         }
 
-        fireEvent.submit(screen.getByLabelText(/search recipe with parameters/i))
+        userEvent.click(screen.getByLabelText(/search recipe with parameters/i))
 
         await waitFor(() => {
             expect(onSearchMock).toHaveBeenCalledWith({

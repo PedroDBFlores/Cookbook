@@ -11,6 +11,5 @@ describe("Application layout", () => {
 
         expect(screen.getByText("Cookbook")).toBeInTheDocument()
         expect(screen.getByText("I'm blinded by the light")).toBeInTheDocument()
-
     })
 })

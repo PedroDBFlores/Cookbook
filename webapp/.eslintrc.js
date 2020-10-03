@@ -5,7 +5,8 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:jest/recommended",
-    "plugin:testing-library/recommended"
+    "plugin:testing-library/react",
+    "plugin:jest-dom/recommended"
   ],
   "env": {
     "browser": true,
@@ -48,13 +49,16 @@ module.exports = {
         requireLast: false,
       },
     }],
-    "@typescript-eslint/ban-ts-comment": 0
+    "@typescript-eslint/ban-ts-comment": 0,
+    "testing-library/no-debug": "error",
+    "testing-library/prefer-find-by": "warn"
   },
   "overrides": [
     {
       "files": ["*.test.tsx", "*.test.ts"],
       "rules": {
-        "react/display-name": "off"
+        "react/display-name": "off",
+        "no-restricted-globals": ["error", "console"],
       }
     }
   ]

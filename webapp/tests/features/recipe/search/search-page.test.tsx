@@ -1,5 +1,5 @@
 import React, {useEffect} from "react"
-import {fireEvent, screen, waitFor} from "@testing-library/react"
+import {screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "../../../../src/features/recipe/search/search-page"
 import RecipeSearchForm from "../../../../src/features/recipe/search/search-form"
 import {generateRecipeDetails} from "../../../helpers/generators/dto-generators"
@@ -8,6 +8,7 @@ import {SearchResult} from "../../../../src/model"
 import createRecipeService, {RecipeDetails} from "../../../../src/services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../../src/services/recipe-type-service"
 import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../render"
+import userEvent from "@testing-library/user-event"
 
 jest.mock("../../../../src/services/recipe-type-service")
 jest.mock("../../../../src/services/recipe-service")
@@ -87,16 +88,15 @@ describe("Search recipe page component", () => {
 
     it("renders the initial component", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
+
         renderWrappedInCommonContexts(<RecipeSearchPage/>, apiHandlerMock)
 
         expect(screen.getByText(/search recipes/i)).toBeInTheDocument()
         expect(screen.getByText(/no matching recipes/i)).toBeInTheDocument()
-        await waitFor(() => {
-            expect(getAllRecipeTypesMock).toHaveBeenCalled()
-            expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-            expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-            expect(screen.getByText("Die erste")).toBeInTheDocument()
-        })
+        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+        expect(getAllRecipeTypesMock).toHaveBeenCalled()
+        expect(await screen.findByText("Die erste")).toBeInTheDocument()
     })
 
     test.each([
@@ -114,7 +114,7 @@ describe("Search recipe page component", () => {
                 return <></>
             })
 
-            renderWrappedInCommonContexts(<RecipeSearchPage />)
+            renderWrappedInCommonContexts(<RecipeSearchPage/>)
 
             await waitFor(() => {
                 expect(searchRecipesMock).toHaveBeenCalledWith({
@@ -142,7 +142,7 @@ describe("Search recipe page component", () => {
             return <></>
         })
 
-        renderWrappedInCommonContexts(<RecipeSearchPage />)
+        renderWrappedInCommonContexts(<RecipeSearchPage/>)
 
         await waitFor(() => {
             expect(searchRecipesMock).toHaveBeenNthCalledWith(1, {
@@ -154,7 +154,7 @@ describe("Search recipe page component", () => {
             })
         })
 
-        fireEvent.click(screen.getByText(/change page/i))
+        userEvent.click(screen.getByText(/change page/i))
 
         await waitFor(() => {
             expect(searchRecipesMock).toHaveBeenNthCalledWith(2, {
@@ -170,14 +170,12 @@ describe("Search recipe page component", () => {
     it("navigates to the recipe create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
         renderWithRoutes({
-            "/recipe": () => <RecipeSearchPage />,
+            "/recipe": () => <RecipeSearchPage/>,
             "/recipe/new": () => <>I'm the recipe create page</>
         }, "/recipe")
-        await waitFor(() => expect(screen.getByLabelText(/create new recipe/i)).toBeInTheDocument())
 
-        const createButton = screen.getByLabelText(/create new recipe/i)
-        fireEvent.click(createButton)
+        userEvent.click(await screen.findByLabelText(/create new recipe/i))
 
-        await waitFor(() => expect(screen.getByText(/I'm the recipe create page/i)).toBeInTheDocument())
+        expect(await screen.findByText(/I'm the recipe create page/i)).toBeInTheDocument()
     })
 })

@@ -1,7 +1,8 @@
 import React from "react"
 import Drawer from "../../../src/components/layout/drawer"
 import {renderWithRouter, renderWithRoutes} from "../../render"
-import {screen, fireEvent} from "@testing-library/react"
+import {screen} from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 describe("Drawer", () => {
     it("renders the basic drawer", () => {
@@ -37,8 +38,7 @@ describe("Drawer", () => {
             [expectedRoute]: () => <div>I'm the {itemLabel} page</div>
         })
 
-        const listItem = screen.getByLabelText(itemLabel)
-        fireEvent.click(listItem)
+        userEvent.click(screen.getByLabelText(itemLabel))
 
         expect(screen.getByText(`I'm the ${itemLabel} page`)).toBeInTheDocument()
     })
@@ -47,8 +47,7 @@ describe("Drawer", () => {
         const onCloseMock = jest.fn()
         renderWithRouter(<Drawer isOpen={true} items={[]} onClose={onCloseMock}/>)
 
-        const closeButton = screen.getByLabelText(/close the drawer/i)
-        fireEvent.click(closeButton)
+        userEvent.click(screen.getByLabelText(/close the drawer/i))
 
         expect(onCloseMock).toHaveBeenCalled()
     })

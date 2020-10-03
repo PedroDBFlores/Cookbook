@@ -1,6 +1,7 @@
 import React from "react"
 import BasicModalDialog from "../../../src/components/modal/basic-modal-dialog"
-import {render, screen, fireEvent} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 describe("Basic modal dialog", () => {
     it("renders the title and content", () => {
@@ -18,9 +19,8 @@ describe("Basic modal dialog", () => {
             text: "OK",
             onDismiss: dismissMock
         }} onClose={jest.fn()} />)
-        const dismissButton = screen.getByLabelText(/dismiss modal/i)
 
-        fireEvent.click(dismissButton)
+        userEvent.click(screen.getByLabelText(/dismiss modal/i))
 
         expect(dismissMock).toHaveBeenCalled()
     })
@@ -34,9 +34,8 @@ describe("Basic modal dialog", () => {
                                  }}
                                  onClose={closeFn}
         />)
-        const closeButton = screen.getByLabelText(/cancel modal/i)
 
-        fireEvent.click(closeButton)
+        userEvent.click(screen.getByLabelText(/cancel modal/i))
 
         expect(closeFn).toHaveBeenCalled()
     })

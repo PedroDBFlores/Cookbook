@@ -9,7 +9,7 @@ import FormHelperText from "@material-ui/core/FormHelperText"
 import If from "../flow-control/if"
 
 interface FormikSelectorProps {
-    options: Array<{ id: number; name: string }>
+    options?: Array<{ id: number; name: string }>
     label: string
     formName: string
     ariaLabel?: string
@@ -18,7 +18,7 @@ interface FormikSelectorProps {
 }
 
 const FormikSelector: React.FC<FormikSelectorProps> = ({
-                                                           options,
+                                                           options = [],
                                                            label,
                                                            formName,
                                                            ariaLabel,
@@ -48,7 +48,7 @@ const FormikSelector: React.FC<FormikSelectorProps> = ({
     </FormControl>
 }
 FormikSelector.propTypes = {
-    options: PropTypes.array.isRequired,
+    options: PropTypes.array,
     label: PropTypes.string.isRequired,
     formName: PropTypes.string.isRequired,
     ariaLabel: PropTypes.string,
