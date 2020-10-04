@@ -22,12 +22,17 @@ import {RecipeDetails} from "../../../services/recipe-service"
 interface RecipeSearchListProps {
     searchResult: SearchResult<RecipeDetails>
     onDelete: (id: number) => void
+    onNumberOfRowsChange: (rowsPerPage: number) => void
     onPageChange: (page: number) => void
 }
 
 const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
-                                                               searchResult, onDelete, onPageChange
+                                                               searchResult,
+                                                               onDelete,
+                                                               onNumberOfRowsChange,
+                                                               onPageChange
                                                            }) => {
+    const [rowsPerPage, setRowsPerPage] = useState<number>(10)
     const [page, setPage] = useState<number>(0)
     const history = useHistory()
 
@@ -37,6 +42,11 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
     const handleOnChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
         setPage(page)
         onPageChange(page)
+    }
+
+    const handleOnRowsPerPageChange = (rowsPerPage: number) => {
+        setRowsPerPage(rowsPerPage)
+        onNumberOfRowsChange(rowsPerPage)
     }
 
     return <TableContainer component={Paper}>
@@ -87,7 +97,7 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                 <TableRow>
                     <TablePagination
                         count={searchResult.count}
-                        rowsPerPage={10}
+                        rowsPerPage={rowsPerPage}
                         page={page}
                         colSpan={5}
                         rowsPerPageOptions={[10, 20, 50]}
@@ -96,6 +106,7 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                             native: true,
                         }}
                         onChangePage={handleOnChangePage}
+                        onChangeRowsPerPage={event => handleOnRowsPerPageChange(Number(event.target.value))}
                         ActionsComponent={TablePaginationActions}
                     />
                 </TableRow>
@@ -109,6 +120,7 @@ RecipeSearchList.propTypes = {
         numberOfPages: PropTypes.number.isRequired,
         results: PropTypes.array.isRequired
     }).isRequired,
+    onNumberOfRowsChange: PropTypes.func.isRequired,
     onPageChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired
 }

@@ -28,6 +28,13 @@ const RecipeSearchPage: React.FC = () => {
         description: undefined,
         recipeTypeId: 0
     })
+    const [pageParams, setPageParams] = useState<{
+        pageNumber: number
+        itemsPerPage: number
+    }>({
+        pageNumber: 0,
+        itemsPerPage: 10
+    })
     const [recipes, setRecipes] = useState<SearchResult<RecipeDetails>>({
         count: 0,
         numberOfPages: 0,
@@ -40,30 +47,27 @@ const RecipeSearchPage: React.FC = () => {
     const {search, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
 
-    const handleOnFormSearch = ({name, description, recipeTypeId}: RecipeSearchFormData) => {
-        setFormData({name, description, recipeTypeId})
-        search({
-            name,
-            description,
-            recipeTypeId: recipeTypeId > 0 ? recipeTypeId : undefined,
-            pageNumber: 0,
-            itemsPerPage: 10
-        }).then(setRecipes)
-    }
+    const handleOnFormSearch = (recipeSearchFormData: RecipeSearchFormData) =>
+        setFormData(recipeSearchFormData)
 
-    const handleOnPageChange = (page: number) => {
-        search({
-            ...formData,
-            pageNumber: page,
-            itemsPerPage: 10
-        }).then(setRecipes)
-    }
+    const handleOnPageChange = (pageNumber: number) =>
+        setPageParams({...pageParams, pageNumber})
+
+    const handleOnNumberOfRowsChange = (itemsPerPage: number) =>
+        setPageParams({...pageParams, itemsPerPage})
 
     const navigateToCreateRecipe = () => history.push("/recipe/new")
 
     useEffect(() => {
         getAllRecipeTypes().then(setRecipeTypes)
     }, [])
+
+    useEffect(() => {
+        search({
+            ...formData, ...pageParams,
+            recipeTypeId: formData.recipeTypeId > 0 ? formData.recipeTypeId : undefined
+        }).then(setRecipes)
+    }, [formData, pageParams])
 
     return <Grid className={classes.base} container spacing={3}>
         <Grid item xs={11}>
@@ -77,7 +81,9 @@ const RecipeSearchPage: React.FC = () => {
             <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
         </Grid>
         <Grid item xs={12}>
-            <RecipeSearchList searchResult={recipes} onDelete={(id) => deleteRecipe(id)}
+            <RecipeSearchList searchResult={recipes}
+                              onDelete={(id) => deleteRecipe(id)}
+                              onNumberOfRowsChange={handleOnNumberOfRowsChange}
                               onPageChange={handleOnPageChange}/>
         </Grid>
     </Grid>

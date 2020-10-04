@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import ApplicationToolbar from "./application-toolbar"
 import Drawer from "./drawer"
 import List from "@material-ui/icons/List"
+import Restaurant from "@material-ui/icons/Restaurant"
 import Home from "@material-ui/icons/Home"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Container from "@material-ui/core/Container"
@@ -50,7 +51,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
     const drawerItems = [
         {name: "Home", icon: <Home/>, route: "/"},
-        {name: "Recipe Types", icon: <List/>, route: "/recipetype"}
+        {name: "Recipe Types", icon: <List/>, route: "/recipetype"},
+        {name: "Recipes", icon: <Restaurant/>, route: "/recipe"}
     ]
 
     return (

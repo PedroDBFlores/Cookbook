@@ -33,8 +33,9 @@ const recipeSearchFormMock = RecipeSearchForm as jest.MockedFunction<typeof Reci
 jest.mock("../../../../src/features/recipe/search/search-list", () => {
     return {
         __esModule: true,
-        default: jest.fn().mockImplementation(({searchResult, onPageChange}: {
+        default: jest.fn().mockImplementation(({searchResult, onNumberOfRowsChange, onPageChange}: {
                 searchResult: SearchResult<RecipeDetails>
+                onNumberOfRowsChange: (rowsPerPage: number) => void
                 onPageChange: (page: number) => void
             }) =>
                 <>
@@ -45,6 +46,7 @@ jest.mock("../../../../src/features/recipe/search/search-list", () => {
                             <span>No matching recipes</span>
                     }
                     <Button onClick={() => onPageChange(1)}>Change page</Button>
+                    <Button onClick={() => onNumberOfRowsChange(20)}>Change Items per page</Button>
                 </>
         )
     }
@@ -131,7 +133,7 @@ describe("Search recipe page component", () => {
             })
         })
 
-    it("calls the search function and persists the form info even if the pages change", async () => {
+    it("calls the search function and persists the form info even if the numberOfPages or pageNumber changes", async () => {
         recipeSearchFormMock.mockImplementationOnce(({recipeTypes, onSearch}) => {
             useEffect(() => {
                 if (recipeTypes) {
@@ -145,7 +147,7 @@ describe("Search recipe page component", () => {
         renderWrappedInCommonContexts(<RecipeSearchPage/>)
 
         await waitFor(() => {
-            expect(searchRecipesMock).toHaveBeenNthCalledWith(1, {
+            expect(searchRecipesMock).toHaveBeenNthCalledWith(2, {
                 name: "One",
                 description: "Two",
                 recipeTypeId: 1,
@@ -153,16 +155,27 @@ describe("Search recipe page component", () => {
                 itemsPerPage: 10
             })
         })
-
         userEvent.click(screen.getByText(/change page/i))
 
         await waitFor(() => {
-            expect(searchRecipesMock).toHaveBeenNthCalledWith(2, {
+            expect(searchRecipesMock).toHaveBeenNthCalledWith(3, {
                 name: "One",
                 description: "Two",
                 recipeTypeId: 1,
                 pageNumber: 1,
                 itemsPerPage: 10
+            })
+        })
+
+        userEvent.click(screen.getByText("Change Items per page"))
+
+        await waitFor(() => {
+            expect(searchRecipesMock).toHaveBeenNthCalledWith(4, {
+                name: "One",
+                description: "Two",
+                recipeTypeId: 1,
+                pageNumber: 1,
+                itemsPerPage: 20
             })
         })
     })

@@ -58,7 +58,10 @@ const Drawer: React.FC<DrawerProps> = ({isOpen, items, onClose}) => {
     const classes = useStyles()
     const history = useHistory()
 
-    const onItemClick = (item: DrawerItem) => history.push(item.route)
+    const onItemClick = (item: DrawerItem) => {
+        onClose()
+        history.push(item.route)
+    }
 
     return <DrawerMUI open={isOpen} classes={{
         paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),

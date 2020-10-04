@@ -34,7 +34,7 @@ const theme = createMuiTheme({
     },
 })
 
-const App: React.FC<unknown> = () => {
+const App: React.FC = () => {
     const [authInfo, setAuthInfo] = useState<AuthInfo | undefined>(undefined)
     const updateAuthContext = (newAuthInfo: AuthInfo | undefined): void => {
         setAuthInfo(newAuthInfo)
@@ -65,8 +65,14 @@ const App: React.FC<unknown> = () => {
                                         <Logout onLogout={credentialsService.logout}
                                                 onUpdateAuth={updateAuthContext}/>
                                     </Route>
-                                    <RecipeTypeRoutes/>
-                                    <RecipeRoutes/>
+                                    <Route exact path="/recipetype" render={() => <RecipeTypeListPage/>}/>
+                                    <Route exact path="/recipetype/new" render={() => <CreateRecipeType/>}/>
+                                    <Route exact path="/recipetype/:id/details" render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}/>}/>
+                                    <Route exact path="/recipetype/:id/edit"
+                                           render={(x) => <EditRecipeType id={Number(x.match.params.id)}/>}/>
+
+                                    <Route exact path="/recipe" render={() => <RecipeSearchPage/>}/>
+                                    <Route exact path="/recipe/new" render={() => <CreateRecipe/>}/>
                                 </Switch>
                             </Layout>
                         </BrowserRouter>
@@ -76,18 +82,5 @@ const App: React.FC<unknown> = () => {
         </ApiHandlerContext.Provider>
     )
 }
-
-const RecipeTypeRoutes = () => <>
-    <Route exact path="/recipetype" render={() => <RecipeTypeListPage/>}/>
-    <Route exact path="/recipetype/new" render={() => <CreateRecipeType/>}/>
-    <Route exact path="/recipetype/:id/details" render={(x) => <RecipeTypeDetails id={Number(x.match.params.id)}/>}/>
-    <Route exact path="/recipetype/:id/edit"
-           render={(x) => <EditRecipeType id={Number(x.match.params.id)}/>}/>
-</>
-
-const RecipeRoutes = () => <>
-    <Route exact path="/recipe" render={() => <RecipeSearchPage/>}/>
-    <Route exact path="/recipe/new" render={() => <CreateRecipe/>}/>
-</>
 
 export default App

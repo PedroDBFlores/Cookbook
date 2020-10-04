@@ -29,18 +29,20 @@ describe("Drawer", () => {
         ["Item1 menu", "/route/1"],
         ["Item2 menu", "/route/2"]
     ])("navigates to the %s", (itemLabel, expectedRoute) => {
+        const onClose = jest.fn()
         const drawerItems = [
             {name: "Item1", icon: null, route: "/route/1"},
             {name: "Item2", icon: null, route: "/route/2"}
         ]
         renderWithRoutes({
-            "/": () => <Drawer isOpen={true} items={drawerItems} onClose={jest.fn()}/>,
+            "/": () => <Drawer isOpen={true} items={drawerItems} onClose={onClose}/>,
             [expectedRoute]: () => <div>I'm the {itemLabel} page</div>
         })
 
         userEvent.click(screen.getByLabelText(itemLabel))
 
         expect(screen.getByText(`I'm the ${itemLabel} page`)).toBeInTheDocument()
+        expect(onClose).toHaveBeenCalled()
     })
 
     it("call the onClose function", () => {
