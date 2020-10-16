@@ -1,9 +1,9 @@
-package journey
+package journeys
 
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
-import flows.RecipeTypeFlows
-import flows.UserFlows
+import actions.RecipeTypeActions
+import actions.UserActions
 import io.kotest.assertions.json.shouldContainJsonKey
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.BehaviorSpec
@@ -39,15 +39,15 @@ class RecipeTypeJourney : BehaviorSpec({
         DatabaseMigration.migrateDB(configuration)
         cookbookAPI = CookbookApi(configuration)
         cookbookAPI.start()
-        UserFlows.createUser(
+        UserActions.createUser(
             baseUrl, createJSONObject(
                 "name" to "basicName",
                 "userName" to "basicUser",
                 "password" to "basicPassword"
             )
         )
-        userJWTToken = UserFlows.loginUser(baseUrl, userLoginRequestBody).body().getJsonValue("token")
-        adminJWTToken = UserFlows.loginUser(baseUrl, adminLoginRequestBody).body().getJsonValue("token")
+        userJWTToken = UserActions.loginUser(baseUrl, userLoginRequestBody).body().getJsonValue("token")
+        adminJWTToken = UserActions.loginUser(baseUrl, adminLoginRequestBody).body().getJsonValue("token")
     }
 
     afterSpec {
@@ -61,7 +61,7 @@ class RecipeTypeJourney : BehaviorSpec({
         ).forEach { (token, userType) ->
             `when`("I have a JWT token with a $userType role") {
                 then("I'm able to access the route and get them") {
-                    val getRecipeTypeResponse = RecipeTypeFlows.getRecipeTypes(baseUrl, token)
+                    val getRecipeTypeResponse = RecipeTypeActions.getRecipeTypes(baseUrl, token)
 
                     getRecipeTypeResponse.statusCode().shouldBe(HttpStatus.OK_200)
                 }
@@ -69,7 +69,7 @@ class RecipeTypeJourney : BehaviorSpec({
         }
         `when`("I haven't got a JWT token") {
             then("I'm unauthorized") {
-                val getRecipeTypeResponse = RecipeTypeFlows.getRecipeTypes(baseUrl)
+                val getRecipeTypeResponse = RecipeTypeActions.getRecipeTypes(baseUrl)
 
                 getRecipeTypeResponse.statusCode().shouldBe(HttpStatus.UNAUTHORIZED_401)
             }
@@ -82,7 +82,7 @@ class RecipeTypeJourney : BehaviorSpec({
                 then("I'm able to create it") {
                     val requestBody = createJSONObject("name" to "Recipe Type name")
 
-                    val createRecipeTypeResponse = RecipeTypeFlows.createRecipeType(baseUrl, requestBody, adminJWTToken)
+                    val createRecipeTypeResponse = RecipeTypeActions.createRecipeType(baseUrl, requestBody, adminJWTToken)
                     createRecipeTypeResponse.statusCode().shouldBe(HttpStatus.CREATED_201)
                     createRecipeTypeResponse.body().shouldContainJsonKey("id")
                 }
@@ -91,7 +91,7 @@ class RecipeTypeJourney : BehaviorSpec({
                 then("I'm unauthorized") {
                     val requestBody = createJSONObject("name" to "Recipe Type name")
 
-                    val createRecipeTypeResponse = RecipeTypeFlows.createRecipeType(baseUrl, requestBody, userJWTToken)
+                    val createRecipeTypeResponse = RecipeTypeActions.createRecipeType(baseUrl, requestBody, userJWTToken)
 
                     createRecipeTypeResponse.statusCode().shouldBe(HttpStatus.UNAUTHORIZED_401)
                 }
@@ -107,14 +107,14 @@ class RecipeTypeJourney : BehaviorSpec({
             `when`("I have a JWT token with a $userType role") {
                 then("I'm able to access the route as $userType and create it") {
                     val createRecipeTypeResponse =
-                        RecipeTypeFlows.createRecipeType(
+                        RecipeTypeActions.createRecipeType(
                             baseUrl = baseUrl,
                             requestBody = createJSONObject("name" to "Another recipe type for our $userType"),
                             jwtToken = adminJWTToken
                         )
                     val createResult = createRecipeTypeResponse.body().transformInto<CreateResult>()
 
-                    val findRecipeTypeResponse = RecipeTypeFlows.getRecipeType(baseUrl, createResult.id, token)
+                    val findRecipeTypeResponse = RecipeTypeActions.getRecipeType(baseUrl, createResult.id, token)
 
                     with(findRecipeTypeResponse) {
                         statusCode().shouldBe(HttpStatus.OK_200)
@@ -130,7 +130,7 @@ class RecipeTypeJourney : BehaviorSpec({
         }
         `when`("I haven't got a JWT token") {
             then("I'm unauthorized") {
-                val findRecipeTypeResponse = RecipeTypeFlows.getRecipeType(baseUrl, 1)
+                val findRecipeTypeResponse = RecipeTypeActions.getRecipeType(baseUrl, 1)
 
                 findRecipeTypeResponse.statusCode().shouldBe(HttpStatus.UNAUTHORIZED_401)
             }
@@ -141,7 +141,7 @@ class RecipeTypeJourney : BehaviorSpec({
         `when`("I have a JWT token with a admin role") {
             then("I'm able to access the route and update it") {
                 val createResult =
-                    RecipeTypeFlows.createRecipeType(
+                    RecipeTypeActions.createRecipeType(
                         baseUrl = baseUrl,
                         requestBody = createJSONObject("name" to "A fresh recipe type for our admin"),
                         jwtToken = adminJWTToken
@@ -152,7 +152,7 @@ class RecipeTypeJourney : BehaviorSpec({
                 )
 
                 val updateRecipeTypeResponse =
-                    RecipeTypeFlows.updateRecipeType(baseUrl, updateRecipeTypeRequestBody, adminJWTToken)
+                    RecipeTypeActions.updateRecipeType(baseUrl, updateRecipeTypeRequestBody, adminJWTToken)
 
                 updateRecipeTypeResponse.statusCode().shouldBe(HttpStatus.OK_200)
             }
@@ -163,7 +163,7 @@ class RecipeTypeJourney : BehaviorSpec({
         ).forEach { (token, description) ->
             `when`("I have $description") {
                 then("I'm unauthorized") {
-                    val updateRecipeTypeResponse = RecipeTypeFlows.updateRecipeType(
+                    val updateRecipeTypeResponse = RecipeTypeActions.updateRecipeType(
                         baseUrl = baseUrl,
                         requestBody = createJSONObject("name" to "Another recipe type for our unauthorized user"),
                         jwtToken = token
@@ -179,14 +179,14 @@ class RecipeTypeJourney : BehaviorSpec({
         `when`("I have a JWT token with a admin role") {
             then("I'm able to access the route and delete it") {
                 val createResult =
-                    RecipeTypeFlows.createRecipeType(
+                    RecipeTypeActions.createRecipeType(
                         baseUrl = baseUrl,
                         requestBody = createJSONObject("name" to "A fresh recipe type for our admin"),
                         jwtToken = adminJWTToken
                     ).body().transformInto<CreateResult>()
 
                 val deleteRecipeTypeResponse =
-                    RecipeTypeFlows.deleteRecipeType(baseUrl, createResult.id, adminJWTToken)
+                    RecipeTypeActions.deleteRecipeType(baseUrl, createResult.id, adminJWTToken)
 
                 deleteRecipeTypeResponse.statusCode().shouldBe(HttpStatus.NO_CONTENT_204)
             }
@@ -197,7 +197,7 @@ class RecipeTypeJourney : BehaviorSpec({
         ).forEach { (token, description) ->
             `when`("I have $description") {
                 then("I'm unauthorized") {
-                    val deleteRecipeTypeResponse = RecipeTypeFlows.deleteRecipeType(
+                    val deleteRecipeTypeResponse = RecipeTypeActions.deleteRecipeType(
                         baseUrl = baseUrl,
                         id = 1,
                         jwtToken = token

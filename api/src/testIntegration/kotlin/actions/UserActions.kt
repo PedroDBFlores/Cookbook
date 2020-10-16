@@ -1,9 +1,9 @@
-package flows
+package actions
 
 import java.net.URI
 import java.net.http.HttpResponse
 
-object UserFlows {
+object UserActions {
     suspend fun createUser(baseUrl: String, requestBody: String): HttpResponse<String> =
         executePOSTRequest(URI("$baseUrl/user"), requestBody)
 

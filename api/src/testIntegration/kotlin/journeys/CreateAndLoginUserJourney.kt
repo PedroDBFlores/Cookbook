@@ -1,20 +1,15 @@
-package journey
+package journeys
 
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
-import flows.UserFlows
+import actions.UserActions
 import io.kotest.assertions.json.shouldContainJsonKey
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.future.await
 import org.eclipse.jetty.http.HttpStatus
 import server.CookbookApi
 import utils.DatabaseMigration
 import utils.JsonHelpers
-import java.net.URI
-import java.net.http.HttpClient.newHttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse.BodyHandlers.ofString
 
 class CreateAndLoginUserJourney : BehaviorSpec({
     val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/application.conf")
@@ -40,7 +35,7 @@ class CreateAndLoginUserJourney : BehaviorSpec({
                     "password" to "password"
                 )
 
-                val createUserResponse = UserFlows.createUser(baseUrl, createUserRequestBody)
+                val createUserResponse = UserActions.createUser(baseUrl, createUserRequestBody)
 
                 createUserResponse.statusCode().shouldBe(HttpStatus.CREATED_201)
                 createUserResponse.body().shouldContainJsonKey("id")
@@ -52,7 +47,7 @@ class CreateAndLoginUserJourney : BehaviorSpec({
                     "password" to "password"
                 )
 
-                val loginUserResponse = UserFlows.loginUser(baseUrl, loginUserRequestBody)
+                val loginUserResponse = UserActions.loginUser(baseUrl, loginUserRequestBody)
 
                 loginUserResponse.statusCode().shouldBe(HttpStatus.OK_200)
                 loginUserResponse.body().shouldContainJsonKey("token")
@@ -66,7 +61,7 @@ class CreateAndLoginUserJourney : BehaviorSpec({
                     "password" to "existing"
                 )
 
-                val loginUserResponse = UserFlows.loginUser(baseUrl, loginUserRequestBody)
+                val loginUserResponse = UserActions.loginUser(baseUrl, loginUserRequestBody)
 
                 with(loginUserResponse) {
                     statusCode().shouldBe(HttpStatus.FORBIDDEN_403)

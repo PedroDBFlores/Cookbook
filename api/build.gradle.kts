@@ -1,8 +1,8 @@
 plugins {
     application
     kotlin("jvm") version "1.4.0"
-    id("com.github.johnrengelman.shadow") version "6.0.0"
-    id("com.github.ben-manes.versions") version "0.29.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.ben-manes.versions") version "0.33.0"
     id("com.adarshr.test-logger") version "2.1.0"
 //    id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
 }
@@ -56,7 +56,7 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
-    implementation("org.flywaydb:flyway-core:6.5.5")
+    implementation("org.flywaydb:flyway-core:7.0.3")
 
     /* Tests */
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")

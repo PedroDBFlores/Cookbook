@@ -1,6 +1,8 @@
 package web.recipetype
 
+import errors.RecipeTypeAlreadyExists
 import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -44,6 +46,22 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
                     verify(exactly = 1) { createRecipeTypeMock(CreateRecipeType.Parameters("Recipe type")) }
+                }
+            }
+        }
+
+        it("throws if a recipe type with the same name already exists") {
+            val jsonBody = createJSONObject("name" to "Recipe type")
+            val createRecipeTypeMock = mockk<CreateRecipeType> {
+                every { this@mockk(any()) } throws RecipeTypeAlreadyExists("Recipe type")
+            }
+
+            shouldThrow<RecipeTypeAlreadyExists> {
+                withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
+                    handleRequest(HttpMethod.Post, "/recipetype") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
                 }
             }
         }

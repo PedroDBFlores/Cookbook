@@ -1,9 +1,9 @@
-package flows
+package actions
 
 import java.net.URI
 import java.net.http.HttpResponse
 
-object RecipeTypeFlows {
+object RecipeTypeActions {
     suspend fun getRecipeType(baseUrl: String, id: Int, jwtToken: String? = null) = executeGETRequest(
         uri = URI("$baseUrl/recipetype/$id"),
         headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
