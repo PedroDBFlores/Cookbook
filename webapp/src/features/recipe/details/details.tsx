@@ -4,7 +4,6 @@ import {useAsync} from "react-async"
 import Button from "@material-ui/core/Button"
 import Delete from "@material-ui/icons/Delete"
 import Edit from "@material-ui/icons/Edit"
-import {useHistory} from "react-router-dom"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import Paper from "@material-ui/core/Paper"
@@ -14,10 +13,11 @@ import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
 import createStyles from "@material-ui/core/styles/createStyles"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import {Theme} from "@material-ui/core/styles/createMuiTheme"
-import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useSnackbar} from "notistack"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Choose, When} from "../../../components/flow-control/choose"
+import {useHistory} from "react-router-dom"
+import createRecipeService, {RecipeDetails as RecipeDetail} from "../../../services/recipe-service"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -28,25 +28,25 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 )
 
-const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
+const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
     const [showModal, setShowModal] = useState<boolean>(false)
     const history = useHistory()
     const classes = useStyles()
     const {enqueueSnackbar} = useSnackbar()
 
-    const {find, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
+    const {find, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
     const findPromiseRef = useRef(() => find(id))
-    const state = useAsync<RecipeType>({
+    const state = useAsync<RecipeDetail>({
         promiseFn: findPromiseRef.current
     })
 
-    const handleDelete = (id: number) => deleteRecipeType(id)
+    const handleDelete = (id: number) => deleteRecipe(id)
         .then(() => {
-            enqueueSnackbar(`Recipe type ${id} was deleted`, {variant: "success"})
-            history.push("/recipetype")
-        }).catch(err => enqueueSnackbar(`An error occurred while trying to delete this recipe type: ${err.message}`, {variant: "error"}))
+            enqueueSnackbar(`Recipe ${id} was deleted`, {variant: "success"})
+            history.push("/recipe")
+        }).catch(err => enqueueSnackbar(`An error occurred while trying to delete this recipe: ${err.message}`, {variant: "error"}))
 
-    const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
+    const onEdit = (id: number) => history.push(`/recipe/${id}/edit`)
 
     return <Choose>
         <When condition={state.isLoading}>
@@ -58,7 +58,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
         <When condition={state.isFulfilled}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Typography variant="h4">Recipe type details</Typography>
+                    <Typography variant="h4">Recipe details</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
@@ -68,14 +68,20 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                                 <Typography component='dd' variant='body2'>{state.data?.id}</Typography>
                                 <Typography component="dt" variant="h6">Name:</Typography>
                                 <Typography component='dd' variant='body2'>{state.data?.name}</Typography>
+                                <Typography component="dt" variant="h6">Description:</Typography>
+                                <Typography component='dd' variant='body2'>{state.data?.description}</Typography>
+                                <Typography component="dt" variant="h6">Ingredients:</Typography>
+                                <Typography component='dd' variant='body2'>{state.data?.ingredients}</Typography>
+                                <Typography component="dt" variant="h6">Preparing steps:</Typography>
+                                <Typography component='dd' variant='body2'>{state.data?.preparingSteps}</Typography>
                             </Grid>
                         </Grid>
                         <ButtonGroup>
-                            <Button aria-label={`Edit recipe type with id ${state.data?.id}`}
+                            <Button aria-label={`Edit recipe with id ${state.data?.id}`}
                                     onClick={() => onEdit(Number(state.data?.id))}>
                                 <Edit/>
                             </Button>
-                            <Button aria-label={`Delete recipe type with id ${state.data?.id}`}
+                            <Button aria-label={`Delete recipe with id ${state.data?.id}`}
                                     onClick={() => setShowModal(true)}>
                                 <Delete/>
                             </Button>
@@ -84,7 +90,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                 </Grid>
                 <If condition={showModal}>
                     <BasicModalDialog title="Question"
-                                      content="Are you sure you want to delete this recipe type?"
+                                      content="Are you sure you want to delete this recipe?"
                                       dismiss={{
                                           text: "Delete",
                                           onDismiss: () => handleDelete(Number(state.data?.id))
@@ -95,8 +101,9 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
         </When>
     </Choose>
 }
-RecipeTypeDetails.propTypes = {
+
+RecipeDetails.propTypes = {
     id: PropTypes.number.isRequired
 }
 
-export default RecipeTypeDetails
+export default RecipeDetails

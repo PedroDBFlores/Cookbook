@@ -2,7 +2,7 @@ const path = require("path")
 
 module.exports = {
   roots: [
-    "<rootDir>/tests"
+    "<rootDir>/src"
   ],
   transform: {
     "^.+\\.t(s|sx)?$": ["@swc-node/jest", { target: "es2019" }],

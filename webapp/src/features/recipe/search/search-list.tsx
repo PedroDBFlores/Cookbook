@@ -36,7 +36,7 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
     const [page, setPage] = useState<number>(0)
     const history = useHistory()
 
-    const navigateToDetails = (id: number): void => history.push(`/recipe/${id}`)
+    const navigateToDetails = (id: number): void => history.push(`/recipe/${id}/details`)
     const navigateToEdit = (id: number): void => history.push(`/recipe/${id}/edit`)
 
     const handleOnChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {

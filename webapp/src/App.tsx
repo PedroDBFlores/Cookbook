@@ -16,6 +16,7 @@ import Logout from "./features/user/logout/logout"
 import RecipeSearchPage from "./features/recipe/search/search-page"
 import CreateRecipe from "./features/recipe/create/create"
 import jwt_decode from "jwt-decode"
+import RecipeDetails from "./features/recipe/details/details"
 
 const theme = createMuiTheme({
     palette: {
@@ -73,6 +74,7 @@ const App: React.FC = () => {
 
                                     <Route exact path="/recipe" render={() => <RecipeSearchPage/>}/>
                                     <Route exact path="/recipe/new" render={() => <CreateRecipe/>}/>
+                                    <Route exact path="/recipe/:id/details" render={(x) => <RecipeDetails id={Number(x.match.params.id)}/>}/>
                                 </Switch>
                             </Layout>
                         </BrowserRouter>

@@ -87,7 +87,8 @@ const CreateRecipe: React.FC = () => {
             }).then(({id}) => {
                 enqueueSnackbar(`Recipe '${data.name}' created successfully!`)
                 history.push(`/recipe/${id}`)
-            })
+            }).catch(err =>
+                enqueueSnackbar(`An error occurred while creating the recipe: ${err.message}`))
         }
     }
 
