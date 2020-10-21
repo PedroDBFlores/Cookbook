@@ -80,9 +80,11 @@ const Login: React.FC<LoginProps> = ({loginFn, onUpdateAuth}) => {
                                     <Grid item xs={12}>
                                         <Field
                                             component={TextField}
+                                            type="password"
                                             id="password"
                                             label="Password"
-                                            name="password"/>
+                                            name="password"
+                                        />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Button variant="contained" aria-label="Login to application"

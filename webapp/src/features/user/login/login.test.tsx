@@ -23,8 +23,8 @@ describe("Login component", () => {
         render(wrapLoginInContext())
 
         expect(screen.getByText(/login user/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/^username$/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/^username$/i)).toHaveAttribute("type", "text")
+        expect(screen.getByLabelText(/^password$/i)).toHaveAttribute("type", "password")
         expect(screen.getByLabelText(/login to application/i)).toHaveAttribute("type", "submit")
     })
 
