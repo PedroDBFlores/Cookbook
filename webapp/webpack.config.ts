@@ -7,7 +7,7 @@ const commonConfig: Configuration = {
     output: {
         path: resolve(__dirname, "dist"),
         filename: "index_bundle.js",
-        publicPath: "/"
+        publicPath: "/",
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -23,7 +23,6 @@ const commonConfig: Configuration = {
         rules: [
             {
                 test: /\.js|\.ts|\.tsx$/,
-                //use: "ts-loader",
                 use: "swc-loader",
                 exclude: /node_modules/
             },
