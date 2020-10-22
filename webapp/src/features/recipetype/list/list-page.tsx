@@ -2,16 +2,11 @@ import React, {useContext, useRef} from "react"
 import RecipeTypeList from "./list"
 import {useAsync} from "react-async"
 import {useHistory} from "react-router-dom"
-import Typography from "@material-ui/core/Typography"
-import Grid from "@material-ui/core/Grid"
-import Button from "@material-ui/core/Button"
+import {Typography, Grid, Button, Paper} from "@material-ui/core"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useSnackbar} from "notistack"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import makeStyles from "@material-ui/core/styles/makeStyles"
-import {Theme} from "@material-ui/core/styles/createMuiTheme"
-import createStyles from "@material-ui/core/styles/createStyles"
-import Paper from "@material-ui/core/Paper"
+import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
 import {Choose, When} from "../../../components/flow-control/choose"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -46,19 +41,21 @@ const RecipeTypeListPage: React.FC = () => {
                     onClick={navigateToCreateRecipeType}>Create</Button>
         </Grid>
         <Grid item xs={12}>
-            <Paper className={classes.paper}>
-                <Choose>
-                    <When condition={state.isPending}>
+            <Choose>
+                <When condition={state.isPending}>
+                    <Paper className={classes.paper}>
                         <span>Loading...</span>
-                    </When>
-                    <When condition={state.isRejected}>
+                    </Paper>
+                </When>
+                <When condition={state.isRejected}>
+                    <Paper className={classes.paper}>
                         <span>Error: {state.error?.message}</span>
-                    </When>
-                    <When condition={state.isFulfilled}>
-                        <RecipeTypeList recipeTypes={state.data || []} onDelete={(id => handleDelete(id))}/>
-                    </When>
-                </Choose>
-            </Paper>
+                    </Paper>
+                </When>
+                <When condition={state.isFulfilled}>
+                    <RecipeTypeList recipeTypes={state.data || []} onDelete={(id => handleDelete(id))}/>
+                </When>
+            </Choose>
         </Grid>
     </Grid>
 }

@@ -2,13 +2,9 @@ import React, {useState} from "react"
 import PropTypes from "prop-types"
 import ApplicationToolbar from "./application-toolbar"
 import Drawer from "./drawer"
-import List from "@material-ui/icons/List"
-import Restaurant from "@material-ui/icons/Restaurant"
-import Home from "@material-ui/icons/Home"
-import CssBaseline from "@material-ui/core/CssBaseline"
-import Container from "@material-ui/core/Container"
-import Grid from "@material-ui/core/Grid"
-import makeStyles from "@material-ui/core/styles/makeStyles"
+import {List, Restaurant, Home} from "@material-ui/icons"
+import {CssBaseline, Container, Grid} from "@material-ui/core"
+import {makeStyles} from "@material-ui/core/styles"
 
 const useStyles = makeStyles((theme) => ({
     root: {

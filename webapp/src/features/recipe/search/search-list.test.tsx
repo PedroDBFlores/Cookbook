@@ -76,7 +76,8 @@ describe("Recipe search list component", () => {
                                      onPageChange={jest.fn()}/>)
 
             expect(screen.getByLabelText(/rows per page/i)).toBeInTheDocument()
-            expect(screen.getByLabelText(/first page/i)).toBeInTheDocument()
+            expect(screen.getByLabelText(/Go to next page/i)).toBeInTheDocument()
+            expect(screen.getByLabelText(/Go to previous page/i)).toBeInTheDocument()
         })
 
         test.each([
@@ -101,22 +102,18 @@ describe("Recipe search list component", () => {
                 onPageChangeMock.mockClear()
             })
 
-            test.each([
-                ["next page", ["next page"], 1],
-                ["first page", ["next page", "first page"], 0],
-                ["previous page", ["next page", "previous page"], 0],
-                ["last page", ["last page"], 9]
-            ])("calls the 'onPageChange' when the '%s' button is pressed", (_,
-                                                                            buttonLabels, expectedPageNumber) => {
+            it("calls the 'onPageChange' when the page changing buttons are pressed", () => {
                 render(<RecipeSearchList
                     searchResult={searchResult}
                     onDelete={jest.fn()}
                     onNumberOfRowsChange={jest.fn()}
                     onPageChange={onPageChangeMock}/>)
 
-                buttonLabels.forEach(label => userEvent.click(screen.getByLabelText(label)))
+                userEvent.click(screen.getByLabelText(/Go to next page/i))
+                expect(onPageChangeMock).toHaveBeenCalledWith(1)
 
-                expect(onPageChangeMock).toHaveBeenLastCalledWith(expectedPageNumber)
+                userEvent.click(screen.getByLabelText(/Go to previous page/i))
+                expect(onPageChangeMock).toHaveBeenCalledWith(0)
             })
         })
     })

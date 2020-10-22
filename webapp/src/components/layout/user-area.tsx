@@ -1,8 +1,7 @@
 import React, {useContext} from "react"
 import {useHistory} from "react-router-dom"
-import Button from "@material-ui/core/Button"
-import Typography from "@material-ui/core/Typography"
-import makeStyles from "@material-ui/core/styles/makeStyles"
+import {Button, Typography} from "@material-ui/core"
+import {makeStyles} from "@material-ui/core/styles"
 import {AuthContext} from "../../services/credentials-service"
 
 const useStyles = makeStyles({
@@ -11,7 +10,7 @@ const useStyles = makeStyles({
     }
 })
 
-const UserArea : React.FC = () => {
+const UserArea: React.FC = () => {
     const history = useHistory()
     const classes = useStyles()
     const authContext = useContext(AuthContext)
@@ -34,7 +33,7 @@ const UserArea : React.FC = () => {
                 </>
                 :
                 <>
-                    <Button variant="contained" aria-label="Login" color="default"
+                    <Button variant="contained" aria-label="Login" color="primary"
                             onClick={() => onLogin()}>Login</Button>
                 </>
         }

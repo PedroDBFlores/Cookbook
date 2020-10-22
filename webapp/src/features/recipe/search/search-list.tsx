@@ -1,21 +1,21 @@
 import React, {useState} from "react"
 import PropTypes from "prop-types"
 import {SearchResult} from "../../../model"
-import Paper from "@material-ui/core/Paper"
-import Table from "@material-ui/core/Table"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-import TableCell from "@material-ui/core/TableCell"
-import TableContainer from "@material-ui/core/TableContainer"
-import TableBody from "@material-ui/core/TableBody"
-import ButtonGroup from "@material-ui/core/ButtonGroup"
-import Button from "@material-ui/core/Button"
-import Visibility from "@material-ui/icons/Visibility"
-import Edit from "@material-ui/icons/Edit"
-import Delete from "@material-ui/icons/Delete"
+import {
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableContainer,
+    TableBody,
+    TablePagination,
+    TableFooter,
+    ButtonGroup,
+    Button
+} from "@material-ui/core"
+import {Visibility, Edit, Delete} from "@material-ui/icons"
 import {useHistory} from "react-router-dom"
-import TablePagination from "@material-ui/core/TablePagination"
-import TableFooter from "@material-ui/core/TableFooter"
 import TablePaginationActions from "../../../components/table-pagination-actions/table-pagination-actions"
 import {RecipeDetails} from "../../../services/recipe-service"
 
@@ -105,9 +105,8 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                             inputProps: {"aria-label": "rows per page"},
                             native: true,
                         }}
-                        onChangePage={handleOnChangePage}
-                        onChangeRowsPerPage={event => handleOnRowsPerPageChange(Number(event.target.value))}
-                        ActionsComponent={TablePaginationActions}
+                        onPageChange={handleOnChangePage}
+                        onRowsPerPageChange={event => handleOnRowsPerPageChange(Number(event.target.value))}
                     />
                 </TableRow>
             </TableFooter>

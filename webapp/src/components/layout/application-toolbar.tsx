@@ -1,12 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
-import AppBar from "@material-ui/core/AppBar"
-import Toolbar from "@material-ui/core/Toolbar"
-import IconButton from "@material-ui/core/IconButton"
-import Typography from "@material-ui/core/Typography"
-import {Theme} from "@material-ui/core/styles/createMuiTheme"
-import MenuIcon from "@material-ui/icons/Menu"
-import makeStyles from "@material-ui/core/styles/makeStyles"
+import {AppBar, Toolbar, IconButton, Typography} from "@material-ui/core"
+import {makeStyles, Theme} from "@material-ui/core/styles"
+import {Menu} from "@material-ui/icons"
 import clsx from "clsx"
 import UserArea from "./user-area"
 
@@ -68,7 +64,7 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 <IconButton edge="start" color="inherit" aria-label="menu"
                             onClick={onMenuClick}
                             className={clsx(classes.menuButton, isDrawerOpen && classes.menuButtonHidden)}>
-                    <MenuIcon/>
+                    <Menu/>
                 </IconButton>
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                     {title}

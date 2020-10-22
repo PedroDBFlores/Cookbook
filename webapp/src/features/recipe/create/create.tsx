@@ -1,10 +1,6 @@
 import React, {useContext, useEffect, useState} from "react"
-import Button from "@material-ui/core/Button"
-import Grid from "@material-ui/core/Grid"
-import {Theme} from "@material-ui/core/styles/createMuiTheme"
-import createStyles from "@material-ui/core/styles/createStyles"
-import makeStyles from "@material-ui/core/styles/makeStyles"
-import Typography from "@material-ui/core/Typography"
+import {Button, Grid, Typography, Paper} from "@material-ui/core"
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {Field, Form, Formik} from "formik"
 import {TextField} from "formik-material-ui"
 import FormikSelector from "../../../components/formik-selector/formik-selector"
@@ -16,7 +12,6 @@ import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {useSnackbar} from "notistack"
 import {Choose, When} from "../../../components/flow-control/choose"
-import Paper from "@material-ui/core/Paper"
 
 interface CreateRecipeFormData {
     name: string

@@ -1,21 +1,19 @@
 import React from "react"
 import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
-import TableBody from "@material-ui/core/TableBody"
-import TableCell from "@material-ui/core/TableCell"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-import Delete from "@material-ui/icons/Delete"
-import Edit from "@material-ui/icons/Edit"
-import Visibility from "@material-ui/icons/Visibility"
-import Paper from "@material-ui/core/Paper"
-import TableContainer from "@material-ui/core/TableContainer"
-import Table from "@material-ui/core/Table"
-import ButtonGroup from "@material-ui/core/ButtonGroup"
-import Button from "@material-ui/core/Button"
-import makeStyles from "@material-ui/core/styles/makeStyles"
-import {Theme} from "@material-ui/core/styles/createMuiTheme"
-import createStyles from "@material-ui/core/styles/createStyles"
+import {
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    TableContainer,
+    Table,
+    Paper,
+    ButtonGroup,
+    Button
+} from "@material-ui/core"
+import {Delete, Edit, Visibility} from "@material-ui/icons"
+import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
 import {RecipeType} from "../../../services/recipe-type-service"
 
 interface RecipeTypeListProps {
