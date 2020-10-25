@@ -43,7 +43,7 @@ internal class RecipeTest : DescribeSpec({
         arrayOf(
             row(-1, 1, 1, "n", "d", "i", "ps", "an invalid id is provided"),
             row(1, -1, 1, "n", "d", "i", "ps", "an invalid recipeTypeId is provided"),
-            row(1, -1, -1, "n", "d", "i", "ps", "an invalid userId is provided"),
+            row(1, 1, -1, "n", "d", "i", "ps", "an invalid userId is provided"),
             row(1, 1, 1, "", "d", "i", "ps", "an empty name is provided"),
             row(1, 1, 1, "n", "", "i", "ps", "an empty description is provided"),
             row(1, 1, 1, "n", "d", "", "ps", "an empty ingredients is provided"),

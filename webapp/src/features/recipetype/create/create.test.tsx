@@ -46,7 +46,7 @@ describe("Create recipe type", () => {
         it("displays an error when the name exceeds 64 characters", async () => {
             renderWrappedInCommonContexts(<CreateRecipeType/>)
 
-            await userEvent.type(screen.getByLabelText(/^name$/i), "a".repeat(65))
+            userEvent.paste(screen.getByLabelText(/^name$/i), "a".repeat(65))
             userEvent.click(screen.getByLabelText(/create recipe type/i))
 
             expect(await screen.findByText(/name exceeds the character limit/i)).toBeInTheDocument()
