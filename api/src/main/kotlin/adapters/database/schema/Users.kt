@@ -12,8 +12,8 @@ object Users : IntIdTable() {
     val passwordHash: Column<String> = varchar("passwordhash", 255)
 }
 
-class UserEntity (id: EntityID<Int>) : IntEntity(id) {
-    companion object: IntEntityClass<UserEntity>(Users)
+class UserEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<UserEntity>(Users)
     var name by Users.name
     var userName by Users.userName
     var passwordHash by Users.passwordHash

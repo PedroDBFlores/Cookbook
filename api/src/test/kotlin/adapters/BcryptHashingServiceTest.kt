@@ -17,7 +17,8 @@ internal class BcryptHashingServiceTest : DescribeSpec({
 
         it("verifies an matching hash successfully") {
             val valueToMatch = "VALUE"
-            val hashToMatch = """${'$'}2a${'$'}04${'$'}UBfKKQCyLTPXZUCyHBKvM.xpXpW.upzTAL14llmp92jLLjZBcoWzy"""
+            val hashToMatch =
+                """${'$'}2a${'$'}04${'$'}UBfKKQCyLTPXZUCyHBKvM.xpXpW.upzTAL14llmp92jLLjZBcoWzy"""
 
             val hashingService = BcryptHashingService()
             val hashMatches = hashingService.verify(valueToMatch, hashToMatch)
@@ -27,7 +28,8 @@ internal class BcryptHashingServiceTest : DescribeSpec({
 
         it("verifies an hash that doesn't match") {
             val valueToMatch = "TOUCHE"
-            val hashToMatch = """${'$'}2a${'$'}04${'$'}UBfKKQCyLTPXZUCyHBKvM.xpXpW.upzTAL14llmp92jLLjZBcoWzy"""
+            val hashToMatch =
+                """${'$'}2a${'$'}04${'$'}UBfKKQCyLTPXZUCyHBKvM.xpXpW.upzTAL14llmp92jLLjZBcoWzy"""
 
             val hashingService = BcryptHashingService()
             val hashMatches = hashingService.verify(valueToMatch, hashToMatch)

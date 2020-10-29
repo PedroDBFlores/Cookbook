@@ -13,7 +13,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import model.CreateResult
-import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.CreateRecipe
 import utils.JsonHelpers.createJSONObject
@@ -52,11 +51,12 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(createRecipe)) {
-                with(handleRequest(HttpMethod.Post, "/recipe") {
-                    setBody(createRecipeRepresenterMap.toJson())
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/recipe") {
+                        setBody(createRecipeRepresenterMap.toJson())
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
                     verify(exactly = 1) { createRecipe(expectedParameters) }
@@ -95,11 +95,12 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                 val createRecipeMock = mockk<CreateRecipe>()
 
                 withTestApplication(moduleFunction = createTestServer(createRecipeMock)) {
-                    with(handleRequest(HttpMethod.Post, "/recipe") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    })
-                    {
+                    with(
+                        handleRequest(HttpMethod.Post, "/recipe") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { createRecipeMock wasNot Called }
                     }

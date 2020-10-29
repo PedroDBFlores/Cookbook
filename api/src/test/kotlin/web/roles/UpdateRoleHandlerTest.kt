@@ -43,11 +43,12 @@ internal class UpdateRoleHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRole)) {
-                with(handleRequest(HttpMethod.Put, "/role") {
-                    setBody(requestBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Put, "/role") {
+                        setBody(requestBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     verify(exactly = 1) {
                         updateRole(
@@ -81,11 +82,12 @@ internal class UpdateRoleHandlerTest : DescribeSpec({
                 val updateRole = mockk<UpdateRole>()
 
                 withTestApplication(moduleFunction = createTestServer(updateRole)) {
-                    with(handleRequest(HttpMethod.Put, "/role") {
-                        setBody(requestBody)
-                        addHeader("Content-Type", "application/json")
-
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Put, "/role") {
+                            setBody(requestBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { updateRole wasNot Called }
                     }

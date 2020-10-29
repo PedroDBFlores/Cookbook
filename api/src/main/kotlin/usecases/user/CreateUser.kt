@@ -15,7 +15,8 @@ class CreateUser(private val userRepository: UserRepository) {
             user = User(
                 name = name,
                 userName = userName
-            ), userPassword = password
+            ),
+            userPassword = password
         )
     }
 

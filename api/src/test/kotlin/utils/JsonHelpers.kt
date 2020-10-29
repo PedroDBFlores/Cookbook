@@ -55,7 +55,7 @@ object JsonHelpers {
 
     fun createJSONObject(vararg properties: Pair<String, Any?>) = createJSONObject(mapOf(*properties))
 
-    //Extension methods
+    // Extension methods
     fun Any.toJson() = convertToJSON(this)
     fun String.removePropertiesFromJson(vararg properties: String) = removeJSONProperties(this, *properties)
 }

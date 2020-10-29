@@ -1,7 +1,7 @@
 package web.user
 
-import errors.WrongCredentials
 import errors.UserNotFound
+import errors.WrongCredentials
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*

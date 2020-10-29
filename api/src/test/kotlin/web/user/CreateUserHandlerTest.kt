@@ -58,18 +58,22 @@ internal class CreateUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(createUser)) {
-                with(handleRequest(HttpMethod.Post, "/user") {
-                    setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
-                }) {
+                with(
+                    handleRequest(HttpMethod.Post, "/user") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(basicUser.id).toJson())
                     verify(exactly = 1) {
-                        createUser(CreateUser.Parameters(
-                            name = basicUser.name,
-                            userName = basicUser.userName,
-                            password = "password"
-                        ))
+                        createUser(
+                            CreateUser.Parameters(
+                                name = basicUser.name,
+                                userName = basicUser.userName,
+                                password = "password"
+                            )
+                        )
                         findRole(FindRole.Parameters("USER"))
                         addRoleToUser(AddRoleToUser.Parameters(basicUser.id, basicRole.id))
                     }
@@ -99,10 +103,12 @@ internal class CreateUserHandlerTest : DescribeSpec({
                 val createUser = mockk<CreateUser>()
 
                 withTestApplication(moduleFunction = createTestServer(createUser)) {
-                    with(handleRequest(HttpMethod.Post, "/user") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/user") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { createUser wasNot called }
                     }

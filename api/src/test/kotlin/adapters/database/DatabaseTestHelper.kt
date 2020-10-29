@@ -54,13 +54,13 @@ object DatabaseTestHelper {
         return recipe.copy(id = id)
     }
 
-    fun createUserInDatabase(user: User, userPassword: String, hashingService: HashingService): User{
+    fun createUserInDatabase(user: User, userPassword: String, hashingService: HashingService): User {
         val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
         val id = repo.create(user = user, userPassword = userPassword)
         return user.copy(id = id)
     }
 
-    fun createRoleInDatabase(role: Role) : Role{
+    fun createRoleInDatabase(role: Role): Role {
         val repo = RoleRepositoryImpl(database = database)
         val id = repo.create(role = role)
         return role.copy(id = id)

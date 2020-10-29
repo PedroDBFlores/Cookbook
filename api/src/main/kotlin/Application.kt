@@ -1,8 +1,5 @@
 import com.sksamuel.hoplite.ConfigLoader
-import com.sksamuel.hoplite.EnvironmentVariablesPropertySource
-import com.typesafe.config.ConfigFactory
 import config.ConfigurationFile
-import io.ktor.config.*
 import io.ktor.util.*
 import org.flywaydb.core.Flyway
 import server.CookbookApi

@@ -40,54 +40,54 @@ fun Routing.optionsRoutes() {
         response.header("Access-Control-Allow-Methods", allowedMethods)
         respond(HttpStatusCode.OK)
     }
-    
-    //Recipe type
+
+    // Recipe type
     options("recipetype") {
         call.handleOptionsHeaders("GET,POST,PUT")
     }
     options("recipetype/{id}") {
-        call.handleOptionsHeaders( "GET,DELETE")
+        call.handleOptionsHeaders("GET,DELETE")
     }
 
-    //Recipe
+    // Recipe
     options("recipe") {
-        call.handleOptionsHeaders( "GET,POST,PUT")
+        call.handleOptionsHeaders("GET,POST,PUT")
     }
     options("recipe/{id}") {
         call.handleOptionsHeaders("GET,DELETE")
     }
     options("recipe/search") {
-        call.handleOptionsHeaders( "POST")
+        call.handleOptionsHeaders("POST")
     }
 
-    //User
+    // User
     options("user") {
-        call.handleOptionsHeaders( "POST,PUT")
+        call.handleOptionsHeaders("POST,PUT")
     }
     options("user/{id}") {
-        call.handleOptionsHeaders( "GET,DELETE")
+        call.handleOptionsHeaders("GET,DELETE")
     }
     options("user/login") {
         call.handleOptionsHeaders("POST")
     }
 
-    //Role
+    // Role
     options("role") {
-        call.handleOptionsHeaders( "GET,POST,PUT")
+        call.handleOptionsHeaders("GET,POST,PUT")
     }
     options("role/{id}") {
-        call.handleOptionsHeaders( "GET,DELETE")
+        call.handleOptionsHeaders("GET,DELETE")
     }
 
-    //User roles
+    // User roles
     options("userroles") {
-        call.handleOptionsHeaders( "POST")
+        call.handleOptionsHeaders("POST")
     }
     options("userroles/{userId}") {
-        call.handleOptionsHeaders( "GET")
+        call.handleOptionsHeaders("GET")
     }
     options("userroles/{userId}/{roleId}") {
-        call.handleOptionsHeaders( "DELETE")
+        call.handleOptionsHeaders("DELETE")
     }
 }
 
@@ -136,7 +136,7 @@ fun Routing.recipeRoutes() {
             val useCase by call.di().instance<FindRecipe>()
             FindRecipeHandler(useCase).handle(call)
         }
-        post("search"){
+        post("search") {
             val useCase by call.di().instance<SearchRecipe>()
             SearchRecipeHandler(useCase).handle(call)
         }

@@ -58,7 +58,7 @@ object JsonHelpers {
 
     fun createJSONObject(vararg properties: Pair<String, Any?>) = createJSONObject(mapOf(*properties))
 
-    //Extension methods
+    // Extension methods
     inline fun <reified T> String.transformInto() = ObjectMapper().registerModule(KotlinModule()).readValue<T>(this)
 
     fun String.getJsonValue(key: String) = run {

@@ -32,10 +32,12 @@ internal class AddRoleToUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(addRoleToUser)) {
-                with(handleRequest(HttpMethod.Post, "/userroles") {
-                    setBody(requestBody)
-                    addHeader("Content-Type", "application/json")
-                }) {
+                with(
+                    handleRequest(HttpMethod.Post, "/userroles") {
+                        setBody(requestBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Created)
                     verify(exactly = 1) {
                         addRoleToUser(AddRoleToUser.Parameters(1, 2))
@@ -53,10 +55,12 @@ internal class AddRoleToUserHandlerTest : DescribeSpec({
                 val addRoleToUser = mockk<AddRoleToUser>()
 
                 withTestApplication(moduleFunction = createTestServer(addRoleToUser)) {
-                    with(handleRequest(HttpMethod.Post, "/userroles") {
-                        setBody(requestBody)
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/userroles") {
+                            setBody(requestBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { addRoleToUser wasNot called }
                     }

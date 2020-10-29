@@ -1,9 +1,8 @@
 package usecases.user
 
-import errors.WrongCredentials
 import errors.UserNotFound
+import errors.WrongCredentials
 import model.Credentials
-import model.User
 import ports.HashingService
 import ports.JWTManager
 import ports.UserRepository

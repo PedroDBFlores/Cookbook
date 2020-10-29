@@ -15,7 +15,7 @@ import server.modules.contentNegotiationModule
 import usecases.role.GetAllRoles
 import utils.JsonHelpers.toJson
 
-internal class GetAllRolesHandlerTest: DescribeSpec({
+internal class GetAllRolesHandlerTest : DescribeSpec({
     fun createTestServer(getAllRoles: GetAllRoles): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
@@ -27,7 +27,8 @@ internal class GetAllRolesHandlerTest: DescribeSpec({
         it("gets all the roles") {
             val expectedRoles = listOf(
                 Role(id = 1, name = "User", code = "USER"),
-                Role(id = 1, name = "Admin", code = "ADMIN"))
+                Role(id = 1, name = "Admin", code = "ADMIN")
+            )
             val getAllRoles = mockk<GetAllRoles> {
                 every { this@mockk() } returns expectedRoles
             }

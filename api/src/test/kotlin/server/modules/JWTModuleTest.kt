@@ -46,10 +46,15 @@ class JWTModuleTest : DescribeSpec({
             )
         )
         val applicationUser = User(
-            id = 123, name = "John Doe", userName = "johnDoe", roles = listOf(ApplicationRoles.USER.name)
+            id = 123,
+            name = "John Doe",
+            userName = "johnDoe",
+            roles = listOf(ApplicationRoles.USER.name)
         )
         val applicationAdmin = User(
-            id = 456, name = "Jane Doe", userName = "janeDoe",
+            id = 456,
+            name = "Jane Doe",
+            userName = "janeDoe",
             roles = listOf(
                 ApplicationRoles.USER.name,
                 ApplicationRoles.ADMIN.name
@@ -80,9 +85,11 @@ class JWTModuleTest : DescribeSpec({
             ).forEach { (token, description) ->
                 it("allows the request through $description") {
                     withTestApplication(moduleFunction = createTestServer()) {
-                        with(handleRequest(HttpMethod.Get, "/userRoute") {
-                            addHeader("Authorization", "Bearer $token")
-                        }) {
+                        with(
+                            handleRequest(HttpMethod.Get, "/userRoute") {
+                                addHeader("Authorization", "Bearer $token")
+                            }
+                        ) {
                             response.status().shouldBe(HttpStatusCode.Accepted)
                             principal<UserPrincipal>().shouldNotBeNull()
                             verify(exactly = 1) { userJwtManager.validate(any()) }
@@ -96,9 +103,11 @@ class JWTModuleTest : DescribeSpec({
                 val token = userJwtManager.generateToken(User(id = 999, name = "Who", userName = "isThisGuy?"))
 
                 withTestApplication(moduleFunction = createTestServer()) {
-                    with(handleRequest(HttpMethod.Get, "/userRoute") {
-                        addHeader("Authorization", "Bearer $token")
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Get, "/userRoute") {
+                            addHeader("Authorization", "Bearer $token")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.Unauthorized)
                         principal<UserPrincipal>().shouldBeNull()
                         verify(exactly = 0) { userJwtManager.validate(any()) }
@@ -128,9 +137,11 @@ class JWTModuleTest : DescribeSpec({
                 val token = adminJwtManager.generateToken(applicationAdmin)
 
                 withTestApplication(moduleFunction = createTestServer()) {
-                    with(handleRequest(HttpMethod.Get, "/adminRoute") {
-                        addHeader("Authorization", "Bearer $token")
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Get, "/adminRoute") {
+                            addHeader("Authorization", "Bearer $token")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.NoContent)
                         principal<UserPrincipal>().shouldNotBeNull()
                         verify(exactly = 1) { adminJwtManager.validate(any()) }
@@ -143,9 +154,11 @@ class JWTModuleTest : DescribeSpec({
                 val token = adminJwtManager.generateToken(applicationUser)
 
                 withTestApplication(moduleFunction = createTestServer()) {
-                    with(handleRequest(HttpMethod.Get, "/adminRoute") {
-                        addHeader("Authorization", "Bearer $token")
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Get, "/adminRoute") {
+                            addHeader("Authorization", "Bearer $token")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.Unauthorized)
                         principal<UserPrincipal>().shouldBeNull()
                         verify(exactly = 0) { adminJwtManager.validate(any()) }

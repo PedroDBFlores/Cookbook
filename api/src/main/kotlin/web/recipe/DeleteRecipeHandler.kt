@@ -13,7 +13,7 @@ class DeleteRecipeHandler(private val deleteRecipe: DeleteRecipe) : KtorHandler 
     override suspend fun handle(call: ApplicationCall) {
         try {
             val recipeId = call.parameters.getOrFail<Int>("id")
-            require(recipeId > 0) { throw BadRequestException("Path param 'id' must be bigger than 0")}
+            require(recipeId > 0) { throw BadRequestException("Path param 'id' must be bigger than 0") }
 
             deleteRecipe(DeleteRecipe.Parameters(recipeId))
             call.respond(HttpStatusCode.NoContent)

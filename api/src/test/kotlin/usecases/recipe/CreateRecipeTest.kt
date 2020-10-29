@@ -25,14 +25,16 @@ internal class CreateRecipeTest : DescribeSpec({
             }
 
             val createRecipe = CreateRecipe(recipeRepository)
-            val recipeId = createRecipe(CreateRecipe.Parameters(
-                recipeTypeId = 1,
-                userId = 1,
-                name = "Recipe Name",
-                description = "Recipe description",
-                ingredients = "Oh so many ingredients",
-                preparingSteps = "This will be so easy..."
-            ))
+            val recipeId = createRecipe(
+                CreateRecipe.Parameters(
+                    recipeTypeId = 1,
+                    userId = 1,
+                    name = "Recipe Name",
+                    description = "Recipe description",
+                    ingredients = "Oh so many ingredients",
+                    preparingSteps = "This will be so easy..."
+                )
+            )
 
             recipeId.shouldBe(1)
             verify(exactly = 1) { recipeRepository.create(expectedRecipe) }

@@ -27,7 +27,7 @@ class UserRepositoryImpl(
     override fun create(user: User, userPassword: String): Int = transaction(database) {
         UserEntity.new {
             name = user.name
-            userName= user.userName
+            userName = user.userName
             passwordHash = hashingService.hash(userPassword)
         }.id.value
     }

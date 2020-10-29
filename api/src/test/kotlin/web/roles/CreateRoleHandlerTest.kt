@@ -16,7 +16,6 @@ import model.CreateResult
 import model.Role
 import server.modules.contentNegotiationModule
 import usecases.role.CreateRole
-import utils.JsonHelpers
 import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
 
@@ -41,11 +40,12 @@ internal class CreateRoleHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(createRole)) {
-                with(handleRequest(HttpMethod.Post, "/role") {
-                    setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/role") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
                     verify(exactly = 1) { createRole(CreateRole.Parameters(expectedRole.name, expectedRole.code)) }
@@ -67,11 +67,12 @@ internal class CreateRoleHandlerTest : DescribeSpec({
                 val createRole = mockk<CreateRole>()
 
                 withTestApplication(moduleFunction = createTestServer(createRole)) {
-                    with(handleRequest(HttpMethod.Post, "/role") {
-                        setBody(requestBody)
-                        addHeader("Content-Type", "application/json")
-
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/role") {
+                            setBody(requestBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { createRole wasNot Called }
                     }

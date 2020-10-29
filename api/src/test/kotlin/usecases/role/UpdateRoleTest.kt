@@ -20,11 +20,13 @@ internal class UpdateRoleTest : DescribeSpec({
             }
             val updateRole = UpdateRole(roleRepository)
 
-            updateRole(UpdateRole.Parameters(
-                id = basicRole.id,
-                name = basicRole.name,
-                code = basicRole.code
-            ))
+            updateRole(
+                UpdateRole.Parameters(
+                    id = basicRole.id,
+                    name = basicRole.name,
+                    code = basicRole.code
+                )
+            )
 
             verify(exactly = 1) {
                 roleRepository.find(basicRole.id)
@@ -38,11 +40,15 @@ internal class UpdateRoleTest : DescribeSpec({
             }
             val updateRole = UpdateRole(roleRepository)
 
-            val act = { updateRole(UpdateRole.Parameters(
-                id = basicRole.id,
-                name = basicRole.name,
-                code = basicRole.code
-            )) }
+            val act = {
+                updateRole(
+                    UpdateRole.Parameters(
+                        id = basicRole.id,
+                        name = basicRole.name,
+                        code = basicRole.code
+                    )
+                )
+            }
 
             val roleNotFound = shouldThrow<RoleNotFound>(act)
             roleNotFound.message.shouldBe("Role with id '${basicRole.id}' not found")
@@ -60,11 +66,15 @@ internal class UpdateRoleTest : DescribeSpec({
             }
             val updateRole = UpdateRole(roleRepository)
 
-            val act = { updateRole(UpdateRole.Parameters(
-                id = basicRole.id,
-                name = basicRole.name,
-                code = basicRole.code
-            )) }
+            val act = {
+                updateRole(
+                    UpdateRole.Parameters(
+                        id = basicRole.id,
+                        name = basicRole.name,
+                        code = basicRole.code
+                    )
+                )
+            }
 
             val roleNotFound = shouldThrow<OperationNotAllowed>(act)
             roleNotFound.message.shouldBe("Cannot update a persistent role")

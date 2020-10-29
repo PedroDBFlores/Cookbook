@@ -32,5 +32,4 @@ object RecipeTypeActions {
         uri = URI("$baseUrl/recipetype/$id"),
         headers = arrayOf(Pair("Authorization", "Bearer $jwtToken"))
     )
-
 }

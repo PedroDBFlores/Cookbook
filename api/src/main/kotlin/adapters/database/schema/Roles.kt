@@ -11,8 +11,8 @@ object Roles : IntIdTable() {
     val persistent = bool("persistent")
 }
 
-class RoleEntity (id: EntityID<Int>) : IntEntity(id) {
-    companion object: IntEntityClass<RoleEntity>(Roles)
+class RoleEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<RoleEntity>(Roles)
     var name by Roles.name
     var code by Roles.code
     var persistent by Roles.persistent

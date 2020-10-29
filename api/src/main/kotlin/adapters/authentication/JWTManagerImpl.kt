@@ -42,13 +42,12 @@ class JWTManagerImpl(
     }
 
     override fun validate(jwtCredential: JWTCredential): UserPrincipal? {
-        return if (jwtCredential.payload.issuer == domain
-            && jwtCredential.payload.audience.contains(audience)
+        return if (jwtCredential.payload.issuer == domain &&
+            jwtCredential.payload.audience.contains(audience)
         ) {
             jwtCredential.toUserPrincipal()
         } else null
     }
 
     override fun decodeToken(token: String): DecodedJWT = JWT.decode(token)
-
 }

@@ -24,6 +24,4 @@ class UpdateRecipeTypeHandler(private val updateRecipeType: UpdateRecipeType) : 
 
         fun toParameters() = UpdateRecipeType.Parameters(id = id, name = name)
     }
-
-
 }

@@ -1,6 +1,5 @@
 package web.userroles
 
-import errors.UserNotFound
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -36,9 +35,11 @@ internal class GetUserRolesHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(getUserRoles)) {
-                with(handleRequest(HttpMethod.Get, "/userroles/${userId}") {
-                    addHeader("Content-Type", "application/json")
-                }) {
+                with(
+                    handleRequest(HttpMethod.Get, "/userroles/$userId") {
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedUserRoles.toJson())
                     verify(exactly = 1) { getUserRoles(GetUserRoles.Parameters(userId)) }

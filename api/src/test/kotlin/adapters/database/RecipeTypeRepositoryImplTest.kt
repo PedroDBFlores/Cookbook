@@ -103,7 +103,6 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
                 updatedRecipeType.shouldNotBeNull()
                 updatedRecipeType.name.shouldBe("Arroz")
             }
-
         }
 
         it("deletes a recipe type from the database") {

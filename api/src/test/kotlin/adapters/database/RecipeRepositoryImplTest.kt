@@ -165,13 +165,14 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 row("", null, "when the name is empty"),
                 row(null, "", "when the description is empty")
             ).forEach { (name, description, testDescription) ->
-                it("returns all the values $testDescription"){
+                it("returns all the values $testDescription") {
                     val createdRecipes = createRecipes(5)
 
                     val repo = RecipeRepositoryImpl(database = database)
 
                     val searchResult = repo.search(
-                        pageNumber = 0, itemsPerPage = 10,
+                        pageNumber = 0,
+                        itemsPerPage = 10,
                         name = name,
                         description = description,
                         recipeTypeId = null
@@ -193,7 +194,8 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                     val repo = RecipeRepositoryImpl(database = database)
 
                     val searchResult = repo.search(
-                        pageNumber = pageNumber, itemsPerPage = itemsPerPage,
+                        pageNumber = pageNumber,
+                        itemsPerPage = itemsPerPage,
                         name = null,
                         description = null,
                         recipeTypeId = null
@@ -242,13 +244,16 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 row(
                     basicRecipe.copy(name = "a".repeat(129)),
                     "name exceeds the size limit"
-                ), row(
+                ),
+                row(
                     basicRecipe.copy(description = "b".repeat(257)),
                     "description exceeds the size limit"
-                ), row(
+                ),
+                row(
                     basicRecipe.copy(ingredients = "c".repeat(2049)),
                     "ingredients exceeds the size limit"
-                ), row(
+                ),
+                row(
                     basicRecipe.copy(preparingSteps = "d".repeat(4097)),
                     "preparingSteps exceeds the size limit"
                 )

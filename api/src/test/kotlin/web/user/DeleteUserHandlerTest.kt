@@ -19,7 +19,7 @@ internal class DeleteUserHandlerTest : DescribeSpec({
 
     describe("Delete user handler") {
         it("deletes a user") {
-            val deleteUser = mockk<DeleteUser>{
+            val deleteUser = mockk<DeleteUser> {
                 every { this@mockk(DeleteUser.Parameters(88)) } just runs
             }
 

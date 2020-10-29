@@ -8,17 +8,17 @@ import io.mockk.every
 import io.mockk.mockk
 
 class UserPrincipalTest : DescribeSpec({
-    describe("User Principal test"){
-        it("Transforms the JWT credentials into a UserPrincipal"){
-            val jwtCredential = mockk<JWTCredential>{
+    describe("User Principal test") {
+        it("Transforms the JWT credentials into a UserPrincipal") {
+            val jwtCredential = mockk<JWTCredential> {
                 every { payload.subject } returns "1234"
-                every { payload.getClaim("name") } returns mockk{
+                every { payload.getClaim("name") } returns mockk {
                     every { asString() } returns "John Doe"
                 }
-                every { payload.getClaim("userName") } returns mockk{
-                    every {  asString() } returns "JohnDoe"
+                every { payload.getClaim("userName") } returns mockk {
+                    every { asString() } returns "JohnDoe"
                 }
-                every { payload.getClaim("roles") } returns mockk{
+                every { payload.getClaim("roles") } returns mockk {
                     every { asList(String::class.java) } returns listOf("User")
                 }
             }

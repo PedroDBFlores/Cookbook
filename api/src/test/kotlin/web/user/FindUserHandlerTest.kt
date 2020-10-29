@@ -1,6 +1,5 @@
 package web.user
 
-import errors.UserNotFound
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -34,9 +33,11 @@ internal class FindUserHandlerTest : DescribeSpec({
                 every { this@mockk(FindUser.Parameters(expectedUser.id)) } returns expectedUser
             }
             withTestApplication(moduleFunction = createTestServer(findUser)) {
-                with(handleRequest(HttpMethod.Get, "/user/${expectedUser.id}") {
-                    addHeader("Content-Type", "application/json")
-                }) {
+                with(
+                    handleRequest(HttpMethod.Get, "/user/${expectedUser.id}") {
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedUser.toJson())
                     verify(exactly = 1) { findUser(FindUser.Parameters(expectedUser.id)) }

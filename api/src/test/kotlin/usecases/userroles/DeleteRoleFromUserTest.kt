@@ -24,7 +24,7 @@ internal class DeleteRoleFromUserTest : DescribeSpec({
             verify { userRolesRepository.deleteRoleFromUser(userId, roleId) }
         }
 
-        it("throws 'UserRoleNotFound' when no rows are affected"){
+        it("throws 'UserRoleNotFound' when no rows are affected") {
             val userId = 1
             val roleId = 7
             val userRolesRepository = mockk<UserRolesRepository> {
@@ -32,7 +32,7 @@ internal class DeleteRoleFromUserTest : DescribeSpec({
             }
             val deleteRoleFromUser = DeleteRoleFromUser(userRolesRepository)
 
-            val act = { deleteRoleFromUser(DeleteRoleFromUser.Parameters(userId, roleId))}
+            val act = { deleteRoleFromUser(DeleteRoleFromUser.Parameters(userId, roleId)) }
 
             val userRoleNotFound = shouldThrow<UserRoleNotFound>(act)
             userRoleNotFound.message.shouldBe(UserRoleNotFound(userId, roleId).message)

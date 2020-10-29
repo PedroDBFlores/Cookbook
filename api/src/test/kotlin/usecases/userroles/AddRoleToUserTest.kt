@@ -95,7 +95,7 @@ internal class AddRoleToUserTest : DescribeSpec({
                 roleRepository.find(roleId)
             }
             verify {
-               userRolesRepository wasNot Called
+                userRolesRepository wasNot Called
             }
         }
     }

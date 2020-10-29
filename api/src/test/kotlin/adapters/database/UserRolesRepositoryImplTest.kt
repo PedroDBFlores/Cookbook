@@ -64,7 +64,7 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
                 repo.addRoleToUser(userId = user.id, roleId = role.id)
 
                 val createdUserRole = repo.getRolesForUser(userId = user.id).first { ur -> ur.roleId == role.id }
-                createdUserRole.shouldBe(UserRole(userId = user.id, roleId = role.id ))
+                createdUserRole.shouldBe(UserRole(userId = user.id, roleId = role.id))
             }
 
             arrayOf(
@@ -72,7 +72,8 @@ internal class UserRolesRepositoryImplTest : DescribeSpec({
                     { createUserInDatabase(basicUser, "password", mockk(relaxed = true)) },
                     { null },
                     "when there's no matching role"
-                ), row({ null }, { createRoleInDatabase(secondRole) }, "when there's no matching user")
+                ),
+                row({ null }, { createRoleInDatabase(secondRole) }, "when there's no matching user")
             ).forEach { (createUser: () -> User?, createRole: () -> Role?, description) ->
                 it("should throw $description") {
                     val user = createUser()

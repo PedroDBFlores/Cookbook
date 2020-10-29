@@ -5,13 +5,13 @@ RUN mkdir -p /usr/src/app/cookbook-api
 COPY ./api/build.gradle.kts /usr/src/app/cookbook-api
 COPY ./api/gradle.properties /usr/src/app/cookbook-api
 WORKDIR /usr/src/app/cookbook-api
-RUN gradle build -i --stacktrace
+RUN gradle build -i
 
 FROM gradle:6.6-jdk11 as build
 COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
 WORKDIR /usr/src/app/cookbook-api
 COPY ./api ./
-RUN gradle shadowJar -i --stacktrace
+RUN gradle shadowJar -i
 
 # Deploy project step
 FROM openjdk:11-jre-slim as run

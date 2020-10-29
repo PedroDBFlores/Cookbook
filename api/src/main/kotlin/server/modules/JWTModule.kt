@@ -5,7 +5,6 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.response.*
-import model.User
 import ports.JWTManager
 
 fun Application.jwtModule(userJwtManager: JWTManager, adminJWTManager: JWTManager) {
@@ -15,7 +14,6 @@ fun Application.jwtModule(userJwtManager: JWTManager, adminJWTManager: JWTManage
             verifier(userJwtManager.verifier)
             validate { call -> userJwtManager.validate(call) }
             challenge { defaultScheme, realm -> handleChallenge(defaultScheme, realm, call) }
-
         }
         jwt("admin") {
             realm = adminJWTManager.realm

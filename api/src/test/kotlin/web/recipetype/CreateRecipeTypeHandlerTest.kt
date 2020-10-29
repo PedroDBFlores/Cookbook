@@ -15,7 +15,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import model.CreateResult
-import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.CreateRecipeType
 import utils.JsonHelpers.createJSONObject
@@ -38,11 +37,12 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Post, "/recipetype") {
-                    setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/recipetype") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Created)
                     response.content.shouldMatchJson(CreateResult(1).toJson())
                     verify(exactly = 1) { createRecipeTypeMock(CreateRecipeType.Parameters("Recipe type")) }
@@ -74,17 +74,17 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
                 val createRecipeType = mockk<CreateRecipeType>()
 
                 withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
-                    with(handleRequest(HttpMethod.Post, "/recipetype") {
-                        setBody(requestBody)
-                        addHeader("Content-Type", "application/json")
-
-                    }) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/recipetype") {
+                            setBody(requestBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { createRecipeType wasNot called }
                     }
                 }
             }
         }
-
     }
 })

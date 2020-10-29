@@ -29,14 +29,18 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
             it("receives and returns the body as an object when it's successful") {
                 val jsonBody = ExampleClass(1, "Marco").toJson()
 
-                withTestApplication(moduleFunction = {
-                    contentNegotiationModule()
-                    routing { post("*") { receivedBodyHandlerWithValidation(call) } }
-                }) {
-                    with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                withTestApplication(
+                    moduleFunction = {
+                        contentNegotiationModule()
+                        routing { post("*") { receivedBodyHandlerWithValidation(call) } }
+                    }
+                ) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/something") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.OK)
                         response.content.shouldMatchJson(jsonBody)
                     }
@@ -44,28 +48,36 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
             }
 
             it("throws a BadRequestException if isn't able to transform the JSON") {
-                withTestApplication(moduleFunction = {
-                    contentNegotiationModule()
-                    routing { post("*") { receivedBodyHandlerWithValidation(call) } }
-                }) {
-                    with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(createJSONObject(mapOf("non" to "conforming")))
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                withTestApplication(
+                    moduleFunction = {
+                        contentNegotiationModule()
+                        routing { post("*") { receivedBodyHandlerWithValidation(call) } }
+                    }
+                ) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/something") {
+                            setBody(createJSONObject(mapOf("non" to "conforming")))
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                     }
                 }
             }
 
             it("throws a BadRequestException when the validation fails") {
-                withTestApplication(moduleFunction = {
-                    contentNegotiationModule()
-                    routing { post("*") { receivedBodyHandlerWithValidation(call) } }
-                }) {
-                    with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(ExampleClass(99, "Polo").toJson())
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                withTestApplication(
+                    moduleFunction = {
+                        contentNegotiationModule()
+                        routing { post("*") { receivedBodyHandlerWithValidation(call) } }
+                    }
+                ) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/something") {
+                            setBody(ExampleClass(99, "Polo").toJson())
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                     }
                 }
@@ -88,14 +100,18 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
             it("receives and returns the body as an object when it's successful") {
                 val jsonBody = ExampleClass(1, "Marco").toJson()
 
-                withTestApplication(moduleFunction = {
-                    contentNegotiationModule()
-                    routing { post("*") { receivedBodyHandler(call) } }
-                }) {
-                    with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                withTestApplication(
+                    moduleFunction = {
+                        contentNegotiationModule()
+                        routing { post("*") { receivedBodyHandler(call) } }
+                    }
+                ) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/something") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.OK)
                         response.content.shouldMatchJson(jsonBody)
                     }
@@ -103,35 +119,43 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
             }
 
             it("throws a BadRequestException if isn't able to transform the JSON") {
-                withTestApplication(moduleFunction = {
-                    contentNegotiationModule()
-                    routing { post("*") { receivedBodyHandler(call) } }
-                }) {
-                    with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(createJSONObject(mapOf("non" to "conforming")))
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                withTestApplication(
+                    moduleFunction = {
+                        contentNegotiationModule()
+                        routing { post("*") { receivedBodyHandler(call) } }
+                    }
+                ) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/something") {
+                            setBody(createJSONObject(mapOf("non" to "conforming")))
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                     }
                 }
             }
 
             it("throws a BadRequestException if the init fails") {
-                withTestApplication(moduleFunction = {
-                    contentNegotiationModule()
-                    routing { post("*") { receivedBodyHandler(call) } }
-                }) {
-                    with(handleRequest(HttpMethod.Post, "/something") {
-                        setBody(
-                            createJSONObject(
-                                mapOf(
-                                    "id" to 100,
-                                    "name" to "Polo"
+                withTestApplication(
+                    moduleFunction = {
+                        contentNegotiationModule()
+                        routing { post("*") { receivedBodyHandler(call) } }
+                    }
+                ) {
+                    with(
+                        handleRequest(HttpMethod.Post, "/something") {
+                            setBody(
+                                createJSONObject(
+                                    mapOf(
+                                        "id" to 100,
+                                        "name" to "Polo"
+                                    )
                                 )
                             )
-                        )
-                        addHeader("Content-Type", "application/json")
-                    }) {
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                     }
                 }

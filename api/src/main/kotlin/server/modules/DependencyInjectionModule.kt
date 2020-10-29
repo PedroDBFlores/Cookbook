@@ -7,7 +7,6 @@ import adapters.database.*
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.application.*
-import model.User
 import org.jetbrains.exposed.sql.Database
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -83,7 +82,7 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
     }
 
     di {
-        //Common
+        // Common
         bind<HashingService>() with singleton { BcryptHashingService() }
         bind<ConfigurationFile>() with singleton { configuration }
         bind<JWTManager>("userJWTManager") with singleton {

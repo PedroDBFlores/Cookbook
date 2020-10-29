@@ -1,7 +1,7 @@
 package usecases.user
 
-import errors.WrongCredentials
 import errors.UserNotFound
+import errors.WrongCredentials
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe

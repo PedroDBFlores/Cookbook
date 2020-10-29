@@ -12,8 +12,8 @@ import usecases.recipe.FindRecipe
 class FindRecipeHandler(private val findRecipe: FindRecipe) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
         try {
-            val recipeId =  call.parameters.getOrFail<Int>("id")
-            require(recipeId > 0) { throw BadRequestException("Path param 'id' must be bigger than 0")}
+            val recipeId = call.parameters.getOrFail<Int>("id")
+            require(recipeId > 0) { throw BadRequestException("Path param 'id' must be bigger than 0") }
 
             val recipe = findRecipe(FindRecipe.Parameters(recipeId))
             call.respond(HttpStatusCode.OK, recipe)

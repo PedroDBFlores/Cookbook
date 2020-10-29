@@ -1,8 +1,8 @@
 package journeys
 
+import actions.UserActions
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
-import actions.UserActions
 import io.kotest.assertions.json.shouldContainJsonKey
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -69,5 +69,4 @@ class CreateAndLoginUserJourney : BehaviorSpec({
             }
         }
     }
-
 })

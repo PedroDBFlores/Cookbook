@@ -35,18 +35,19 @@ internal class UpdateUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateUser)) {
-                with(handleRequest(HttpMethod.Put, "/user") {
-                    setBody(
-                        createJSONObject(
-                            "id" to 7,
-                            "name" to "newName",
-                            "oldPassword" to null,
-                            "newPassword" to null
+                with(
+                    handleRequest(HttpMethod.Put, "/user") {
+                        setBody(
+                            createJSONObject(
+                                "id" to 7,
+                                "name" to "newName",
+                                "oldPassword" to null,
+                                "newPassword" to null
+                            )
                         )
-                    )
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     verify(exactly = 1) { updateUser(UpdateUser.Parameters(7, "newName")) }
                 }
@@ -59,11 +60,12 @@ internal class UpdateUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateUser)) {
-                with(handleRequest(HttpMethod.Put, "/user") {
-                    setBody(updateUserRequestBody.toJson())
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Put, "/user") {
+                        setBody(updateUserRequestBody.toJson())
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     verify(exactly = 1) { updateUser(UpdateUser.Parameters(1, "newName", "old", "new")) }
                 }
@@ -84,11 +86,12 @@ internal class UpdateUserHandlerTest : DescribeSpec({
                 val updateUser = mockk<UpdateUser>()
                 println(jsonBody)
                 withTestApplication(moduleFunction = createTestServer(updateUser)) {
-                    with(handleRequest(HttpMethod.Put, "/user") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    })
-                    {
+                    with(
+                        handleRequest(HttpMethod.Put, "/user") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { updateUser wasNot Called }
                     }

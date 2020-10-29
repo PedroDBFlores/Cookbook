@@ -20,10 +20,14 @@ internal class CredentialsTest : DescribeSpec({
 
         arrayOf(
             row(
-                "", "password", "the username is invalid"
+                "",
+                "password",
+                "the username is invalid"
             ),
             row(
-                "username", "", "the password is invalid"
+                "username",
+                "",
+                "the password is invalid"
             )
         ).forEach { (username, password, conditionDescription) ->
             it("throws a ValidationError when $conditionDescription") {

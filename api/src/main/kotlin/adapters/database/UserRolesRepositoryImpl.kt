@@ -26,7 +26,7 @@ class UserRolesRepositoryImpl(private val database: Database) : UserRolesReposit
     }
 
     private fun mapToUserRole(row: ResultRow): UserRole = UserRole(
-            userId = row[UserRoles.userId].value,
-            roleId = row[UserRoles.roleId].value
-        )
+        userId = row[UserRoles.userId].value,
+        roleId = row[UserRoles.roleId].value
+    )
 }

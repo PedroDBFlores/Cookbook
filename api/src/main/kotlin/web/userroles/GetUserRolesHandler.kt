@@ -7,7 +7,7 @@ import io.ktor.util.*
 import ports.KtorHandler
 import usecases.userroles.GetUserRoles
 
-class GetUserRolesHandler(private val getUserRoles: GetUserRoles) : KtorHandler{
+class GetUserRolesHandler(private val getUserRoles: GetUserRoles) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
         val userId = call.parameters.getOrFail<Int>("userId")
 

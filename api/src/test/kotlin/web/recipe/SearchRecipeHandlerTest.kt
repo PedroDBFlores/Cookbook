@@ -57,11 +57,12 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
-                with(handleRequest(HttpMethod.Post, "/recipe/search") {
-                    setBody(requestBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/recipe/search") {
+                        setBody(requestBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedSearchResult.toJson())
                     verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(name = "name")) }
@@ -78,11 +79,12 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
                 val searchRecipe = mockk<SearchRecipe>()
 
                 withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
-                    with(handleRequest(HttpMethod.Post, "/recipe/search") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    })
-                    {
+                    with(
+                        handleRequest(HttpMethod.Post, "/recipe/search") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { searchRecipe wasNot Called }
                     }

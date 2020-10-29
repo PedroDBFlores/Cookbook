@@ -1,7 +1,8 @@
 package errors
 
 class RoleNotFound(
-    private val code: String? = null, private val id: Int? = null
+    private val code: String? = null,
+    private val id: Int? = null
 ) : ResourceNotFound("") {
     private val notFoundMessage by lazy {
         if (code != null) "Role with code '$code' not found" else "Role with id '$id' not found"

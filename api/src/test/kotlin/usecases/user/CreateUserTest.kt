@@ -34,7 +34,6 @@ internal class CreateUserTest : DescribeSpec({
                 userRepository.find("NewUserName")
                 userRepository.create(user = basicUser, userPassword = "PASSWORD")
             }
-
         }
 
         it("throws 'UserAlreadyExists' when a user with the same username already exists") {
@@ -44,11 +43,15 @@ internal class CreateUserTest : DescribeSpec({
             }
 
             val createUser = CreateUser(userRepository = userRepository)
-            val act = { createUser.invoke(CreateUser.Parameters(
-                name = existingUser.name,
-                userName = existingUser.userName,
-                password = "PASSWORD"
-            )) }
+            val act = {
+                createUser.invoke(
+                    CreateUser.Parameters(
+                        name = existingUser.name,
+                        userName = existingUser.userName,
+                        password = "PASSWORD"
+                    )
+                )
+            }
 
             val userAlreadyExists = shouldThrow<UserAlreadyExists>(act)
             userAlreadyExists.message.shouldBe("An user with the username 'dup' already exists")

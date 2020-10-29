@@ -23,7 +23,7 @@ class UpdateUserTest : DescribeSpec({
 
             verify(exactly = 1) {
                 userRepository.find(currentUser.id)
-                userRepository.update(currentUser.copy(name = newName),null,null)
+                userRepository.update(currentUser.copy(name = newName), null, null)
             }
         }
 

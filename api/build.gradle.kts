@@ -4,14 +4,13 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.github.ben-manes.versions") version "0.33.0"
     id("com.adarshr.test-logger") version "2.1.0"
-//    id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
-    jacoco
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 group = "pt.pedro"
 
 application {
-    mainClassName = "ApplicationKt"
+    mainClass.set("ApplicationKt")
 }
 
 repositories {
@@ -69,8 +68,8 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
-sourceSets{
-    create("testIntegration"){
+sourceSets {
+    create("testIntegration") {
         withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
             kotlin.srcDir("src/testIntegration/kotlin")
             resources.srcDir("src/testIntegration/resources")
@@ -95,18 +94,8 @@ task<Test>("testIntegration") {
     group = "verification"
     testClassesDirs = sourceSets["testIntegration"].output.classesDirs
     classpath = sourceSets["testIntegration"].runtimeClasspath
-    // mustRunAfter(tasks["test"])
 }
 
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+ktlint {
+    disabledRules.set(setOf("no-wildcard-imports"))
 }
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
-}
-
-
-//ktlint {
-//    disabledRules.set(setOf("no-wildcard-imports", "indent"))
-//}

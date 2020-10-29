@@ -8,11 +8,9 @@ import io.ktor.http.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
-import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.UpdateRecipeType
 import utils.JsonHelpers.createJSONObject
-import utils.JsonHelpers.toJson
 
 internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
@@ -34,11 +32,12 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Put, "/recipetype") {
-                    setBody(requestBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Put, "/recipetype") {
+                        setBody(requestBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     verify(exactly = 1) { updateRecipeTypeMock(UpdateRecipeType.Parameters(1, "update recipe type")) }
                 }
@@ -65,11 +64,12 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 }
 
                 withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
-                    with(handleRequest(HttpMethod.Put, "/recipetype") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    })
-                    {
+                    with(
+                        handleRequest(HttpMethod.Put, "/recipetype") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify(exactly = 0) { updateRecipeTypeMock.invoke(any()) }
                     }

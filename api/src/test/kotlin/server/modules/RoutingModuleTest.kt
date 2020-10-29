@@ -23,13 +23,13 @@ class RoutingModuleTest : DescribeSpec({
 
     fun Application.injectTestDependencies() {
         di {
-            //Recipe type
+            // Recipe type
             bind<FindRecipeType>() with singleton { mockk(relaxed = true) }
             bind<GetAllRecipeTypes>() with singleton { mockk(relaxed = true) }
             bind<CreateRecipeType>() with singleton { mockk(relaxed = true) }
             bind<UpdateRecipeType>() with singleton { mockk(relaxed = true) }
             bind<DeleteRecipeType>() with singleton { mockk(relaxed = true) }
-            //Recipe
+            // Recipe
             bind<FindRecipe>() with singleton { mockk(relaxed = true) }
             bind<GetAllRecipes>() with singleton { mockk(relaxed = true) }
             bind<CreateRecipe>() with singleton { mockk(relaxed = true) }
@@ -109,7 +109,6 @@ class RoutingModuleTest : DescribeSpec({
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Options, "/role")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,POST,PUT")
-
                 }
                 with(handleRequest(HttpMethod.Options, "/role/123")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")

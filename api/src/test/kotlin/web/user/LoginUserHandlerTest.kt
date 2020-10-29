@@ -1,7 +1,7 @@
 package web.user
 
-import errors.WrongCredentials
 import errors.UserNotFound
+import errors.WrongCredentials
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -47,11 +47,12 @@ internal class LoginUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(loginUser)) {
-                with(handleRequest(HttpMethod.Post, "/user/login") {
-                    setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/user/login") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(
                         createJSONObject("token" to "A_VALID_TOKEN")
@@ -76,11 +77,12 @@ internal class LoginUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(loginUser)) {
-                with(handleRequest(HttpMethod.Post, "/user/login") {
-                    setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/user/login") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Forbidden)
                     verify(exactly = 1) {
                         loginUser.invoke(
@@ -102,11 +104,12 @@ internal class LoginUserHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(loginUser)) {
-                with(handleRequest(HttpMethod.Post, "/user/login") {
-                    setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Post, "/user/login") {
+                        setBody(jsonBody)
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.Unauthorized)
                     verify(exactly = 1) {
                         loginUser.invoke(
@@ -136,11 +139,12 @@ internal class LoginUserHandlerTest : DescribeSpec({
                 val loginUser = mockk<LoginUser>(relaxed = true)
 
                 withTestApplication(moduleFunction = createTestServer(loginUser)) {
-                    with(handleRequest(HttpMethod.Post, "/user/login") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    })
-                    {
+                    with(
+                        handleRequest(HttpMethod.Post, "/user/login") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { loginUser wasNot called }
                     }

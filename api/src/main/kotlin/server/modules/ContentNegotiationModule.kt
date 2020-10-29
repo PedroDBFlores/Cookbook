@@ -7,7 +7,7 @@ import io.ktor.features.*
 import io.ktor.jackson.*
 
 fun Application.contentNegotiationModule() {
-    install(ContentNegotiation){
+    install(ContentNegotiation) {
         jackson {
             KotlinModule()
             enable(SerializationFeature.INDENT_OUTPUT)

@@ -56,7 +56,8 @@ internal class JWTManagerImplTest : DescribeSpec({
                     realm = "my-realm",
                     allowedRoles = listOf(ApplicationRoles.USER),
                     algorithmSecret = "secret"
-                ).generateToken(basicUser), "a token is not from the same domain"
+                ).generateToken(basicUser),
+                "a token is not from the same domain"
             ),
             row(
                 JWTManagerImpl(
@@ -65,7 +66,8 @@ internal class JWTManagerImplTest : DescribeSpec({
                     realm = "my-realm",
                     allowedRoles = listOf(ApplicationRoles.USER),
                     algorithmSecret = "secret"
-                ).generateToken(basicUser), "a token is not from the same audience"
+                ).generateToken(basicUser),
+                "a token is not from the same audience"
             ),
             row(
                 basicJwtManager.generateToken(basicUser.copy(roles = listOf("UNKNOWN"))),

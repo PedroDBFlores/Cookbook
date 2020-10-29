@@ -1,9 +1,9 @@
 package journeys
 
-import com.sksamuel.hoplite.ConfigLoader
-import config.ConfigurationFile
 import actions.RecipeTypeActions
 import actions.UserActions
+import com.sksamuel.hoplite.ConfigLoader
+import config.ConfigurationFile
 import io.kotest.assertions.json.shouldContainJsonKey
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.BehaviorSpec
@@ -40,7 +40,8 @@ class RecipeTypeJourney : BehaviorSpec({
         cookbookAPI = CookbookApi(configuration)
         cookbookAPI.start()
         UserActions.createUser(
-            baseUrl, createJSONObject(
+            baseUrl,
+            createJSONObject(
                 "name" to "basicName",
                 "userName" to "basicUser",
                 "password" to "basicPassword"

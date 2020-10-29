@@ -38,11 +38,12 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
-                with(handleRequest(HttpMethod.Put, "/recipe") {
-                    setBody(updateRecipeRepresenterMap.toJson())
-                    addHeader("Content-Type", "application/json")
-                })
-                {
+                with(
+                    handleRequest(HttpMethod.Put, "/recipe") {
+                        setBody(updateRecipeRepresenterMap.toJson())
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     verify(exactly = 1) { updateRecipe(any()) }
                 }
@@ -86,11 +87,12 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                 }
 
                 withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
-                    with(handleRequest(HttpMethod.Put, "/recipe") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    })
-                    {
+                    with(
+                        handleRequest(HttpMethod.Put, "/recipe") {
+                            setBody(jsonBody)
+                            addHeader("Content-Type", "application/json")
+                        }
+                    ) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { updateRecipe wasNot called }
                     }

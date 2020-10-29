@@ -15,8 +15,8 @@ object Recipes : IntIdTable() {
     val preparingSteps: Column<String> = varchar("preparingsteps", 4096)
 }
 
-class RecipeEntity (id: EntityID<Int>) : IntEntity(id) {
-    companion object: IntEntityClass<RecipeEntity>(Recipes)
+class RecipeEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<RecipeEntity>(Recipes)
     var recipeType by RecipeTypeEntity referencedOn Recipes.recipeType
     var user by UserEntity referencedOn Recipes.user
     var name by Recipes.name

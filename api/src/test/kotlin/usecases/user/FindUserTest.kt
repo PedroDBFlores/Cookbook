@@ -13,7 +13,7 @@ import ports.UserRepository
 internal class FindUserTest : DescribeSpec({
     describe("Find user use case") {
         it("returns a user") {
-            val expectedUser =  User(id = 1, name = "New user", userName = "NewUserName")
+            val expectedUser = User(id = 1, name = "New user", userName = "NewUserName")
             val userRepository = mockk<UserRepository> {
                 every { find(expectedUser.id) } returns expectedUser
             }
