@@ -6,9 +6,16 @@ import {renderWithRoutes} from "../../../../tests/render"
 import userEvent from "@testing-library/user-event"
 
 describe("Recipe search list component", () => {
-    beforeEach(() => {
-        jest.clearAllMocks()
-    })
+    const expectedRecipes = [
+        generateRecipeDetails(),
+        generateRecipeDetails()
+    ]
+
+    const searchResult = {
+        count: expectedRecipes.length,
+        numberOfPages: 1,
+        results: expectedRecipes
+    }
 
     describe("Render", () => {
         it("shows 'No matching recipes' when there are no recipes", () => {
@@ -57,20 +64,9 @@ describe("Recipe search list component", () => {
     })
 
     describe("Pagination", () => {
-        const expectedRecipes = [
-            generateRecipeDetails(),
-            generateRecipeDetails()
-        ]
-
-        const basicSearchResult = {
-            count: expectedRecipes.length,
-            numberOfPages: 1,
-            results: expectedRecipes
-        }
-
         test.each([
-            ["has results", basicSearchResult],
-            ["doesn't have results", {...basicSearchResult, count: 0, results: []}]
+            ["has results", searchResult],
+            ["doesn't have results", {...searchResult, count: 0, results: []}]
         ])("it has the pagination element when it %s", (_, searchResult) => {
             render(<RecipeSearchList searchResult={searchResult} onNumberOfRowsChange={jest.fn()} onDelete={jest.fn()}
                                      onPageChange={jest.fn()}/>)
@@ -81,8 +77,8 @@ describe("Recipe search list component", () => {
         })
 
         test.each([
-            ["1-2 of 2", basicSearchResult],
-            ["1-10 of 500", {...basicSearchResult, count: 500, numberOfPages: 50}]
+            ["1-2 of 2", searchResult],
+            ["1-10 of 500", {...searchResult, count: 500, numberOfPages: 50}]
         ])("has the correct number of elements (%s)", (expectedElements, searchResult) => {
             render(<RecipeSearchList searchResult={searchResult} onDelete={jest.fn()} onNumberOfRowsChange={jest.fn()}
                                      onPageChange={jest.fn()}/>)
@@ -90,76 +86,53 @@ describe("Recipe search list component", () => {
             expect(screen.getByText(expectedElements)).toBeInTheDocument()
         })
 
-        describe("on page change", () => {
+        it("calls the 'onPageChange' when the page changing buttons are pressed", () => {
             const onPageChangeMock = jest.fn()
             const searchResult = {
                 count: 100,
                 numberOfPages: 10,
                 results: []
             }
+            render(<RecipeSearchList
+                searchResult={searchResult}
+                onDelete={jest.fn()}
+                onNumberOfRowsChange={jest.fn()}
+                onPageChange={onPageChangeMock}/>)
 
-            beforeEach(() => {
-                onPageChangeMock.mockClear()
-            })
+            userEvent.click(screen.getByLabelText(/Go to next page/i))
+            expect(onPageChangeMock).toHaveBeenCalledWith(1)
 
-            it("calls the 'onPageChange' when the page changing buttons are pressed", () => {
-                render(<RecipeSearchList
-                    searchResult={searchResult}
-                    onDelete={jest.fn()}
-                    onNumberOfRowsChange={jest.fn()}
-                    onPageChange={onPageChangeMock}/>)
+            userEvent.click(screen.getByLabelText(/Go to previous page/i))
+            expect(onPageChangeMock).toHaveBeenCalledWith(0)
+        })
 
-                userEvent.click(screen.getByLabelText(/Go to next page/i))
-                expect(onPageChangeMock).toHaveBeenCalledWith(1)
+        test.each([
+            [10], [20], [50]
+        ])("changes the number of rows to %s", async (numberOfItems) => {
+            const onNumberOfRowsChange = jest.fn()
+            render(<RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
+                                     onNumberOfRowsChange={onNumberOfRowsChange}
+                                     onPageChange={jest.fn()}/>)
 
-                userEvent.click(screen.getByLabelText(/Go to previous page/i))
-                expect(onPageChangeMock).toHaveBeenCalledWith(0)
-            })
+
+            userEvent.selectOptions(screen.getByLabelText(/^rows per page$/i), numberOfItems.toString())
+
+            expect(onNumberOfRowsChange).toHaveBeenCalledWith(numberOfItems)
         })
     })
 
-    test.each([
-        [10], [20], [50]
-    ])("changes the number of rows to %s", async (numberOfItems) => {
-        const recipes = [generateRecipeDetails(), generateRecipeDetails()]
-        const searchResult = {
-            count: recipes.length,
-            numberOfPages: 1,
-            results: recipes
-        }
-        const onNumberOfRowsChange = jest.fn()
-        render(<RecipeSearchList searchResult={searchResult} onDelete={jest.fn()} onNumberOfRowsChange={onNumberOfRowsChange}
-                                 onPageChange={jest.fn()}/>)
-
-
-        userEvent.selectOptions(screen.getByLabelText(/^rows per page$/i), numberOfItems.toString())
-
-        expect(onNumberOfRowsChange).toHaveBeenCalledWith(numberOfItems)
-    })
-
     describe("Actions", () => {
-        const recipes = [
-            generateRecipeDetails(),
-            generateRecipeDetails()
-        ]
-
-        const searchResult = {
-            count: recipes.length,
-            numberOfPages: 1,
-            results: recipes
-        }
-
         it("has a set of actions for the recipe type", async () => {
             render(<RecipeSearchList searchResult={searchResult} onDelete={jest.fn()} onNumberOfRowsChange={jest.fn()}
                                      onPageChange={jest.fn()}/>)
 
-            const detailButton = screen.getByLabelText(`Recipe details for id ${recipes[0].id}`, {
+            const detailButton = screen.getByLabelText(`Recipe details for id ${expectedRecipes[0].id}`, {
                 selector: "button"
             })
-            const editButton = screen.getByLabelText(`Edit Recipe with id ${recipes[0].id}`, {
+            const editButton = screen.getByLabelText(`Edit Recipe with id ${expectedRecipes[0].id}`, {
                 selector: "button"
             })
-            const deleteButton = screen.getByLabelText(`Delete Recipe with id ${recipes[0].id}`, {
+            const deleteButton = screen.getByLabelText(`Delete Recipe with id ${expectedRecipes[0].id}`, {
                 selector: "button"
             })
 
@@ -170,7 +143,7 @@ describe("Recipe search list component", () => {
 
 
         it("navigates to the recipe details", async () => {
-            const firstRecipe = recipes[0]
+            const firstRecipe = expectedRecipes[0]
             renderWithRoutes({
                 "/recipe": () => <RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
                                                    onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>,
@@ -185,7 +158,7 @@ describe("Recipe search list component", () => {
         })
 
         it("navigates to the recipe edit page", async () => {
-            const firstRecipe = recipes[0]
+            const firstRecipe = expectedRecipes[0]
             renderWithRoutes({
                 "/recipe": () => <RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
                                                    onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>,
@@ -201,8 +174,9 @@ describe("Recipe search list component", () => {
 
         it("deletes a recipe", async () => {
             const onDeleteMock = jest.fn()
-            const firstRecipe = recipes[0]
-            render(<RecipeSearchList searchResult={searchResult} onDelete={onDeleteMock} onNumberOfRowsChange={jest.fn()}
+            const firstRecipe = expectedRecipes[0]
+            render(<RecipeSearchList searchResult={searchResult} onDelete={onDeleteMock}
+                                     onNumberOfRowsChange={jest.fn()}
                                      onPageChange={jest.fn()}/>)
 
             userEvent.click(screen.getByLabelText(`Delete Recipe with id ${firstRecipe.id}`, {

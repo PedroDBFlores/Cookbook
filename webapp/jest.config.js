@@ -20,11 +20,10 @@ module.exports = {
   moduleFileExtensions: [
     "ts",
     "tsx",
-    "js",
-    "jsx"
+    "js"
   ],
   moduleNameMapper: {
-    "^.+\\.(css|less|scss)$": "babel-jest",
+    //"^.+\\.(css|less|scss)$": "babel-jest",
     "^.+\\.(jpg|png|gif|svg)$": "identity-obj-proxy"
   },
   watchPlugins: [
