@@ -2,8 +2,8 @@ plugins {
     application
     kotlin("jvm") version "1.4.0"
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("com.github.ben-manes.versions") version "0.33.0"
-    id("com.adarshr.test-logger") version "2.1.0"
+    id("com.github.ben-manes.versions") version "0.36.0"
+    id("com.adarshr.test-logger") version "2.1.1"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
@@ -50,13 +50,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
-    implementation("mysql:mysql-connector-java:8.0.21")
+    implementation("mysql:mysql-connector-java:8.0.22")
     implementation("com.zaxxer:HikariCP:3.4.5")
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
-    implementation("org.flywaydb:flyway-core:7.0.3")
+    implementation("org.flywaydb:flyway-core:7.2.0")
 
     /* Tests */
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")

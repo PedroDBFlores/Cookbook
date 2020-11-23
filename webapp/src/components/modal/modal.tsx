@@ -12,7 +12,7 @@ interface ModalProps {
     onClose: () => void
 }
 
-const BasicModalDialog: React.FC<ModalProps> = ({
+const Modal: React.FC<ModalProps> = ({
                                                     title, content,
                                                     dismiss,
                                                     onClose
@@ -27,7 +27,7 @@ const BasicModalDialog: React.FC<ModalProps> = ({
     </DialogActions>
 </Dialog>
 
-BasicModalDialog.propTypes = {
+Modal.propTypes = {
     title: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
     dismiss: PropTypes.shape({
@@ -37,4 +37,4 @@ BasicModalDialog.propTypes = {
     onClose: PropTypes.func.isRequired
 }
 
-export default BasicModalDialog
+export default Modal

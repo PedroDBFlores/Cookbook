@@ -1,9 +1,9 @@
 import React from "react"
-import {renderWithRoutes} from "../../../../tests/render"
+import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 import Logout from "./logout"
-import {screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import {Link} from "react-router-dom"
-import {AuthContext, AuthInfo} from "../../../services/credentials-service"
+import {AuthContext, AuthInfo} from "../../../services/credentials-service/credentials-service"
 import userEvent from "@testing-library/user-event"
 
 const logoutMock = jest.fn().mockImplementation(() => {
@@ -28,14 +28,20 @@ describe("Logout component", () => {
 
     it("ends your session", async () => {
         localStorage.setItem("token", "A_TOKEN")
-        renderWithRoutes({
-            "/": () => <>
-                {localStorage.getItem("token")
-                    ? <Link to="/logout">Logout</Link>
-                    : <span>Logged Out</span>}
-            </>,
-            "/logout": () => wrapLogoutInContext()
-        }, "/")
+        render(
+            <WrapperWithRoutes routeConfiguration={[
+                {
+                    path: "/", exact: true, component: () => <>
+                        {localStorage.getItem("token")
+                            ? <Link to="/logout">Logout</Link>
+                            : <span>Logged Out</span>}
+                    </>
+                },
+                {
+                    path: "/logout", exact: false, component: () => wrapLogoutInContext()
+                }
+            ]}/>
+        )
 
         userEvent.click(screen.getByText(/logout/i))
 

@@ -2,11 +2,12 @@ import React from "react"
 import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchList from "./search-list"
 import {generateRecipeDetails} from "../../../../tests/helpers/generators/dto-generators"
-import {renderWithRoutes} from "../../../../tests/render"
+import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
+import {RecipeDetails} from "../../../services/recipe-service"
 
 describe("Recipe search list component", () => {
-    const expectedRecipes = [
+    const expectedRecipes: Array<RecipeDetails> = [
         generateRecipeDetails(),
         generateRecipeDetails()
     ]
@@ -32,7 +33,7 @@ describe("Recipe search list component", () => {
             render(<RecipeSearchList searchResult={{
                 count: 1,
                 numberOfPages: 1,
-                results: [generateRecipeDetails()]
+                results: expectedRecipes
             }} onDelete={jest.fn()} onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>)
 
             expect(screen.getByText(/^id$/i)).toBeInTheDocument()
@@ -43,11 +44,6 @@ describe("Recipe search list component", () => {
         })
 
         it("shows the provided data", () => {
-            const expectedRecipes = [
-                generateRecipeDetails(),
-                generateRecipeDetails()
-            ]
-
             render(<RecipeSearchList searchResult={{
                 count: expectedRecipes.length,
                 numberOfPages: 1,
@@ -144,11 +140,19 @@ describe("Recipe search list component", () => {
 
         it("navigates to the recipe details", async () => {
             const firstRecipe = expectedRecipes[0]
-            renderWithRoutes({
-                "/recipe": () => <RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
-                                                   onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>,
-                [`/recipe/${firstRecipe.id}/details`]: () => <div>I'm the recipe details page</div>
-            }, "/recipe")
+            render(<WrapperWithRoutes initialPath="/recipe" routeConfiguration={[
+                {
+                    path: "/recipe",
+                    exact: true,
+                    component: () => <RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
+                                                       onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>
+                },
+                {
+                    path: `/recipe/${firstRecipe.id}/details`,
+                    exact: true,
+                    component: () => <div>I'm the recipe details page</div>
+                }
+            ]}/>)
 
             userEvent.click(screen.getByLabelText(`Recipe details for id ${firstRecipe.id}`, {
                 selector: "button"
@@ -159,11 +163,19 @@ describe("Recipe search list component", () => {
 
         it("navigates to the recipe edit page", async () => {
             const firstRecipe = expectedRecipes[0]
-            renderWithRoutes({
-                "/recipe": () => <RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
-                                                   onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>,
-                [`/recipe/${firstRecipe.id}/edit`]: () => <div>I'm the recipe edit page</div>
-            }, "/recipe")
+            render(<WrapperWithRoutes initialPath="/recipe" routeConfiguration={[
+                {
+                    path: "/recipe",
+                    exact: true,
+                    component: () => <RecipeSearchList searchResult={searchResult} onDelete={jest.fn()}
+                                                       onNumberOfRowsChange={jest.fn()} onPageChange={jest.fn()}/>
+                },
+                {
+                    path: `/recipe/${firstRecipe.id}/edit`,
+                    exact: true,
+                    component: () => <div>I'm the recipe edit page</div>
+                }
+            ]}/>)
 
             userEvent.click(screen.getByLabelText(`Edit Recipe with id ${firstRecipe.id}`, {
                 selector: "button"

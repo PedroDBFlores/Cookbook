@@ -5,7 +5,7 @@ import {Button, Grid, Typography, ButtonGroup, Paper} from "@material-ui/core"
 import {Delete, Edit} from "@material-ui/icons"
 import {useHistory} from "react-router-dom"
 import If from "../../../components/flow-control/if"
-import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
+import Modal from "../../../components/modal/modal"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useSnackbar} from "notistack"
@@ -76,13 +76,13 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                     </Paper>
                 </Grid>
                 <If condition={showModal}>
-                    <BasicModalDialog title="Question"
-                                      content="Are you sure you want to delete this recipe type?"
-                                      dismiss={{
+                    <Modal title="Question"
+                           content="Are you sure you want to delete this recipe type?"
+                           dismiss={{
                                           text: "Delete",
                                           onDismiss: () => handleDelete(Number(state.data?.id))
                                       }}
-                                      onClose={() => setShowModal(false)}/>
+                           onClose={() => setShowModal(false)}/>
                 </If>
             </Grid>
         </When>

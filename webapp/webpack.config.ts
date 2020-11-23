@@ -3,7 +3,7 @@ import {Configuration} from "webpack"
 import {resolve} from "path"
 
 const commonConfig: Configuration = {
-    entry: "./index.tsx",
+    entry: "./user-area.tsx",
     output: {
         path: resolve(__dirname, "dist"),
         filename: "index_bundle.js",
@@ -23,12 +23,8 @@ const commonConfig: Configuration = {
         rules: [
             {
                 test: /\.js|\.ts|\.tsx$/,
-                use: "swc-loader",
+                use: "ts-loader",
                 exclude: /node_modules/
-            },
-            {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader"]
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,

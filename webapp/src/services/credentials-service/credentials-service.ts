@@ -1,5 +1,5 @@
 import axios from "axios"
-import handleApiError from "../utils/error-handling"
+import handleApiError from "../../utils/error-handling"
 import jwt_decode from "jwt-decode"
 import React from "react"
 
@@ -24,6 +24,12 @@ export interface Credentials {
     password: string
 }
 
+export interface CookbookJWT {
+    sub: string
+    name: string
+    userName: string
+}
+
 const login = async (credentials: Credentials): Promise<AuthInfo> => {
     try {
         const response = await axios.post<LoginResult>("/user/login", credentials,
@@ -31,7 +37,7 @@ const login = async (credentials: Credentials): Promise<AuthInfo> => {
                 baseURL: "http://localhost:9000",
             })
         localStorage.setItem("token", response.data.token)
-        const {sub, name, userName} = jwt_decode(response.data.token)
+        const {sub, name, userName} = jwt_decode(response.data.token) as CookbookJWT
         return {userId: Number(sub), name, userName}
     } catch (err) {
         throw handleApiError(err)

@@ -1,9 +1,9 @@
 import React from "react"
-import {screen, within} from "@testing-library/react"
+import {render, screen, within} from "@testing-library/react"
 import CreateRecipe from "./create"
 import createRecipeService from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../../tests/render"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 
 jest.mock("../../../../src/services/recipe-type-service")
@@ -39,7 +39,9 @@ describe("Create recipe component", () => {
     it("renders the initial form", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
 
-        renderWrappedInCommonContexts(<CreateRecipe/>, apiHandlerMock)
+        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+            <CreateRecipe/>
+        </WrapWithCommonContexts>)
 
         expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -58,10 +60,12 @@ describe("Create recipe component", () => {
         test.each([
             ["Name is required", ""],
             ["Name exceeds the character limit", "a".repeat(129)],
-        ])("it displays an error when '%s'", async (message, name) => {
-            renderWrappedInCommonContexts(<CreateRecipe/>)
+        ])("displays an error when '%s'", async (message, name) => {
+            render(<WrapWithCommonContexts>
+                <CreateRecipe/>
+            </WrapWithCommonContexts>)
 
-            await userEvent.paste(await screen.findByLabelText(/^name$/i), name)
+            userEvent.paste(await screen.findByLabelText(/^name$/i), name)
             userEvent.click(screen.getByLabelText(/create recipe/i))
 
             expect(await screen.findByText(message)).toBeInTheDocument()
@@ -70,17 +74,21 @@ describe("Create recipe component", () => {
         test.each([
             ["Description is required", ""],
             ["Description exceeds the character limit", "b".repeat(257)],
-        ])("it displays an error when '%s'", async (message, description) => {
-            renderWrappedInCommonContexts(<CreateRecipe/>)
+        ])("displays an error when '%s'", async (message, description) => {
+            render(<WrapWithCommonContexts>
+                <CreateRecipe/>
+            </WrapWithCommonContexts>)
 
-            await userEvent.paste(await screen.findByLabelText(/^description$/i), description)
+            userEvent.paste(await screen.findByLabelText(/^description$/i), description)
             userEvent.click(screen.getByLabelText(/create recipe/i))
 
             expect(await screen.findByText(message)).toBeInTheDocument()
         })
 
         it("displays an error if no recipe type is selected", async () => {
-            renderWrappedInCommonContexts(<CreateRecipe/>)
+            render(<WrapWithCommonContexts>
+                <CreateRecipe/>
+            </WrapWithCommonContexts>)
 
             userEvent.click(await screen.findByLabelText(/create recipe/i))
 
@@ -90,10 +98,12 @@ describe("Create recipe component", () => {
         test.each([
             ["Ingredients is required", ""],
             ["Ingredients exceeds the character limit", "i".repeat(2049)],
-        ])("it displays an error when '%s'", async (message, ingredients) => {
-            renderWrappedInCommonContexts(<CreateRecipe/>)
+        ])("displays an error when '%s'", async (message, ingredients) => {
+            render(<WrapWithCommonContexts>
+                <CreateRecipe/>
+            </WrapWithCommonContexts>)
 
-            await userEvent.paste(await screen.findByLabelText(/^ingredients$/i), ingredients)
+            userEvent.paste(await screen.findByLabelText(/^ingredients$/i), ingredients)
             userEvent.click(screen.getByLabelText(/create recipe/i))
 
             expect(await screen.findByText(message)).toBeInTheDocument()
@@ -103,9 +113,11 @@ describe("Create recipe component", () => {
             ["Preparing steps is required", ""],
             ["Preparing steps exceeds the character limit", "i".repeat(4099)],
         ])("it displays an error when '%s'", async (message, preparingSteps) => {
-            renderWrappedInCommonContexts(<CreateRecipe/>)
+            render(<WrapWithCommonContexts>
+                <CreateRecipe/>
+            </WrapWithCommonContexts>)
 
-            await userEvent.paste(await screen.findByLabelText(/^preparing steps$/i), preparingSteps)
+            userEvent.paste(await screen.findByLabelText(/^preparing steps$/i), preparingSteps)
             userEvent.click(screen.getByLabelText(/create recipe/i))
 
             expect(await screen.findByText(message)).toBeInTheDocument()
@@ -114,10 +126,12 @@ describe("Create recipe component", () => {
 
     it("calls the 'createRecipe' function on submit", async () => {
         createRecipeMock.mockResolvedValueOnce({id: 1})
-        renderWithRoutes({
-            "/recipe/new": () => <CreateRecipe/>,
-            "/recipe/1": () => <div>I'm the recipe details page for id 1</div>
-        }, "/recipe/new")
+        render(<WrapWithCommonContexts authInfo={{userId: 100, name: "Eric Carmen", userName: "ericCarmen"}}>
+            <WrapperWithRoutes initialPath="/recipe/new" routeConfiguration={[
+                {path: "/recipe/new", exact: true, component: () => <CreateRecipe/>},
+                {path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</>}
+            ]}/>
+        </WrapWithCommonContexts>)
 
         await userEvent.type(await screen.findByLabelText(/^name$/i), "name")
         await userEvent.type(await screen.findByLabelText(/^description$/i), "description")
@@ -137,7 +151,7 @@ describe("Create recipe component", () => {
             name: "name",
             description: "description",
             recipeTypeId: 1,
-            userId: 666,
+            userId: 100,
             ingredients: "ingredients",
             preparingSteps: "preparing steps"
         })
@@ -145,7 +159,9 @@ describe("Create recipe component", () => {
 
     it("shows an error message if the create API call fails", async () => {
         createRecipeMock.mockRejectedValueOnce({message: "A wild error has appeared"})
-        renderWrappedInCommonContexts(<CreateRecipe/>)
+        render(<WrapWithCommonContexts authInfo={{userId: 100, name: "Eric Carmen", userName: "ericCarmen"}}>
+            <CreateRecipe/>
+        </WrapWithCommonContexts>)
 
         await userEvent.type(await screen.findByLabelText(/^name$/i), "i")
         await userEvent.type(await screen.findByLabelText(/^description$/i), "will")
@@ -164,7 +180,7 @@ describe("Create recipe component", () => {
             name: "i",
             description: "will",
             recipeTypeId: 1,
-            userId: 666,
+            userId: 100,
             ingredients: "fail",
             preparingSteps: "preparing steps"
         })

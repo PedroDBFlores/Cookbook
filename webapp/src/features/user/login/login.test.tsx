@@ -1,9 +1,9 @@
 import React from "react"
 import {render, screen, waitFor} from "@testing-library/react"
 import Login from "./login"
-import {renderWithRoutes} from "../../../../tests/render"
+import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 import {Link} from "react-router-dom"
-import {AuthContext, AuthInfo} from "../../../services/credentials-service"
+import {AuthContext, AuthInfo} from "../../../services/credentials-service/credentials-service"
 import userEvent from "@testing-library/user-event"
 
 const loginMock = jest.fn()
@@ -60,12 +60,16 @@ describe("Login component", () => {
             name: "Jacinto",
             userName: "jac"
         })
-        renderWithRoutes({
-            "/login": () => wrapLoginInContext(),
-            "/recipetype": () => <>
-                <div>I'm the recipe type page</div>
-                <Link to="/login" aria-label="Go to login">Go to login</Link></>
-        }, "/recipetype")
+        render(
+            <WrapperWithRoutes initialPath="/recipeType" routeConfiguration={[
+                {
+                    path: "/recipetype", exact: true, component: () => <>
+                        <div>I'm the recipe type page</div>
+                        <Link to="/login" aria-label="Go to login">Go to login</Link></>
+                },
+                {path: "/login", exact: true, component: () => wrapLoginInContext()}
+            ]}/>
+        )
 
         userEvent.click(screen.getByLabelText(/go to login/i))
         expect(await screen.findByText(/login user/i)).toBeInTheDocument()

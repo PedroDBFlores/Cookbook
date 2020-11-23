@@ -9,7 +9,7 @@ import {Field, Form, Formik} from "formik"
 import {TextField} from "formik-material-ui"
 import FormikSelector from "../../../components/formik-selector/formik-selector"
 import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
-import {AuthContext} from "../../../services/credentials-service"
+import {AuthContext} from "../../../services/credentials-service/credentials-service"
 import {useHistory} from "react-router-dom"
 import {useSnackbar} from "notistack"
 import * as yup from "yup"
@@ -71,7 +71,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
     const {find, update} = createRecipeService(useContext(ApiHandlerContext))
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
     const findPromiseRef = useRef(() => find(id))
-    const state = useAsync<RecipeDetails>({
+    const {isLoading, isRejected, isFulfilled, data} = useAsync<RecipeDetails>({
         promiseFn: findPromiseRef.current
     })
 
@@ -79,12 +79,12 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
         getAllRecipeTypes().then(setRecipeTypes)
     }, [])
 
-    const handleOnSubmit = (data: UpdateRecipeFormData) => {
-        if (authContext && state.data) {
+    const handleOnSubmit = (formData: UpdateRecipeFormData) => {
+        if (authContext && data) {
             const userId = authContext.userId
-            update({...data, id: state.data.id, userId: userId})
+            update({...formData, id: data.id, userId: userId})
                 .then(() => {
-                    enqueueSnackbar(`Recipe '${data.name}' updated successfully!`)
+                    enqueueSnackbar(`Recipe '${formData.name}' updated successfully!`)
                     history.push(`/recipe/${id}`)
                 }).catch(err =>
                 enqueueSnackbar(`An error occurred while updating the recipe: ${err.message}`))
@@ -98,12 +98,12 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
         <Grid item xs={12}>
             <Paper className={classes.paper}>
                 <Choose>
-                    <When condition={!recipeTypes && state.isPending}>
+                    <When condition={!recipeTypes && isLoading}>
                         <span>Loading...</span>
                     </When>
-                    <When condition={!!recipeTypes && state.isFulfilled}>
+                    <When condition={!!recipeTypes && isFulfilled}>
                         <Formik
-                            initialValues={{...state.data}}
+                            initialValues={data as RecipeDetails}
                             validateOnBlur={true}
                             onSubmit={handleOnSubmit}
                             validationSchema={schema}>

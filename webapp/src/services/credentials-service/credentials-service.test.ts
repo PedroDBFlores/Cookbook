@@ -1,8 +1,8 @@
 import axios from "axios"
 import MockAdapter from "axios-mock-adapter"
-import * as errorHandler from "../utils/error-handling"
+import * as errorHandler from "../../utils/error-handling"
 import {internet} from "faker"
-import {localStorageMock} from "../../tests/utils/mocks"
+import {localStorageMock} from "../../../tests/utils/mocks"
 import createCredentialsService, {Credentials} from "./credentials-service"
 
 const mockedAxios = new MockAdapter(axios)

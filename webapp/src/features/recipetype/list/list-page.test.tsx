@@ -1,9 +1,9 @@
 import React, {useEffect} from "react"
-import {screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import RecipeTypeListPage from "./list-page"
 import RecipeTypeList from "./list"
 import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
-import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../../tests/render"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import createRecipeTypeService from "../../../services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -37,7 +37,9 @@ describe("Recipe type list page", () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
         getAllRecipeTypesMock.mockResolvedValueOnce([])
 
-        renderWrappedInCommonContexts(<RecipeTypeListPage/>, apiHandlerMock)
+        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+            <RecipeTypeListPage/>
+        </WrapWithCommonContexts>)
 
         expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
@@ -50,7 +52,9 @@ describe("Recipe type list page", () => {
     it("shows the error if fetching the recipe types fails", async () => {
         getAllRecipeTypesMock.mockRejectedValueOnce({code: "YELLOW", message: "Database error"})
 
-        renderWrappedInCommonContexts(<RecipeTypeListPage/>)
+        render(<WrapWithCommonContexts>
+            <RecipeTypeListPage/>
+        </WrapWithCommonContexts>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         await screen.findByText(/error: database error/i)
@@ -68,7 +72,9 @@ describe("Recipe type list page", () => {
             return <></>
         })
 
-        renderWrappedInCommonContexts(<RecipeTypeListPage/>)
+        render(<WrapWithCommonContexts>
+            <RecipeTypeListPage/>
+        </WrapWithCommonContexts>)
 
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         expect(await screen.findByText(`Recipe type ${expectedRecipeType.id} was deleted`)).toBeInTheDocument()
@@ -77,12 +83,14 @@ describe("Recipe type list page", () => {
 
     it("navigates to the recipe type create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
-        renderWithRoutes({
-            "/recipetype": () => <RecipeTypeListPage/>,
-            "/recipetype/new": () => <>I'm the recipe type create page</>
-        }, "/recipetype")
+        render(<WrapWithCommonContexts>
+            <WrapperWithRoutes initialPath="/recipetype" routeConfiguration={[
+                {path: "/recipetype", exact: true, component: () => <RecipeTypeListPage/>},
+                {path: "/recipetype/new", exact: true, component: () => <>I'm the recipe type create page</>}
+            ]}/>
+        </WrapWithCommonContexts>)
 
-        userEvent.click(await screen.findByLabelText(/create new recipe type/i))
+        userEvent.click(await screen.findByLabelText(/^create new recipe type$/i))
 
         expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
     })

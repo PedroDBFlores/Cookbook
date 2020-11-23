@@ -1,7 +1,7 @@
 import React from "react"
-import {screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import CreateRecipeType from "./create"
-import {renderWrappedInCommonContexts, renderWithRoutes} from "../../../../tests/render"
+import {WrapWithCommonContexts, WrapperWithRoutes} from "../../../../tests/render-helpers"
 import createRecipeTypeService from "../../../services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -25,7 +25,9 @@ describe("Create recipe type", () => {
     it("renders the initial form", () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
 
-        renderWrappedInCommonContexts(<CreateRecipeType/>, apiHandlerMock)
+        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+            <CreateRecipeType/>
+        </WrapWithCommonContexts>)
 
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
@@ -36,7 +38,9 @@ describe("Create recipe type", () => {
 
     describe("Form validation", () => {
         it("displays an error when the name is empty on submitting", async () => {
-            renderWrappedInCommonContexts(<CreateRecipeType/>)
+            render(<WrapWithCommonContexts>
+                <CreateRecipeType/>
+            </WrapWithCommonContexts>)
 
             userEvent.click(screen.getByLabelText(/create recipe type/i))
 
@@ -44,7 +48,9 @@ describe("Create recipe type", () => {
         })
 
         it("displays an error when the name exceeds 64 characters", async () => {
-            renderWrappedInCommonContexts(<CreateRecipeType/>)
+            render(<WrapWithCommonContexts>
+                <CreateRecipeType/>
+            </WrapWithCommonContexts>)
 
             userEvent.paste(screen.getByLabelText(/^name$/i), "a".repeat(65))
             userEvent.click(screen.getByLabelText(/create recipe type/i))
@@ -55,10 +61,16 @@ describe("Create recipe type", () => {
 
     it("create the recipe type in the Cookbook API and navigates to the details", async () => {
         createRecipeTypeMock.mockResolvedValueOnce({id: 1})
-        renderWithRoutes({
-            "/recipetype/new": () => <CreateRecipeType/>,
-            "/recipetype/1": () => <div>I'm the recipe type details page for id 1</div>
-        }, "/recipetype/new")
+        render(<WrapWithCommonContexts>
+            <WrapperWithRoutes initialPath="/recipetype/new" routeConfiguration={[
+                {path: "/recipetype/new", exact: true, component: () => <CreateRecipeType/>},
+                {
+                    path: "/recipetype/1",
+                    exact: true,
+                    component: () => <div>I'm the recipe type details page for id 1</div>
+                }
+            ]}/>
+        </WrapWithCommonContexts>)
 
         await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
         userEvent.click(screen.getByLabelText(/create recipe type/i))
@@ -70,7 +82,9 @@ describe("Create recipe type", () => {
 
     it("shows an error message if the create API call fails", async () => {
         createRecipeTypeMock.mockRejectedValueOnce({message: "Duplicate recipe type"})
-        renderWrappedInCommonContexts(<CreateRecipeType/>)
+        render(<WrapWithCommonContexts>
+            <CreateRecipeType/>
+        </WrapWithCommonContexts>)
 
         await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
         userEvent.click(screen.getByLabelText(/create recipe type/i))

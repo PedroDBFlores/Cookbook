@@ -1,12 +1,15 @@
 import React from "react"
 import Drawer from "./drawer"
-import {renderWithRouter, renderWithRoutes} from "../../../tests/render"
-import {screen} from "@testing-library/react"
+import {WrapperWithRouter, WrapperWithRoutes} from "../../../tests/render-helpers"
+import {render, screen} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 describe("Drawer", () => {
     it("renders the basic drawer", () => {
-        renderWithRouter(<Drawer isOpen={true} items={[]} onClose={jest.fn()}/>)
+        render(
+            <WrapperWithRouter>
+                <Drawer isOpen={true} items={[]} onClose={jest.fn()}/>
+            </WrapperWithRouter>)
 
         expect(screen.getByLabelText(/Close the drawer/i)).toBeInTheDocument()
     })
@@ -16,7 +19,10 @@ describe("Drawer", () => {
             {name: "Item1", icon: null, route: "/route/1"},
             {name: "Item2", icon: null, route: "/route/2"}
         ]
-        renderWithRouter(<Drawer isOpen={true} items={drawerItems} onClose={jest.fn()}/>)
+        render(
+            <WrapperWithRouter>
+                <Drawer isOpen={true} items={drawerItems} onClose={jest.fn()}/>
+            </WrapperWithRouter>)
 
         drawerItems.forEach(item => {
             expect(screen.getByLabelText(`${item.name} menu`)).toBeInTheDocument()
@@ -34,10 +40,10 @@ describe("Drawer", () => {
             {name: "Item1", icon: null, route: "/route/1"},
             {name: "Item2", icon: null, route: "/route/2"}
         ]
-        renderWithRoutes({
-            "/": () => <Drawer isOpen={true} items={drawerItems} onClose={onClose}/>,
-            [expectedRoute]: () => <div>I'm the {itemLabel} page</div>
-        })
+        render(<WrapperWithRoutes routeConfiguration={[
+            {path: "/", exact: true, component: () => <Drawer isOpen={true} items={drawerItems} onClose={onClose}/>},
+            {path: expectedRoute, exact: true, component: () => <div>I'm the {itemLabel} page</div>}
+        ]}/>)
 
         userEvent.click(screen.getByLabelText(itemLabel))
 
@@ -47,7 +53,10 @@ describe("Drawer", () => {
 
     it("call the onClose function", () => {
         const onCloseMock = jest.fn()
-        renderWithRouter(<Drawer isOpen={true} items={[]} onClose={onCloseMock}/>)
+        render(
+            <WrapperWithRouter>
+                <Drawer isOpen={true} items={[]} onClose={onCloseMock}/>
+            </WrapperWithRouter>)
 
         userEvent.click(screen.getByLabelText(/close the drawer/i))
 

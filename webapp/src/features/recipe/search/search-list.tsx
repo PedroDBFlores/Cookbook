@@ -16,7 +16,6 @@ import {
 } from "@material-ui/core"
 import {Visibility, Edit, Delete} from "@material-ui/icons"
 import {useHistory} from "react-router-dom"
-import TablePaginationActions from "../../../components/table-pagination-actions/table-pagination-actions"
 import {RecipeDetails} from "../../../services/recipe-service"
 
 interface RecipeSearchListProps {

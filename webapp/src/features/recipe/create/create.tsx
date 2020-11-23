@@ -7,7 +7,7 @@ import FormikSelector from "../../../components/formik-selector/formik-selector"
 import * as yup from "yup"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import createRecipeService from "../../../services/recipe-service"
-import {AuthContext} from "../../../services/credentials-service"
+import {AuthContext} from "../../../services/credentials-service/credentials-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {useSnackbar} from "notistack"
@@ -80,10 +80,10 @@ const CreateRecipe: React.FC = () => {
                 preparingSteps: data.preparingSteps,
                 userId
             }).then(({id}) => {
-                enqueueSnackbar(`Recipe '${data.name}' created successfully!`)
+                enqueueSnackbar(`Recipe '${data.name}' created successfully!`, {variant: "success"})
                 history.push(`/recipe/${id}`)
             }).catch(err =>
-                enqueueSnackbar(`An error occurred while creating the recipe: ${err.message}`))
+                enqueueSnackbar(`An error occurred while creating the recipe: ${err.message}`, {variant: "error"}))
         }
     }
 

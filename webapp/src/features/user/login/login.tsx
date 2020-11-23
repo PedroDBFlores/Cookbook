@@ -7,7 +7,7 @@ import If from "../../../components/flow-control/if"
 import {useHistory} from "react-router-dom"
 import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
 import {TextField} from "formik-material-ui"
-import {Credentials, AuthInfo, AuthContext} from "../../../services/credentials-service"
+import {Credentials, AuthInfo, AuthContext} from "../../../services/credentials-service/credentials-service"
 
 interface LoginFormData {
     userName: string

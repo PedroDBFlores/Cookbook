@@ -5,19 +5,21 @@ import RecipeTypeListPage from "./features/recipetype/list/list-page"
 import CreateRecipeType from "./features/recipetype/create/create"
 import RecipeTypeDetails from "./features/recipetype/details/details"
 import EditRecipeType from "./features/recipetype/edit/edit"
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme"
-import {SnackbarProvider} from "notistack"
 import ApiHandler, {ApiHandlerContext} from "./services/api-handler"
 import Login from "./features/user/login/login"
-import createCredentialsService, {AuthContext, AuthInfo} from "./services/credentials-service"
-import "fontsource-roboto"
-import {ThemeProvider} from "@material-ui/core/styles"
+import createCredentialsService, {
+    AuthContext,
+    AuthInfo,
+    CookbookJWT
+} from "./services/credentials-service/credentials-service"
 import Logout from "./features/user/logout/logout"
 import RecipeSearchPage from "./features/recipe/search/search-page"
 import CreateRecipe from "./features/recipe/create/create"
 import jwt_decode from "jwt-decode"
 import RecipeDetails from "./features/recipe/details/details"
 import EditRecipe from "./features/recipe/edit/edit"
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles"
+import { SnackbarProvider } from "notistack"
 
 const theme = createMuiTheme({
     palette: {
@@ -46,7 +48,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem("token")
         if (token && !authInfo) {
-            const {sub, name, userName} = jwt_decode(token)
+            const {sub, name, userName} = jwt_decode(token) as CookbookJWT
             setAuthInfo({userId: Number(sub), name, userName})
         }
     }, [])

@@ -1,8 +1,8 @@
-import {screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import React from "react"
 import EditRecipeType from "./edit"
 import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
-import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../../tests/render"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import createRecipeTypeService from "../../../services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -29,14 +29,14 @@ describe("Edit recipe type", () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
 
-        renderWrappedInCommonContexts(<EditRecipeType id={expectedRecipeType.id}/>,
-            apiHandlerMock)
+        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+            <EditRecipeType id={expectedRecipeType.id}/>
+        </WrapWithCommonContexts>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
         expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^name$/i)).toBeInTheDocument()
         expect(await screen.findByLabelText(/^name$/i)).toHaveAttribute("value", expectedRecipeType.name)
         expect(screen.getByLabelText(/edit recipe type/i)).toHaveAttribute("type", "submit")
         expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "reset")
@@ -45,7 +45,9 @@ describe("Edit recipe type", () => {
     it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
 
-        renderWrappedInCommonContexts(<EditRecipeType id={99}/>)
+        render(<WrapWithCommonContexts>
+            <EditRecipeType id={99}/>
+        </WrapWithCommonContexts>)
 
         expect(await screen.findByText(/failure/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalled()
@@ -55,7 +57,9 @@ describe("Edit recipe type", () => {
         it("displays an error when the name is empty on submitting", async () => {
             const expectedRecipeType = generateRecipeType()
             findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-            renderWrappedInCommonContexts(<EditRecipeType id={expectedRecipeType.id}/>)
+            render(<WrapWithCommonContexts>
+                <EditRecipeType id={expectedRecipeType.id}/>
+            </WrapWithCommonContexts>)
 
             userEvent.clear(await screen.findByLabelText(/^name$/i))
             userEvent.click(screen.getByLabelText(/edit recipe type/i))
@@ -66,7 +70,9 @@ describe("Edit recipe type", () => {
         it("displays an error when the name exceeds 64 characters", async () => {
             const expectedRecipeType = generateRecipeType()
             findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
-            renderWrappedInCommonContexts(<EditRecipeType id={expectedRecipeType.id}/>)
+            render(<WrapWithCommonContexts>
+                <EditRecipeType id={expectedRecipeType.id}/>
+            </WrapWithCommonContexts>)
 
             userEvent.paste(await screen.findByLabelText(/^name$/i), "a".repeat(65))
             userEvent.click(screen.getByLabelText(/edit recipe type/i))
@@ -79,10 +85,21 @@ describe("Edit recipe type", () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         updateRecipeTypeMock.mockResolvedValueOnce({})
-        renderWithRoutes({
-            [`/recipetype/${expectedRecipeType.id}/edit`]: () => <EditRecipeType id={expectedRecipeType.id}/>,
-            [`/recipetype/${expectedRecipeType.id}`]: () => <div>I'm the recipe type details page</div>
-        }, `/recipetype/${expectedRecipeType.id}/edit`)
+        render(<WrapWithCommonContexts>
+            <WrapperWithRoutes initialPath={`/recipetype/${expectedRecipeType.id}/edit`} routeConfiguration={[
+                {
+                    path: `/recipetype/${expectedRecipeType.id}/edit`,
+                    exact: true,
+                    component: () => <EditRecipeType id={expectedRecipeType.id}/>
+                },
+                {
+                    path: `/recipetype/${expectedRecipeType.id}`,
+                    exact: true,
+                    component: () => <>I'm the recipe type details page</>
+                }
+            ]}/>
+            <EditRecipeType id={expectedRecipeType.id}/>
+        </WrapWithCommonContexts>)
 
         userEvent.clear(await screen.findByLabelText(/^name$/i))
         await userEvent.type(screen.getByLabelText(/^name$/i), "Japanese")
@@ -96,7 +113,9 @@ describe("Edit recipe type", () => {
         const expectedRecipeType = generateRecipeType()
         findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
         updateRecipeTypeMock.mockRejectedValueOnce({message: "Duplicate recipe type"})
-        renderWrappedInCommonContexts(<EditRecipeType id={expectedRecipeType.id}/>)
+        render(<WrapWithCommonContexts>
+            <EditRecipeType id={expectedRecipeType.id}/>
+        </WrapWithCommonContexts>)
         expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
 
         userEvent.clear(screen.getByLabelText(/^name$/i))

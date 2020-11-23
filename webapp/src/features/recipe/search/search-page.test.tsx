@@ -1,5 +1,5 @@
 import React, {useEffect} from "react"
-import {screen, waitFor} from "@testing-library/react"
+import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "./search-page"
 import RecipeSearchForm from "./search-form"
 import {generateRecipeDetails} from "../../../../tests/helpers/generators/dto-generators"
@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button"
 import {SearchResult} from "../../../model"
 import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import {renderWithRoutes, renderWrappedInCommonContexts} from "../../../../tests/render"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 
 jest.mock("../../../../src/services/recipe-type-service")
@@ -91,7 +91,9 @@ describe("Search recipe page component", () => {
     it("renders the initial component", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
 
-        renderWrappedInCommonContexts(<RecipeSearchPage/>, apiHandlerMock)
+        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+            <RecipeSearchPage/>
+        </WrapWithCommonContexts>)
 
         expect(screen.getByText(/search recipes/i)).toBeInTheDocument()
         expect(screen.getByText(/no matching recipes/i)).toBeInTheDocument()
@@ -116,7 +118,9 @@ describe("Search recipe page component", () => {
                 return <></>
             })
 
-            renderWrappedInCommonContexts(<RecipeSearchPage/>)
+            render(<WrapWithCommonContexts>
+                <RecipeSearchPage/>
+            </WrapWithCommonContexts>)
 
             await waitFor(() => {
                 expect(searchRecipesMock).toHaveBeenCalledWith({
@@ -144,7 +148,9 @@ describe("Search recipe page component", () => {
             return <></>
         })
 
-        renderWrappedInCommonContexts(<RecipeSearchPage/>)
+        render(<WrapWithCommonContexts>
+            <RecipeSearchPage/>
+        </WrapWithCommonContexts>)
 
         await waitFor(() => {
             expect(searchRecipesMock).toHaveBeenNthCalledWith(2, {
@@ -182,10 +188,12 @@ describe("Search recipe page component", () => {
 
     it("navigates to the recipe create page on click", async () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
-        renderWithRoutes({
-            "/recipe": () => <RecipeSearchPage/>,
-            "/recipe/new": () => <>I'm the recipe create page</>
-        }, "/recipe")
+        render(<WrapWithCommonContexts>
+            <WrapperWithRoutes initialPath="/recipe" routeConfiguration={[
+                {path: "/recipe", exact: true, component: () => <RecipeSearchPage/>},
+                {path: "/recipe/new", exact: true, component: () => <>I'm the recipe create page</>},
+            ]}/>
+        </WrapWithCommonContexts>)
 
         userEvent.click(await screen.findByLabelText(/create new recipe/i))
 

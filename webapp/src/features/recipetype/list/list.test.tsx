@@ -3,7 +3,7 @@ import {render, screen} from "@testing-library/react"
 import RecipeTypeList from "./list"
 import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
 import userEvent from "@testing-library/user-event"
-import {renderWithRoutes} from "../../../../tests/render"
+import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 
 describe("Recipe type list component", () => {
     const recipeTypes = [
@@ -34,10 +34,18 @@ describe("Recipe type list component", () => {
     describe("Actions", () => {
         it("navigates to the recipe type details", async () => {
             const firstRecipeType = recipeTypes[0]
-            renderWithRoutes({
-                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>,
-                [`/recipetype/${firstRecipeType.id}/details`]: () => <div>I'm the recipe type details page</div>
-            }, "/recipetype")
+            render(<WrapperWithRoutes initialPath={"/recipetype"} routeConfiguration={[
+                {
+                    path: "/recipetype",
+                    exact: true,
+                    component: () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>
+                },
+                {
+                    path: `/recipetype/${firstRecipeType.id}/details`,
+                    exact: true,
+                    component: () => <>I'm the recipe type details page</>
+                }
+            ]}/>)
 
             userEvent.click(screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
                 selector: "button"
@@ -48,10 +56,18 @@ describe("Recipe type list component", () => {
 
         it("navigates to the recipe type edit page", async () => {
             const firstRecipeType = recipeTypes[0]
-            renderWithRoutes({
-                "/recipetype": () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>,
-                [`/recipetype/${firstRecipeType.id}/edit`]: () => <div>I'm the recipe type edit page</div>
-            }, "/recipetype")
+            render(<WrapperWithRoutes initialPath={"/recipetype"} routeConfiguration={[
+                {
+                    path: "/recipetype",
+                    exact: true,
+                    component: () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>
+                },
+                {
+                    path: `/recipetype/${firstRecipeType.id}/edit`,
+                    exact: true,
+                    component: () => <>I'm the recipe type edit page</>
+                }
+            ]}/>)
 
             userEvent.click(screen.getByLabelText(`Edit Recipe type with id ${firstRecipeType.id}`, {
                 selector: "button"

@@ -1,11 +1,12 @@
 const path = require("path")
 
 module.exports = {
+  preset: "ts-jest",
   roots: [
     "<rootDir>/src"
   ],
   transform: {
-    "^.+\\.t(s|sx)?$": ["@swc-node/jest", { target: "es2019" }],
+    "^.+\\.t(s|sx)?$": "ts-jest",
   },
   clearMocks: true,
   setupFilesAfterEnv: [
@@ -23,7 +24,6 @@ module.exports = {
     "js"
   ],
   moduleNameMapper: {
-    //"^.+\\.(css|less|scss)$": "babel-jest",
     "^.+\\.(jpg|png|gif|svg)$": "identity-obj-proxy"
   },
   watchPlugins: [

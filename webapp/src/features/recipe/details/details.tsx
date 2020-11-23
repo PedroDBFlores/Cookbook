@@ -4,7 +4,7 @@ import {useAsync} from "react-async"
 import {Button, ButtonGroup, Typography, Paper, Grid} from "@material-ui/core"
 import {Delete, Edit} from "@material-ui/icons"
 import If from "../../../components/flow-control/if"
-import BasicModalDialog from "../../../components/modal/basic-modal-dialog"
+import Modal from "../../../components/modal/modal"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {useSnackbar} from "notistack"
 import {ApiHandlerContext} from "../../../services/api-handler"
@@ -82,13 +82,13 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
                     </Paper>
                 </Grid>
                 <If condition={showModal}>
-                    <BasicModalDialog title="Question"
-                                      content="Are you sure you want to delete this recipe?"
-                                      dismiss={{
+                    <Modal title="Question"
+                           content="Are you sure you want to delete this recipe?"
+                           dismiss={{
                                           text: "Delete",
                                           onDismiss: () => handleDelete(Number(state.data?.id))
                                       }}
-                                      onClose={() => setShowModal(false)}/>
+                           onClose={() => setShowModal(false)}/>
                 </If>
             </Grid>
         </When>
