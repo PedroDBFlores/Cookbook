@@ -18,13 +18,6 @@ interface RecipeRepository {
      */
     fun getAll(): List<Recipe>
 
-    /**
-     * Gets all the recipes belonging to a specific user
-     * @param userId The user's Id associated to that recipe
-     * @return A list of [Recipe] for that user
-     */
-    fun getAll(userId: Int): List<Recipe>
-
     /** Returns the number of recipes in the database */
     fun count(): Long
 

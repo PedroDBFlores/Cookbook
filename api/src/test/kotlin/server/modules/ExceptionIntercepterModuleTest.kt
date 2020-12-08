@@ -1,8 +1,6 @@
 package server.modules
 
 import errors.OperationNotAllowed
-import errors.UserAlreadyExists
-import errors.UserNotFound
 import errors.ValidationError
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
@@ -43,12 +41,6 @@ class ExceptionIntercepterModuleTest : DescribeSpec({
                 "a OperationNotAllowed occurs"
             ),
             row(
-                { throw UserNotFound(1) },
-                HttpStatusCode.NotFound,
-                ResponseError(HttpStatusCode.NotFound.value.toString(), "User with id 1 not found"),
-                "a ResourceNotFound occurs"
-            ),
-            row(
                 { throw NotFoundException() },
                 HttpStatusCode.NotFound,
                 ResponseError(HttpStatusCode.NotFound.value.toString(), "Resource not found"),
@@ -74,12 +66,6 @@ class ExceptionIntercepterModuleTest : DescribeSpec({
                 HttpStatusCode.BadRequest,
                 ResponseError(HttpStatusCode.BadRequest.value.toString(), "Field 'id' is invalid"),
                 "a ValidationError occurs"
-            ),
-            row(
-                { throw UserAlreadyExists("username") },
-                HttpStatusCode.Conflict,
-                ResponseError(HttpStatusCode.Conflict.value.toString(), "An user with the username 'username' already exists"),
-                "a ResourceAlredyExists error occurs"
             ),
             row(
                 { throw SQLException("Denied") },

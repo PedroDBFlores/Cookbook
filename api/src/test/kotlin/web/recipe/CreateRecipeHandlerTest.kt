@@ -30,7 +30,6 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
     describe("Create recipe type handler") {
         val createRecipeRepresenterMap = mapOf<String, Any>(
             "recipeTypeId" to 1,
-            "userId" to 1,
             "name" to "name",
             "description" to "description",
             "ingredients" to "ingredients",
@@ -40,7 +39,6 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
         it("creates a recipe returning 201") {
             val expectedParameters = CreateRecipe.Parameters(
                 recipeTypeId = 1,
-                userId = 1,
                 name = "name",
                 description = "description",
                 ingredients = "ingredients",
@@ -69,10 +67,6 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
             row(
                 (createRecipeRepresenterMap + mapOf<String, Any>("recipeTypeId" to 0)).toJson(),
                 "the recipeTypeId field is invalid"
-            ),
-            row(
-                (createRecipeRepresenterMap + mapOf<String, Any>("userId" to 0)).toJson(),
-                "the userId field is invalid"
             ),
             row(
                 (createRecipeRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(),

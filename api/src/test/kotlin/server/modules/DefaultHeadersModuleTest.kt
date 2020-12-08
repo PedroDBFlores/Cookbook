@@ -26,7 +26,7 @@ class DefaultHeadersModuleTest : DescribeSpec({
                     response shouldHaveStatus HttpStatusCode.OK
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.headers["Date"].shouldNotBeEmpty()
-                    response.shouldHaveHeader("Server", "Cookbook Ktor Server")
+                    response.shouldHaveHeader("Server", "Cookbook Server")
                     response.shouldHaveHeader("X-CreatedBy", "Mr. Flowers")
                     response.shouldHaveHeader("Access-Control-Allow-Origin", "http://localhost:8080")
                     response.shouldHaveHeader(

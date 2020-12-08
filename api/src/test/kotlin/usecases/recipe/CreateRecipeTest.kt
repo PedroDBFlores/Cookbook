@@ -14,7 +14,6 @@ internal class CreateRecipeTest : DescribeSpec({
         it("creates a recipe") {
             val expectedRecipe = Recipe(
                 recipeTypeId = 1,
-                userId = 1,
                 name = "Recipe Name",
                 description = "Recipe description",
                 ingredients = "Oh so many ingredients",
@@ -28,7 +27,6 @@ internal class CreateRecipeTest : DescribeSpec({
             val recipeId = createRecipe(
                 CreateRecipe.Parameters(
                     recipeTypeId = 1,
-                    userId = 1,
                     name = "Recipe Name",
                     description = "Recipe description",
                     ingredients = "Oh so many ingredients",

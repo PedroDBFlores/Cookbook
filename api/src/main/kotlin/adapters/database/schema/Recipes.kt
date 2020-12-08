@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.Column
 
 object Recipes : IntIdTable() {
     val recipeType = reference("recipetypeid", RecipeTypes)
-    val user = reference("userid", Users)
     val name: Column<String> = varchar("name", 128)
     val description: Column<String> = varchar("description", 256)
     val ingredients: Column<String> = varchar("ingredients", 2048)
@@ -18,7 +17,6 @@ object Recipes : IntIdTable() {
 class RecipeEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<RecipeEntity>(Recipes)
     var recipeType by RecipeTypeEntity referencedOn Recipes.recipeType
-    var user by UserEntity referencedOn Recipes.user
     var name by Recipes.name
     var description by Recipes.description
     var ingredients by Recipes.ingredients

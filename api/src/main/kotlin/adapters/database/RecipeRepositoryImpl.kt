@@ -4,7 +4,6 @@ import adapters.database.schema.*
 import model.Recipe
 import model.SearchResult
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -21,10 +20,6 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         RecipeEntity.all().map(::mapToRecipe)
     }
 
-    override fun getAll(userId: Int): List<Recipe> = transaction(database) {
-        RecipeEntity.find { Recipes.user eq userId }.map(::mapToRecipe)
-    }
-
     override fun count(): Long = transaction(database) {
         RecipeEntity.count()
     }
@@ -36,10 +31,9 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         pageNumber: Int,
         itemsPerPage: Int
     ): SearchResult<Recipe> = transaction(database) {
-        val query = (Recipes innerJoin RecipeTypes innerJoin Users)
+        val query = (Recipes innerJoin RecipeTypes)
             .select {
                 (Recipes.recipeType eq RecipeTypes.id)
-                    .and((Recipes.user eq Users.id))
             }
 
         if (name?.isNotEmpty() == true) {
@@ -67,7 +61,6 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
     override fun create(recipe: Recipe): Int = transaction(database) {
         RecipeEntity.new {
             recipeType = RecipeTypeEntity[recipe.recipeTypeId]
-            user = UserEntity[recipe.userId]
             name = recipe.name
             description = recipe.description
             ingredients = recipe.ingredients
@@ -96,8 +89,6 @@ class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
         id = entity.id.value,
         recipeTypeId = entity.recipeType.id.value,
         recipeTypeName = entity.recipeType.name,
-        userId = entity.user.id.value,
-        userName = entity.user.name,
         name = entity.name,
         description = entity.description,
         ingredients = entity.ingredients,

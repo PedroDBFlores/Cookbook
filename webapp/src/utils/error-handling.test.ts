@@ -1,6 +1,4 @@
 import { AxiosError } from "axios"
-import "jest-chain"
-import "jest-extended"
 import handleApiError from "./error-handling"
 
 describe("Error handling", () => {

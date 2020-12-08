@@ -17,8 +17,6 @@ internal class SearchRecipeTest : DescribeSpec({
                     id = 0,
                     recipeTypeId = 1,
                     recipeTypeName = "Recipe type name",
-                    userId = 1,
-                    userName = "User name",
                     name = "Recipe Name",
                     description = "Recipe description",
                     ingredients = "Oh so many ingredients",

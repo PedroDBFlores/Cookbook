@@ -17,7 +17,6 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
     val updateRecipeRepresenterMap = mapOf<String, Any>(
         "id" to 1,
         "recipeTypeId" to 1,
-        "userId" to 1,
         "name" to "name",
         "description" to "description",
         "ingredients" to "ingredients",
@@ -59,10 +58,6 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
             row(
                 (updateRecipeRepresenterMap + mapOf<String, Any>("recipeTypeId" to 0)).toJson(),
                 "the recipeTypeId field is invalid"
-            ),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("userId" to 0)).toJson(),
-                "the userId field is invalid"
             ),
             row(
                 (updateRecipeRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(),

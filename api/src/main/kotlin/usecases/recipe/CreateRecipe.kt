@@ -10,7 +10,6 @@ class CreateRecipe(private val recipeRepository: RecipeRepository) {
 
     data class Parameters(
         val recipeTypeId: Int,
-        val userId: Int,
         val name: String,
         val description: String,
         val ingredients: String,
@@ -18,7 +17,6 @@ class CreateRecipe(private val recipeRepository: RecipeRepository) {
     ) {
         fun toRecipe() = Recipe(
             recipeTypeId = recipeTypeId,
-            userId = userId,
             name = name,
             description = description,
             ingredients = ingredients,

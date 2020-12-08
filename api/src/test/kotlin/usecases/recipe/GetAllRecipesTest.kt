@@ -14,8 +14,6 @@ internal class GetAllRecipesTest : DescribeSpec({
             id = 1,
             recipeTypeId = 1,
             recipeTypeName = "Recipe type name",
-            userId = 1,
-            userName = "User name",
             name = "Recipe Name",
             description = "Recipe description",
             ingredients = "Oh so many ingredients",

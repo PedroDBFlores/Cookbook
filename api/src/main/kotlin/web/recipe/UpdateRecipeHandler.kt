@@ -19,7 +19,6 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler 
     private data class UpdateRecipeRepresenter(
         val id: Int,
         val recipeTypeId: Int,
-        val userId: Int,
         val name: String,
         val description: String,
         val ingredients: String,
@@ -28,7 +27,6 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler 
         init {
             check(id > 0) { "Field 'id' must be bigger than 0" }
             check(recipeTypeId > 0) { "Field 'recipeTypeId' must be bigger than 0" }
-            check(userId > 0) { "Field 'userId' must be bigger than 0" }
             check(name.isNotBlank()) { "Field 'name' must not be empty or blank" }
             check(description.isNotBlank()) { "Field 'description' must not be empty or blank" }
             check(ingredients.isNotBlank()) { "Field 'ingredients' must not be empty or blank" }
@@ -38,7 +36,6 @@ class UpdateRecipeHandler(private val updateRecipe: UpdateRecipe) : KtorHandler 
         fun toParameters() = UpdateRecipe.Parameters(
             id = id,
             recipeTypeId = recipeTypeId,
-            userId = userId,
             name = name,
             description = description,
             ingredients = ingredients,

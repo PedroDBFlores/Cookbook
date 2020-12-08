@@ -16,7 +16,6 @@ class UpdateRecipe(private val recipeRepository: RecipeRepository) {
     data class Parameters(
         val id: Int,
         val recipeTypeId: Int,
-        val userId: Int,
         val name: String,
         val description: String,
         val ingredients: String,
@@ -25,7 +24,6 @@ class UpdateRecipe(private val recipeRepository: RecipeRepository) {
         fun toRecipe() = Recipe(
             id = id,
             recipeTypeId = recipeTypeId,
-            userId = userId,
             name = name,
             description = description,
             ingredients = ingredients,

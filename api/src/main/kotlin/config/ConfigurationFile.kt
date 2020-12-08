@@ -2,21 +2,12 @@ package config
 
 data class ConfigurationFile(
     val api: ApiSettings,
-    val jwt: JWTSettings,
     val database: DatabaseSettings
 ) {
     data class ApiSettings(
         val port: Int,
         val testing: Boolean
     )
-
-    data class JWTSettings(
-        val domain: String,
-        val audience: String,
-        val realm: String,
-        val secret: String
-    )
-
     data class DatabaseSettings(
         val driver: String,
         val jdbcUrl: String,

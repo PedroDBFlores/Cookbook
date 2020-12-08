@@ -5,11 +5,8 @@ import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import model.Recipe
 import model.RecipeType
-import model.Role
-import model.User
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
-import ports.HashingService
 
 /**
  * Object that contains common functions that are used throughout the database tests
@@ -52,17 +49,5 @@ object DatabaseTestHelper {
         val repo = RecipeRepositoryImpl(database = database)
         val id = repo.create(recipe = recipe.copy(id = 0))
         return recipe.copy(id = id)
-    }
-
-    fun createUserInDatabase(user: User, userPassword: String, hashingService: HashingService): User {
-        val repo = UserRepositoryImpl(database = database, hashingService = hashingService)
-        val id = repo.create(user = user, userPassword = userPassword)
-        return user.copy(id = id)
-    }
-
-    fun createRoleInDatabase(role: Role): Role {
-        val repo = RoleRepositoryImpl(database = database)
-        val id = repo.create(role = role)
-        return role.copy(id = id)
     }
 }

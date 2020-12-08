@@ -9,11 +9,7 @@ module.exports = {
     "^.+\\.t(s|sx)?$": "ts-jest",
   },
   clearMocks: true,
-  setupFilesAfterEnv: [
-    "@testing-library/jest-dom/extend-expect",
-    "jest-extended",
-    "jest-chain"
-  ],
+  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],
   moduleDirectories: ["node_modules", path.join(__dirname, "src"), path.join(__dirname, "tests")],
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/"

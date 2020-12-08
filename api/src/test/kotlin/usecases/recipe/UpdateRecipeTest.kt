@@ -12,7 +12,6 @@ internal class UpdateRecipeTest : DescribeSpec({
         val parameters = UpdateRecipe.Parameters(
             id = 1,
             recipeTypeId = 1,
-            userId = 1,
             name = "NOT",
             description = "EQUAL",
             ingredients = "Oh so many ingredients",
@@ -24,8 +23,6 @@ internal class UpdateRecipeTest : DescribeSpec({
                 id = 1,
                 recipeTypeId = 1,
                 recipeTypeName = "Recipe type name",
-                userId = 1,
-                userName = "User name",
                 name = "Recipe Name",
                 description = "Recipe description",
                 ingredients = "Oh so many ingredients",
@@ -34,14 +31,14 @@ internal class UpdateRecipeTest : DescribeSpec({
             val expectedRecipe = currentRecipe.copy(name = "NOT", description = "EQUAL")
             val recipeRepository = mockk<RecipeRepository> {
                 every { find(parameters.id) } returns currentRecipe
-                every { update(expectedRecipe.copy(recipeTypeName = null, userName = null)) } just runs
+                every { update(expectedRecipe.copy(recipeTypeName = null)) } just runs
             }
             val updateRecipe = UpdateRecipe(recipeRepository)
 
             updateRecipe(parameters)
 
             verify(exactly = 1) {
-                recipeRepository.update(expectedRecipe.copy(recipeTypeName = null, userName = null))
+                recipeRepository.update(expectedRecipe.copy(recipeTypeName = null))
             }
         }
 

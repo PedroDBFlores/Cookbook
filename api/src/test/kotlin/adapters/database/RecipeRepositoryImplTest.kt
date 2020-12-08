@@ -2,40 +2,25 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRecipeInDatabase
 import adapters.database.DatabaseTestHelper.createRecipeTypeInDatabase
-import adapters.database.DatabaseTestHelper.createUserInDatabase
-import adapters.database.schema.*
+import adapters.database.schema.Recipes
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.ints.shouldNotBeZero
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.mockk.mockk
 import model.Recipe
 import model.RecipeType
-import model.User
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class RecipeRepositoryImplTest : DescribeSpec({
     val database = DatabaseTestHelper.database
     var firstRecipeType = RecipeType(name = "First recipe type")
-    lateinit var firstUser: User
-    lateinit var secondUser: User
 
     beforeSpec {
         transaction(database) {
             firstRecipeType = createRecipeTypeInDatabase(firstRecipeType)
-            firstUser = createUserInDatabase(
-                User(name = "firstUser", userName = "firstUsername"),
-                "password",
-                mockk(relaxed = true)
-            )
-            secondUser = createUserInDatabase(
-                User(name = "secondUser", userName = "secondUsername"),
-                "password2",
-                mockk(relaxed = true)
-            )
         }
     }
 
@@ -45,20 +30,10 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
         }
     }
 
-    afterSpec {
-        transaction(database) {
-            UserRoles.deleteAll()
-            Roles.deleteAll()
-            Users.deleteAll()
-        }
-    }
-
     describe("Recipe repository") {
         val basicRecipe = Recipe(
             recipeTypeId = firstRecipeType.id,
             recipeTypeName = firstRecipeType.name,
-            userId = firstUser.id,
-            userName = firstUser.name,
             name = "Recipe Name",
             description = "Recipe description",
             ingredients = "Oh so many ingredients",
@@ -85,18 +60,6 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 val recipes = repo.getAll()
 
                 recipes.shouldBe(createdRecipes)
-            }
-
-            it("gets all the recipe types by userId") {
-                val createdRecipes = listOf(
-                    createRecipeInDatabase(basicRecipe),
-                    createRecipeInDatabase(basicRecipe.copy(userId = secondUser.id, userName = secondUser.name))
-                )
-
-                val repo = RecipeRepositoryImpl(database = database)
-                val recipes = repo.getAll(secondUser.id)
-
-                recipes.shouldBe(createdRecipes.filter { it.userId == secondUser.id })
             }
         }
 

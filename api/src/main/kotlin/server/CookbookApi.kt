@@ -5,7 +5,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
-import ports.JWTManager
 import server.modules.*
 
 /** Defines the Cookbook API server
@@ -16,9 +15,6 @@ class CookbookApi(private val configuration: ConfigurationFile) : AutoCloseable 
         contentNegotiationModule()
         exceptionInterceptorModule()
         dependencyInjectionModule(configuration)
-        val userJWTManager by di().instance<JWTManager>("userJWTManager")
-        val adminJWTManager by di().instance<JWTManager>("adminJWTManager")
-        jwtModule(userJwtManager = userJWTManager, adminJWTManager = adminJWTManager)
         routingModule()
         defaultHeadersModule()
     }

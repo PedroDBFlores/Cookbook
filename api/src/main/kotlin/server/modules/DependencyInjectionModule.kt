@@ -1,9 +1,8 @@
 package server.modules
 
 import adapters.BcryptHashingService
-import adapters.authentication.ApplicationRoles
-import adapters.authentication.JWTManagerImpl
-import adapters.database.*
+import adapters.database.RecipeRepositoryImpl
+import adapters.database.RecipeTypeRepositoryImpl
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.application.*
@@ -13,17 +12,11 @@ import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
-import ports.*
+import ports.HashingService
+import ports.RecipeRepository
+import ports.RecipeTypeRepository
 import usecases.recipe.*
 import usecases.recipetype.*
-import usecases.role.*
-import usecases.user.CreateUser
-import usecases.user.DeleteUser
-import usecases.user.FindUser
-import usecases.user.LoginUser
-import usecases.userroles.AddRoleToUser
-import usecases.userroles.DeleteRoleFromUser
-import usecases.userroles.GetUserRoles
 
 fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
     val db by lazy {
@@ -57,61 +50,12 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
         bind<DeleteRecipe>() with singleton { DeleteRecipe(instance()) }
     }
 
-    val userModule = DI.Module("userModule") {
-        bind<UserRepository>() with singleton { UserRepositoryImpl(db, instance()) }
-        bind<CreateUser>() with singleton { CreateUser(instance()) }
-        bind<DeleteUser>() with singleton { DeleteUser(instance()) }
-        bind<FindUser>() with singleton { FindUser(instance()) }
-        bind<LoginUser>() with singleton { LoginUser(instance(), instance(), instance("userJWTManager")) }
-    }
-
-    val roleModule = DI.Module("rolesModule") {
-        bind<RoleRepository>() with singleton { RoleRepositoryImpl(db) }
-        bind<CreateRole>() with singleton { CreateRole(instance()) }
-        bind<FindRole>() with singleton { FindRole(instance()) }
-        bind<GetAllRoles>() with singleton { GetAllRoles(instance()) }
-        bind<UpdateRole>() with singleton { UpdateRole(instance()) }
-        bind<DeleteRole>() with singleton { DeleteRole(instance()) }
-    }
-
-    val userRolesModule = DI.Module("userRolesModule") {
-        bind<UserRolesRepository>() with singleton { UserRolesRepositoryImpl(db) }
-        bind<AddRoleToUser>() with singleton { AddRoleToUser(instance(), instance(), instance()) }
-        bind<GetUserRoles>() with singleton { GetUserRoles(instance(), instance()) }
-        bind<DeleteRoleFromUser>() with singleton { DeleteRoleFromUser(instance()) }
-    }
-
     di {
         // Common
         bind<HashingService>() with singleton { BcryptHashingService() }
         bind<ConfigurationFile>() with singleton { configuration }
-        bind<JWTManager>("userJWTManager") with singleton {
-            with(configuration.jwt) {
-                JWTManagerImpl(
-                    domain = domain,
-                    audience = audience,
-                    realm = realm,
-                    allowedRoles = listOf(ApplicationRoles.USER),
-                    algorithmSecret = secret
-                )
-            }
-        }
-        bind<JWTManager>("adminJWTManager") with singleton {
-            with(configuration.jwt) {
-                JWTManagerImpl(
-                    domain = domain,
-                    audience = audience,
-                    realm = realm,
-                    allowedRoles = listOf(ApplicationRoles.ADMIN),
-                    algorithmSecret = secret
-                )
-            }
-        }
 
         import(recipeTypeModule)
         import(recipeModule)
-        import(userModule)
-        import(roleModule)
-        import(userRolesModule)
     }
 }
