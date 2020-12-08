@@ -3,13 +3,12 @@ import PropTypes from "prop-types"
 import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import {Grid, Typography, Paper, Button} from "@material-ui/core"
+import {Button, Grid, Paper, Typography} from "@material-ui/core"
 import {Choose, When} from "../../../components/flow-control/choose"
 import {Field, Form, Formik} from "formik"
 import {TextField} from "formik-material-ui"
 import FormikSelector from "../../../components/formik-selector/formik-selector"
-import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
-import {AuthContext} from "../../../services/credentials-service/credentials-service"
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {useHistory} from "react-router-dom"
 import {useSnackbar} from "notistack"
 import * as yup from "yup"
@@ -64,7 +63,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>()
     const classes = useStyles()
-    const authContext = useContext(AuthContext)
     const history = useHistory()
     const {enqueueSnackbar} = useSnackbar()
 
@@ -80,9 +78,8 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
     }, [])
 
     const handleOnSubmit = (formData: UpdateRecipeFormData) => {
-        if (authContext && data) {
-            const userId = authContext.userId
-            update({...formData, id: data.id, userId: userId})
+        if (data) {
+            update({...formData, id: data.id})
                 .then(() => {
                     enqueueSnackbar(`Recipe '${formData.name}' updated successfully!`)
                     history.push(`/recipe/${id}`)

@@ -126,7 +126,7 @@ describe("Create recipe component", () => {
 
     it("calls the 'createRecipe' function on submit", async () => {
         createRecipeMock.mockResolvedValueOnce({id: 1})
-        render(<WrapWithCommonContexts authInfo={{userId: 100, name: "Eric Carmen", userName: "ericCarmen"}}>
+        render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipe/new" routeConfiguration={[
                 {path: "/recipe/new", exact: true, component: () => <CreateRecipe/>},
                 {path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</>}
@@ -151,7 +151,6 @@ describe("Create recipe component", () => {
             name: "name",
             description: "description",
             recipeTypeId: 1,
-            userId: 100,
             ingredients: "ingredients",
             preparingSteps: "preparing steps"
         })
@@ -159,7 +158,7 @@ describe("Create recipe component", () => {
 
     it("shows an error message if the create API call fails", async () => {
         createRecipeMock.mockRejectedValueOnce({message: "A wild error has appeared"})
-        render(<WrapWithCommonContexts authInfo={{userId: 100, name: "Eric Carmen", userName: "ericCarmen"}}>
+        render(<WrapWithCommonContexts>
             <CreateRecipe/>
         </WrapWithCommonContexts>)
 
@@ -180,7 +179,6 @@ describe("Create recipe component", () => {
             name: "i",
             description: "will",
             recipeTypeId: 1,
-            userId: 100,
             ingredients: "fail",
             preparingSteps: "preparing steps"
         })

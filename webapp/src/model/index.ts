@@ -1,10 +1,3 @@
-/* DTOS */
-export interface User{
-    id: number
-    name: string
-    userName: string
-}
-
 /* Responses */
 export interface SearchResult<T> {
     count: number

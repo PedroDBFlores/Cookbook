@@ -37,7 +37,7 @@ describe("Edit recipe type", () => {
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
         expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^name$/i)).toHaveAttribute("value", expectedRecipeType.name)
+        expect(await screen.findByLabelText(/^name$/i)).toHaveValue(expectedRecipeType.name)
         expect(screen.getByLabelText(/edit recipe type/i)).toHaveAttribute("type", "submit")
         expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "reset")
     })

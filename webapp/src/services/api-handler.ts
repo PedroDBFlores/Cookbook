@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from "axios"
+import axios, {AxiosInstance} from "axios"
 import React from "react"
 
 const ApiHandler = (baseURL: string): AxiosInstance => {
@@ -14,37 +14,7 @@ const ApiHandler = (baseURL: string): AxiosInstance => {
         }
     })
 
-    api.interceptors.request.use(interceptRequestFulfilledHandler,
-        interceptRequestRejectedHandler)
-    api.interceptors.response.use(interceptResponseHandler,
-        interceptResponseRejectedHandler)
-
     return api
-}
-
-const interceptRequestFulfilledHandler = (config: AxiosRequestConfig): AxiosRequestConfig => {
-    const token = localStorage.getItem("token")
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    } else {
-        throw new axios.Cancel("User token not defined")
-    }
-    return config
-}
-
-const interceptRequestRejectedHandler = (error: Error): Promise<Error> => {
-    return Promise.reject(error)
-}
-
-const interceptResponseHandler = (response: AxiosResponse): AxiosResponse => {
-    return response
-}
-
-const interceptResponseRejectedHandler = (error: AxiosError): Promise<AxiosError> => {
-    if (error.response && error.response.status === 401) {
-        localStorage.removeItem("token")
-    }
-    return Promise.reject(error)
 }
 
 export default ApiHandler

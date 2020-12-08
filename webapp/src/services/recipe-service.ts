@@ -80,7 +80,6 @@ const createRecipeService = (instance: AxiosInstance): RecipeService => ({
 export interface Recipe {
     id: number
     recipeTypeId: number
-    userId: number
     name: string
     description: string
     ingredients: string
@@ -89,7 +88,6 @@ export interface Recipe {
 
 export interface RecipeDetails extends Recipe {
     recipeTypeName: string
-    userName: string
 }
 
 export interface SearchRecipeParameters {

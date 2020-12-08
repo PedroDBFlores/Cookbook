@@ -1,9 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Route, MemoryRouter, Switch} from "react-router-dom"
+import {MemoryRouter, Route, Switch} from "react-router-dom"
 import {AxiosInstance} from "axios"
 import {ApiHandlerContext} from "../src/services/api-handler"
-import {AuthContext, AuthInfo} from "../src/services/credentials-service/credentials-service"
 import {SnackbarProvider} from "notistack"
 
 const MemoryRouterWrapper: React.FC<{ initialPath: string }> =
@@ -54,26 +53,21 @@ export const WrapperWithRouter: React.FC = ({children}) => <WrapperWithRoutes
 
 interface WrapperWithCommonContexts {
     apiHandler?: () => AxiosInstance
-    authInfo?: AuthInfo
 }
 
 export const WrapWithCommonContexts: React.FC<WrapperWithCommonContexts> = ({
                                                                                 children,
-                                                                                apiHandler = jest.fn(),
-                                                                                authInfo
+                                                                                apiHandler = jest.fn()
                                                                             }) => (
     <ApiHandlerContext.Provider value={apiHandler()}>
-        <AuthContext.Provider value={authInfo}>
-            <SnackbarProvider maxSnack={10}>
-                {children}
-            </SnackbarProvider>
-        </AuthContext.Provider>
+        <SnackbarProvider maxSnack={10}>
+            {children}
+        </SnackbarProvider>
     </ApiHandlerContext.Provider>
 )
 
 WrapWithCommonContexts.propTypes = {
-    apiHandler: PropTypes.func,
-    authInfo: PropTypes.any
+    apiHandler: PropTypes.func
 }
 
 

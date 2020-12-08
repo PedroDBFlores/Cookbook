@@ -12,9 +12,6 @@ const handleErrorsSpy = jest.spyOn(errorHandler, "default")
 const service = createRecipeService(ApiHandler("http://localhost"))
 
 describe("Recipe service", () => {
-    beforeAll(() => {
-        localStorage.setItem("token", "A_TOKEN")
-    })
     beforeEach(() => {
         mockedAxios.reset()
         handleErrorsSpy.mockClear()

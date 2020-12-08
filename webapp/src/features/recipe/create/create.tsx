@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react"
-import {Button, Grid, Typography, Paper} from "@material-ui/core"
+import {Button, Grid, Paper, Typography} from "@material-ui/core"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {Field, Form, Formik} from "formik"
 import {TextField} from "formik-material-ui"
@@ -7,7 +7,6 @@ import FormikSelector from "../../../components/formik-selector/formik-selector"
 import * as yup from "yup"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import createRecipeService from "../../../services/recipe-service"
-import {AuthContext} from "../../../services/credentials-service/credentials-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {useSnackbar} from "notistack"
@@ -58,7 +57,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const CreateRecipe: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>()
     const classes = useStyles()
-    const authContext = useContext(AuthContext)
     const history = useHistory()
     const {enqueueSnackbar} = useSnackbar()
 
@@ -70,21 +68,17 @@ const CreateRecipe: React.FC = () => {
     }, [])
 
     const handleOnSubmit = (data: CreateRecipeFormData) => {
-        if (authContext) {
-            const userId = authContext.userId
-            create({
-                name: data.name,
-                description: data.description,
-                recipeTypeId: data.recipeTypeId,
-                ingredients: data.ingredients,
-                preparingSteps: data.preparingSteps,
-                userId
-            }).then(({id}) => {
-                enqueueSnackbar(`Recipe '${data.name}' created successfully!`, {variant: "success"})
-                history.push(`/recipe/${id}`)
-            }).catch(err =>
-                enqueueSnackbar(`An error occurred while creating the recipe: ${err.message}`, {variant: "error"}))
-        }
+        create({
+            name: data.name,
+            description: data.description,
+            recipeTypeId: data.recipeTypeId,
+            ingredients: data.ingredients,
+            preparingSteps: data.preparingSteps
+        }).then(({id}) => {
+            enqueueSnackbar(`Recipe '${data.name}' created successfully!`, {variant: "success"})
+            history.push(`/recipe/${id}`)
+        }).catch(err =>
+            enqueueSnackbar(`An error occurred while creating the recipe: ${err.message}`, {variant: "error"}))
     }
 
     return <Grid container spacing={3}>

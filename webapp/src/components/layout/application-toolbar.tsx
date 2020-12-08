@@ -4,7 +4,6 @@ import {AppBar, Toolbar, IconButton, Typography} from "@material-ui/core"
 import {makeStyles, Theme} from "@material-ui/core/styles"
 import {Menu} from "@material-ui/icons"
 import clsx from "clsx"
-import UserArea from "../user-area/user-area"
 
 const useStyles = makeStyles<Theme, { drawerWidth: number }>((theme) =>
     ({
@@ -69,7 +68,6 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                     {title}
                 </Typography>
-                <UserArea/>
             </Toolbar>
         </AppBar>)
 }

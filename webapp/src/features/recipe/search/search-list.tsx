@@ -2,19 +2,19 @@ import React, {useState} from "react"
 import PropTypes from "prop-types"
 import {SearchResult} from "../../../model"
 import {
+    Button,
+    ButtonGroup,
     Paper,
     Table,
-    TableHead,
-    TableRow,
+    TableBody,
     TableCell,
     TableContainer,
-    TableBody,
-    TablePagination,
     TableFooter,
-    ButtonGroup,
-    Button
+    TableHead,
+    TablePagination,
+    TableRow
 } from "@material-ui/core"
-import {Visibility, Edit, Delete} from "@material-ui/icons"
+import {Delete, Edit, Visibility} from "@material-ui/icons"
 import {useHistory} from "react-router-dom"
 import {RecipeDetails} from "../../../services/recipe-service"
 
@@ -55,7 +55,6 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                     <TableCell>Id</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Recipe type</TableCell>
-                    <TableCell>User</TableCell>
                     <TableCell align="center">Actions</TableCell>
                 </TableRow>
             </TableHead>
@@ -67,12 +66,11 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                                 No matching recipes
                             </TableCell>
                         </TableRow> :
-                        searchResult.results.map(({id, name, recipeTypeName, userName}) =>
+                        searchResult.results.map(({id, name, recipeTypeName}) =>
                             <TableRow key={`recipe-${id}`}>
                                 <TableCell>{id}</TableCell>
                                 <TableCell>{name}</TableCell>
                                 <TableCell>{recipeTypeName}</TableCell>
-                                <TableCell>{userName}</TableCell>
                                 <TableCell align="center">
                                     <ButtonGroup>
                                         <Button aria-label={`Recipe details for id ${id}`}

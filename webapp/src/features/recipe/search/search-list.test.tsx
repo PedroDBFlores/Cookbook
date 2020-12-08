@@ -39,7 +39,6 @@ describe("Recipe search list component", () => {
             expect(screen.getByText(/^id$/i)).toBeInTheDocument()
             expect(screen.getByText(/^name$/i)).toBeInTheDocument()
             expect(screen.getByText(/^recipe type$/i)).toBeInTheDocument()
-            expect(screen.getByText(/^user$/i)).toBeInTheDocument()
             expect(screen.getByText(/^actions$/i)).toBeInTheDocument()
         })
 
@@ -54,7 +53,6 @@ describe("Recipe search list component", () => {
                 expect(screen.getByText(recipe.id.toString())).toBeInTheDocument()
                 expect(screen.getByText(recipe.name)).toBeInTheDocument()
                 expect(screen.getByText(recipe.recipeTypeName)).toBeInTheDocument()
-                expect(screen.getByText(recipe.userName)).toBeInTheDocument()
             })
         })
     })

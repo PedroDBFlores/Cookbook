@@ -18,8 +18,7 @@ describe("Edit recipe component", () => {
         name: "A great",
         description: "recipe for winter times",
         ingredients: "A lot of love",
-        preparingSteps: "and care",
-        userId: 123
+        preparingSteps: "and care"
     } as RecipeDetails))
     const updateRecipeMock = jest.fn()
     const getRecipeTypesMock = jest.fn().mockImplementation(() =>
@@ -147,7 +146,7 @@ describe("Edit recipe component", () => {
 
     it("calls the 'updateRecipe' function on submit", async () => {
         updateRecipeMock.mockResolvedValueOnce({})
-        render(<WrapWithCommonContexts authInfo={{userId: 100, name: "Eric Carmen", userName: "ericCarmen"}}>
+        render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipe/1/edit" routeConfiguration={[
                 {path: "/recipe/1/edit", exact: true, component: () => <EditRecipe id={1}/>},
                 {path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</>},
@@ -179,7 +178,6 @@ describe("Edit recipe component", () => {
             name: "name",
             description: "description",
             recipeTypeId: 1,
-            userId: 100,
             ingredients: "ingredients",
             preparingSteps: "preparing steps"
         })
@@ -187,7 +185,7 @@ describe("Edit recipe component", () => {
 
     it("shows an error message if the update API call fails", async () => {
         updateRecipeMock.mockRejectedValueOnce({message: "A wild error has appeared"})
-        render(<WrapWithCommonContexts authInfo={{userId: 100, name: "Eric Carmen", userName: "ericCarmen"}}>
+        render(<WrapWithCommonContexts>
             <EditRecipe id={1}/>
         </WrapWithCommonContexts>)
 
@@ -218,7 +216,6 @@ describe("Edit recipe component", () => {
             name: "i",
             description: "will",
             recipeTypeId: 1,
-            userId: 100,
             ingredients: "fail",
             preparingSteps: "preparing steps"
         })
