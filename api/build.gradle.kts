@@ -10,7 +10,8 @@ plugins {
 group = "pt.pedro"
 
 application {
-    mainClass.set("ApplicationKt")
+    @Suppress("Deprecation")
+    mainClassName = "ApplicationKt"
 }
 
 repositories {
