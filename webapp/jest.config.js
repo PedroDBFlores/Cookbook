@@ -1,12 +1,12 @@
 const path = require("path")
 
 module.exports = {
-  preset: "ts-jest",
   roots: [
     "<rootDir>/src"
   ],
+  testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   transform: {
-    "^.+\\.t(s|sx)?$": "ts-jest",
+    "^.+\\.t(s|sx)?$":  ["@swc-node/jest", { target: "es2019" }],
   },
   clearMocks: true,
   setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],

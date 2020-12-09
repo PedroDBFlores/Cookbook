@@ -1,0 +1,12 @@
+{
+  "test": ".*.t(s|sx)$",
+  "jsc": {
+    "target": "es2019",
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": true,
+      "dynamicImport": true
+    }
+  }
+}

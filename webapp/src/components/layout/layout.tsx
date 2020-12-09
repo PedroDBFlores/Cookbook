@@ -2,8 +2,8 @@ import React, {useState} from "react"
 import PropTypes from "prop-types"
 import ApplicationToolbar from "./application-toolbar"
 import Drawer from "./drawer"
-import {List, Restaurant, Home} from "@material-ui/icons"
-import {CssBaseline, Container, Grid} from "@material-ui/core"
+import {Home, List, Restaurant} from "@material-ui/icons"
+import {Container, CssBaseline, Grid} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 
 const useStyles = makeStyles((theme) => ({

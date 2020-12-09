@@ -162,13 +162,13 @@ describe("Edit recipe component", () => {
         userEvent.clear(ingredientsInput)
         userEvent.clear(preparingStepsInput)
 
-        await userEvent.type(nameInput, "name")
-        await userEvent.type(descriptionInput, "description")
+        await userEvent.paste(nameInput, "name")
+        await userEvent.paste(descriptionInput, "description")
         // @ts-ignore
         userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
         userEvent.click(screen.getByText("ABC", {selector: "li"}))
-        await userEvent.type(ingredientsInput, "ingredients")
-        await userEvent.type(preparingStepsInput, "preparing steps")
+        await userEvent.paste(ingredientsInput, "ingredients")
+        await userEvent.paste(preparingStepsInput, "preparing steps")
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(/^recipe 'name' updated successfully!$/i)).toBeInTheDocument()
@@ -198,15 +198,15 @@ describe("Edit recipe component", () => {
         userEvent.clear(ingredientsInput)
         userEvent.clear(preparingStepsInput)
 
-        await userEvent.type(nameInput, "i")
-        await userEvent.type(descriptionInput, "will")
+        await userEvent.paste(nameInput, "i")
+        await userEvent.paste(descriptionInput, "will")
 
         // @ts-ignore
         userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
         userEvent.click(screen.getByText("ABC", {selector: "li"}))
 
-        await userEvent.type(ingredientsInput, "fail")
-        await userEvent.type(preparingStepsInput, "preparing steps")
+        await userEvent.paste(ingredientsInput, "fail")
+        await userEvent.paste(preparingStepsInput, "preparing steps")
 
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
