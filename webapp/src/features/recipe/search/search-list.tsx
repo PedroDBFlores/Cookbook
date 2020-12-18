@@ -1,122 +1,107 @@
 import React, {useState} from "react"
 import PropTypes from "prop-types"
 import {SearchResult} from "../../../model"
-import {
-    Button,
-    ButtonGroup,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableFooter,
-    TableHead,
-    TablePagination,
-    TableRow
-} from "@material-ui/core"
-import {Delete, Edit, Visibility} from "@material-ui/icons"
+import {MdDelete, MdEdit, MdVisibility} from "react-icons/md"
 import {useHistory} from "react-router-dom"
 import {RecipeDetails} from "../../../services/recipe-service"
+import {Table, Thead, Th, Tr, Tbody, Td, Tfoot, ButtonGroup, Button} from "@chakra-ui/react"
+import TablePagination from "../../../components/table-pagination/table-pagination"
 
 interface RecipeSearchListProps {
     searchResult: SearchResult<RecipeDetails>
     onDelete: (id: number) => void
-    onNumberOfRowsChange: (rowsPerPage: number) => void
+    onChangeRowsPerPage: (rowsPerPage: number) => void
     onPageChange: (page: number) => void
 }
 
 const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                                                                searchResult,
                                                                onDelete,
-                                                               onNumberOfRowsChange,
+                                                               onChangeRowsPerPage,
                                                                onPageChange
                                                            }) => {
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
-    const [page, setPage] = useState<number>(0)
+    const [page, setPage] = useState<number>(1)
     const history = useHistory()
 
     const navigateToDetails = (id: number): void => history.push(`/recipe/${id}/details`)
     const navigateToEdit = (id: number): void => history.push(`/recipe/${id}/edit`)
 
-    const handleOnChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
+    const handleOnChangePage = (page: number) => {
         setPage(page)
         onPageChange(page)
     }
 
-    const handleOnRowsPerPageChange = (rowsPerPage: number) => {
+    const handleOnChangeRowsPerPage = (rowsPerPage: number) => {
+        setPage(1)
         setRowsPerPage(rowsPerPage)
-        onNumberOfRowsChange(rowsPerPage)
+        onChangeRowsPerPage(rowsPerPage)
     }
 
-    return <TableContainer component={Paper}>
-        <Table stickyHeader>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Id</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Recipe type</TableCell>
-                    <TableCell align="center">Actions</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {
-                    !searchResult?.count ?
-                        <TableRow>
-                            <TableCell colSpan={5}>
-                                No matching recipes
-                            </TableCell>
-                        </TableRow> :
-                        searchResult.results.map(({id, name, recipeTypeName}) =>
-                            <TableRow key={`recipe-${id}`}>
-                                <TableCell>{id}</TableCell>
-                                <TableCell>{name}</TableCell>
-                                <TableCell>{recipeTypeName}</TableCell>
-                                <TableCell align="center">
-                                    <ButtonGroup>
-                                        <Button aria-label={`Recipe details for id ${id}`}
-                                                onClick={() => navigateToDetails(id)}>
-                                            <Visibility/>
-                                        </Button>
-                                        <Button aria-label={`Edit Recipe with id ${id}`}
-                                                onClick={() => navigateToEdit(id)}>
-                                            <Edit/>
-                                        </Button>
-                                        <Button aria-label={`Delete Recipe with id ${id}`}
-                                                onClick={() => onDelete(id)}>
-                                            <Delete/>
-                                        </Button>
-                                    </ButtonGroup>
-                                </TableCell>
-                            </TableRow>)
-                }
-            </TableBody>
-            <TableFooter>
-                <TableRow>
+    return <Table>
+        <Thead>
+            <Tr>
+                <Th>Id</Th>
+                <Th>Name</Th>
+                <Th>Recipe type</Th>
+                <Th align="center">Actions</Th>
+            </Tr>
+        </Thead>
+        <Tbody>
+            {
+                !searchResult?.count ?
+                    <Tr>
+                        <Td colSpan={5}>
+                            No matching recipes
+                        </Td>
+                    </Tr> :
+                    searchResult.results.map(({id, name, recipeTypeName}) =>
+                        <Tr key={`recipe-${id}`}>
+                            <Td>{id}</Td>
+                            <Td>{name}</Td>
+                            <Td>{recipeTypeName}</Td>
+                            <Td align="center">
+                                <ButtonGroup>
+                                    <Button aria-label={`Recipe details for id ${id}`}
+                                            onClick={() => navigateToDetails(id)}>
+                                        <MdVisibility/>
+                                    </Button>
+                                    <Button aria-label={`Edit Recipe with id ${id}`}
+                                            onClick={() => navigateToEdit(id)}>
+                                        <MdEdit/>
+                                    </Button>
+                                    <Button aria-label={`Delete Recipe with id ${id}`}
+                                            onClick={() => onDelete(id)}>
+                                        <MdDelete/>
+                                    </Button>
+                                </ButtonGroup>
+                            </Td>
+                        </Tr>)
+            }
+        </Tbody>
+        <Tfoot>
+            <Tr>
+                <Td>
                     <TablePagination
                         count={searchResult.count}
-                        rowsPerPage={rowsPerPage}
                         page={page}
-                        colSpan={5}
-                        rowsPerPageOptions={[10, 20, 50]}
-                        SelectProps={{
-                            inputProps: {"aria-label": "rows per page"},
-                            native: true,
-                        }}
-                        onPageChange={handleOnChangePage}
-                        onRowsPerPageChange={event => handleOnRowsPerPageChange(Number(event.target.value))}
+                        rowsPerPage={rowsPerPage}
+                        onChangeRowsPerPage={handleOnChangeRowsPerPage}
+                        onChangePage={handleOnChangePage}
                     />
-                </TableRow>
-            </TableFooter>
-        </Table>
-    </TableContainer>
+                </Td>
+            </Tr>
+        </Tfoot>
+    </Table>
 }
+
 RecipeSearchList.propTypes = {
     searchResult: PropTypes.shape({
         count: PropTypes.number.isRequired,
         numberOfPages: PropTypes.number.isRequired,
         results: PropTypes.array.isRequired
     }).isRequired,
-    onNumberOfRowsChange: PropTypes.func.isRequired,
+    onChangeRowsPerPage: PropTypes.func.isRequired,
     onPageChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired
 }

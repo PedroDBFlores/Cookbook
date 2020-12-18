@@ -32,7 +32,7 @@ describe("Create recipe type", () => {
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/create recipe type/i)).toHaveAttribute("type", "submit")
-        expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "reset")
+        expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "button")
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
     })
 

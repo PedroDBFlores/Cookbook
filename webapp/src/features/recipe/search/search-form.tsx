@@ -1,11 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Formik, Field, Form, FormikHelpers} from "formik"
-import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
-import {Typography, Grid, Paper, Button} from "@material-ui/core"
-import {TextField} from "formik-material-ui"
-import FormikSelector from "../../../components/formik-selector/formik-selector"
+import {Form, Formik, FormikHelpers} from "formik"
 import {RecipeType} from "../../../services/recipe-type-service"
+import {Button, Grid, GridItem, Heading} from "@chakra-ui/react"
+import {InputControl, SelectControl} from "formik-chakra-ui"
 
 export interface RecipeSearchFormData {
     name: string | undefined
@@ -18,21 +16,7 @@ interface RecipeSearchFormProps {
     onSearch: (data: RecipeSearchFormData) => void
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        paper: {
-            padding: theme.spacing(2),
-            color: theme.palette.text.primary,
-        },
-        formControl: {
-            width: "66%"
-        },
-    }),
-)
-
 const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearch}) => {
-    const classes = useStyles()
-
     const handleSubmit = (values: RecipeSearchFormData,
                           {setSubmitting}: FormikHelpers<{
                               name: string
@@ -43,8 +27,8 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
         setSubmitting(false)
     }
 
-    return <Paper className={classes.paper}>
-        <Typography variant="subtitle1">Parameters</Typography>
+    return <>
+        <Heading as="strong">Parameters</Heading>
         <Formik
             initialValues={{name: "", description: "", recipeTypeId: 0}}
             validateOnBlur={true}
@@ -53,39 +37,36 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
                     handleSubmit(values, helpers)
             }>
             <Form>
-                <Grid container spacing={3}>
-                    <Grid item xs>
-                        <Field className={classes.formControl}
-                               component={TextField}
-                               id="name-field"
-                               label="Name"
-                               name="name"
-                               aria-label="Recipe name parameter"/>
-                    </Grid>
-                    <Grid item xs>
-                        <Field className={classes.formControl}
-                               component={TextField}
-                               id="description-field"
-                               label="Description"
-                               name="description"
-                               aria-label="Recipe description parameter"/>
-                    </Grid>
-                    <Grid item xs>
-                        <FormikSelector
-                            className={classes.formControl}
-                            options={recipeTypes}
-                            label="Recipe type"
-                            formName="recipeTypeId"
-                            ariaLabel="Recipe type parameter"/>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button variant="contained" aria-label="Search recipe with parameters"
+                <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                    <GridItem colSpan={12}>
+                        <InputControl aria-label="Recipe name parameter" name={"name"} label={"Name"}/>
+                    </GridItem>
+                    <GridItem colSpan={12}>
+                        <InputControl aria-label="Recipe description parameter" name={"description"}
+                                      label={"Description"}/>
+                    </GridItem>
+                    <GridItem colSpan={12}>
+                        <SelectControl aria-label="Recipe type parameter"
+                                       name={"recipeTypeId"}
+                                       label={"Recipe type"}
+                                       selectProps={{placeholder: " "}}>
+                            {
+                                recipeTypes.map(({id, name}) => (
+                                    <option key={`recipeType-${id}`} value={id}>
+                                        {name}
+                                    </option>)
+                                )
+                            }
+                        </SelectControl>
+                    </GridItem>
+                    <Grid colSpan={12}>
+                        <Button aria-label="Search recipe with parameters"
                                 type="submit">Search</Button>
                     </Grid>
                 </Grid>
             </Form>
         </Formik>
-    </Paper>
+    </>
 }
 RecipeSearchForm.propTypes = {
     recipeTypes: PropTypes.array.isRequired,

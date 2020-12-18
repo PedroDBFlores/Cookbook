@@ -1,6 +1,15 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Dialog, DialogTitle, DialogContent, DialogActions, Button} from "@material-ui/core"
+import {
+    Button,
+    Modal as ChakraModal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay
+} from "@chakra-ui/react"
 
 interface ModalProps {
     title: string
@@ -13,19 +22,23 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({
-                                                    title, content,
-                                                    dismiss,
-                                                    onClose
-                                                }) => <Dialog open={true} onClose={onClose}>
-    <DialogTitle>{title}</DialogTitle>
-    <DialogContent>
-        {content}
-    </DialogContent>
-    <DialogActions>
-        <Button aria-label="Cancel modal" onClick={onClose}>Close</Button>
-        <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
-    </DialogActions>
-</Dialog>
+                                         title, content,
+                                         dismiss,
+                                         onClose
+                                     }) => <ChakraModal isOpen={true} onClose={onClose}>
+    <ModalOverlay/>
+    <ModalContent>
+        <ModalHeader>{title}</ModalHeader>
+        <ModalCloseButton/>
+        <ModalBody>
+            {content}
+        </ModalBody>
+        <ModalFooter>
+            <Button aria-label="Cancel modal" onClick={onClose}>Close</Button>
+            <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
+        </ModalFooter>
+    </ModalContent>
+</ChakraModal>
 
 Modal.propTypes = {
     title: PropTypes.string.isRequired,

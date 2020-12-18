@@ -6,7 +6,6 @@ import config.ConfigurationFile
 import io.kotest.core.spec.style.BehaviorSpec
 import server.CookbookApi
 import utils.DatabaseMigration
-import utils.JsonHelpers
 
 class RecipeJourney : BehaviorSpec({
     val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/application.conf")
@@ -24,7 +23,7 @@ class RecipeJourney : BehaviorSpec({
     }
 
     Given("I want to search for a recipe") {
-        `when`("I have a valid JWT token") {
+        `when`("I am at the endpoint") {
             then("I'm able to search") {
                 val searchRecipes = RecipeActions.searchRecipe(
                     baseUrl = baseUrl,

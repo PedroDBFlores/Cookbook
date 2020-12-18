@@ -1,5 +1,5 @@
 import React from "react"
-import {render, screen, within} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import CreateRecipe from "./create"
 import createRecipeService from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
@@ -133,15 +133,13 @@ describe("Create recipe component", () => {
             ]}/>
         </WrapWithCommonContexts>)
 
-        await userEvent.type(await screen.findByLabelText(/^name$/i), "name")
-        await userEvent.type(await screen.findByLabelText(/^description$/i), "description")
+        userEvent.type(await screen.findByLabelText(/^name$/i), "name")
+        userEvent.type(await screen.findByLabelText(/^description$/i), "description")
 
-        // @ts-ignore
-        userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
-        userEvent.click(screen.getByText("ABC"))
+        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
 
-        await userEvent.type(await screen.findByLabelText(/^ingredients$/i), "ingredients")
-        await userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
+        userEvent.type(await screen.findByLabelText(/^ingredients$/i), "ingredients")
+        userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 
@@ -162,15 +160,13 @@ describe("Create recipe component", () => {
             <CreateRecipe/>
         </WrapWithCommonContexts>)
 
-        await userEvent.type(await screen.findByLabelText(/^name$/i), "i")
-        await userEvent.type(await screen.findByLabelText(/^description$/i), "will")
+        userEvent.type(await screen.findByLabelText(/^name$/i), "i")
+        userEvent.type(await screen.findByLabelText(/^description$/i), "will")
 
-        // @ts-ignore
-        userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
-        userEvent.click(screen.getByText("ABC"))
+        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
 
-        await userEvent.type(await screen.findByLabelText(/^ingredients$/i), "fail")
-        await userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
+        userEvent.type(await screen.findByLabelText(/^ingredients$/i), "fail")
+        userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 

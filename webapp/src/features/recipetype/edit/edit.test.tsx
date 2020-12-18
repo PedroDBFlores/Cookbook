@@ -39,7 +39,7 @@ describe("Edit recipe type", () => {
         expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
         expect(await screen.findByLabelText(/^name$/i)).toHaveValue(expectedRecipeType.name)
         expect(screen.getByLabelText(/edit recipe type/i)).toHaveAttribute("type", "submit")
-        expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "reset")
+        expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "button")
     })
 
     it("renders an error if the recipe type cannot be obtained", async () => {

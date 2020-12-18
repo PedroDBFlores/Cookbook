@@ -6,7 +6,7 @@ module.exports = {
   ],
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   transform: {
-    "^.+\\.t(s|sx)?$":  ["@swc-node/jest", { target: "es2019" }],
+    "^.+\\.t(s|sx)?$":  ["@swc/jest"],
   },
   clearMocks: true,
   setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],

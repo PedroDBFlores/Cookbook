@@ -3,7 +3,6 @@ import PropTypes from "prop-types"
 import {MemoryRouter, Route, Switch} from "react-router-dom"
 import {AxiosInstance} from "axios"
 import {ApiHandlerContext} from "../src/services/api-handler"
-import {SnackbarProvider} from "notistack"
 
 const MemoryRouterWrapper: React.FC<{ initialPath: string }> =
     ({children, initialPath}) =>
@@ -60,9 +59,7 @@ export const WrapWithCommonContexts: React.FC<WrapperWithCommonContexts> = ({
                                                                                 apiHandler = jest.fn()
                                                                             }) => (
     <ApiHandlerContext.Provider value={apiHandler()}>
-        <SnackbarProvider maxSnack={10}>
-            {children}
-        </SnackbarProvider>
+        {children}
     </ApiHandlerContext.Provider>
 )
 

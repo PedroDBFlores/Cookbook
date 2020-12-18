@@ -33,17 +33,17 @@ describe("Recipe search form", () => {
         ["name is filled", {
             name: "a name",
             description: "",
-            recipeTypeId: 0
+            recipeTypeId: ""
         }, undefined],
         ["description is filled", {
             name: "",
             description: "a description",
-            recipeTypeId: 0
+            recipeTypeId: ""
         }, undefined],
         ["recipe type id is changed", {
             name: "",
             description: "",
-            recipeTypeId: 2
+            recipeTypeId: "2"
         }, "new recipe type"]
     ])("searches when %s", async (_, {name, description, recipeTypeId}, recipeTypeText) => {
         const onSearchMock = jest.fn()
@@ -52,14 +52,9 @@ describe("Recipe search form", () => {
             {id: 2, name: "new recipe type"}
         ]}/>)
 
-        await userEvent.type(screen.getByLabelText(/^name$/i), name)
-        await userEvent.type(screen.getByLabelText(/^description$/i), description)
-
-        if (recipeTypeText) {
-            // @ts-ignore
-            userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
-            userEvent.click(screen.getByText(recipeTypeText))
-        }
+        userEvent.paste(screen.getByLabelText(/^name$/i), name)
+        userEvent.paste(screen.getByLabelText(/^description$/i), description)
+        userEvent.selectOptions(screen.getByLabelText(/^recipe type$/i), recipeTypeId)
 
         userEvent.click(screen.getByLabelText(/search recipe with parameters/i))
 

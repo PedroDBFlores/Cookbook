@@ -28,8 +28,8 @@ suspend fun executePOSTRequest(
     requestBody: String,
     vararg headers: Pair<String, String>
 ): HttpResponse<String> {
-    val newHeaders = arrayOf(Pair("Content-Type", "application/json"), *headers)
-    val requestBuilder = provideHttpRequestBuilder(uri, *newHeaders)
+    val requestHeaders = arrayOf(Pair("Content-Type", "application/json"), *headers)
+    val requestBuilder = provideHttpRequestBuilder(uri, *requestHeaders)
         .POST(HttpRequest.BodyPublishers.ofString(requestBody))
 
     return HttpClient.newHttpClient()
@@ -41,8 +41,8 @@ suspend fun executePUTRequest(
     requestBody: String,
     vararg headers: Pair<String, String>
 ): HttpResponse<String> {
-    val newHeaders = arrayOf(Pair("Content-Type", "application/json"), *headers)
-    val requestBuilder = provideHttpRequestBuilder(uri, *newHeaders)
+    val requestHeaders = arrayOf(Pair("Content-Type", "application/json"), *headers)
+    val requestBuilder = provideHttpRequestBuilder(uri, *requestHeaders)
         .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
 
     return HttpClient.newHttpClient()

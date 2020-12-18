@@ -34,9 +34,22 @@ class RecipeTypeJourney : BehaviorSpec({
     Given("I want to get all the recipe types") {
         `when`("I am at the endpoint") {
             then("I'm able to access the route and get them") {
+                val firstRecipeTypeBody = createJSONObject("name" to "First Recipe Type name")
+                val secondRecipeTypeBody = createJSONObject("name" to "Second Recipe Type name")
+                RecipeTypeActions.createRecipeType(baseUrl, firstRecipeTypeBody)
+                RecipeTypeActions.createRecipeType(baseUrl, secondRecipeTypeBody)
+
                 val getRecipeTypeResponse = RecipeTypeActions.getRecipeTypes(baseUrl)
 
-                getRecipeTypeResponse.statusCode().shouldBe(HttpStatus.OK_200)
+                with(getRecipeTypeResponse) {
+                    statusCode().shouldBe(HttpStatus.OK_200)
+                    body().shouldMatchJson(
+                        """[
+                            { "id": 1, "name" : "First Recipe Type name" },
+                            { "id": 2, "name" : "Second Recipe Type name" }
+                        ]""".trimMargin()
+                    )
+                }
             }
         }
     }
@@ -47,8 +60,11 @@ class RecipeTypeJourney : BehaviorSpec({
                 val requestBody = createJSONObject("name" to "Recipe Type name")
 
                 val createRecipeTypeResponse = RecipeTypeActions.createRecipeType(baseUrl, requestBody)
-                createRecipeTypeResponse.statusCode().shouldBe(HttpStatus.CREATED_201)
-                createRecipeTypeResponse.body().shouldContainJsonKey("id")
+
+                with(createRecipeTypeResponse) {
+                    statusCode().shouldBe(HttpStatus.CREATED_201)
+                    body().shouldContainJsonKey("id")
+                }
             }
         }
     }

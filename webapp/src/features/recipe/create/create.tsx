@@ -1,16 +1,13 @@
 import React, {useContext, useEffect, useState} from "react"
-import {Button, Grid, Paper, Typography} from "@material-ui/core"
-import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
-import {Field, Form, Formik} from "formik"
-import {TextField} from "formik-material-ui"
-import FormikSelector from "../../../components/formik-selector/formik-selector"
+import {Form, Formik} from "formik"
 import * as yup from "yup"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import createRecipeService from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {useSnackbar} from "notistack"
 import {Choose, When} from "../../../components/flow-control/choose"
+import {Box, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {InputControl, ResetButton, SelectControl, SubmitButton} from "formik-chakra-ui"
 
 interface CreateRecipeFormData {
     name: string
@@ -42,23 +39,10 @@ const schema = yup.object({
         .max(4096, "Preparing steps exceeds the character limit"),
 })
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        paper: {
-            padding: theme.spacing(2),
-            color: theme.palette.text.primary,
-        },
-        formControl: {
-            width: "100%"
-        }
-    }),
-)
-
 const CreateRecipe: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>()
-    const classes = useStyles()
     const history = useHistory()
-    const {enqueueSnackbar} = useSnackbar()
+    const toast = useToast()
 
     const {create} = createRecipeService(useContext(ApiHandlerContext))
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
@@ -71,96 +55,74 @@ const CreateRecipe: React.FC = () => {
         create({
             name: data.name,
             description: data.description,
-            recipeTypeId: data.recipeTypeId,
+            recipeTypeId: Number(data.recipeTypeId),
             ingredients: data.ingredients,
             preparingSteps: data.preparingSteps
         }).then(({id}) => {
-            enqueueSnackbar(`Recipe '${data.name}' created successfully!`, {variant: "success"})
+            toast({title: `Recipe '${data.name}' created successfully!`, status: "success"})
             history.push(`/recipe/${id}`)
         }).catch(err =>
-            enqueueSnackbar(`An error occurred while creating the recipe: ${err.message}`, {variant: "error"}))
+            toast({title: `An error occurred while creating the recipe: ${err.message}`, status: "error"}))
     }
 
-    return <Grid container spacing={3}>
-        <Grid item xs={12}>
-            <Typography variant="h4">Create a new recipe</Typography>
-        </Grid>
-        <Grid item xs={12}>
-            <Paper className={classes.paper}>
-                <Choose>
-                    <When condition={!recipeTypes}>
-                        <span>Loading...</span>
-                    </When>
-                    <When condition={!!recipeTypes}>
-                        <Formik
-                            initialValues={{
-                                name: "",
-                                description: "",
-                                recipeTypeId: 0,
-                                ingredients: "",
-                                preparingSteps: ""
-                            }}
-                            validateOnBlur={true}
-                            onSubmit={handleOnSubmit}
-                            validationSchema={schema}>
-                            {
-                                ({errors}) => <Form>
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={6}>
-                                            <Field
-                                                className={classes.formControl}
-                                                component={TextField}
-                                                id="name"
-                                                label="Name"
-                                                name="name"/>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Field
-                                                className={classes.formControl}
-                                                component={TextField}
-                                                id="description"
-                                                label="Description"
-                                                name="description"/>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <FormikSelector
-                                                className={classes.formControl}
-                                                options={recipeTypes}
-                                                label="Recipe type"
-                                                formName="recipeTypeId"
-                                                ariaLabel="Recipe type parameter"
-                                                error={errors.recipeTypeId}/>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Field
-                                                className={classes.formControl}
-                                                component={TextField}
-                                                id="ingredients"
-                                                label="Ingredients"
-                                                name="ingredients"/>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Field
-                                                className={classes.formControl}
-                                                component={TextField}
-                                                id="preparingSteps"
-                                                label="Preparing steps"
-                                                name="preparingSteps"/>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Button variant="contained" aria-label="Create recipe"
-                                                    type="submit">Create</Button>
-                                        </Grid>
-                                    </Grid>
-                                </Form>
-                            }
-                        </Formik>
-                    </When>
-                </Choose>
-            </Paper>
-        </Grid>
-    </Grid>
-
+    return <>
+        <Heading as="h4">Create a new recipe</Heading>
+        <Box>
+            <Choose>
+                <When condition={!recipeTypes}>
+                    <span>Loading...</span>
+                </When>
+                <When condition={!!recipeTypes}>
+                    <Formik
+                        initialValues={{
+                            name: "",
+                            description: "",
+                            recipeTypeId: 0,
+                            ingredients: "",
+                            preparingSteps: ""
+                        }}
+                        validateOnBlur={true}
+                        onSubmit={handleOnSubmit}
+                        validationSchema={schema}>
+                        <Form>
+                            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                                <GridItem colSpan={6}>
+                                    <InputControl name={"name"} label={"Name"}/>
+                                </GridItem>
+                                <GridItem colSpan={6}>
+                                    <InputControl name={"description"} label={"Description"}/>
+                                </GridItem>
+                                <GridItem colSpan={6}>
+                                    <SelectControl aria-label="Recipe type parameter"
+                                                   name={"recipeTypeId"}
+                                                   label={"Recipe type"}
+                                                   selectProps={{placeholder: " "}}>
+                                        {
+                                            recipeTypes?.map(({id, name}) => (
+                                                <option key={`recipeType-${id}`} value={id}>
+                                                    {name}
+                                                </option>)
+                                            )
+                                        }
+                                    </SelectControl>
+                                </GridItem>
+                                <GridItem colSpan={6}>
+                                    <InputControl name={"ingredients"} label={"Ingredients"}/>
+                                </GridItem>
+                                <GridItem colSpan={6}>
+                                    <InputControl name={"preparingSteps"} label={"Preparing steps"}/>
+                                </GridItem>
+                                <GridItem colSpan={12}>
+                                    <SubmitButton aria-label="Create recipe">Create</SubmitButton>
+                                    <ResetButton aria-label="Reset form">Reset</ResetButton>
+                                </GridItem>
+                            </Grid>
+                        </Form>
+                    </Formik>
+                </When>
+            </Choose>
+        </Box>
+    </>
 }
 
 export default CreateRecipe

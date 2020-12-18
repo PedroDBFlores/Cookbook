@@ -1,5 +1,5 @@
 import React from "react"
-import {render, screen, within} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
@@ -101,12 +101,8 @@ describe("Edit recipe component", () => {
                 <EditRecipe id={1}/>
             </WrapWithCommonContexts>)
 
-            const recipeTypeInput = await screen.findByText("Recipe type")
-
-            //@ts-ignore
-            userEvent.click(within(recipeTypeInput.closest("div")).getByRole("button"))
-            userEvent.click(screen.getByText("", {selector: "li"}))
-            userEvent.click(await screen.findByLabelText(/edit recipe/i))
+            userEvent.selectOptions(await screen.findByLabelText("Recipe type"),"")
+            userEvent.click(screen.getByLabelText(/edit recipe/i))
 
             expect(await screen.findByText("Recipe type is required")).toBeInTheDocument()
         })
@@ -162,13 +158,11 @@ describe("Edit recipe component", () => {
         userEvent.clear(ingredientsInput)
         userEvent.clear(preparingStepsInput)
 
-        await userEvent.paste(nameInput, "name")
-        await userEvent.paste(descriptionInput, "description")
-        // @ts-ignore
-        userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
-        userEvent.click(screen.getByText("ABC", {selector: "li"}))
-        await userEvent.paste(ingredientsInput, "ingredients")
-        await userEvent.paste(preparingStepsInput, "preparing steps")
+        userEvent.paste(nameInput, "name")
+        userEvent.paste(descriptionInput, "description")
+        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
+        userEvent.paste(ingredientsInput, "ingredients")
+        userEvent.paste(preparingStepsInput, "preparing steps")
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(/^recipe 'name' updated successfully!$/i)).toBeInTheDocument()
@@ -198,15 +192,11 @@ describe("Edit recipe component", () => {
         userEvent.clear(ingredientsInput)
         userEvent.clear(preparingStepsInput)
 
-        await userEvent.paste(nameInput, "i")
-        await userEvent.paste(descriptionInput, "will")
-
-        // @ts-ignore
-        userEvent.click(within(screen.getByText("Recipe type").closest("div")).getByRole("button"))
-        userEvent.click(screen.getByText("ABC", {selector: "li"}))
-
-        await userEvent.paste(ingredientsInput, "fail")
-        await userEvent.paste(preparingStepsInput, "preparing steps")
+        userEvent.paste(nameInput, "i")
+        userEvent.paste(descriptionInput, "will")
+        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
+        userEvent.paste(ingredientsInput, "fail")
+        userEvent.paste(preparingStepsInput, "preparing steps")
 
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 

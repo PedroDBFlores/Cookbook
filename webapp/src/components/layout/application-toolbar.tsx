@@ -1,81 +1,84 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {AppBar, Toolbar, IconButton, Typography} from "@material-ui/core"
-import {makeStyles, Theme} from "@material-ui/core/styles"
-import {Menu} from "@material-ui/icons"
-import clsx from "clsx"
+import {Box, Button, Flex, Heading, Text} from "@chakra-ui/react"
+import {useHistory} from "react-router-dom"
 
-const useStyles = makeStyles<Theme, { drawerWidth: number }>((theme) =>
-    ({
-        appBar: {
-            zIndex: theme.zIndex.drawer + 1,
-            transition: theme.transitions.create(["width", "margin"], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-        },
-        appBarShift: {
-            marginLeft: props => props.drawerWidth,
-            width: props => `calc(100% - ${props.drawerWidth}px)`,
-            transition: theme.transitions.create(["width", "margin"], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
-        toolbar: {
-            paddingRight: 24,
-        },
-        toolbarIcon: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            padding: "0 8px",
-            ...theme.mixins.toolbar,
-        },
-        menuButton: {
-            marginRight: 36,
-        },
-        menuButtonHidden: {
-            display: "none",
-        }, title: {
-            flexGrow: 1,
-        },
-    }))
+interface MenuItemProps {
+    onClick?: () => void
+}
 
-export interface ApplicationToolbarProps {
+const MenuItem: React.FC<MenuItemProps> =
+    ({children, onClick}) => {
+        return <Text mt={{base: 4, md: 0}} mr={6} display="block" onClick={onClick}>
+            {children}
+        </Text>
+    }
+
+MenuItem.propTypes = {
+    onClick: PropTypes.func
+}
+
+interface ApplicationToolbarProps {
     title: string
-    onMenuClick: () => void
-    drawerWidth: number
-    isDrawerOpen: boolean
 }
 
 const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                                                                    title,
-                                                                   onMenuClick,
-                                                                   drawerWidth,
-                                                                   isDrawerOpen
                                                                }) => {
-    const classes = useStyles({drawerWidth})
+    const history = useHistory()
+    const [show, setShow] = React.useState(false)
+    const handleToggle = () => setShow(!show)
 
     return (
-        <AppBar position="absolute" className={clsx(classes.appBar, isDrawerOpen && classes.appBarShift)}>
-            <Toolbar className={classes.toolbar}>
-                <IconButton edge="start" color="inherit" aria-label="menu"
-                            onClick={onMenuClick}
-                            className={clsx(classes.menuButton, isDrawerOpen && classes.menuButtonHidden)}>
-                    <Menu/>
-                </IconButton>
-                <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+        <Flex
+            as="nav"
+            align="center"
+            justify="space-between"
+            wrap="wrap"
+            padding="1.5rem"
+            bg="teal.500"
+            color="white"
+        >
+            <Flex align="center" mr={5}>
+                <Heading as="h1" size="lg" letterSpacing={"-.1rem"} onClick={() => history.push("/")}>
                     {title}
-                </Typography>
-            </Toolbar>
-        </AppBar>)
+                </Heading>
+            </Flex>
+
+            <Box display={{base: "block", md: "none"}} onClick={handleToggle}>
+                <svg
+                    fill="white"
+                    width="12px"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/>
+                </svg>
+            </Box>
+
+            <Box
+                display={{sm: show ? "block" : "none", md: "flex"}}
+                width={{sm: "full", md: "auto"}}
+                alignItems="center"
+                flexGrow={1}>
+                <MenuItem onClick={() => history.push("/recipetype")}>Recipe types</MenuItem>
+                <MenuItem onClick={() => history.push("/recipe")}>Recipes</MenuItem>
+            </Box>
+
+            <Box
+                display={{sm: show ? "block" : "none", md: "block"}}
+                mt={{base: 4, md: 0}}
+            >
+                <Button bg="transparent" border="1px">
+                    Create account
+                </Button>
+            </Box>
+        </Flex>
+    )
 }
 ApplicationToolbar.propTypes = {
-    title: PropTypes.string.isRequired,
-    onMenuClick: PropTypes.func.isRequired,
-    drawerWidth: PropTypes.number.isRequired,
-    isDrawerOpen: PropTypes.bool.isRequired
+    title: PropTypes.string.isRequired
 }
 
 export default ApplicationToolbar

@@ -1,13 +1,11 @@
 import React, {useContext} from "react"
 import {useHistory} from "react-router-dom"
-import {Formik, Field, Form} from "formik"
+import {Form, Formik} from "formik"
 import * as yup from "yup"
-import {Button, Grid, Typography, Paper} from "@material-ui/core"
-import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
-import {TextField} from "formik-material-ui"
 import createRecipeTypeService from "../../../services/recipe-type-service"
-import {useSnackbar} from "notistack"
 import {ApiHandlerContext} from "../../../services/api-handler"
+import {Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {InputControl, SubmitButton, ResetButton} from "formik-chakra-ui"
 
 interface CreateRecipeTypeFormData {
     name: string
@@ -20,68 +18,41 @@ const schema = yup.object({
         .max(64, "Name exceeds the character limit")
 })
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        paper: {
-            padding: theme.spacing(2),
-            color: theme.palette.text.primary,
-        },
-        buttonArea: {
-            "& > *": {
-                margin: theme.spacing(1),
-            },
-        }
-    }),
-)
-
 const CreateRecipeType: React.FC = () => {
     const {create} = createRecipeTypeService(useContext(ApiHandlerContext))
-    const {enqueueSnackbar} = useSnackbar()
+    const toast = useToast()
     const history = useHistory()
-    const classes = useStyles()
 
     const handleOnSubmit = async ({name}: CreateRecipeTypeFormData) => {
         try {
             const recipeType = await create({name})
-            enqueueSnackbar(`Recipe type '${name}' created successfully!`)
+            toast({title: `Recipe type '${name}' created successfully!`, status: "success"})
             history.push(`/recipetype/${recipeType.id}`)
         } catch ({message}) {
-            enqueueSnackbar(`An error occurred while creating the recipe type: ${message}`, {variant: "error"})
+            toast({title: `An error occurred while creating the recipe type: ${message}`, status: "error"})
         }
     }
 
-    return <Grid container spacing={3}>
-        <Grid item xs={12}>
-            <Typography variant="h4">Create a new recipe type</Typography>
-        </Grid>
-        <Grid item xs={12}>
-            <Paper className={classes.paper}>
-                <Formik
-                    initialValues={{name: ""}}
-                    validateOnBlur={true}
-                    onSubmit={handleOnSubmit}
-                    validationSchema={schema}>
-                    <Form>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <Field
-                                    component={TextField}
-                                    id="name"
-                                    label="Name"
-                                    name="name"/>
-                            </Grid>
-                            <Grid item className={classes.buttonArea}>
-                                <Button color="primary" variant="contained" aria-label="Create recipe type"
-                                        type="submit">Create</Button>
-                                <Button variant="contained" aria-label="Reset form"
-                                        type="reset">Reset</Button>
-                            </Grid>
-                        </Grid>
-                    </Form>
-                </Formik>
-            </Paper>
-        </Grid>
-    </Grid>
+    return <>
+        <Heading as="h4">Create a new recipe type</Heading>
+        <Formik
+            initialValues={{name: ""}}
+            validateOnBlur={true}
+            onSubmit={handleOnSubmit}
+            validationSchema={schema}>
+            <Form>
+                <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                    <GridItem colSpan={12}>
+                        <InputControl name={"name"} label={"Name"}/>
+                    </GridItem>
+                    <GridItem colSpan={12}>
+                        <SubmitButton aria-label="Create recipe type">Create</SubmitButton>
+                        <ResetButton aria-label="Reset form">Reset</ResetButton>
+                    </GridItem>
+                </Grid>
+            </Form>
+        </Formik>
+    </>
 }
 
 export default CreateRecipeType

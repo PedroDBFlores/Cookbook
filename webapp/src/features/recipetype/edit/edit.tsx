@@ -2,15 +2,13 @@ import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
 import * as yup from "yup"
 import {useAsync} from "react-async"
-import {Field, Formik, FormikValues, Form} from "formik"
+import {Form, Formik, FormikValues} from "formik"
 import {useHistory} from "react-router-dom"
-import {useSnackbar} from "notistack"
-import {Grid, Typography, Button, Paper} from "@material-ui/core"
-import {TextField} from "formik-material-ui"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Choose, When} from "../../../components/flow-control/choose"
+import {Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {InputControl, ResetButton, SubmitButton} from "formik-chakra-ui"
 
 const schema = yup.object({
     name: yup.string().required("Name is required")
@@ -18,23 +16,8 @@ const schema = yup.object({
         .max(64, "Name exceeds the character limit")
 })
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        paper: {
-            padding: theme.spacing(2),
-            color: theme.palette.text.primary,
-        },
-        buttonArea: {
-            "& > *": {
-                margin: theme.spacing(1),
-            },
-        }
-    }),
-)
-
 const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
-    const {enqueueSnackbar} = useSnackbar()
-    const classes = useStyles()
+    const toast = useToast()
     const history = useHistory()
 
     const {find, update} = createRecipeTypeService(useContext(ApiHandlerContext))
@@ -48,11 +31,11 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
             await update({...values} as RecipeType)
             history.push(`/recipetype/${id}`)
         } catch ({message}) {
-            enqueueSnackbar(`An error occurred while updating the recipe type: ${message}`, {variant: "error"})
+            toast({title: `An error occurred while updating the recipe type: ${message}`, status: "error"})
         }
     }
 
-    return <Grid container spacing={3}>
+    return <>
         <Choose>
             <When condition={state.isPending}>
                 <span>Loading...</span>
@@ -62,39 +45,28 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
             </When>
             <When condition={state.isFulfilled}>
                 <>
-                    <Grid item xs={12}>
-                        <Typography variant="h4">Edit a recipe type</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Paper className={classes.paper}>
-                            <Formik
-                                initialValues={{...state.data}}
-                                validateOnBlur={true}
-                                onSubmit={handleOnSubmit}
-                                validationSchema={schema}>
-                                <Form>
-                                    <Grid container spacing={3}/>
-                                    <Grid item xs={12}>
-                                        <Field
-                                            component={TextField}
-                                            id="name"
-                                            label="Name"
-                                            name="name"/>
-                                    </Grid>
-                                    <Grid item className={classes.buttonArea}>
-                                        <Button color="primary" variant="contained" aria-label="Edit recipe type"
-                                                type="submit">Edit</Button>
-                                        <Button variant="contained" aria-label="Reset form"
-                                                type="reset">Reset</Button>
-                                    </Grid>
-                                </Form>
-                            </Formik>
-                        </Paper>
-                    </Grid>
+                    <Heading as="h4">Edit a recipe type</Heading>
+                    <Formik
+                        initialValues={{...state.data}}
+                        validateOnBlur={true}
+                        onSubmit={handleOnSubmit}
+                        validationSchema={schema}>
+                        <Form>
+                            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                                <GridItem colSpan={12}>
+                                    <InputControl name={"name"} label={"Name"}/>
+                                </GridItem>
+                                <GridItem colSpan={12}>
+                                    <SubmitButton aria-label="Edit recipe type"/>
+                                    <ResetButton aria-label="Reset form"/>
+                                </GridItem>
+                            </Grid>
+                        </Form>
+                    </Formik>
                 </>
             </When>
         </Choose>
-    </Grid>
+    </>
 }
 EditRecipeType.propTypes = {
     id: PropTypes.number.isRequired

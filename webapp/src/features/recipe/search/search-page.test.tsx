@@ -3,12 +3,12 @@ import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "./search-page"
 import RecipeSearchForm from "./search-form"
 import {generateRecipeDetails} from "../../../../tests/helpers/generators/dto-generators"
-import Button from "@material-ui/core/Button"
 import {SearchResult} from "../../../model"
 import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
+import { Button } from "@chakra-ui/react"
 
 jest.mock("../../../../src/services/recipe-type-service")
 jest.mock("../../../../src/services/recipe-service")
@@ -33,9 +33,9 @@ const recipeSearchFormMock = RecipeSearchForm as jest.MockedFunction<typeof Reci
 jest.mock("../../../../src/features/recipe/search/search-list", () => {
     return {
         __esModule: true,
-        default: jest.fn().mockImplementation(({searchResult, onNumberOfRowsChange, onPageChange}: {
+        default: jest.fn().mockImplementation(({searchResult, onChangeRowsPerPage, onPageChange}: {
                 searchResult: SearchResult<RecipeDetails>
-                onNumberOfRowsChange: (rowsPerPage: number) => void
+                onChangeRowsPerPage: (rowsPerPage: number) => void
                 onPageChange: (page: number) => void
             }) =>
                 <>
@@ -45,8 +45,8 @@ jest.mock("../../../../src/features/recipe/search/search-list", () => {
                             searchResult.results.map(({id, name}) => <span key={id}>{name}</span>) :
                             <span>No matching recipes</span>
                     }
-                    <Button onClick={() => onPageChange(1)}>Change page</Button>
-                    <Button onClick={() => onNumberOfRowsChange(20)}>Change Items per page</Button>
+                    <Button onClick={() => onChangeRowsPerPage(20)}>Change Items per page</Button>
+                    <Button onClick={() => onPageChange(2)}>Change page</Button>
                 </>
         )
     }
@@ -127,7 +127,7 @@ describe("Search recipe page component", () => {
                     name: "One",
                     description: "Two",
                     recipeTypeId: expectedOnSearchRecipeTypeId,
-                    pageNumber: 0,
+                    pageNumber: 1,
                     itemsPerPage: 10
                 })
 
@@ -157,7 +157,7 @@ describe("Search recipe page component", () => {
                 name: "One",
                 description: "Two",
                 recipeTypeId: 1,
-                pageNumber: 0,
+                pageNumber: 1,
                 itemsPerPage: 10
             })
         })
@@ -168,7 +168,7 @@ describe("Search recipe page component", () => {
                 name: "One",
                 description: "Two",
                 recipeTypeId: 1,
-                pageNumber: 1,
+                pageNumber: 2,
                 itemsPerPage: 10
             })
         })

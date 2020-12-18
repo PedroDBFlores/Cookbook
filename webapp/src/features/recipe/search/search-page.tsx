@@ -1,21 +1,12 @@
 import React, {useContext, useEffect, useState} from "react"
 import {SearchResult} from "../../../model"
 import RecipeSearchList from "./search-list"
-import {Grid, Typography, Button} from "@material-ui/core"
-import {makeStyles, createStyles, Theme} from "@material-ui/core/styles"
 import RecipeSearchForm, {RecipeSearchFormData} from "./search-form"
 import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        base: {
-            color: theme.palette.text.primary,
-        },
-    }),
-)
+import {Button, Grid, GridItem, Text} from "@chakra-ui/react"
 
 const RecipeSearchPage: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
@@ -28,7 +19,7 @@ const RecipeSearchPage: React.FC = () => {
         pageNumber: number
         itemsPerPage: number
     }>({
-        pageNumber: 0,
+        pageNumber: 1,
         itemsPerPage: 10
     })
     const [recipes, setRecipes] = useState<SearchResult<RecipeDetails>>({
@@ -37,7 +28,6 @@ const RecipeSearchPage: React.FC = () => {
         results: []
     })
 
-    const classes = useStyles()
     const history = useHistory()
 
     const {search, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
@@ -50,7 +40,7 @@ const RecipeSearchPage: React.FC = () => {
         setPageParams({...pageParams, pageNumber})
 
     const handleOnNumberOfRowsChange = (itemsPerPage: number) =>
-        setPageParams({...pageParams, itemsPerPage})
+        setPageParams({...pageParams, itemsPerPage, pageNumber: 1})
 
     const navigateToCreateRecipe = () => history.push("/recipe/new")
 
@@ -65,23 +55,23 @@ const RecipeSearchPage: React.FC = () => {
         }).then(setRecipes)
     }, [formData, pageParams])
 
-    return <Grid className={classes.base} container spacing={3}>
-        <Grid item xs={11}>
-            <Typography variant="h4">Search recipes</Typography>
-        </Grid>
-        <Grid item xs={1}>
-            <Button variant="contained" color="primary" aria-label="Create new recipe"
+    return <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+        <GridItem colSpan={11}>
+            <Text as="h4">Search recipes</Text>
+        </GridItem>
+        <GridItem colSpan={1}>
+            <Button aria-label="Create new recipe"
                     onClick={navigateToCreateRecipe}>Create</Button>
-        </Grid>
-        <Grid item xs={12}>
+        </GridItem>
+        <GridItem colSpan={12}>
             <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
-        </Grid>
-        <Grid item xs={12}>
+        </GridItem>
+        <GridItem colSpan={12}>
             <RecipeSearchList searchResult={recipes}
                               onDelete={(id) => deleteRecipe(id)}
-                              onNumberOfRowsChange={handleOnNumberOfRowsChange}
+                              onChangeRowsPerPage={handleOnNumberOfRowsChange}
                               onPageChange={handleOnPageChange}/>
-        </Grid>
+        </GridItem>
     </Grid>
 }
 

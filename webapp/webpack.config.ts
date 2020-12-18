@@ -22,9 +22,9 @@ const commonConfig: Configuration = {
     module: {
         rules: [
             {
-                test: /\.js|\.ts|\.tsx$/,
-                use: "swc-loader",
-                exclude: /node_modules/
+                test: /\.ts|\.tsx$/,
+                exclude: /node_modules/,
+                use: "swc-loader"
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,
