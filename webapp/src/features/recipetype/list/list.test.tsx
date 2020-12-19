@@ -85,7 +85,7 @@ describe("Recipe type list component", () => {
                 selector: "button"
             }))
 
-            expect(onDeleteMock).toHaveBeenCalledWith(firstRecipeType.id)
+            expect(onDeleteMock).toHaveBeenCalledWith(firstRecipeType.id, firstRecipeType.name)
         })
     })
 })

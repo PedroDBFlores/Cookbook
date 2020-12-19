@@ -6,7 +6,7 @@ import createRecipeService, {RecipeDetails} from "../../../services/recipe-servi
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Button, Grid, GridItem, Text} from "@chakra-ui/react"
+import {Button, Grid, GridItem, Heading, Text} from "@chakra-ui/react"
 
 const RecipeSearchPage: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
@@ -57,7 +57,7 @@ const RecipeSearchPage: React.FC = () => {
 
     return <Grid templateColumns="repeat(12, 1fr)" gap={6}>
         <GridItem colSpan={11}>
-            <Text as="h4">Search recipes</Text>
+            <Heading>Search recipes</Heading>
         </GridItem>
         <GridItem colSpan={1}>
             <Button aria-label="Create new recipe"

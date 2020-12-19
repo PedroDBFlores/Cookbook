@@ -1,4 +1,5 @@
 webapp/node_modules/*
 webapp/coverage/*
 webapp/dist/*
+e2e/node_modules/*
 .idea/

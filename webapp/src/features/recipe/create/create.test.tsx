@@ -129,7 +129,7 @@ describe("Create recipe component", () => {
         render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipe/new" routeConfiguration={[
                 {path: "/recipe/new", exact: true, component: () => <CreateRecipe/>},
-                {path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</>}
+                {path: "/recipe/1/details", exact: true, component: () => <>I'm the recipe details page for id 1</>}
             ]}/>
         </WrapWithCommonContexts>)
 

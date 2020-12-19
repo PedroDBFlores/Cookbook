@@ -1,5 +1,5 @@
 import React from "react"
-import {render, screen, waitFor, within} from "@testing-library/react"
+import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchForm from "./search-form"
 import userEvent from "@testing-library/user-event"
 
@@ -7,7 +7,6 @@ describe("Recipe search form", () => {
     it("renders the layout", () => {
         render(<RecipeSearchForm onSearch={jest.fn()} recipeTypes={[]}/>)
 
-        expect(screen.getByText(/parameters/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/recipe name parameter/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/recipe description parameter/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/recipe type parameter/i)).toBeInTheDocument()

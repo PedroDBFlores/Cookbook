@@ -65,7 +65,7 @@ describe("Create recipe type", () => {
             <WrapperWithRoutes initialPath="/recipetype/new" routeConfiguration={[
                 {path: "/recipetype/new", exact: true, component: () => <CreateRecipeType/>},
                 {
-                    path: "/recipetype/1",
+                    path: "/recipetype/1/details",
                     exact: true,
                     component: () => <div>I'm the recipe type details page for id 1</div>
                 }

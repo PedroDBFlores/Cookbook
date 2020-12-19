@@ -8,8 +8,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <>
             <ApplicationToolbar title={"Cookbook"} />
             <main>
-                <div style={{ minHeight: "64px" }} />
-                <Container centerContent>
+                <div style={{ minHeight: "48px" }} />
+                <Container maxW="6xl">
                     <Grid>
                         {children}
                     </Grid>

@@ -7,7 +7,7 @@ import {Button, ButtonGroup, Table, Tbody, Td, Th, Thead, Tr} from "@chakra-ui/r
 
 interface RecipeTypeListProps {
     recipeTypes: Array<RecipeType>
-    onDelete: (id: number) => void
+    onDelete: (id: number, name: string) => void
 }
 
 const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes, onDelete}) => {
@@ -45,7 +45,7 @@ const RecipeTypeList: React.FC<RecipeTypeListProps> = ({recipeTypes, onDelete}) 
                                     <MdEdit/>
                                 </Button>
                                 <Button aria-label={`Delete Recipe type with id ${id}`}
-                                        onClick={() => onDelete(id)}>
+                                        onClick={() => onDelete(id, name)}>
                                     <MdDelete/>
                                 </Button>
                             </ButtonGroup>

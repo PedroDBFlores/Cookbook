@@ -53,7 +53,7 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
         <When condition={state.isFulfilled}>
             <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                 <GridItem colSpan={12}>
-                    <Heading as="h4">Recipe details</Heading>
+                    <Heading>Recipe details</Heading>
                 </GridItem>
                 <GridItem colSpan={12}>
                     <StatGroup>

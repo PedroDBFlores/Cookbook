@@ -27,14 +27,14 @@ const CreateRecipeType: React.FC = () => {
         try {
             const recipeType = await create({name})
             toast({title: `Recipe type '${name}' created successfully!`, status: "success"})
-            history.push(`/recipetype/${recipeType.id}`)
+            history.push(`/recipetype/${recipeType.id}/details`)
         } catch ({message}) {
             toast({title: `An error occurred while creating the recipe type: ${message}`, status: "error"})
         }
     }
 
     return <>
-        <Heading as="h4">Create a new recipe type</Heading>
+        <Heading>Create a new recipe type</Heading>
         <Formik
             initialValues={{name: ""}}
             validateOnBlur={true}

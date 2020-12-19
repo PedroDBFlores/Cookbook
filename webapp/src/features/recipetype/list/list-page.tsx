@@ -5,8 +5,7 @@ import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Choose, When} from "../../../components/flow-control/choose"
-import {Button, Grid, GridItem, Text} from "@chakra-ui/react"
-import {useToast} from "@chakra-ui/react"
+import {Button, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
 
 const RecipeTypeListPage: React.FC = () => {
     const {getAll, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
@@ -14,10 +13,14 @@ const RecipeTypeListPage: React.FC = () => {
     const toast = useToast()
 
     const getPromiseRef = useRef(() => getAll())
-    const handleDelete = (id: number) => deleteRecipeType(id).then(() =>
+    const handleDelete = (id: number, name: string) => deleteRecipeType(id).then(() =>
         toast({
-            title: `Recipe type ${id} was deleted`,
+            title: `Recipe type '${name}' was deleted`,
             status: "success"
+        }))
+        .catch(() => toast({
+            title: `Recipe type '${name}' failed to be deleted`,
+            status: "error"
         }))
     const state = useAsync<Array<RecipeType>>({
         promiseFn: getPromiseRef.current
@@ -27,7 +30,7 @@ const RecipeTypeListPage: React.FC = () => {
 
     return <Grid templateColumns="repeat(12, 1fr)" gap={6}>
         <GridItem colSpan={11}>
-            <Text as="h4">Recipe types</Text>
+            <Heading>Recipe types</Heading>
         </GridItem>
         <GridItem colSpan={1}>
             <Button aria-label="Create new recipe type"
@@ -42,7 +45,7 @@ const RecipeTypeListPage: React.FC = () => {
                     <span>Error: {state.error?.message}</span>
                 </When>
                 <When condition={state.isFulfilled}>
-                    <RecipeTypeList recipeTypes={state.data || []} onDelete={(id => handleDelete(id))}/>
+                    <RecipeTypeList recipeTypes={state.data || []} onDelete={handleDelete}/>
                 </When>
             </Choose>
         </GridItem>

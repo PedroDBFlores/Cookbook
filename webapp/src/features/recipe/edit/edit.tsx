@@ -73,7 +73,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
     }
 
     return <>
-        <Heading as="h4">Edit recipe</Heading>
+        <Heading>Edit recipe</Heading>
         <Box>
             <Choose>
                 <When condition={!recipeTypes && isLoading}>

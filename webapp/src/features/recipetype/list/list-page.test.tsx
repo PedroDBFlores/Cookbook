@@ -61,37 +61,57 @@ describe("Recipe type list page", () => {
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
     })
 
-    it("passed the onDelete function to the 'RecipeTypeList' component", async () => {
-        const expectedRecipeType = generateRecipeType()
-        getAllRecipeTypesMock.mockResolvedValueOnce([expectedRecipeType])
-        deleteRecipeTypeMock.mockResolvedValueOnce(void (0))
-        recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
-            useEffect(() => {
-                onDelete(recipeTypes[0].id)
-            }, [])
-            return <></>
+    describe("Actions", () => {
+        it("navigates to the recipe type create page on click", async () => {
+            getAllRecipeTypesMock.mockResolvedValueOnce([])
+            render(<WrapWithCommonContexts>
+                <WrapperWithRoutes initialPath="/recipetype" routeConfiguration={[
+                    {path: "/recipetype", exact: true, component: () => <RecipeTypeListPage/>},
+                    {path: "/recipetype/new", exact: true, component: () => <>I'm the recipe type create page</>}
+                ]}/>
+            </WrapWithCommonContexts>)
+
+            userEvent.click(await screen.findByLabelText(/^create new recipe type$/i))
+
+            expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
         })
 
-        render(<WrapWithCommonContexts>
-            <RecipeTypeListPage/>
-        </WrapWithCommonContexts>)
+        it("deletes a recipe type successfully", async () => {
+            const expectedRecipeType = generateRecipeType()
+            getAllRecipeTypesMock.mockResolvedValueOnce([expectedRecipeType])
+            deleteRecipeTypeMock.mockResolvedValueOnce(void (0))
+            recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
+                useEffect(() => {
+                    onDelete(recipeTypes[0].id, recipeTypes[0].name)
+                }, [])
+                return <></>
+            })
 
-        expect(getAllRecipeTypesMock).toHaveBeenCalled()
-        expect(await screen.findByText(`Recipe type ${expectedRecipeType.id} was deleted`)).toBeInTheDocument()
-        expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
-    })
+            render(<WrapWithCommonContexts>
+                <RecipeTypeListPage/>
+            </WrapWithCommonContexts>)
 
-    it("navigates to the recipe type create page on click", async () => {
-        getAllRecipeTypesMock.mockResolvedValueOnce([])
-        render(<WrapWithCommonContexts>
-            <WrapperWithRoutes initialPath="/recipetype" routeConfiguration={[
-                {path: "/recipetype", exact: true, component: () => <RecipeTypeListPage/>},
-                {path: "/recipetype/new", exact: true, component: () => <>I'm the recipe type create page</>}
-            ]}/>
-        </WrapWithCommonContexts>)
+            expect(getAllRecipeTypesMock).toHaveBeenCalled()
+            expect(await screen.findByText(`Recipe type '${expectedRecipeType.name}' was deleted`)).toBeInTheDocument()
+            expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
+        })
 
-        userEvent.click(await screen.findByLabelText(/^create new recipe type$/i))
+        it("shows an error message if deleting the recipe type fails", async () => {
+            const expectedRecipeType = generateRecipeType()
+            getAllRecipeTypesMock.mockResolvedValueOnce([expectedRecipeType])
+            deleteRecipeTypeMock.mockRejectedValueOnce(void (0))
+            recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
+                useEffect(() => {
+                    onDelete(recipeTypes[0].id, recipeTypes[0].name)
+                }, [])
+                return <></>
+            })
 
-        expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
+            render(<WrapWithCommonContexts>
+                <RecipeTypeListPage/>
+            </WrapWithCommonContexts>)
+
+            expect(await screen.findByText(`Recipe type '${expectedRecipeType.name}' failed to be deleted`)).toBeInTheDocument()
+        })
     })
 })

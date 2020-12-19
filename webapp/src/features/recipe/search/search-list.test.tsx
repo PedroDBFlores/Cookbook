@@ -172,7 +172,7 @@ describe("Recipe search list component", () => {
             }))
 
             await waitFor(() => {
-                expect(onDeleteMock).toHaveBeenCalledWith(firstRecipe.id)
+                expect(onDeleteMock).toHaveBeenCalledWith(firstRecipe.id, firstRecipe.name)
             })
         })
     })

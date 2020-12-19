@@ -6,7 +6,7 @@ import createRecipeService from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Choose, When} from "../../../components/flow-control/choose"
-import {Box, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {Box, ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton} from "formik-chakra-ui"
 
 interface CreateRecipeFormData {
@@ -60,14 +60,16 @@ const CreateRecipe: React.FC = () => {
             preparingSteps: data.preparingSteps
         }).then(({id}) => {
             toast({title: `Recipe '${data.name}' created successfully!`, status: "success"})
-            history.push(`/recipe/${id}`)
+            history.push(`/recipe/${id}/details`)
         }).catch(err =>
             toast({title: `An error occurred while creating the recipe: ${err.message}`, status: "error"}))
     }
 
-    return <>
-        <Heading as="h4">Create a new recipe</Heading>
-        <Box>
+    return <Grid width={"100%"} templateColumns="repeat(12, 1fr)" gap={6}>
+        <GridItem colSpan={12}>
+            <Heading>Create a new recipe</Heading>
+        </GridItem>
+        <GridItem colSpan={12}>
             <Choose>
                 <When condition={!recipeTypes}>
                     <span>Loading...</span>
@@ -113,16 +115,18 @@ const CreateRecipe: React.FC = () => {
                                     <InputControl name={"preparingSteps"} label={"Preparing steps"}/>
                                 </GridItem>
                                 <GridItem colSpan={12}>
-                                    <SubmitButton aria-label="Create recipe">Create</SubmitButton>
-                                    <ResetButton aria-label="Reset form">Reset</ResetButton>
+                                    <ButtonGroup>
+                                        <SubmitButton aria-label="Create recipe">Create</SubmitButton>
+                                        <ResetButton aria-label="Reset form">Reset</ResetButton>
+                                    </ButtonGroup>
                                 </GridItem>
                             </Grid>
                         </Form>
                     </Formik>
                 </When>
             </Choose>
-        </Box>
-    </>
+        </GridItem>
+    </Grid>
 }
 
 export default CreateRecipe

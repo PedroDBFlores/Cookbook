@@ -9,7 +9,7 @@ import TablePagination from "../../../components/table-pagination/table-paginati
 
 interface RecipeSearchListProps {
     searchResult: SearchResult<RecipeDetails>
-    onDelete: (id: number) => void
+    onDelete: (id: number, name: string) => void
     onChangeRowsPerPage: (rowsPerPage: number) => void
     onPageChange: (page: number) => void
 }
@@ -71,7 +71,7 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                                         <MdEdit/>
                                     </Button>
                                     <Button aria-label={`Delete Recipe with id ${id}`}
-                                            onClick={() => onDelete(id)}>
+                                            onClick={() => onDelete(id, name)}>
                                         <MdDelete/>
                                     </Button>
                                 </ButtonGroup>
@@ -81,7 +81,7 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
         </Tbody>
         <Tfoot>
             <Tr>
-                <Td>
+                <Td colSpan={5}>
                     <TablePagination
                         count={searchResult.count}
                         page={page}

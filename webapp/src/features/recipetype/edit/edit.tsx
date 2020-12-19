@@ -45,7 +45,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
             </When>
             <When condition={state.isFulfilled}>
                 <>
-                    <Heading as="h4">Edit a recipe type</Heading>
+                    <Heading>Edit a recipe type</Heading>
                     <Formik
                         initialValues={{...state.data}}
                         validateOnBlur={true}

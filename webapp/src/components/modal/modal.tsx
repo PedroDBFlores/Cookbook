@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {
     Button,
+    ButtonGroup,
     Modal as ChakraModal,
     ModalBody,
     ModalCloseButton,
@@ -34,8 +35,10 @@ const Modal: React.FC<ModalProps> = ({
             {content}
         </ModalBody>
         <ModalFooter>
-            <Button aria-label="Cancel modal" onClick={onClose}>Close</Button>
-            <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
+            <ButtonGroup>
+                <Button aria-label="Cancel modal" onClick={onClose}>Close</Button>
+                <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
+            </ButtonGroup>
         </ModalFooter>
     </ModalContent>
 </ChakraModal>

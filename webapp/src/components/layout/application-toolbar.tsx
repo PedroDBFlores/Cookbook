@@ -65,15 +65,6 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 <MenuItem onClick={() => history.push("/recipetype")}>Recipe types</MenuItem>
                 <MenuItem onClick={() => history.push("/recipe")}>Recipes</MenuItem>
             </Box>
-
-            <Box
-                display={{sm: show ? "block" : "none", md: "block"}}
-                mt={{base: 4, md: 0}}
-            >
-                <Button bg="transparent" border="1px">
-                    Create account
-                </Button>
-            </Box>
         </Flex>
     )
 }

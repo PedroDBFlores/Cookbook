@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import {MdFirstPage, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLastPage} from "react-icons/md"
-import {Box, Flex, IconButton, Select, Text} from "@chakra-ui/react"
+import {Box, ButtonGroup, Flex, IconButton, Select, Spacer, Text} from "@chakra-ui/react"
 
 interface TablePaginationProps {
     count: number
@@ -45,34 +45,38 @@ const TablePagination: React.FC<TablePaginationProps> = ({
                 <option value={50}>50</option>
             </Select>
         </Box>
+        <Spacer/>
         <Box>
             <Text>{`Page ${page} of ${pageNumber}`}</Text>
         </Box>
+        <Spacer/>
         <Box>
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 1}
-                aria-label="first page">
-                <MdFirstPage/>
-            </IconButton>
-            <IconButton
-                onClick={handlePreviousButtonClick}
-                disabled={page === 1}
-                aria-label="previous page">
-                <MdKeyboardArrowLeft/>
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= pageNumber}
-                aria-label="next page">
-                <MdKeyboardArrowRight/>
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= pageNumber}
-                aria-label="last page">
-                <MdLastPage/>
-            </IconButton>
+            <ButtonGroup isAttached>
+                <IconButton
+                    onClick={handleFirstPageButtonClick}
+                    disabled={page === 1}
+                    aria-label="first page">
+                    <MdFirstPage/>
+                </IconButton>
+                <IconButton
+                    onClick={handlePreviousButtonClick}
+                    disabled={page === 1}
+                    aria-label="previous page">
+                    <MdKeyboardArrowLeft/>
+                </IconButton>
+                <IconButton
+                    onClick={handleNextButtonClick}
+                    disabled={page >= pageNumber}
+                    aria-label="next page">
+                    <MdKeyboardArrowRight/>
+                </IconButton>
+                <IconButton
+                    onClick={handleLastPageButtonClick}
+                    disabled={page >= pageNumber}
+                    aria-label="last page">
+                    <MdLastPage/>
+                </IconButton>
+            </ButtonGroup>
         </Box>
     </Flex>
 }

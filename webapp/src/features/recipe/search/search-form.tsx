@@ -27,46 +27,43 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
         setSubmitting(false)
     }
 
-    return <>
-        <Heading as="strong">Parameters</Heading>
-        <Formik
-            initialValues={{name: "", description: "", recipeTypeId: 0}}
-            validateOnBlur={true}
-            onSubmit={
-                (values, helpers) =>
-                    handleSubmit(values, helpers)
-            }>
-            <Form>
-                <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                    <GridItem colSpan={12}>
-                        <InputControl aria-label="Recipe name parameter" name={"name"} label={"Name"}/>
-                    </GridItem>
-                    <GridItem colSpan={12}>
-                        <InputControl aria-label="Recipe description parameter" name={"description"}
-                                      label={"Description"}/>
-                    </GridItem>
-                    <GridItem colSpan={12}>
-                        <SelectControl aria-label="Recipe type parameter"
-                                       name={"recipeTypeId"}
-                                       label={"Recipe type"}
-                                       selectProps={{placeholder: " "}}>
-                            {
-                                recipeTypes.map(({id, name}) => (
-                                    <option key={`recipeType-${id}`} value={id}>
-                                        {name}
-                                    </option>)
-                                )
-                            }
-                        </SelectControl>
-                    </GridItem>
-                    <Grid colSpan={12}>
-                        <Button aria-label="Search recipe with parameters"
-                                type="submit">Search</Button>
-                    </Grid>
+    return <Formik
+        initialValues={{name: "", description: "", recipeTypeId: 0}}
+        validateOnBlur={true}
+        onSubmit={
+            (values, helpers) =>
+                handleSubmit(values, helpers)
+        }>
+        <Form>
+            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                <GridItem colSpan={12}>
+                    <InputControl aria-label="Recipe name parameter" name={"name"} label={"Name"}/>
+                </GridItem>
+                <GridItem colSpan={12}>
+                    <InputControl aria-label="Recipe description parameter" name={"description"}
+                                  label={"Description"}/>
+                </GridItem>
+                <GridItem colSpan={12}>
+                    <SelectControl aria-label="Recipe type parameter"
+                                   name={"recipeTypeId"}
+                                   label={"Recipe type"}
+                                   selectProps={{placeholder: " "}}>
+                        {
+                            recipeTypes.map(({id, name}) => (
+                                <option key={`recipeType-${id}`} value={id}>
+                                    {name}
+                                </option>)
+                            )
+                        }
+                    </SelectControl>
+                </GridItem>
+                <Grid colSpan={12}>
+                    <Button aria-label="Search recipe with parameters"
+                            type="submit">Search</Button>
                 </Grid>
-            </Form>
-        </Formik>
-    </>
+            </Grid>
+        </Form>
+    </Formik>
 }
 RecipeSearchForm.propTypes = {
     recipeTypes: PropTypes.array.isRequired,
