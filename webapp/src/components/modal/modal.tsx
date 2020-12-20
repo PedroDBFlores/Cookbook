@@ -15,16 +15,16 @@ import {
 interface ModalProps {
     title: string
     content: string
-    dismiss: {
-        text: string
-        onDismiss: () => void
-    }
+    actionText: string
+    onAction: () => void
     onClose: () => void
 }
 
 const Modal: React.FC<ModalProps> = ({
-                                         title, content,
-                                         dismiss,
+                                         title,
+                                         content,
+                                         actionText,
+                                         onAction,
                                          onClose
                                      }) => <ChakraModal isOpen={true} onClose={onClose}>
     <ModalOverlay/>
@@ -37,7 +37,7 @@ const Modal: React.FC<ModalProps> = ({
         <ModalFooter>
             <ButtonGroup>
                 <Button aria-label="Cancel modal" onClick={onClose}>Close</Button>
-                <Button aria-label="Dismiss modal" onClick={dismiss.onDismiss}>{dismiss.text}</Button>
+                <Button aria-label="Accept action" onClick={onAction}>{actionText}</Button>
             </ButtonGroup>
         </ModalFooter>
     </ModalContent>
@@ -46,10 +46,8 @@ const Modal: React.FC<ModalProps> = ({
 Modal.propTypes = {
     title: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
-    dismiss: PropTypes.shape({
-        text: PropTypes.string.isRequired,
-        onDismiss: PropTypes.func.isRequired
-    }).isRequired,
+    actionText: PropTypes.string.isRequired,
+    onAction: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired
 }
 

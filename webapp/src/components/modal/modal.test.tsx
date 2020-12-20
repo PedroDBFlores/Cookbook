@@ -5,33 +5,28 @@ import userEvent from "@testing-library/user-event"
 
 describe("Basic modal dialog", () => {
     it("renders the title and content", () => {
-        render(<Modal title="A title" content="The content" dismiss={{
-            text: "", onDismiss: jest.fn()
-        }} onClose={jest.fn()}/>)
+        render(<Modal title="A title" content="The content" actionText=""
+                      onAction={jest.fn()} onClose={jest.fn()}/>)
 
         expect(screen.getByText(/a title/i)).toBeInTheDocument()
         expect(screen.getByText(/the content/i)).toBeInTheDocument()
     })
 
-    it("performs the dismiss action on click", () => {
-        const dismissMock = jest.fn()
-        render(<Modal title="A title" content="The content" dismiss={{
-            text: "OK",
-            onDismiss: dismissMock
-        }} onClose={jest.fn()} />)
+    it("performs the modal action on click", () => {
+        const modalActionMock = jest.fn()
+        render(<Modal title="A title" content="The content" actionText="OK"
+                      onAction={modalActionMock} onClose={jest.fn()}/>)
 
-        userEvent.click(screen.getByLabelText(/dismiss modal/i))
+        userEvent.click(screen.getByLabelText(/accept action/i))
 
-        expect(dismissMock).toHaveBeenCalled()
+        expect(modalActionMock).toHaveBeenCalled()
     })
 
-    it("closes the modal by clicking on the 'Cancel' button", () => {
+    it("Performs the onClose action by clicking on the 'Cancel' button", () => {
         const closeFn = jest.fn()
         render(<Modal title="A title" content="The content"
-                      dismiss={{
-                                     text: "OK",
-                                     onDismiss: jest.fn()
-                                 }}
+                      actionText="OK"
+                      onAction={jest.fn}
                       onClose={closeFn}
         />)
 

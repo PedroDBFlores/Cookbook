@@ -1,9 +1,7 @@
-import React, {useContext, useRef, useState} from "react"
+import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
 import {useAsync} from "react-async"
 import {MdDelete, MdEdit} from "react-icons/md"
-import If from "../../../components/flow-control/if"
-import Modal from "../../../components/modal/modal"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Choose, When} from "../../../components/flow-control/choose"
 import {useHistory} from "react-router-dom"
@@ -20,9 +18,10 @@ import {
     StatNumber,
     useToast
 } from "@chakra-ui/react"
+import ModalContext from "../../../components/modal/modal-context"
 
 const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
-    const [showModal, setShowModal] = useState<boolean>(false)
+    const {setModalState} = useContext(ModalContext)
     const history = useHistory()
     const toast = useToast()
 
@@ -31,6 +30,19 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
     const state = useAsync<RecipeDetail>({
         promiseFn: findPromiseRef.current
     })
+
+    const showModal = () => {
+        setModalState({
+            isOpen: true,
+            props: {
+                title: "Question",
+                content: "Are you sure you want to delete this recipe?",
+                actionText: "Delete",
+                onAction: () => handleDelete(Number(state.data?.id)),
+                onClose: () => setModalState({isOpen: false})
+            }
+        })
+    }
 
     const handleDelete = (id: number) => deleteRecipe(id)
         .then(() => {
@@ -86,20 +98,11 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
                             <MdEdit/>
                         </Button>
                         <Button aria-label={`Delete recipe with id ${state.data?.id}`}
-                                onClick={() => setShowModal(true)}>
+                                onClick={showModal}>
                             <MdDelete/>
                         </Button>
                     </ButtonGroup>
                 </GridItem>
-                <If condition={showModal}>
-                    <Modal title="Question"
-                           content="Are you sure you want to delete this recipe?"
-                           dismiss={{
-                               text: "Delete",
-                               onDismiss: () => handleDelete(Number(state.data?.id))
-                           }}
-                           onClose={() => setShowModal(false)}/>
-                </If>
             </Grid>
         </When>
     </Choose>

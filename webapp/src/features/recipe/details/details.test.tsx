@@ -100,10 +100,8 @@ describe("Recipe details component", () => {
             const expectedRecipe = generateRecipeDetails()
             findRecipeMock.mockResolvedValueOnce(expectedRecipe)
             deleteRecipeMock.mockResolvedValueOnce({})
-            basicModalDialogMock.mockImplementationOnce(({dismiss}) => {
-                useEffect(() => {
-                    dismiss.onDismiss()
-                }, [])
+            basicModalDialogMock.mockImplementationOnce(({onAction}) => {
+                useEffect(() => onAction(), [])
                 return <div>Are you sure you want to delete this recipe?</div>
             })
 
@@ -123,9 +121,8 @@ describe("Recipe details component", () => {
             </WrapWithCommonContexts>)
 
             userEvent.click(await screen.findByLabelText(`Delete recipe with id ${expectedRecipe.id}`))
-
-            expect(basicModalDialogMock).toHaveBeenCalled()
             expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
+
             expect(deleteRecipeMock).toHaveBeenCalledWith(expectedRecipe.id)
             expect(await screen.findByText(`Recipe ${expectedRecipe.id} was deleted`)).toBeInTheDocument()
             expect(await screen.findByText(/I'm the recipe search page/i)).toBeInTheDocument()
@@ -135,10 +132,8 @@ describe("Recipe details component", () => {
             const expectedRecipe = generateRecipeDetails()
             findRecipeMock.mockResolvedValueOnce(expectedRecipe)
             deleteRecipeMock.mockRejectedValueOnce({message: "Something went wrong"})
-            basicModalDialogMock.mockImplementationOnce(({dismiss}) => {
-                useEffect(() => {
-                    dismiss.onDismiss()
-                }, [])
+            basicModalDialogMock.mockImplementationOnce(({onAction}) => {
+                useEffect(() => onAction(), [])
                 return <div>Are you sure you want to delete this recipe?</div>
             })
 
@@ -147,6 +142,7 @@ describe("Recipe details component", () => {
             </WrapWithCommonContexts>)
 
             userEvent.click(await screen.findByLabelText(`Delete recipe with id ${expectedRecipe.id}`))
+            expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
 
             expect(await screen.findByText(`An error occurred while trying to delete this recipe: Something went wrong`)).toBeInTheDocument()
         })

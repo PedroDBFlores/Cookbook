@@ -94,10 +94,8 @@ describe("Recipe type details", () => {
             const expectedRecipeType = generateRecipeType()
             findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
             deleteRecipeTypeMock.mockResolvedValueOnce({})
-            basicModalDialogMock.mockImplementationOnce(({dismiss}) => {
-                useEffect(() => {
-                    dismiss.onDismiss()
-                }, [])
+            basicModalDialogMock.mockImplementationOnce(({onAction}) => {
+                useEffect(() => onAction(), [])
                 return <div>Are you sure you want to delete this recipe type?</div>
             })
 
@@ -118,8 +116,8 @@ describe("Recipe type details", () => {
 
             userEvent.click(await screen.findByLabelText(`Delete recipe type with id ${expectedRecipeType.id}`))
 
-            expect(basicModalDialogMock).toHaveBeenCalled()
             expect(screen.getByText(/are you sure you want to delete this recipe type?/i)).toBeInTheDocument()
+
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
             expect(await screen.findByText(`Recipe type ${expectedRecipeType.id} was deleted`)).toBeInTheDocument()
             expect(await screen.findByText(/I'm the recipe type list page/i)).toBeInTheDocument()
@@ -129,10 +127,8 @@ describe("Recipe type details", () => {
             const expectedRecipeType = generateRecipeType()
             findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
             deleteRecipeTypeMock.mockRejectedValueOnce({message: "In use"})
-            basicModalDialogMock.mockImplementationOnce(({dismiss}) => {
-                useEffect(() => {
-                    dismiss.onDismiss()
-                }, [])
+            basicModalDialogMock.mockImplementationOnce(({onAction}) => {
+                useEffect(() => onAction(), [])
                 return <div>Are you sure you want to delete this recipe type?</div>
             })
             render(<WrapWithCommonContexts>
