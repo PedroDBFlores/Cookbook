@@ -6,7 +6,8 @@ import createRecipeService, {RecipeDetails} from "../../../services/recipe-servi
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Button, Grid, GridItem, Heading} from "@chakra-ui/react"
+import {Button, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import ModalContext from "../../../components/modal/modal-context"
 
 const RecipeSearchPage: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
@@ -28,6 +29,8 @@ const RecipeSearchPage: React.FC = () => {
         results: []
     })
 
+    const toast = useToast()
+    const {setModalState} = useContext(ModalContext)
     const history = useHistory()
 
     const {search, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
@@ -43,6 +46,27 @@ const RecipeSearchPage: React.FC = () => {
         setPageParams({...pageParams, itemsPerPage, pageNumber: 1})
 
     const navigateToCreateRecipe = () => history.push("/recipe/new")
+
+    const showModal = (id: number, name: string) => {
+        setModalState({
+            isOpen: true,
+            props: {
+                title: "Question",
+                content: `Are you sure you want to delete recipe '${name}'?`,
+                actionText: "Delete",
+                onClose: () => setModalState({isOpen: false}),
+                onAction: () => handleDelete(id, name)
+            }
+        })
+    }
+
+    const handleDelete = (id: number, name: string) => deleteRecipe(id)
+        .then(() => {
+            toast({title: `Recipe '${name}' was deleted`, status: "success"})
+        }).catch(err => toast({
+            title: `An error occurred while trying to delete this recipe: ${err.message}`,
+            status: "error"
+        }))
 
     useEffect(() => {
         getAllRecipeTypes().then(setRecipeTypes)
@@ -68,7 +92,7 @@ const RecipeSearchPage: React.FC = () => {
         </GridItem>
         <GridItem colSpan={12}>
             <RecipeSearchList searchResult={recipes}
-                              onDelete={(id) => deleteRecipe(id)}
+                              onDelete={(id, name) => showModal(id, name)}
                               onChangeRowsPerPage={handleOnNumberOfRowsChange}
                               onPageChange={handleOnPageChange}/>
         </GridItem>

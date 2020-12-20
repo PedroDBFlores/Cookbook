@@ -99,9 +99,9 @@ describe("Recipe details component", () => {
             const expectedRecipe = generateRecipeDetails()
             findRecipeMock.mockResolvedValueOnce(expectedRecipe)
             deleteRecipeMock.mockResolvedValueOnce({})
-            basicModalDialogMock.mockImplementationOnce(({onAction}) => {
+            basicModalDialogMock.mockImplementationOnce(({content, onAction}) => {
                 useEffect(() => onAction(), [])
-                return <div>Are you sure you want to delete this recipe?</div>
+                return <div>{content}</div>
             })
 
             render(<WrapWithCommonContexts>
@@ -131,9 +131,9 @@ describe("Recipe details component", () => {
             const expectedRecipe = generateRecipeDetails()
             findRecipeMock.mockResolvedValueOnce(expectedRecipe)
             deleteRecipeMock.mockRejectedValueOnce({message: "Something went wrong"})
-            basicModalDialogMock.mockImplementationOnce(({onAction}) => {
+            basicModalDialogMock.mockImplementationOnce(({content, onAction}) => {
                 useEffect(() => onAction(), [])
-                return <div>Are you sure you want to delete this recipe?</div>
+                return <div>{content}</div>
             })
 
             render(<WrapWithCommonContexts>
