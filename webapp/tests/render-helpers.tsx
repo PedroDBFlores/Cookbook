@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {MemoryRouter, Route, Switch} from "react-router-dom"
 import {AxiosInstance} from "axios"
 import {ApiHandlerContext} from "../src/services/api-handler"
-import {WithModal} from "../src/components/modal/modal-context";
+import {WithModal} from "../src/components/modal/modal-context"
 
 const MemoryRouterWrapper: React.FC<{ initialPath: string }> =
     ({children, initialPath}) =>

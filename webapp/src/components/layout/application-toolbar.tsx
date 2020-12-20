@@ -1,6 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Box, Button, Flex, Heading, Text} from "@chakra-ui/react"
+import {Box, Flex, Heading, Text} from "@chakra-ui/react"
 import {useHistory} from "react-router-dom"
 
 interface MenuItemProps {

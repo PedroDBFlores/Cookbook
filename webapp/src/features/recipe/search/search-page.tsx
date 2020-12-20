@@ -6,7 +6,7 @@ import createRecipeService, {RecipeDetails} from "../../../services/recipe-servi
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Button, Grid, GridItem, Heading, Text} from "@chakra-ui/react"
+import {Button, Grid, GridItem, Heading} from "@chakra-ui/react"
 
 const RecipeSearchPage: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])

@@ -1,11 +1,10 @@
 import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
-import {useAsync} from "react-async"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {MdDelete, MdEdit} from "react-icons/md"
 import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Choose, When} from "../../../components/flow-control/choose"
 import {
     Button,
     ButtonGroup,
@@ -19,6 +18,7 @@ import {
     useToast
 } from "@chakra-ui/react"
 import ModalContext from "../../../components/modal/modal-context"
+import Loader from "../../../components/loader/loader"
 
 const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
     const {setModalState} = useContext(ModalContext)
@@ -55,15 +55,15 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
 
-    return <Choose>
-        <When condition={state.isLoading}>
-            <span>Loading...</span>
-        </When>
-        <When condition={state.isRejected}>
-            <span>Error: {state.error?.message}</span>
-        </When>
-        <When condition={state.isFulfilled}>
-            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+    return <>
+        <IfPending state={state}>
+            <Loader/>
+        </IfPending>
+        <IfRejected state={state}>
+            {err => <span>Error: {err?.message}</span>}
+        </IfRejected>
+        <IfFulfilled state={state}>
+            {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                 <GridItem colSpan={12}>
                     <Heading>Recipe type details</Heading>
                 </GridItem>
@@ -71,27 +71,28 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                     <StatGroup>
                         <Stat>
                             <StatLabel>Id:</StatLabel>
-                            <StatNumber>{state.data?.id}</StatNumber>
+                            <StatNumber>{data.id}</StatNumber>
                         </Stat>
                         <Stat>
                             <StatLabel>Name:</StatLabel>
-                            <StatNumber>{state.data?.name}</StatNumber>
+                            <StatNumber>{data.name}</StatNumber>
                         </Stat>
                     </StatGroup>
                     <ButtonGroup>
-                        <Button aria-label={`Edit recipe type with id ${state.data?.id}`}
-                                onClick={() => onEdit(Number(state.data?.id))}>
+                        <Button aria-label={`Edit recipe type with id ${data.id}`}
+                                onClick={() => onEdit(Number(data.id))}>
                             <MdEdit/>
                         </Button>
-                        <Button aria-label={`Delete recipe type with id ${state.data?.id}`}
+                        <Button aria-label={`Delete recipe type with id ${data.id}`}
                                 onClick={showModal}>
                             <MdDelete/>
                         </Button>
                     </ButtonGroup>
                 </GridItem>
             </Grid>
-        </When>
-    </Choose>
+            }
+        </IfFulfilled>
+    </>
 }
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired

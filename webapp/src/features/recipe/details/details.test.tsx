@@ -61,14 +61,13 @@ describe("Recipe details component", () => {
     })
 
     it("renders an error if the recipe cannot be obtained", async () => {
-        findRecipeMock.mockRejectedValueOnce({message: "Failure"})
+        findRecipeMock.mockRejectedValueOnce(new Error("failure"))
 
         render(<WrapWithCommonContexts>
             <RecipeDetails id={99}/>
         </WrapWithCommonContexts>)
 
         expect(await screen.findByText(/failure/i)).toBeInTheDocument()
-        expect(findRecipeMock).toHaveBeenCalled()
     })
 
     describe("Actions", () => {

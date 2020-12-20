@@ -1,13 +1,14 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, {useContext, useEffect, useRef, useState} from "react"
 import {Form, Formik} from "formik"
 import * as yup from "yup"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import createRecipeService from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Choose, When} from "../../../components/flow-control/choose"
-import {Box, ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton} from "formik-chakra-ui"
+import {IfFulfilled, IfPending, useAsync} from "react-async"
+import Loader from "../../../components/loader/loader";
 
 interface CreateRecipeFormData {
     name: string
@@ -46,6 +47,10 @@ const CreateRecipe: React.FC = () => {
 
     const {create} = createRecipeService(useContext(ApiHandlerContext))
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
+    const getAllRecipeTypesFn = useRef(() => getAllRecipeTypes())
+    const state = useAsync<RecipeType[]>({
+        promiseFn: getAllRecipeTypesFn.current
+    })
 
     useEffect(() => {
         getAllRecipeTypes().then(setRecipeTypes)
@@ -70,61 +75,59 @@ const CreateRecipe: React.FC = () => {
             <Heading>Create a new recipe</Heading>
         </GridItem>
         <GridItem colSpan={12}>
-            <Choose>
-                <When condition={!recipeTypes}>
-                    <span>Loading...</span>
-                </When>
-                <When condition={!!recipeTypes}>
-                    <Formik
-                        initialValues={{
-                            name: "",
-                            description: "",
-                            recipeTypeId: 0,
-                            ingredients: "",
-                            preparingSteps: ""
-                        }}
-                        validateOnBlur={true}
-                        onSubmit={handleOnSubmit}
-                        validationSchema={schema}>
-                        <Form>
-                            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                                <GridItem colSpan={6}>
-                                    <InputControl name={"name"} label={"Name"}/>
-                                </GridItem>
-                                <GridItem colSpan={6}>
-                                    <InputControl name={"description"} label={"Description"}/>
-                                </GridItem>
-                                <GridItem colSpan={6}>
-                                    <SelectControl aria-label="Recipe type parameter"
-                                                   name={"recipeTypeId"}
-                                                   label={"Recipe type"}
-                                                   selectProps={{placeholder: " "}}>
-                                        {
-                                            recipeTypes?.map(({id, name}) => (
-                                                <option key={`recipeType-${id}`} value={id}>
-                                                    {name}
-                                                </option>)
-                                            )
-                                        }
-                                    </SelectControl>
-                                </GridItem>
-                                <GridItem colSpan={6}>
-                                    <InputControl name={"ingredients"} label={"Ingredients"}/>
-                                </GridItem>
-                                <GridItem colSpan={6}>
-                                    <InputControl name={"preparingSteps"} label={"Preparing steps"}/>
-                                </GridItem>
-                                <GridItem colSpan={12}>
-                                    <ButtonGroup>
-                                        <SubmitButton aria-label="Create recipe">Create</SubmitButton>
-                                        <ResetButton aria-label="Reset form">Reset</ResetButton>
-                                    </ButtonGroup>
-                                </GridItem>
-                            </Grid>
-                        </Form>
-                    </Formik>
-                </When>
-            </Choose>
+            <IfPending state={state}>
+                <Loader />
+            </IfPending>
+            <IfFulfilled state={state}>
+                <Formik
+                    initialValues={{
+                        name: "",
+                        description: "",
+                        recipeTypeId: 0,
+                        ingredients: "",
+                        preparingSteps: ""
+                    }}
+                    validateOnBlur={true}
+                    onSubmit={handleOnSubmit}
+                    validationSchema={schema}>
+                    <Form>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                            <GridItem colSpan={6}>
+                                <InputControl name={"name"} label={"Name"}/>
+                            </GridItem>
+                            <GridItem colSpan={6}>
+                                <InputControl name={"description"} label={"Description"}/>
+                            </GridItem>
+                            <GridItem colSpan={6}>
+                                <SelectControl aria-label="Recipe type parameter"
+                                               name={"recipeTypeId"}
+                                               label={"Recipe type"}
+                                               selectProps={{placeholder: " "}}>
+                                    {
+                                        recipeTypes?.map(({id, name}) => (
+                                            <option key={`recipeType-${id}`} value={id}>
+                                                {name}
+                                            </option>)
+                                        )
+                                    }
+                                </SelectControl>
+                            </GridItem>
+                            <GridItem colSpan={6}>
+                                <InputControl name={"ingredients"} label={"Ingredients"}/>
+                            </GridItem>
+                            <GridItem colSpan={6}>
+                                <InputControl name={"preparingSteps"} label={"Preparing steps"}/>
+                            </GridItem>
+                            <GridItem colSpan={12}>
+                                <ButtonGroup>
+                                    <SubmitButton aria-label="Create recipe">Create</SubmitButton>
+                                    <ResetButton aria-label="Reset form">Reset</ResetButton>
+                                </ButtonGroup>
+                            </GridItem>
+                        </Grid>
+                    </Form>
+                </Formik>
+            </IfFulfilled>
         </GridItem>
     </Grid>
 }

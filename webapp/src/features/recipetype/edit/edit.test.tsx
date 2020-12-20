@@ -43,7 +43,7 @@ describe("Edit recipe type", () => {
     })
 
     it("renders an error if the recipe type cannot be obtained", async () => {
-        findRecipeTypeMock.mockRejectedValueOnce({message: "Failure"})
+        findRecipeTypeMock.mockRejectedValueOnce(new Error("failure"))
 
         render(<WrapWithCommonContexts>
             <EditRecipeType id={99}/>

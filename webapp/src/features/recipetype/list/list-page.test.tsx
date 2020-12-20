@@ -50,7 +50,7 @@ describe("Recipe type list page", () => {
     })
 
     it("shows the error if fetching the recipe types fails", async () => {
-        getAllRecipeTypesMock.mockRejectedValueOnce({code: "YELLOW", message: "Database error"})
+        getAllRecipeTypesMock.mockRejectedValueOnce(new Error("Database error"))
 
         render(<WrapWithCommonContexts>
             <RecipeTypeListPage/>

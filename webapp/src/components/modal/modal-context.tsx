@@ -1,6 +1,5 @@
 import React, {useState} from "react"
 import Modal from "./modal"
-import If from "../flow-control/if"
 
 interface ModalState {
     isOpen: boolean
@@ -13,7 +12,8 @@ interface ModalState {
     }
 }
 
-export const useModalState = (initialState?: ModalState) => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const useModalState = (initialState?: ModalState)  => {
     const [modalState, setModalState] = useState<ModalState>(initialState ?? {
         isOpen: false,
         props: undefined

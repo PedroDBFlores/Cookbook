@@ -1,11 +1,11 @@
 import React, {useContext, useRef} from "react"
 import RecipeTypeList from "./list"
-import {useAsync} from "react-async"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Choose, When} from "../../../components/flow-control/choose"
 import {Button, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import Loader from "../../../components/loader/loader"
 
 const RecipeTypeListPage: React.FC = () => {
     const {getAll, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
@@ -37,17 +37,15 @@ const RecipeTypeListPage: React.FC = () => {
                     onClick={navigateToCreateRecipeType}>Create</Button>
         </GridItem>
         <GridItem colSpan={12}>
-            <Choose>
-                <When condition={state.isPending}>
-                    <span>Loading...</span>
-                </When>
-                <When condition={state.isRejected}>
-                    <span>Error: {state.error?.message}</span>
-                </When>
-                <When condition={state.isFulfilled}>
-                    <RecipeTypeList recipeTypes={state.data || []} onDelete={handleDelete}/>
-                </When>
-            </Choose>
+            <IfPending state={state}>
+                <Loader/>
+            </IfPending>
+            <IfRejected state={state}>
+                {err => <span>Error: {err?.message}</span>}
+            </IfRejected>
+            <IfFulfilled state={state}>
+                {data => <RecipeTypeList recipeTypes={data} onDelete={handleDelete}/>}
+            </IfFulfilled>
         </GridItem>
     </Grid>
 }
