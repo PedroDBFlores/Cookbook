@@ -60,13 +60,18 @@ const RecipeSearchPage: React.FC = () => {
         })
     }
 
-    const handleDelete = (id: number, name: string) => deleteRecipe(id)
-        .then(() => {
+    const handleDelete = async (id: number, name: string) => {
+        try {
+            await deleteRecipe(id)
             toast({title: `Recipe '${name}' was deleted`, status: "success"})
-        }).catch(err => toast({
-            title: `An error occurred while trying to delete this recipe: ${err.message}`,
-            status: "error"
-        }))
+            setRecipes({...recipes, results: recipes.results.filter(r => r.id != id)})
+        } catch ({message}) {
+            toast({
+                title: `An error occurred while trying to delete recipe '${name}': ${message}`,
+                status: "error"
+            })
+        }
+    }
 
     useEffect(() => {
         getAllRecipeTypes().then(setRecipeTypes)

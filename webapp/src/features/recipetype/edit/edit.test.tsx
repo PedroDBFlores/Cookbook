@@ -105,6 +105,7 @@ describe("Edit recipe type", () => {
         await userEvent.type(screen.getByLabelText(/^name$/i), "Japanese")
         userEvent.click(screen.getByLabelText(/edit recipe type/i))
 
+        expect(await screen.findByText(/^recipe type 'Japanese' updated successfully!$/i)).toBeInTheDocument()
         expect(await screen.findByText("I'm the recipe type details page")).toBeInTheDocument()
         expect(updateRecipeTypeMock).toHaveBeenCalledWith({...expectedRecipeType, name: "Japanese"})
     })

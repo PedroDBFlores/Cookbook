@@ -90,7 +90,7 @@ describe("Recipe details component", () => {
                 ]}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Edit recipe with id ${expectedRecipe.id}`))
+            userEvent.click(await screen.findByLabelText(`Edit recipe '${expectedRecipe.name}'`))
 
             expect(screen.getByText(/I'm the recipe edit page/i)).toBeInTheDocument()
         })
@@ -119,11 +119,11 @@ describe("Recipe details component", () => {
                 ]}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe with id ${expectedRecipe.id}`))
+            userEvent.click(await screen.findByLabelText(`Delete recipe '${expectedRecipe.name}'`))
             expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
 
             expect(deleteRecipeMock).toHaveBeenCalledWith(expectedRecipe.id)
-            expect(await screen.findByText(`Recipe ${expectedRecipe.id} was deleted`)).toBeInTheDocument()
+            expect(await screen.findByText(`Recipe '${expectedRecipe.name}' was deleted`)).toBeInTheDocument()
             expect(await screen.findByText(/I'm the recipe search page/i)).toBeInTheDocument()
         })
 
@@ -140,7 +140,7 @@ describe("Recipe details component", () => {
                 <RecipeDetails id={expectedRecipe.id}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe with id ${expectedRecipe.id}`))
+            userEvent.click(await screen.findByLabelText(`Delete recipe '${expectedRecipe.name}'`))
             expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
 
             expect(await screen.findByText(`An error occurred while trying to delete this recipe: Something went wrong`)).toBeInTheDocument()

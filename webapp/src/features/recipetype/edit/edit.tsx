@@ -29,6 +29,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     const handleOnSubmit = async (values: FormikValues) => {
         try {
             await update({...values} as RecipeType)
+            toast({title: `Recipe type '${values.name}' updated successfully!`, status: "success"})
             history.push(`/recipetype/${id}`)
         } catch ({message}) {
             toast({title: `An error occurred while updating the recipe type: ${message}`, status: "error"})

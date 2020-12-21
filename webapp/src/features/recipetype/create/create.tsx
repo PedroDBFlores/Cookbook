@@ -25,9 +25,9 @@ const CreateRecipeType: React.FC = () => {
 
     const handleOnSubmit = async ({name}: CreateRecipeTypeFormData) => {
         try {
-            const recipeType = await create({name})
+            const {id} = await create({name})
             toast({title: `Recipe type '${name}' created successfully!`, status: "success"})
-            history.push(`/recipetype/${recipeType.id}/details`)
+            history.push(`/recipetype/${id}/details`)
         } catch ({message}) {
             toast({title: `An error occurred while creating the recipe type: ${message}`, status: "error"})
         }

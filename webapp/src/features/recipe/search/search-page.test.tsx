@@ -46,7 +46,7 @@ jest.mock("../../../../src/features/recipe/search/search-list", () => {
                             searchResult.results.map(({id, name}) => <div key={id}>
                                 <span>{name}</span>)
                                 <Button
-                                    onClick={() => onDelete(id, name)}>Delete recipe '{name}'</Button>
+                                    onClick={() => onDelete(id, name)}>Delete recipe named '{name}'</Button>
                             </div>) : <span>No matching recipes</span>
                     }
                     <Button onClick={() => onChangeRowsPerPage(20)}> Change Items per page</Button>
@@ -247,12 +247,13 @@ describe("Search recipe page component", () => {
             </WrapWithCommonContexts>)
 
             await screen.findByText("Arroz de Pato")
-            userEvent.click(screen.getByText(/delete recipe 'Arroz de Pato'/i))
+            userEvent.click(screen.getByText(/delete recipe named 'Arroz de Pato'/i))
 
             expect(screen.getByText(/are you sure you want to delete recipe 'Arroz de Pato'?/i)).toBeInTheDocument()
 
             expect(deleteRecipeMock).toHaveBeenCalledWith(1)
             expect(await screen.findByText(`Recipe 'Arroz de Pato' was deleted`)).toBeInTheDocument()
+            expect(screen.queryByText(/delete recipe named 'Arroz de Pato'/i)).not.toBeInTheDocument()
         })
 
         it("shows a failure message if it fails to delete the recipe", async () => {
@@ -263,11 +264,11 @@ describe("Search recipe page component", () => {
             </WrapWithCommonContexts>)
 
             await screen.findByText("Arroz de Pato")
-            userEvent.click(screen.getByText(/delete recipe 'Arroz de Pato'/i))
+            userEvent.click(screen.getByText(/delete recipe named 'Arroz de Pato'/i))
 
             expect(screen.getByText(/are you sure you want to delete recipe 'Arroz de Pato'?/i)).toBeInTheDocument()
 
-            expect(await screen.findByText(`An error occurred while trying to delete this recipe: Failure`)).toBeInTheDocument()
+            expect(await screen.findByText(`An error occurred while trying to delete recipe 'Arroz de Pato': Failure`)).toBeInTheDocument()
         })
     })
 })

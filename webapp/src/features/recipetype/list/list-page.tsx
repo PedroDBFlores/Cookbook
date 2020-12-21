@@ -13,18 +13,24 @@ const RecipeTypeListPage: React.FC = () => {
     const toast = useToast()
 
     const getPromiseRef = useRef(() => getAll())
-    const handleDelete = (id: number, name: string) => deleteRecipeType(id).then(() =>
-        toast({
-            title: `Recipe type '${name}' was deleted`,
-            status: "success"
-        }))
-        .catch(() => toast({
-            title: `Recipe type '${name}' failed to be deleted`,
-            status: "error"
-        }))
     const state = useAsync<Array<RecipeType>>({
         promiseFn: getPromiseRef.current
     })
+    const handleDelete = async (id: number, name: string) => {
+        try {
+            await deleteRecipeType(id)
+            state.reload()
+            toast({
+                title: `Recipe type '${name}' was deleted`,
+                status: "success"
+            })
+        } catch ({message}) {
+            toast({
+                title: `An error occurred while trying to delete recipe type '${name}': ${message}`,
+                status: "error"
+            })
+        }
+    }
 
     const navigateToCreateRecipeType = () => history.push("/recipetype/new")
 

@@ -79,12 +79,17 @@ describe("Recipe type list page", () => {
         it("deletes a recipe type successfully", async () => {
             const expectedRecipeType = generateRecipeType()
             getAllRecipeTypesMock.mockResolvedValueOnce([expectedRecipeType])
+                .mockResolvedValueOnce([])
             deleteRecipeTypeMock.mockResolvedValueOnce(void (0))
             recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
                 useEffect(() => {
                     onDelete(recipeTypes[0].id, recipeTypes[0].name)
                 }, [])
-                return <></>
+                return <>
+                    {
+                        recipeTypes.map(r => <span key={r.id}>{r.name}</span>)
+                    }
+                </>
             })
 
             render(<WrapWithCommonContexts>
@@ -94,12 +99,14 @@ describe("Recipe type list page", () => {
             expect(getAllRecipeTypesMock).toHaveBeenCalled()
             expect(await screen.findByText(`Recipe type '${expectedRecipeType.name}' was deleted`)).toBeInTheDocument()
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
+            expect(getAllRecipeTypesMock).toHaveBeenCalled()
+            expect(screen.queryByText(expectedRecipeType.name)).not.toBeInTheDocument()
         })
 
         it("shows an error message if deleting the recipe type fails", async () => {
             const expectedRecipeType = generateRecipeType()
             getAllRecipeTypesMock.mockResolvedValueOnce([expectedRecipeType])
-            deleteRecipeTypeMock.mockRejectedValueOnce(void (0))
+            deleteRecipeTypeMock.mockRejectedValueOnce({message: "In use"})
             recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
                 useEffect(() => {
                     onDelete(recipeTypes[0].id, recipeTypes[0].name)
@@ -111,7 +118,7 @@ describe("Recipe type list page", () => {
                 <RecipeTypeListPage/>
             </WrapWithCommonContexts>)
 
-            expect(await screen.findByText(`Recipe type '${expectedRecipeType.name}' failed to be deleted`)).toBeInTheDocument()
+            expect(await screen.findByText(`An error occurred while trying to delete recipe type '${expectedRecipeType.name}': In use`)).toBeInTheDocument()
         })
     })
 })

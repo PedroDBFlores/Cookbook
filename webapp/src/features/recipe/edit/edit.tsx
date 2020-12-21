@@ -1,23 +1,15 @@
 import React, {useContext, useEffect, useRef, useState} from "react"
 import PropTypes from "prop-types"
-import {Form, Formik} from "formik"
+import {Form, Formik, FormikValues} from "formik"
 import * as yup from "yup"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
+import createRecipeService, {Recipe, RecipeDetails} from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Box, ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton} from "formik-chakra-ui"
 import {IfFulfilled, IfPending, useAsync} from "react-async"
 import Loader from "../../../components/loader/loader"
-
-interface UpdateRecipeFormData {
-    name: string
-    description: string
-    recipeTypeId: number
-    ingredients: string
-    preparingSteps: string
-}
 
 interface EditRecipeProps {
     id: number
@@ -61,14 +53,13 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
         getAllRecipeTypes().then(setRecipeTypes)
     }, [])
 
-    const handleOnSubmit = (formData: UpdateRecipeFormData) => {
-        if (state.data) {
-            update({...formData, id: state.data.id, recipeTypeId: Number(formData.recipeTypeId)})
-                .then(() => {
-                    toast({title: `Recipe '${formData.name}' updated successfully!`, status: "success"})
-                    history.push(`/recipe/${id}`)
-                }).catch(err =>
-                toast({title: `An error occurred while updating the recipe: ${err.message}`, status: "error"}))
+    const handleOnSubmit = async (formData: FormikValues) => {
+        try {
+            await update({...formData, recipeTypeId: Number(formData.recipeTypeId)} as Recipe)
+            toast({title: `Recipe '${formData.name}' updated successfully!`, status: "success"})
+            history.push(`/recipe/${id}`)
+        } catch ({message}) {
+            toast({title: `An error occurred while updating the recipe: ${message}`, status: "error"})
         }
     }
 
@@ -76,7 +67,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
         <Heading>Edit recipe</Heading>
         <Box>
             <IfPending state={state}>
-                <Loader />
+                <Loader/>
             </IfPending>
             <IfFulfilled state={state}>
                 {data => <Formik

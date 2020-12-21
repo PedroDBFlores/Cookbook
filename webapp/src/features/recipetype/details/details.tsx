@@ -31,27 +31,31 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
         promiseFn: findPromiseRef.current
     })
 
-    const showModal = () => {
+    const showModal = (data: RecipeType) => {
         setModalState({
             isOpen: true,
             props: {
                 title: "Question",
-                content: "Are you sure you want to delete this recipe?",
+                content: "Are you sure you want to delete this recipe type?",
                 actionText: "Delete",
-                onAction: () => handleDelete(Number(state.data?.id)),
+                onAction: () => handleDelete(data.id, data.name),
                 onClose: () => setModalState({isOpen: false})
             }
         })
     }
 
-    const handleDelete = (id: number) => deleteRecipeType(id)
-        .then(() => {
-            toast({title: `Recipe type ${id} was deleted`, status: "success"})
+    const handleDelete = async (id: number, name: string) => {
+        try {
+            await deleteRecipeType(id)
+            toast({title: `Recipe type ${name} was deleted`, status: "success"})
             history.push("/recipetype")
-        }).catch(err => toast({
-            title: `An error occurred while trying to delete this recipe type: ${err.message}`,
-            status: "error"
-        }))
+        } catch (err) {
+            toast({
+                title: `An error occurred while trying to delete this recipe type: ${err.message}`,
+                status: "error"
+            })
+        }
+    }
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
 
@@ -79,12 +83,12 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                         </Stat>
                     </StatGroup>
                     <ButtonGroup>
-                        <Button aria-label={`Edit recipe type with id ${data.id}`}
-                                onClick={() => onEdit(Number(data.id))}>
+                        <Button aria-label={`Edit recipe type '${data.name}'`}
+                                onClick={() => onEdit(data.id)}>
                             <MdEdit/>
                         </Button>
-                        <Button aria-label={`Delete recipe type with id ${data.id}`}
-                                onClick={showModal}>
+                        <Button aria-label={`Delete recipe type '${data.name}'`}
+                                onClick={() => showModal(data)}>
                             <MdDelete/>
                         </Button>
                     </ButtonGroup>

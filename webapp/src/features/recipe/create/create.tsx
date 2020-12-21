@@ -8,7 +8,7 @@ import {ApiHandlerContext} from "../../../services/api-handler"
 import {ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton} from "formik-chakra-ui"
 import {IfFulfilled, IfPending, useAsync} from "react-async"
-import Loader from "../../../components/loader/loader";
+import Loader from "../../../components/loader/loader"
 
 interface CreateRecipeFormData {
     name: string
@@ -56,18 +56,20 @@ const CreateRecipe: React.FC = () => {
         getAllRecipeTypes().then(setRecipeTypes)
     }, [])
 
-    const handleOnSubmit = (data: CreateRecipeFormData) => {
-        create({
-            name: data.name,
-            description: data.description,
-            recipeTypeId: Number(data.recipeTypeId),
-            ingredients: data.ingredients,
-            preparingSteps: data.preparingSteps
-        }).then(({id}) => {
+    const handleOnSubmit = async (data: CreateRecipeFormData) => {
+        try {
+            const {id} = await create({
+                name: data.name,
+                description: data.description,
+                recipeTypeId: Number(data.recipeTypeId),
+                ingredients: data.ingredients,
+                preparingSteps: data.preparingSteps
+            })
             toast({title: `Recipe '${data.name}' created successfully!`, status: "success"})
             history.push(`/recipe/${id}/details`)
-        }).catch(err =>
-            toast({title: `An error occurred while creating the recipe: ${err.message}`, status: "error"}))
+        } catch ({message}) {
+            toast({title: `An error occurred while creating the recipe: ${message}`, status: "error"})
+        }
     }
 
     return <Grid width={"100%"} templateColumns="repeat(12, 1fr)" gap={6}>
@@ -76,7 +78,7 @@ const CreateRecipe: React.FC = () => {
         </GridItem>
         <GridItem colSpan={12}>
             <IfPending state={state}>
-                <Loader />
+                <Loader/>
             </IfPending>
             <IfFulfilled state={state}>
                 <Formik
