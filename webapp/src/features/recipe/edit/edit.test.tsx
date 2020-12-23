@@ -5,6 +5,7 @@ import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type
 import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 import EditRecipe from "./edit"
+import "jest-chain"
 
 jest.mock("../../../../src/services/recipe-type-service")
 jest.mock("../../../../src/services/recipe-service")
@@ -54,8 +55,8 @@ describe("Edit recipe component", () => {
         expect(await screen.findByLabelText(/^name$/i)).toHaveValue("A great")
         expect(await screen.findByLabelText(/^description$/i)).toHaveValue("recipe for winter times")
         expect(await screen.findByLabelText(/^recipe type$/i)).toHaveValue("1")
-        expect(await screen.findByLabelText(/^ingredients$/i)).toHaveValue("A lot of love")
-        expect(await screen.findByLabelText(/^preparing steps$/i)).toHaveValue("and care")
+        expect(await screen.findByLabelText(/^ingredients$/i)).toHaveProperty("type", "textarea").toHaveValue("A lot of love")
+        expect(await screen.findByLabelText(/^preparing steps$/i)).toHaveProperty("type", "textarea").toHaveValue("and care")
         expect(await screen.findByLabelText(/^edit recipe$/i)).toHaveAttribute("type", "submit")
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())

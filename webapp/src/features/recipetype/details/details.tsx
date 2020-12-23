@@ -15,6 +15,7 @@ import {
     StatGroup,
     StatLabel,
     StatNumber,
+    Text,
     useToast
 } from "@chakra-ui/react"
 import ModalContext from "../../../components/modal/modal-context"
@@ -28,7 +29,13 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
     const {find, delete: deleteRecipeType} = createRecipeTypeService(useContext(ApiHandlerContext))
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeType>({
-        promiseFn: findPromiseRef.current
+        promiseFn: findPromiseRef.current,
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe type",
+            description: message,
+            status: "error",
+            duration: null
+        })
     })
 
     const showModal = (data: RecipeType) => {
@@ -49,10 +56,12 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
             await deleteRecipeType(id)
             toast({title: `Recipe type ${name} was deleted`, status: "success"})
             history.push("/recipetype")
-        } catch (err) {
+        } catch ({message}) {
             toast({
-                title: `An error occurred while trying to delete this recipe type: ${err.message}`,
-                status: "error"
+                title: "An error occurred while trying to delete this recipe type",
+                description: message,
+                status: "error",
+                duration: null
             })
         }
     }
@@ -64,7 +73,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
             <Loader/>
         </IfPending>
         <IfRejected state={state}>
-            {err => <span>Error: {err?.message}</span>}
+            <Text>Failed to fetch the recipe type</Text>
         </IfRejected>
         <IfFulfilled state={state}>
             {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>

@@ -1,44 +1,14 @@
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {Form, Formik} from "formik"
-import * as yup from "yup"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import createRecipeService from "../../../services/recipe-service"
+import createRecipeService, {Recipe} from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
-import {InputControl, ResetButton, SelectControl, SubmitButton} from "formik-chakra-ui"
+import {InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl} from "formik-chakra-ui"
 import {IfFulfilled, IfPending, useAsync} from "react-async"
 import Loader from "../../../components/loader/loader"
-
-interface CreateRecipeFormData {
-    name: string
-    description: string
-    recipeTypeId: number
-    ingredients: string
-    preparingSteps: string
-}
-
-const schema = yup.object({
-    name: yup.string()
-        .required("Name is required")
-        .min(1, "Name is required")
-        .max(128, "Name exceeds the character limit"),
-    description: yup.string()
-        .required("Description is required")
-        .min(1, "Description is required")
-        .max(256, "Description exceeds the character limit"),
-    recipeTypeId: yup.number()
-        .required("Recipe type is required")
-        .min(1, "Recipe type is required"),
-    ingredients: yup.string()
-        .required("Ingredients is required")
-        .min(1, "Ingredients is required")
-        .max(2048, "Ingredients exceeds the character limit"),
-    preparingSteps: yup.string()
-        .required("Preparing steps is required")
-        .min(1, "Preparing steps is required")
-        .max(4096, "Preparing steps exceeds the character limit"),
-})
+import RecipeFormSchema from "../common/form-schema"
 
 const CreateRecipe: React.FC = () => {
     const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>()
@@ -56,16 +26,10 @@ const CreateRecipe: React.FC = () => {
         getAllRecipeTypes().then(setRecipeTypes)
     }, [])
 
-    const handleOnSubmit = async (data: CreateRecipeFormData) => {
+    const handleOnSubmit = async (formData: Omit<Recipe, "id">) => {
         try {
-            const {id} = await create({
-                name: data.name,
-                description: data.description,
-                recipeTypeId: Number(data.recipeTypeId),
-                ingredients: data.ingredients,
-                preparingSteps: data.preparingSteps
-            })
-            toast({title: `Recipe '${data.name}' created successfully!`, status: "success"})
+            const {id} = await create({...formData, recipeTypeId: Number(formData.recipeTypeId)})
+            toast({title: `Recipe '${formData.name}' created successfully!`, status: "success"})
             history.push(`/recipe/${id}/details`)
         } catch ({message}) {
             toast({title: `An error occurred while creating the recipe: ${message}`, status: "error"})
@@ -91,7 +55,7 @@ const CreateRecipe: React.FC = () => {
                     }}
                     validateOnBlur={true}
                     onSubmit={handleOnSubmit}
-                    validationSchema={schema}>
+                    validationSchema={RecipeFormSchema}>
                     <Form>
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                             <GridItem colSpan={6}>
@@ -115,10 +79,10 @@ const CreateRecipe: React.FC = () => {
                                 </SelectControl>
                             </GridItem>
                             <GridItem colSpan={6}>
-                                <InputControl name={"ingredients"} label={"Ingredients"}/>
+                                <TextareaControl variant={"textarea"} name={"ingredients"} label={"Ingredients"}/>
                             </GridItem>
                             <GridItem colSpan={6}>
-                                <InputControl name={"preparingSteps"} label={"Preparing steps"}/>
+                                <TextareaControl name={"preparingSteps"} label={"Preparing steps"}/>
                             </GridItem>
                             <GridItem colSpan={12}>
                                 <ButtonGroup>

@@ -43,17 +43,17 @@ describe("Create recipe component", () => {
             <CreateRecipe/>
         </WrapWithCommonContexts>)
 
+        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+        expect(getRecipeTypesMock).toHaveBeenCalled()
         expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(await screen.findByLabelText(/^name$/i)).toBeInTheDocument()
         expect(await screen.findByLabelText(/^description$/i)).toBeInTheDocument()
         expect(await screen.findByLabelText(/^recipe type parameter$/i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^ingredients$/i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^preparing steps$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^ingredients$/i)).toHaveProperty("type", "textarea")
+        expect(await screen.findByLabelText(/^preparing steps$/i)).toHaveProperty("type", "textarea")
         expect(await screen.findByLabelText(/^create recipe$/i)).toHaveAttribute("type", "submit")
-        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-        expect(getRecipeTypesMock).toHaveBeenCalled()
     })
 
     describe("Form validation", () => {

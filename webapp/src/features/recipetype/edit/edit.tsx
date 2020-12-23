@@ -1,20 +1,14 @@
 import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
-import * as yup from "yup"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {Form, Formik, FormikValues} from "formik"
 import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {ButtonGroup, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SubmitButton} from "formik-chakra-ui"
 import Loader from "../../../components/loader/loader"
-
-const schema = yup.object({
-    name: yup.string().required("Name is required")
-        .min(1, "Name is required")
-        .max(64, "Name exceeds the character limit")
-})
+import RecipeTypeFormSchema from "../common/form-schema"
 
 const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     const toast = useToast()
@@ -23,7 +17,13 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     const {find, update} = createRecipeTypeService(useContext(ApiHandlerContext))
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeType>({
-        promiseFn: findPromiseRef.current
+        promiseFn: findPromiseRef.current,
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe type",
+            description: message,
+            status: "error",
+            duration: null
+        })
     })
 
     const handleOnSubmit = async (values: FormikValues) => {
@@ -32,33 +32,40 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
             toast({title: `Recipe type '${values.name}' updated successfully!`, status: "success"})
             history.push(`/recipetype/${id}`)
         } catch ({message}) {
-            toast({title: `An error occurred while updating the recipe type: ${message}`, status: "error"})
+            toast({
+                title: "An error occurred while updating the recipe type",
+                description: message,
+                status: "error",
+                duration: null
+            })
         }
     }
 
     return <>
         <IfPending state={state}>
-            <Loader />
+            <Loader/>
         </IfPending>
         <IfRejected state={state}>
-            {err => <span>Error: {err.message}</span>}
+            <Text>Failed to fetch the recipe type</Text>
         </IfRejected>
         <IfFulfilled state={state}>
             {data => <>
                 <Heading>Edit a recipe type</Heading>
                 <Formik
-                    initialValues={{...data}}
+                    initialValues={data}
                     validateOnBlur={true}
                     onSubmit={handleOnSubmit}
-                    validationSchema={schema}>
+                    validationSchema={RecipeTypeFormSchema}>
                     <Form>
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                             <GridItem colSpan={12}>
                                 <InputControl name={"name"} label={"Name"}/>
                             </GridItem>
                             <GridItem colSpan={12}>
-                                <SubmitButton aria-label="Edit recipe type"/>
-                                <ResetButton aria-label="Reset form"/>
+                                <ButtonGroup>
+                                    <SubmitButton aria-label="Edit recipe type">Edit</SubmitButton>
+                                    <ResetButton aria-label="Reset form">Reset</ResetButton>
+                                </ButtonGroup>
                             </GridItem>
                         </Grid>
                     </Form>

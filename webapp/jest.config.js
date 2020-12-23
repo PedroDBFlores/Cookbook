@@ -6,10 +6,10 @@ module.exports = {
   ],
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   transform: {
-    "^.+\\.t(s|sx)?$":  ["@swc/jest"],
+    "^.+\\.t(s|sx)?$": ["@swc/jest"],
   },
   clearMocks: true,
-  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],
+  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect", "jest-chain"],
   moduleDirectories: ["node_modules", path.join(__dirname, "src"), path.join(__dirname, "tests")],
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/"

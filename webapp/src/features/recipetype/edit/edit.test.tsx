@@ -49,7 +49,9 @@ describe("Edit recipe type", () => {
             <EditRecipeType id={99}/>
         </WrapWithCommonContexts>)
 
-        expect(await screen.findByText(/failure/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^an error occurred while fetching the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failure$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch the recipe type$/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalled()
     })
 
@@ -62,9 +64,9 @@ describe("Edit recipe type", () => {
             </WrapWithCommonContexts>)
 
             userEvent.clear(await screen.findByLabelText(/^name$/i))
-            userEvent.click(screen.getByLabelText(/edit recipe type/i))
+            userEvent.click(screen.getByLabelText(/^edit recipe type$/i))
 
-            expect(await screen.findByText(/name is required/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^name is required$/i)).toBeInTheDocument()
         })
 
         it("displays an error when the name exceeds 64 characters", async () => {
@@ -75,9 +77,9 @@ describe("Edit recipe type", () => {
             </WrapWithCommonContexts>)
 
             userEvent.paste(await screen.findByLabelText(/^name$/i), "a".repeat(65))
-            userEvent.click(screen.getByLabelText(/edit recipe type/i))
+            userEvent.click(screen.getByLabelText(/^edit recipe type$/i))
 
-            expect(await screen.findByText(/name exceeds the character limit/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^name exceeds the character limit$/i)).toBeInTheDocument()
         })
     })
 
@@ -103,10 +105,10 @@ describe("Edit recipe type", () => {
 
         userEvent.clear(await screen.findByLabelText(/^name$/i))
         await userEvent.type(screen.getByLabelText(/^name$/i), "Japanese")
-        userEvent.click(screen.getByLabelText(/edit recipe type/i))
+        userEvent.click(screen.getByLabelText(/^edit recipe type$/i))
 
         expect(await screen.findByText(/^recipe type 'Japanese' updated successfully!$/i)).toBeInTheDocument()
-        expect(await screen.findByText("I'm the recipe type details page")).toBeInTheDocument()
+        expect(await screen.findByText(/^I'm the recipe type details page$/i)).toBeInTheDocument()
         expect(updateRecipeTypeMock).toHaveBeenCalledWith({...expectedRecipeType, name: "Japanese"})
     })
 
@@ -117,13 +119,14 @@ describe("Edit recipe type", () => {
         render(<WrapWithCommonContexts>
             <EditRecipeType id={expectedRecipeType.id}/>
         </WrapWithCommonContexts>)
-        expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^edit a recipe type$/i)).toBeInTheDocument()
 
         userEvent.clear(screen.getByLabelText(/^name$/i))
         await userEvent.type(screen.getByLabelText(/^name$/i), "Japanese")
         userEvent.click(screen.getByLabelText(/edit recipe type/i))
 
-        expect(await screen.findByText(/an error occurred while updating the recipe type: duplicate recipe type/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^an error occurred while updating the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^duplicate recipe type$/i)).toBeInTheDocument()
         expect(updateRecipeTypeMock).toHaveBeenCalledWith({...expectedRecipeType, name: "Japanese"})
     })
 })

@@ -65,6 +65,7 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 <MenuItem onClick={() => history.push("/recipetype")}>Recipe types</MenuItem>
                 <MenuItem onClick={() => history.push("/recipe")}>Recipes</MenuItem>
             </Box>
+
         </Flex>
     )
 }

@@ -33,18 +33,18 @@ describe("Recipe search form", () => {
             name: "a name",
             description: "",
             recipeTypeId: ""
-        }, undefined],
+        }],
         ["description is filled", {
             name: "",
             description: "a description",
             recipeTypeId: ""
-        }, undefined],
+        }],
         ["recipe type id is changed", {
             name: "",
             description: "",
             recipeTypeId: "2"
-        }, "new recipe type"]
-    ])("searches when %s", async (_, {name, description, recipeTypeId}, recipeTypeText) => {
+        }]
+    ])("searches when %s", async (_, {name, description, recipeTypeId}) => {
         const onSearchMock = jest.fn()
         render(<RecipeSearchForm onSearch={onSearchMock} recipeTypes={[
             {id: 1, name: "A lovely"},

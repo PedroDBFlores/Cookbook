@@ -32,7 +32,7 @@ describe("Recipe type details", () => {
         }
     })
 
-    beforeEach(() => jest.clearAllMocks())
+    beforeEach(jest.clearAllMocks)
 
     it("renders the recipe type details", async () => {
         const expectedRecipeType = {...generateRecipeType(), id: 99}
@@ -60,7 +60,9 @@ describe("Recipe type details", () => {
             <RecipeTypeDetails id={99}/>
         </WrapWithCommonContexts>)
 
-        expect(await screen.findByText(/failure/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^an error occurred while fetching the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failure$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch the recipe type$/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalled()
     })
 
@@ -136,7 +138,8 @@ describe("Recipe type details", () => {
 
             userEvent.click(await screen.findByLabelText(`Delete recipe type '${expectedRecipeType.name}'`))
 
-            expect(await screen.findByText(`An error occurred while trying to delete this recipe type: In use`)).toBeInTheDocument()
+            expect(await screen.findByText(/^An error occurred while trying to delete this recipe type$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^in use$/i)).toBeInTheDocument()
         })
     })
 })

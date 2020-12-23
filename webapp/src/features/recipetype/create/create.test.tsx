@@ -89,7 +89,8 @@ describe("Create recipe type", () => {
         await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-        expect(await screen.findByText(/an error occurred while creating the recipe type: duplicate recipe type/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^an error occurred while creating the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^duplicate recipe type$/i)).toBeInTheDocument()
         expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
     })
 })

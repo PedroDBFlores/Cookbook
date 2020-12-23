@@ -1,35 +1,29 @@
 import React, {useContext} from "react"
 import {useHistory} from "react-router-dom"
 import {Form, Formik} from "formik"
-import * as yup from "yup"
-import createRecipeTypeService from "../../../services/recipe-type-service"
+import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
-import {InputControl, SubmitButton, ResetButton} from "formik-chakra-ui"
-
-interface CreateRecipeTypeFormData {
-    name: string
-}
-
-const schema = yup.object({
-    name: yup.string()
-        .required("Name is required")
-        .min(1, "Name is required")
-        .max(64, "Name exceeds the character limit")
-})
+import {InputControl, ResetButton, SubmitButton} from "formik-chakra-ui"
+import RecipeTypeFormSchema from "../common/form-schema"
 
 const CreateRecipeType: React.FC = () => {
     const {create} = createRecipeTypeService(useContext(ApiHandlerContext))
     const toast = useToast()
     const history = useHistory()
 
-    const handleOnSubmit = async ({name}: CreateRecipeTypeFormData) => {
+    const handleOnSubmit = async ({name}: Omit<RecipeType, "id">) => {
         try {
             const {id} = await create({name})
             toast({title: `Recipe type '${name}' created successfully!`, status: "success"})
             history.push(`/recipetype/${id}/details`)
         } catch ({message}) {
-            toast({title: `An error occurred while creating the recipe type: ${message}`, status: "error"})
+            toast({
+                title: "An error occurred while creating the recipe type",
+                description: message,
+                status: "error",
+                duration: null
+            })
         }
     }
 
@@ -39,7 +33,7 @@ const CreateRecipeType: React.FC = () => {
             initialValues={{name: ""}}
             validateOnBlur={true}
             onSubmit={handleOnSubmit}
-            validationSchema={schema}>
+            validationSchema={RecipeTypeFormSchema}>
             <Form>
                 <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                     <GridItem colSpan={12}>
