@@ -1,7 +1,7 @@
 import axios from "axios"
 import {generateRecipeType} from "../../tests/helpers/generators/dto-generators"
 import MockAdapter from "axios-mock-adapter"
-import * as errorHandler from "../utils/error-handling"
+import * as errorHandler from "utils/error-handling"
 import {name, random} from "faker"
 import createRecipeTypeService from "./recipe-type-service"
 import ApiHandler from "./api-handler"

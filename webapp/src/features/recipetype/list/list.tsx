@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import {MdDelete, MdEdit, MdVisibility} from "react-icons/md"
-import {RecipeType} from "../../../services/recipe-type-service"
+import {RecipeType} from "services/recipe-type-service"
 import {Button, ButtonGroup, Table, Tbody, Td, Th, Thead, Tr} from "@chakra-ui/react"
 
 interface RecipeTypeListProps {

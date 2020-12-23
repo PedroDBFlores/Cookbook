@@ -1,6 +1,6 @@
-import {CreateResult, SearchResult} from "../model"
+import {CreateResult, SearchResult} from "model"
 import {AxiosInstance} from "axios"
-import handleApiError from "../utils/error-handling"
+import handleApiError from "utils/error-handling"
 
 export interface RecipeService {
     find(id: number): Promise<RecipeDetails>

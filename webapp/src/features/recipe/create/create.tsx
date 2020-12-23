@@ -1,14 +1,14 @@
 import React, {useContext, useRef} from "react"
 import {Form, Formik} from "formik"
-import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import createRecipeService, {Recipe} from "../../../services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
+import createRecipeService, {Recipe} from "services/recipe-service"
 import {useHistory} from "react-router-dom"
-import {ApiHandlerContext} from "../../../services/api-handler"
+import {ApiHandlerContext} from "services/api-handler"
 import {ButtonGroup, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl} from "formik-chakra-ui"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
-import Loader from "../../../components/loader/loader"
 import RecipeFormSchema from "../common/form-schema"
+import Loader from "components/loader/loader"
 
 const CreateRecipe: React.FC = () => {
     const history = useHistory()

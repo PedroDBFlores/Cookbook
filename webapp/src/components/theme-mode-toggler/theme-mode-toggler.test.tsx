@@ -19,7 +19,7 @@ describe("Theme mode toggler", () => {
         toggleColorMode: toggleColorModeMock
     }))
 
-    beforeEach(() => jest.clearAllMocks())
+    beforeEach(jest.clearAllMocks)
 
     it("calls the useColorMode hook on click", () => {
         render(<ThemeModeToggler/>)

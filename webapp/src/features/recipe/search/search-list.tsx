@@ -1,11 +1,11 @@
 import React, {useState} from "react"
 import PropTypes from "prop-types"
-import {SearchResult} from "../../../model"
+import {SearchResult} from "model"
 import {MdDelete, MdEdit, MdVisibility} from "react-icons/md"
 import {useHistory} from "react-router-dom"
-import {RecipeDetails} from "../../../services/recipe-service"
+import {RecipeDetails} from "services/recipe-service"
 import {Table, Thead, Th, Tr, Tbody, Td, Tfoot, ButtonGroup, Button} from "@chakra-ui/react"
-import TablePagination from "../../../components/table-pagination/table-pagination"
+import TablePagination from "components/table-pagination/table-pagination"
 
 interface RecipeSearchListProps {
     searchResult: SearchResult<RecipeDetails>

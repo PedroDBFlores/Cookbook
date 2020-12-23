@@ -8,8 +8,3 @@ export interface SearchResult<T> {
 export interface CreateResult {
     id: number
 }
-
-export interface ResponseError {
-    code: string
-    message: string
-}

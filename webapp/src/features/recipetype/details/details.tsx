@@ -3,8 +3,8 @@ import PropTypes from "prop-types"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {MdDelete, MdEdit} from "react-icons/md"
 import {useHistory} from "react-router-dom"
-import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
-import {ApiHandlerContext} from "../../../services/api-handler"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
+import {ApiHandlerContext} from "services/api-handler"
 import {
     Button,
     ButtonGroup,
@@ -18,8 +18,8 @@ import {
     Text,
     useToast
 } from "@chakra-ui/react"
-import ModalContext from "../../../components/modal/modal-context"
-import Loader from "../../../components/loader/loader"
+import ModalContext from "components/modal/modal-context"
+import Loader from "components/loader/loader"
 
 const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
     const {setModalState} = useContext(ModalContext)

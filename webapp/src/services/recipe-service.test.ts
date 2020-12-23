@@ -1,11 +1,11 @@
 import axios from "axios"
 import {generateRecipe, generateRecipeDetails} from "../../tests/helpers/generators/dto-generators"
 import MockAdapter from "axios-mock-adapter"
-import * as errorHandler from "../utils/error-handling"
+import * as errorHandler from "utils/error-handling"
 import createRecipeService, {RecipeDetails, SearchRecipeParameters} from "./recipe-service"
 import ApiHandler from "./api-handler"
 import {random} from "faker"
-import {SearchResult} from "../model"
+import {SearchResult} from "model"
 
 const mockedAxios = new MockAdapter(axios)
 const handleErrorsSpy = jest.spyOn(errorHandler, "default")

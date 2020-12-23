@@ -2,15 +2,15 @@ import React, {useEffect} from "react"
 import {render, screen} from "@testing-library/react"
 import RecipeTypeDetails from "./details"
 import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
-import Modal from "../../../components/modal/modal"
-import createRecipeTypeService from "../../../services/recipe-type-service"
+import Modal from "components/modal/modal"
+import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 import {WrapWithCommonContexts, WrapperWithRoutes} from "../../../../tests/render-helpers"
 
-jest.mock("../../../../src/services/recipe-type-service")
+jest.mock("services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 
-jest.mock("../../../../src/components/modal/modal", () => {
+jest.mock("components/modal/modal", () => {
     return {
         __esModule: true,
         default: jest.fn().mockImplementation(() => <div>Delete RecipeType Modal</div>)

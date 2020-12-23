@@ -3,10 +3,10 @@ import React from "react"
 import EditRecipeType from "./edit"
 import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
 import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
-import createRecipeTypeService from "../../../services/recipe-type-service"
+import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
-jest.mock("../../../../src/services/recipe-type-service")
+jest.mock("services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 
 describe("Edit recipe type", () => {
@@ -22,7 +22,7 @@ describe("Edit recipe type", () => {
         }
     })
 
-    beforeEach(() => jest.clearAllMocks())
+    beforeEach(jest.clearAllMocks)
 
     it("renders the initial form", async () => {
         const expectedRecipeType = generateRecipeType()

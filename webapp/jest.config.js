@@ -9,6 +9,7 @@ module.exports = {
     "^.+\\.t(s|sx)?$": ["@swc/jest"],
   },
   clearMocks: true,
+  coveragePathIgnorePatterns : [path.join(__dirname, "tests")],
   setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect", "jest-chain"],
   moduleDirectories: ["node_modules", path.join(__dirname, "src"), path.join(__dirname, "tests")],
   testPathIgnorePatterns: [

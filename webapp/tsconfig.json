@@ -6,9 +6,10 @@
     "node_modules"
   ],
   "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist/",
     "strict": true,
     "incremental": true,
-    "outDir": "./dist/",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "commonjs",
@@ -16,6 +17,23 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": true,
+    "paths": {
+      "@webapp/components/*": [
+        "./components"
+      ],
+      "@webapp/features/*": [
+        "./features"
+      ],
+      "@webapp/model/*": [
+        "./model"
+      ],
+      "@webapp/services/*": [
+        "./services"
+      ],
+      "@webapp/utils/*": [
+        "./utils"
+      ]
+    }
   }
 }

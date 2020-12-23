@@ -2,10 +2,10 @@ import React from "react"
 import {render, screen} from "@testing-library/react"
 import CreateRecipeType from "./create"
 import {WrapWithCommonContexts, WrapperWithRoutes} from "../../../../tests/render-helpers"
-import createRecipeTypeService from "../../../services/recipe-type-service"
+import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
-jest.mock("../../../../src/services/recipe-type-service")
+jest.mock("services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 
 describe("Create recipe type", () => {

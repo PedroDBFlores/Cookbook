@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import {Form, Formik, FormikHelpers} from "formik"
-import {RecipeType} from "../../../services/recipe-type-service"
+import {RecipeType} from "services/recipe-type-service"
 import {Button, Grid, GridItem} from "@chakra-ui/react"
 import {InputControl, SelectControl} from "formik-chakra-ui"
 

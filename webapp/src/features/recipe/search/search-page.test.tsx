@@ -2,20 +2,20 @@ import React, {useEffect} from "react"
 import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchPage from "./search-page"
 import RecipeSearchForm from "./search-form"
-import {SearchResult} from "../../../model"
-import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
-import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
+import {SearchResult} from "model"
+import createRecipeService, {RecipeDetails} from "services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 import {Button} from "@chakra-ui/react"
-import Modal from "../../../components/modal/modal"
+import Modal from "components/modal/modal"
 
-jest.mock("../../../../src/services/recipe-type-service")
-jest.mock("../../../../src/services/recipe-service")
+jest.mock("services/recipe-type-service")
+jest.mock("services/recipe-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeof createRecipeService>
 
-jest.mock("../../../../src/features/recipe/search/search-form", () => {
+jest.mock("features/recipe/search/search-form", () => {
     return {
         __esModule: true,
         default: jest.fn().mockImplementation(({recipeTypes}: { recipeTypes: Array<RecipeType> }) =>
@@ -30,7 +30,7 @@ jest.mock("../../../../src/features/recipe/search/search-form", () => {
 })
 const recipeSearchFormMock = RecipeSearchForm as jest.MockedFunction<typeof RecipeSearchForm>
 
-jest.mock("../../../../src/features/recipe/search/search-list", () => {
+jest.mock("features/recipe/search/search-list", () => {
     return {
         __esModule: true,
         default: jest.fn().mockImplementation(({searchResult, onDelete, onChangeRowsPerPage, onPageChange}: {
@@ -56,7 +56,7 @@ jest.mock("../../../../src/features/recipe/search/search-list", () => {
     }
 })
 
-jest.mock("../../../../src/components/modal/modal", () => {
+jest.mock("components/modal/modal", () => {
     return {
         __esModule: true,
         default: jest.fn().mockImplementation(() => <div>Delete Recipe Modal</div>)

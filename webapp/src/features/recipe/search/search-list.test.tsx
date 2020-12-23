@@ -4,7 +4,7 @@ import RecipeSearchList from "./search-list"
 import {generateRecipeDetails} from "../../../../tests/helpers/generators/dto-generators"
 import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
-import {RecipeDetails} from "../../../services/recipe-service"
+import {RecipeDetails} from "services/recipe-service"
 
 describe("Recipe search list component", () => {
     const expectedRecipes: Array<RecipeDetails> = [

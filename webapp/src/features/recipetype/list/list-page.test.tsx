@@ -4,13 +4,13 @@ import RecipeTypeListPage from "./list-page"
 import RecipeTypeList from "./list"
 import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
 import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
-import createRecipeTypeService from "../../../services/recipe-type-service"
+import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
-jest.mock("../../../../src/services/recipe-type-service")
+jest.mock("services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 
-jest.mock("../../../../src/features/recipetype/list/list", () => {
+jest.mock("features/recipetype/list/list", () => {
     return {
         __esModule: true,
         default: jest.fn(() => <>Mock Recipe Type list</>)
@@ -31,7 +31,7 @@ describe("Recipe type list page", () => {
         }
     })
 
-    beforeEach(() => jest.clearAllMocks())
+    beforeEach(jest.clearAllMocks)
 
     it("has the required content and gets the recipe types", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
