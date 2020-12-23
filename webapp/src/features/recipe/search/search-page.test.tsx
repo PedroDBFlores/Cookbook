@@ -119,19 +119,37 @@ describe("Search recipe page component", () => {
 
     it("renders the initial component", async () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
+        searchRecipesMock.mockResolvedValueOnce({
+            count: 0,
+            numberOfPages: 1,
+            results: []
+        } as SearchResult<RecipeDetails>)
 
         render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
             <RecipeSearchPage/>
         </WrapWithCommonContexts>)
 
+        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(screen.getByText(/search recipes/i)).toBeInTheDocument()
-        expect(screen.getByText(/no matching recipes/i)).toBeInTheDocument()
+        expect(await screen.findByText(/no matching recipes/i)).toBeInTheDocument()
         expect(screen.getByText("Search Recipe Form")).toBeInTheDocument()
-        expect(await screen.findByText("Meat")).toBeInTheDocument()
+        expect(screen.getByText("Meat")).toBeInTheDocument()
         expect(screen.getByText("Search Recipe List")).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
+    })
+
+    it("renders an error if fetching the recipe types fails", async () => {
+        getAllRecipeTypesMock.mockRejectedValueOnce(new Error("Failed to fetch recipe types"))
+
+        render(<WrapWithCommonContexts>
+            <RecipeSearchPage/>
+        </WrapWithCommonContexts>)
+
+        expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
     })
 
     test.each([
@@ -246,8 +264,7 @@ describe("Search recipe page component", () => {
                 <RecipeSearchPage/>
             </WrapWithCommonContexts>)
 
-            await screen.findByText("Arroz de Pato")
-            userEvent.click(screen.getByText(/delete recipe named 'Arroz de Pato'/i))
+            userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
 
             expect(screen.getByText(/are you sure you want to delete recipe 'Arroz de Pato'?/i)).toBeInTheDocument()
 
@@ -263,12 +280,12 @@ describe("Search recipe page component", () => {
                 <RecipeSearchPage/>
             </WrapWithCommonContexts>)
 
-            await screen.findByText("Arroz de Pato")
-            userEvent.click(screen.getByText(/delete recipe named 'Arroz de Pato'/i))
+            userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
 
             expect(screen.getByText(/are you sure you want to delete recipe 'Arroz de Pato'?/i)).toBeInTheDocument()
 
-            expect(await screen.findByText(`An error occurred while trying to delete recipe 'Arroz de Pato': Failure`)).toBeInTheDocument()
+            expect(await screen.findByText(/^An error occurred while trying to delete recipe 'Arroz de Pato'$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^Failure$/i)).toBeInTheDocument()
         })
     })
 })

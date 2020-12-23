@@ -1,17 +1,16 @@
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useContext, useRef} from "react"
 import {Form, Formik} from "formik"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import createRecipeService, {Recipe} from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {ButtonGroup, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl} from "formik-chakra-ui"
-import {IfFulfilled, IfPending, useAsync} from "react-async"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Loader from "../../../components/loader/loader"
 import RecipeFormSchema from "../common/form-schema"
 
 const CreateRecipe: React.FC = () => {
-    const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>()
     const history = useHistory()
     const toast = useToast()
 
@@ -19,12 +18,14 @@ const CreateRecipe: React.FC = () => {
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
     const getAllRecipeTypesFn = useRef(() => getAllRecipeTypes())
     const state = useAsync<RecipeType[]>({
-        promiseFn: getAllRecipeTypesFn.current
+        promiseFn: getAllRecipeTypesFn.current,
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe types",
+            description: message,
+            status: "error",
+            duration: null
+        })
     })
-
-    useEffect(() => {
-        getAllRecipeTypes().then(setRecipeTypes)
-    }, [])
 
     const handleOnSubmit = async (formData: Omit<Recipe, "id">) => {
         try {
@@ -32,7 +33,12 @@ const CreateRecipe: React.FC = () => {
             toast({title: `Recipe '${formData.name}' created successfully!`, status: "success"})
             history.push(`/recipe/${id}/details`)
         } catch ({message}) {
-            toast({title: `An error occurred while creating the recipe: ${message}`, status: "error"})
+            toast({
+                title: "An error occurred while creating the recipe",
+                description: message,
+                status: "error",
+                duration: null
+            })
         }
     }
 
@@ -44,8 +50,11 @@ const CreateRecipe: React.FC = () => {
             <IfPending state={state}>
                 <Loader/>
             </IfPending>
+            <IfRejected state={state}>
+                <Text>Failed to fetch the recipe types</Text>
+            </IfRejected>
             <IfFulfilled state={state}>
-                <Formik
+                {recipeTypes => <Formik
                     initialValues={{
                         name: "",
                         description: "",
@@ -93,6 +102,7 @@ const CreateRecipe: React.FC = () => {
                         </Grid>
                     </Form>
                 </Formik>
+                }
             </IfFulfilled>
         </GridItem>
     </Grid>

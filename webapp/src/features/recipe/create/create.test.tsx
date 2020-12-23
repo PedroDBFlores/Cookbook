@@ -56,6 +56,18 @@ describe("Create recipe component", () => {
         expect(await screen.findByLabelText(/^create recipe$/i)).toHaveAttribute("type", "submit")
     })
 
+    it("render an error if the recipe types cannot be obtained", async () => {
+        getRecipeTypesMock.mockRejectedValueOnce(new Error("Failed to fetch"))
+        render(<WrapWithCommonContexts>
+            <CreateRecipe/>
+        </WrapWithCommonContexts>)
+
+        expect(getRecipeTypesMock).toHaveBeenCalled()
+        expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
+    })
+
     describe("Form validation", () => {
         test.each([
             ["Name is required", ""],
@@ -170,7 +182,8 @@ describe("Create recipe component", () => {
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 
-        expect(await screen.findByText(/an error occurred while creating the recipe: A wild error has appeared/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^an error occurred while creating the recipe$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^a wild error has appeared$/i)).toBeInTheDocument()
         expect(createRecipeMock).toHaveBeenCalledWith({
             name: "i",
             description: "will",

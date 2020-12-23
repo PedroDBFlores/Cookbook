@@ -1,13 +1,13 @@
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
 import {Form, Formik, FormikValues} from "formik"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import createRecipeService, {Recipe, RecipeDetails} from "../../../services/recipe-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Box, ButtonGroup, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {Box, ButtonGroup, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import {InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl} from "formik-chakra-ui"
-import {IfFulfilled, IfPending, useAsync} from "react-async"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Loader from "../../../components/loader/loader"
 import RecipeFormSchema from "../common/form-schema"
 
@@ -16,20 +16,32 @@ interface EditRecipeProps {
 }
 
 const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
-    const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>()
     const history = useHistory()
     const toast = useToast()
 
-    const {find, update} = createRecipeService(useContext(ApiHandlerContext))
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
-    const findPromiseRef = useRef(() => find(id))
-    const state = useAsync<RecipeDetails>({
-        promiseFn: findPromiseRef.current
+    const {find, update} = createRecipeService(useContext(ApiHandlerContext))
+    const getAllRecipeTypesRef = useRef(getAllRecipeTypes)
+    const getAllRecipeTypesState = useAsync<Array<RecipeType>>({
+        promiseFn: getAllRecipeTypesRef.current,
+        onResolve: () => findRecipeState.run(),
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe types",
+            description: message,
+            status: "error",
+            duration: null
+        })
     })
-
-    useEffect(() => {
-        getAllRecipeTypes().then(setRecipeTypes)
-    }, [])
+    const findPromiseRef = useRef(() => find(id))
+    const findRecipeState = useAsync<RecipeDetails>({
+        deferFn: findPromiseRef.current,
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe",
+            description: message,
+            status: "error",
+            duration: null,
+        })
+    })
 
     const handleOnSubmit = async (formData: FormikValues) => {
         try {
@@ -44,10 +56,19 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
     return <>
         <Heading>Edit recipe</Heading>
         <Box>
-            <IfPending state={state}>
+            <IfPending state={getAllRecipeTypesState}>
                 <Loader/>
             </IfPending>
-            <IfFulfilled state={state}>
+            <IfPending state={findRecipeState}>
+                <Loader/>
+            </IfPending>
+            <IfRejected state={getAllRecipeTypesState}>
+                <Text>Failed to fetch the recipe types</Text>
+            </IfRejected>
+            <IfRejected state={findRecipeState}>
+                <Text>Failed to fetch the recipe</Text>
+            </IfRejected>
+            <IfFulfilled state={findRecipeState}>
                 {data => <Formik
                     initialValues={data}
                     validateOnBlur={true}
@@ -67,7 +88,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
                                                label={"Recipe type"}
                                                selectProps={{placeholder: " "}}>
                                     {
-                                        recipeTypes?.map(({id, name}) => (
+                                        getAllRecipeTypesState.data?.map(({id, name}) => (
                                             <option key={`recipeType-${id}`} value={id}>
                                                 {name}
                                             </option>)

@@ -67,7 +67,9 @@ describe("Recipe details component", () => {
             <RecipeDetails id={99}/>
         </WrapWithCommonContexts>)
 
+        expect(await screen.findByText(/^an error occurred while fetching the recipe$/i)).toBeInTheDocument()
         expect(await screen.findByText(/failure/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch the recipe$/i)).toBeInTheDocument()
     })
 
     describe("Actions", () => {
@@ -143,7 +145,8 @@ describe("Recipe details component", () => {
             userEvent.click(await screen.findByLabelText(`Delete recipe '${expectedRecipe.name}'`))
             expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
 
-            expect(await screen.findByText(`An error occurred while trying to delete this recipe: Something went wrong`)).toBeInTheDocument()
+            expect(await screen.findByText(/^an error occurred while trying to delete this recipe$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^something went wrong$/i)).toBeInTheDocument()
         })
     })
 })

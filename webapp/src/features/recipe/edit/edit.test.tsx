@@ -64,6 +64,34 @@ describe("Edit recipe component", () => {
         expect(getRecipeTypesMock).toHaveBeenCalled()
     })
 
+    describe("Error rendering", () => {
+        it("renders an error if it fails to get the recipe types", async () => {
+            getRecipeTypesMock.mockRejectedValueOnce(new Error("Failed to fetch recipe types"))
+
+            render(<WrapWithCommonContexts>
+                <EditRecipe id={1}/>
+            </WrapWithCommonContexts>)
+
+            expect(getRecipeTypesMock).toHaveBeenCalled()
+            expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^failed to fetch recipe types$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
+            expect(findRecipeMock).not.toHaveBeenCalled()
+        })
+
+        it("renders an error if it fails to get the recipe", async () => {
+            findRecipeMock.mockRejectedValueOnce(new Error("Failed to fetch recipe"))
+
+            render(<WrapWithCommonContexts>
+                <EditRecipe id={1}/>
+            </WrapWithCommonContexts>)
+
+            expect(await screen.findByText(/^an error occurred while fetching the recipe$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^failed to fetch recipe$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^failed to fetch the recipe$/i)).toBeInTheDocument()
+        })
+    })
+
     describe("Form validation", () => {
         test.each([
             ["Name is required", ""],

@@ -1,6 +1,6 @@
 import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
-import {useAsync, IfPending, IfRejected, IfFulfilled} from "react-async"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {MdDelete, MdEdit} from "react-icons/md"
 import {ApiHandlerContext} from "../../../services/api-handler"
 import {useHistory} from "react-router-dom"
@@ -15,6 +15,7 @@ import {
     StatGroup,
     StatLabel,
     StatNumber,
+    Text,
     useToast
 } from "@chakra-ui/react"
 import ModalContext from "../../../components/modal/modal-context"
@@ -28,7 +29,13 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
     const {find, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeDetail>({
-        promiseFn: findPromiseRef.current
+        promiseFn: findPromiseRef.current,
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe",
+            description: message,
+            status: "error",
+            duration: null
+        })
     })
 
     const showModal = (id: number, name: string) => {
@@ -49,10 +56,12 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
             await deleteRecipe(id)
             toast({title: `Recipe '${name}' was deleted`, status: "success"})
             history.push("/recipe")
-        } catch (err) {
+        } catch ({message}) {
             toast({
-                title: `An error occurred while trying to delete this recipe: ${err.message}`,
-                status: "error"
+                title: "An error occurred while trying to delete this recipe",
+                description: message,
+                status: "error",
+                duration: null
             })
         }
     }
@@ -64,7 +73,7 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
             <Loader/>
         </IfPending>
         <IfRejected state={state}>
-            <span>Error: {state.error?.message}</span>
+            <Text>Failed to fetch the recipe</Text>
         </IfRejected>
         <IfFulfilled state={state}>
             {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>

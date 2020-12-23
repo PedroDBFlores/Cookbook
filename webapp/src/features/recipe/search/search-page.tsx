@@ -1,16 +1,17 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, {useContext, useEffect, useRef, useState} from "react"
 import {SearchResult} from "../../../model"
-import RecipeSearchList from "./search-list"
 import RecipeSearchForm, {RecipeSearchFormData} from "./search-form"
 import createRecipeService, {RecipeDetails} from "../../../services/recipe-service"
 import createRecipeTypeService, {RecipeType} from "../../../services/recipe-type-service"
 import {useHistory} from "react-router-dom"
 import {ApiHandlerContext} from "../../../services/api-handler"
-import {Button, Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
+import {Button, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import ModalContext from "../../../components/modal/modal-context"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
+import Loader from "../../../components/loader/loader"
+import RecipeSearchList from "./search-list"
 
 const RecipeSearchPage: React.FC = () => {
-    const [recipeTypes, setRecipeTypes] = useState<Array<RecipeType>>([])
     const [formData, setFormData] = useState<RecipeSearchFormData>({
         name: undefined,
         description: undefined,
@@ -35,6 +36,16 @@ const RecipeSearchPage: React.FC = () => {
 
     const {search, delete: deleteRecipe} = createRecipeService(useContext(ApiHandlerContext))
     const {getAll: getAllRecipeTypes} = createRecipeTypeService(useContext(ApiHandlerContext))
+    const getAllRecipeTypesRef = useRef(getAllRecipeTypes)
+    const getAllRecipeTypesState = useAsync<Array<RecipeType>>({
+        promiseFn: getAllRecipeTypesRef.current,
+        onReject: ({message}) => toast({
+            title: "An error occurred while fetching the recipe types",
+            description: message,
+            status: "error",
+            duration: null
+        })
+    })
 
     const handleOnFormSearch = (recipeSearchFormData: RecipeSearchFormData) =>
         setFormData(recipeSearchFormData)
@@ -67,15 +78,13 @@ const RecipeSearchPage: React.FC = () => {
             setRecipes({...recipes, results: recipes.results.filter(r => r.id != id)})
         } catch ({message}) {
             toast({
-                title: `An error occurred while trying to delete recipe '${name}': ${message}`,
-                status: "error"
+                title: `An error occurred while trying to delete recipe '${name}'`,
+                description: message,
+                status: "error",
+                duration: null
             })
         }
     }
-
-    useEffect(() => {
-        getAllRecipeTypes().then(setRecipeTypes)
-    }, [])
 
     useEffect(() => {
         search({
@@ -92,16 +101,28 @@ const RecipeSearchPage: React.FC = () => {
             <Button aria-label="Create new recipe"
                     onClick={navigateToCreateRecipe}>Create</Button>
         </GridItem>
-        <GridItem colSpan={12}>
-            <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
-        </GridItem>
-        <GridItem colSpan={12}>
-            <RecipeSearchList searchResult={recipes}
-                              onDelete={(id, name) => showModal(id, name)}
-                              onChangeRowsPerPage={handleOnNumberOfRowsChange}
-                              onPageChange={handleOnPageChange}/>
-        </GridItem>
+        <IfPending state={getAllRecipeTypesState}>
+            <Loader/>
+        </IfPending>
+        <IfRejected state={getAllRecipeTypesState}>
+            <Text>Failed to fetch the recipe types</Text>
+        </IfRejected>
+        <IfFulfilled state={getAllRecipeTypesState}>
+            {recipeTypes => <>
+                <GridItem colSpan={12}>
+                    <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
+                </GridItem>
+                <GridItem colSpan={12}>
+                    <RecipeSearchList searchResult={recipes}
+                                      onDelete={(id, name) => showModal(id, name)}
+                                      onChangeRowsPerPage={handleOnNumberOfRowsChange}
+                                      onPageChange={handleOnPageChange}/>
+                </GridItem>
+            </>
+            }
+        </IfFulfilled>
     </Grid>
+
 }
 
 export default RecipeSearchPage
