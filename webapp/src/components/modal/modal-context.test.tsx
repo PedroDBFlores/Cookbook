@@ -1,7 +1,8 @@
 import React, {useContext} from "react"
 import ModalContext, {useModalState, WithModal} from "./modal-context"
-import {fireEvent, render, screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import {act, renderHook} from "@testing-library/react-hooks"
+import userEvent from "@testing-library/user-event"
 
 jest.mock("./modal", () => ({
     __esModule: true,
@@ -144,11 +145,11 @@ describe("Modal context", () => {
                 <Component/>
             </WithModal>)
 
-            fireEvent.click(screen.getByText(/Open Modal/i))
+            userEvent.click(screen.getByText(/Open Modal/i))
 
             expect(screen.getByText(/I'm the modal you're looking for/i)).toBeInTheDocument()
 
-            fireEvent.click(screen.getByText(/Close Modal/i))
+            userEvent.click(screen.getByText(/Close Modal/i))
 
             expect(screen.queryByText(/I'm the modal you're looking for/i)).not.toBeInTheDocument()
         })

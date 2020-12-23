@@ -1,7 +1,8 @@
 import React from "react"
 import ApplicationToolbar from "./application-toolbar"
 import {WrapperWithRouter, WrapperWithRoutes} from "../../../tests/render-helpers"
-import {fireEvent, render, screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 describe("Application Toolbar", () => {
     describe("Layout", () => {
@@ -56,7 +57,7 @@ describe("Application Toolbar", () => {
                                       ]}
             />)
 
-            fireEvent.click(screen.getByText(elementText))
+            userEvent.click(screen.getByText(elementText))
 
             expect(screen.getByText(expectedContent)).toBeInTheDocument()
         })

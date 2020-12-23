@@ -1,4 +1,4 @@
-import {fireEvent, render, screen} from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import React from "react"
 import TablePagination from "./table-pagination"
 import userEvent from "@testing-library/user-event"
@@ -48,9 +48,7 @@ describe("Table pagination actions", () => {
                 onChangeRowsPerPage={onChangeRowsPerPageMock}
                 onChangePage={jest.fn()}/>)
 
-            fireEvent.change(screen.getByLabelText(/rows per page/i), {
-                target: {value}
-            })
+            userEvent.selectOptions(screen.getByLabelText(/rows per page/i), value.toString())
 
             expect(onChangeRowsPerPageMock).toHaveBeenCalledWith(value)
         })
