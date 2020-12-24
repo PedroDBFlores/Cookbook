@@ -1,12 +1,23 @@
 import React from "react"
 import {render, screen} from "@testing-library/react"
 import CreateRecipeType from "./create"
-import {WrapWithCommonContexts, WrapperWithRoutes} from "../../../../tests/render-helpers"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
 jest.mock("services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
+
+jest.mock("components/recipe-type-form/recipe-type-form", () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(({onSubmit}) => <>
+        <p>Create recipe type form</p>
+        <button aria-label="Create recipe type"
+                onClick={() => onSubmit({id: 0, name: "Fish"})}>
+            Create
+        </button>
+    </>)
+}))
 
 describe("Create recipe type", () => {
     const createRecipeTypeMock = jest.fn()
@@ -20,7 +31,7 @@ describe("Create recipe type", () => {
         }
     })
 
-    beforeEach(() => createRecipeTypeMock.mockReset())
+    beforeEach(jest.clearAllMocks)
 
     it("renders the initial form", () => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
@@ -30,36 +41,11 @@ describe("Create recipe type", () => {
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/create recipe type/i)).toHaveAttribute("type", "submit")
-        expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "button")
+        expect(screen.getByText(/Create recipe type form/i)).toBeInTheDocument()
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
     })
 
-    describe("Form validation", () => {
-        it("displays an error when the name is empty on submitting", async () => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipeType/>
-            </WrapWithCommonContexts>)
-
-            userEvent.click(screen.getByLabelText(/create recipe type/i))
-
-            expect(await screen.findByText(/name is required/i)).toBeInTheDocument()
-        })
-
-        it("displays an error when the name exceeds 64 characters", async () => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipeType/>
-            </WrapWithCommonContexts>)
-
-            userEvent.paste(screen.getByLabelText(/^name$/i), "a".repeat(65))
-            userEvent.click(screen.getByLabelText(/create recipe type/i))
-
-            expect(await screen.findByText(/name exceeds the character limit/i)).toBeInTheDocument()
-        })
-    })
-
-    it("create the recipe type in the Cookbook API and navigates to the details", async () => {
+    it("creates the recipe type in the Cookbook API and navigates to the details", async () => {
         createRecipeTypeMock.mockResolvedValueOnce({id: 1})
         render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipetype/new" routeConfiguration={[
@@ -72,7 +58,6 @@ describe("Create recipe type", () => {
             ]}/>
         </WrapWithCommonContexts>)
 
-        await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
         expect(await screen.findByText(/^recipe type 'Fish' created successfully!$/i)).toBeInTheDocument()
@@ -86,7 +71,6 @@ describe("Create recipe type", () => {
             <CreateRecipeType/>
         </WrapWithCommonContexts>)
 
-        await userEvent.type(screen.getByLabelText(/^name$/i), "Fish")
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
         expect(await screen.findByText(/^an error occurred while creating the recipe type$/i)).toBeInTheDocument()

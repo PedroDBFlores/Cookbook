@@ -1,11 +1,9 @@
 import React, {useContext} from "react"
 import {useHistory} from "react-router-dom"
-import {Form, Formik} from "formik"
 import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import {ApiHandlerContext} from "services/api-handler"
-import {Grid, GridItem, Heading, useToast} from "@chakra-ui/react"
-import {InputControl, ResetButton, SubmitButton} from "formik-chakra-ui"
-import RecipeTypeFormSchema from "../common/form-schema"
+import {Heading, useToast} from "@chakra-ui/react"
+import RecipeTypeForm from "../../../components/recipe-type-form/recipe-type-form"
 
 const CreateRecipeType: React.FC = () => {
     const {create} = createRecipeTypeService(useContext(ApiHandlerContext))
@@ -29,23 +27,7 @@ const CreateRecipeType: React.FC = () => {
 
     return <>
         <Heading>Create a new recipe type</Heading>
-        <Formik
-            initialValues={{name: ""}}
-            validateOnBlur={true}
-            onSubmit={handleOnSubmit}
-            validationSchema={RecipeTypeFormSchema}>
-            <Form>
-                <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                    <GridItem colSpan={12}>
-                        <InputControl name={"name"} label={"Name"}/>
-                    </GridItem>
-                    <GridItem colSpan={12}>
-                        <SubmitButton aria-label="Create recipe type">Create</SubmitButton>
-                        <ResetButton aria-label="Reset form">Reset</ResetButton>
-                    </GridItem>
-                </Grid>
-            </Form>
-        </Formik>
+        <RecipeTypeForm onSubmit={handleOnSubmit} />
     </>
 }
 
