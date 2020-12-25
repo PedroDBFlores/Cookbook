@@ -78,16 +78,16 @@ describe("Recipe type form", () => {
 
     describe("Reset action", () => {
         test.each([
-            ["creating", undefined, {name: ""}],
-            ["updating", {id: 1, name: "The great recipe type"} as RecipeType, {name: "The great recipe type"}]
-        ])("resets the form to the original values while %s", (_, initialValues, expectedResetValues) => {
+            ["creating", undefined],
+            ["updating", {id: 1, name: "The great recipe type"} as RecipeType]
+        ])("resets the form to the original values while %s", (_, initialValues) => {
             render(<RecipeTypeForm initialValues={initialValues} onSubmit={jest.fn}/>)
 
             userEvent.clear(screen.getByLabelText(/name/i))
             userEvent.paste(screen.getByLabelText(/name/i), "Definitely I don't want this")
             userEvent.click(screen.getByLabelText(/reset form/i))
 
-            expect(screen.getByLabelText(/name/i)).toHaveValue(expectedResetValues.name)
+            expect(screen.getByLabelText(/name/i)).toHaveValue(initialValues?.name ?? "")
         })
     })
 })

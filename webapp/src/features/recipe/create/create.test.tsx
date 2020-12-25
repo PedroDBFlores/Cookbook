@@ -11,6 +11,23 @@ jest.mock("services/recipe-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeof createRecipeService>
 
+jest.mock("components/recipe-form/recipe-form", () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(({onSubmit}) => <>
+        <p>Create recipe form</p>
+        <button aria-label="Create recipe"
+                onClick={() => onSubmit({
+                    recipeTypeId: 1,
+                    name: "Name",
+                    description: "Description",
+                    ingredients: "Ingredients",
+                    preparingSteps: "PreparingSteps"
+                })}>
+            Create
+        </button>
+    </>)
+}))
+
 describe("Create recipe component", () => {
     const createRecipeMock = jest.fn()
     const getRecipeTypesMock = jest.fn().mockImplementation(() =>
@@ -48,12 +65,7 @@ describe("Create recipe component", () => {
         expect(getRecipeTypesMock).toHaveBeenCalled()
         expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^name$/i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^description$/i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^recipe type parameter$/i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^ingredients$/i)).toHaveProperty("type", "textarea")
-        expect(await screen.findByLabelText(/^preparing steps$/i)).toHaveProperty("type", "textarea")
-        expect(await screen.findByLabelText(/^create recipe$/i)).toHaveAttribute("type", "submit")
+        expect(await screen.findByText(/^Create recipe form$/i)).toBeInTheDocument()
     })
 
     it("render an error if the recipe types cannot be obtained", async () => {
@@ -68,73 +80,6 @@ describe("Create recipe component", () => {
         expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
     })
 
-    describe("Form validation", () => {
-        test.each([
-            ["Name is required", ""],
-            ["Name exceeds the character limit", "a".repeat(129)],
-        ])("displays an error when '%s'", async (message, name) => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipe/>
-            </WrapWithCommonContexts>)
-
-            userEvent.paste(await screen.findByLabelText(/^name$/i), name)
-            userEvent.click(screen.getByLabelText(/create recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-
-        test.each([
-            ["Description is required", ""],
-            ["Description exceeds the character limit", "b".repeat(257)],
-        ])("displays an error when '%s'", async (message, description) => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipe/>
-            </WrapWithCommonContexts>)
-
-            userEvent.paste(await screen.findByLabelText(/^description$/i), description)
-            userEvent.click(screen.getByLabelText(/create recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-
-        it("displays an error if no recipe type is selected", async () => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipe/>
-            </WrapWithCommonContexts>)
-
-            userEvent.click(await screen.findByLabelText(/create recipe/i))
-
-            expect(await screen.findByText("Recipe type is required")).toBeInTheDocument()
-        })
-
-        test.each([
-            ["Ingredients is required", ""],
-            ["Ingredients exceeds the character limit", "i".repeat(2049)],
-        ])("displays an error when '%s'", async (message, ingredients) => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipe/>
-            </WrapWithCommonContexts>)
-
-            userEvent.paste(await screen.findByLabelText(/^ingredients$/i), ingredients)
-            userEvent.click(screen.getByLabelText(/create recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-
-        test.each([
-            ["Preparing steps is required", ""],
-            ["Preparing steps exceeds the character limit", "i".repeat(4099)],
-        ])("it displays an error when '%s'", async (message, preparingSteps) => {
-            render(<WrapWithCommonContexts>
-                <CreateRecipe/>
-            </WrapWithCommonContexts>)
-
-            userEvent.paste(await screen.findByLabelText(/^preparing steps$/i), preparingSteps)
-            userEvent.click(screen.getByLabelText(/create recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-    })
 
     it("calls the 'createRecipe' function on submit", async () => {
         createRecipeMock.mockResolvedValueOnce({id: 1})
@@ -144,25 +89,18 @@ describe("Create recipe component", () => {
                 {path: "/recipe/1/details", exact: true, component: () => <>I'm the recipe details page for id 1</>}
             ]}/>
         </WrapWithCommonContexts>)
-
-        userEvent.type(await screen.findByLabelText(/^name$/i), "name")
-        userEvent.type(await screen.findByLabelText(/^description$/i), "description")
-
-        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
-
-        userEvent.type(await screen.findByLabelText(/^ingredients$/i), "ingredients")
-        userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
+        await screen.findByText(/^Create recipe form$/i)
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 
         expect(await screen.findByText(/^recipe 'Name' created successfully!$/i)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
         expect(createRecipeMock).toHaveBeenCalledWith({
-            name: "name",
-            description: "description",
             recipeTypeId: 1,
-            ingredients: "ingredients",
-            preparingSteps: "preparing steps"
+            name: "Name",
+            description: "Description",
+            ingredients: "Ingredients",
+            preparingSteps: "PreparingSteps"
         })
     })
 
@@ -171,25 +109,18 @@ describe("Create recipe component", () => {
         render(<WrapWithCommonContexts>
             <CreateRecipe/>
         </WrapWithCommonContexts>)
-
-        userEvent.type(await screen.findByLabelText(/^name$/i), "i")
-        userEvent.type(await screen.findByLabelText(/^description$/i), "will")
-
-        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
-
-        userEvent.type(await screen.findByLabelText(/^ingredients$/i), "fail")
-        userEvent.type(await screen.findByLabelText(/^preparing steps$/i), "preparing steps")
+        await screen.findByText(/^Create recipe form$/i)
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 
         expect(await screen.findByText(/^an error occurred while creating the recipe$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^a wild error has appeared$/i)).toBeInTheDocument()
         expect(createRecipeMock).toHaveBeenCalledWith({
-            name: "i",
-            description: "will",
             recipeTypeId: 1,
-            ingredients: "fail",
-            preparingSteps: "preparing steps"
+            name: "Name",
+            description: "Description",
+            ingredients: "Ingredients",
+            preparingSteps: "PreparingSteps"
         })
     })
 })

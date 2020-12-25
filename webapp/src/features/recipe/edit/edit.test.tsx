@@ -12,6 +12,24 @@ jest.mock("services/recipe-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
 const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeof createRecipeService>
 
+jest.mock("components/recipe-form/recipe-form", () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(({onSubmit}) => <>
+        <p>Edit recipe form</p>
+        <button aria-label="Edit recipe"
+                onClick={() => onSubmit({
+                    id: 1,
+                    recipeTypeId: 1,
+                    name: "Name",
+                    description: "Description",
+                    ingredients: "Ingredients",
+                    preparingSteps: "PreparingSteps"
+                })}>
+            Edit
+        </button>
+    </>)
+}))
+
 describe("Edit recipe component", () => {
     const findRecipeMock = jest.fn().mockImplementation(() => Promise.resolve({
         id: 1,
@@ -52,12 +70,7 @@ describe("Edit recipe component", () => {
 
         expect(screen.getByText(/Edit recipe/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
-        expect(await screen.findByLabelText(/^name$/i)).toHaveValue("A great")
-        expect(await screen.findByLabelText(/^description$/i)).toHaveValue("recipe for winter times")
-        expect(await screen.findByLabelText(/^recipe type$/i)).toHaveValue("1")
-        expect(await screen.findByLabelText(/^ingredients$/i)).toHaveProperty("type", "textarea").toHaveValue("A lot of love")
-        expect(await screen.findByLabelText(/^preparing steps$/i)).toHaveProperty("type", "textarea").toHaveValue("and care")
-        expect(await screen.findByLabelText(/^edit recipe$/i)).toHaveAttribute("type", "submit")
+        expect(await screen.findByText(/Edit recipe form/i)).toBeInTheDocument()
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeMock).toHaveBeenCalledWith(1)
@@ -92,83 +105,6 @@ describe("Edit recipe component", () => {
         })
     })
 
-    describe("Form validation", () => {
-        test.each([
-            ["Name is required", ""],
-            ["Name exceeds the character limit", "a".repeat(129)],
-        ])("it displays an error when '%s'", async (message, name) => {
-            render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
-            </WrapWithCommonContexts>)
-
-            const nameInput = await screen.findByLabelText(/^name$/i)
-            userEvent.clear(nameInput)
-            userEvent.paste(nameInput, name)
-            userEvent.click(screen.getByLabelText(/edit recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-
-        test.each([
-            ["Description is required", ""],
-            ["Description exceeds the character limit", "b".repeat(257)],
-        ])("it displays an error when '%s'", async (message, description) => {
-            render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
-            </WrapWithCommonContexts>)
-
-            const descriptionInput = await screen.findByLabelText(/^description$/i)
-            userEvent.clear(descriptionInput)
-            userEvent.paste(descriptionInput, description)
-            userEvent.click(screen.getByLabelText(/edit recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-
-        it("displays an error if no recipe type is selected", async () => {
-            render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
-            </WrapWithCommonContexts>)
-
-            userEvent.selectOptions(await screen.findByLabelText("Recipe type"),"")
-            userEvent.click(screen.getByLabelText(/edit recipe/i))
-
-            expect(await screen.findByText("Recipe type is required")).toBeInTheDocument()
-        })
-
-        test.each([
-            ["Ingredients is required", ""],
-            ["Ingredients exceeds the character limit", "i".repeat(2049)],
-        ])("it displays an error when '%s'", async (message, ingredients) => {
-            render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
-            </WrapWithCommonContexts>)
-
-            const ingredientsInput = await screen.findByLabelText(/^ingredients$/i)
-            userEvent.clear(ingredientsInput)
-            userEvent.paste(ingredientsInput, ingredients)
-            userEvent.click(screen.getByLabelText(/edit recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-
-        test.each([
-            ["Preparing steps is required", ""],
-            ["Preparing steps exceeds the character limit", "i".repeat(4099)],
-        ])("it displays an error when '%s'", async (message, preparingSteps) => {
-            render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
-            </WrapWithCommonContexts>)
-
-            const preparingStepsInput = await screen.findByLabelText(/^preparing steps$/i)
-            userEvent.clear(preparingStepsInput)
-            userEvent.paste(preparingStepsInput, preparingSteps)
-            userEvent.click(screen.getByLabelText(/edit recipe/i))
-
-            expect(await screen.findByText(message)).toBeInTheDocument()
-        })
-    })
-
     it("calls the 'updateRecipe' function on submit", async () => {
         updateRecipeMock.mockResolvedValueOnce({})
         render(<WrapWithCommonContexts>
@@ -177,32 +113,19 @@ describe("Edit recipe component", () => {
                 {path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</>},
             ]}/>
         </WrapWithCommonContexts>)
+        await screen.findByText(/Edit recipe form/i)
 
-        const nameInput = await screen.findByLabelText(/^name$/i)
-        const descriptionInput = await screen.findByLabelText(/^description$/i)
-        const ingredientsInput = await screen.findByLabelText(/^ingredients$/i)
-        const preparingStepsInput = await screen.findByLabelText(/^preparing steps$/i)
-        userEvent.clear(nameInput)
-        userEvent.clear(descriptionInput)
-        userEvent.clear(ingredientsInput)
-        userEvent.clear(preparingStepsInput)
-
-        userEvent.paste(nameInput, "name")
-        userEvent.paste(descriptionInput, "description")
-        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
-        userEvent.paste(ingredientsInput, "ingredients")
-        userEvent.paste(preparingStepsInput, "preparing steps")
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(/^recipe 'name' updated successfully!$/i)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
         expect(updateRecipeMock).toHaveBeenCalledWith({
             id: 1,
-            name: "name",
-            description: "description",
             recipeTypeId: 1,
-            ingredients: "ingredients",
-            preparingSteps: "preparing steps"
+            name: "Name",
+            description: "Description",
+            ingredients: "Ingredients",
+            preparingSteps: "PreparingSteps"
         })
     })
 
@@ -211,32 +134,18 @@ describe("Edit recipe component", () => {
         render(<WrapWithCommonContexts>
             <EditRecipe id={1}/>
         </WrapWithCommonContexts>)
-
-        const nameInput = await screen.findByLabelText(/^name$/i)
-        const descriptionInput = await screen.findByLabelText(/^description$/i)
-        const ingredientsInput = await screen.findByLabelText(/^ingredients$/i)
-        const preparingStepsInput = await screen.findByLabelText(/^preparing steps$/i)
-        userEvent.clear(nameInput)
-        userEvent.clear(descriptionInput)
-        userEvent.clear(ingredientsInput)
-        userEvent.clear(preparingStepsInput)
-
-        userEvent.paste(nameInput, "i")
-        userEvent.paste(descriptionInput, "will")
-        userEvent.selectOptions(screen.getByLabelText("Recipe type"),"1")
-        userEvent.paste(ingredientsInput, "fail")
-        userEvent.paste(preparingStepsInput, "preparing steps")
+        await screen.findByText(/Edit recipe form/i)
 
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(/an error occurred while updating the recipe: A wild error has appeared/i)).toBeInTheDocument()
         expect(updateRecipeMock).toHaveBeenCalledWith({
             id: 1,
-            name: "i",
-            description: "will",
             recipeTypeId: 1,
-            ingredients: "fail",
-            preparingSteps: "preparing steps"
+            name: "Name",
+            description: "Description",
+            ingredients: "Ingredients",
+            preparingSteps: "PreparingSteps"
         })
     })
 })
