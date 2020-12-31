@@ -3,8 +3,6 @@ package server
 import config.ConfigurationFile
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
 import server.modules.*
 
 /** Defines the Cookbook API server

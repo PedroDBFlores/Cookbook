@@ -1,6 +1,6 @@
 plugins {
     application
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.20"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.github.ben-manes.versions") version "0.36.0"
     id("com.adarshr.test-logger") version "2.1.1"
@@ -21,19 +21,19 @@ repositories {
     maven { url = uri("https://kotlin.bintray.com/ktor") }
 }
 
-val kotlinVersion: String by project
-val hopliteVersion: String by project
-val ktorVersion: String by project
-val kodeinVersion: String by project
-val logbackVersion: String by project
-val exposedVersion: String by project
-val h2Version: String by project
-val jodaDataTypeVersion: String by project
-val auth0Version: String by project
-
-val kotestVersion: String by project
-val mockkVersion: String by project
-val restAssuredVersion: String by project
+val logbackVersion = "1.2.1"
+val kotlinVersion = "1.4.20"
+val hopliteVersion = "1.3.12"
+val kodeinVersion = "7.1.0"
+val ktorVersion = "1.4.1"
+val exposedVersion = "0.28.1"
+val h2Version = "1.4.200"
+val mySQLVersion = "8.0.22"
+val flywayVersion = "7.3.2"
+val auth0Version = "3.11.0"
+val jodaDataTypeVersion = "2.12.0"
+val kotestVersion = "4.3.2"
+val mockkVersion = "1.10.4"
 
 dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -48,13 +48,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
-    implementation("mysql:mysql-connector-java:8.0.22")
+    implementation("mysql:mysql-connector-java:$mySQLVersion")
     implementation("com.zaxxer:HikariCP:3.4.5")
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
-    implementation("org.flywaydb:flyway-core:7.3.0")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
 
     /* Tests */
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
