@@ -18,7 +18,7 @@ defaults:
     working-directory: ./webapp
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
