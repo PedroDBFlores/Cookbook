@@ -18,14 +18,13 @@ repositories {
     mavenLocal()
     jcenter()
     maven { url = uri("https://jitpack.io") }
-    maven { url = uri("https://kotlin.bintray.com/ktor") }
 }
 
 val logbackVersion = "1.2.1"
 val kotlinVersion = "1.4.20"
 val hopliteVersion = "1.3.12"
 val kodeinVersion = "7.1.0"
-val ktorVersion = "1.4.1"
+val ktorVersion = "1.5.0"
 val exposedVersion = "0.28.1"
 val h2Version = "1.4.200"
 val mySQLVersion = "8.0.22"
