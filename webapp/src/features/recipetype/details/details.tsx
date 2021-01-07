@@ -5,21 +5,10 @@ import {MdDelete, MdEdit} from "react-icons/md"
 import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import {ApiHandlerContext} from "services/api-handler"
-import {
-    Button,
-    ButtonGroup,
-    Grid,
-    GridItem,
-    Heading,
-    Stat,
-    StatGroup,
-    StatLabel,
-    StatNumber,
-    Text,
-    useToast
-} from "@chakra-ui/react"
+import {Button, ButtonGroup, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
+import DataDisplay from "../../../components/data-display/data-display";
 
 const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
     const {setModalState} = useContext(ModalContext)
@@ -81,16 +70,8 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({id}) => {
                     <Heading>Recipe type details</Heading>
                 </GridItem>
                 <GridItem colSpan={12}>
-                    <StatGroup>
-                        <Stat>
-                            <StatLabel>Id:</StatLabel>
-                            <StatNumber>{data.id}</StatNumber>
-                        </Stat>
-                        <Stat>
-                            <StatLabel>Name:</StatLabel>
-                            <StatNumber>{data.name}</StatNumber>
-                        </Stat>
-                    </StatGroup>
+                    <DataDisplay title="Id:" content={data.id.toString()} />
+                    <DataDisplay title="Name:" content={data.name} />
                     <ButtonGroup>
                         <Button aria-label={`Edit recipe type '${data.name}'`}
                                 onClick={() => onEdit(data.id)}>
