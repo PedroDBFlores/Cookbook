@@ -161,7 +161,14 @@ describe("Recipe form", () => {
         test.each([
             ["creating", {
                 initialValues: undefined,
-                submitRegExp: /create recipe/i
+                submitRegExp: /create recipe/i,
+                expectedRecipeCalled: {
+                    recipeTypeId: 1,
+                    name: "One",
+                    description: "Two",
+                    ingredients: "Three",
+                    preparingSteps: "Four"
+                }
             }],
             ["updating", {
                 initialValues: {
@@ -172,11 +179,20 @@ describe("Recipe form", () => {
                     ingredients: "Musty",
                     preparingSteps: "Recipe"
                 } as Recipe,
-                submitRegExp: /edit recipe/i
+                submitRegExp: /edit recipe/i,
+                expectedRecipeCalled: {
+                    id: 1,
+                    recipeTypeId: 1,
+                    name: "One",
+                    description: "Two",
+                    ingredients: "Three",
+                    preparingSteps: "Four"
+                }
             }]
         ])("it provides the inputted values to the onSubmit callback while %s", async (_, {
             initialValues,
-            submitRegExp
+            submitRegExp,
+            expectedRecipeCalled
         }) => {
             const onSubmitMock = jest.fn()
             render(<RecipeForm recipeTypes={recipeTypes}
@@ -199,14 +215,7 @@ describe("Recipe form", () => {
             userEvent.paste(preparingStepsInput, "Four")
             fireEvent.click(screen.getByLabelText(submitRegExp))
 
-            await waitFor(() => expect(onSubmitMock).toHaveBeenCalledWith({
-                id: initialValues?.id ?? 0,
-                recipeTypeId: 1,
-                name: "One",
-                description: "Two",
-                ingredients: "Three",
-                preparingSteps: "Four"
-            }))
+            await waitFor(() => expect(onSubmitMock).toHaveBeenCalledWith(expectedRecipeCalled))
         })
     })
 
@@ -245,10 +254,10 @@ describe("Recipe form", () => {
             userEvent.click(screen.getByLabelText(/reset form/i))
 
             expect(nameInput).toHaveValue(initialValues?.name ?? "")
-            expect(descriptionInput).toHaveValue(initialValues?.description?? "")
+            expect(descriptionInput).toHaveValue(initialValues?.description ?? "")
             expect(recipeTypeInput).toHaveValue(initialValues?.recipeTypeId?.toString() ?? undefined)
-            expect(ingredientsInput).toHaveValue(initialValues?.ingredients?? "")
-            expect(preparingStepsInput).toHaveValue(initialValues?.preparingSteps?? "")
+            expect(ingredientsInput).toHaveValue(initialValues?.ingredients ?? "")
+            expect(preparingStepsInput).toHaveValue(initialValues?.preparingSteps ?? "")
         })
     })
 })

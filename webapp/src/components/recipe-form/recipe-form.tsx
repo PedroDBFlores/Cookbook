@@ -32,7 +32,7 @@ const RecipeFormSchema = yup.object({
 interface RecipeFormProps {
     recipeTypes: Array<RecipeType>
     initialValues?: Recipe
-    onSubmit: (recipeType: Recipe) => void
+    onSubmit: (recipe: Recipe) => void
 }
 
 const RecipeForm: React.FC<RecipeFormProps> = ({initialValues, recipeTypes, onSubmit}) => {
@@ -41,10 +41,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({initialValues, recipeTypes, onSu
 
     const handleOnSubmit = (formValues: FormikValues) => {
         onSubmit({
-            ...formValues as Recipe,
-            recipeTypeId: Number(formValues.recipeTypeId),
-            id: initialValues?.id ?? 0
-        })
+            ...formValues,
+            recipeTypeId: Number(formValues.recipeTypeId)
+        } as Recipe)
     }
 
     return <Formik

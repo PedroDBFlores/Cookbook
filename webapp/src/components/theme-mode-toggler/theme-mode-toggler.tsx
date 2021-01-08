@@ -7,7 +7,11 @@ const ThemeModeToggler: React.FC = () => {
     const ariaLabel = `Change to ${colorMode === "light" ? "dark" : "light"} theme`
     const Icon = colorMode === "light" ? <MdBrightness2/> : <MdWbSunny/>
 
-    return <IconButton aria-label={ariaLabel} icon={Icon} onClick={toggleColorMode}/>
+    return <IconButton aria-label={ariaLabel}
+                       variant="outline"
+                       colorScheme="white"
+                       icon={Icon}
+                       onClick={toggleColorMode}/>
 }
 
 export default ThemeModeToggler

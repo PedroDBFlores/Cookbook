@@ -59,7 +59,7 @@ describe("Recipe type form", () => {
 
     describe("Submit action", () => {
         test.each([
-            ["creating", undefined, /^create recipe type$/i, {id: 0, name: "The best recipe type"}],
+            ["creating", undefined, /^create recipe type$/i, {name: "The best recipe type"}],
             ["updating", {id: 1, name: "The great recipe type"} as RecipeType, /^edit recipe type$/i, {
                 id: 1,
                 name: "The best recipe type"

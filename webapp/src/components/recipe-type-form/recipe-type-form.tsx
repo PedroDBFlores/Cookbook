@@ -22,10 +22,7 @@ const RecipeTypeForm: React.FC<RecipeTypeFormProps> = ({initialValues, onSubmit}
     const isCreateMode = initialValues?.id === undefined
     const buttonLabel = isCreateMode ? "Create" : "Edit"
 
-    const handleOnSubmit = (formValues: FormikValues) => onSubmit({
-        id: formValues?.id ?? 0,
-        name: formValues.name
-    })
+    const handleOnSubmit = (formValues: FormikValues) => onSubmit(formValues as RecipeType)
 
     return <Formik
         initialValues={initialValues ?? {name: ""}}

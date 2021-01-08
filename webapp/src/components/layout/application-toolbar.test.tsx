@@ -4,23 +4,25 @@ import {WrapperWithRouter, WrapperWithRoutes} from "../../../tests/render-helper
 import {render, screen} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
+jest.mock("components/theme-mode-toggler/theme-mode-toggler", () => {
+    return {
+        __esModule: true,
+        default: () => <>I'm the theme mode toggler</>
+    }
+})
+
+
 describe("Application Toolbar", () => {
     describe("Layout", () => {
-        it("has the application title", () => {
+        it("render the initial state", () => {
             render(<WrapperWithRouter>
                 <ApplicationToolbar title="A title"/>
             </WrapperWithRouter>)
 
             expect(screen.getByText("A title")).toBeInTheDocument()
-        })
-
-        it("has the expected navigation items", () => {
-            render(<WrapperWithRouter>
-                <ApplicationToolbar title="ABC"/>
-            </WrapperWithRouter>)
-
             expect(screen.getByText("Recipe types")).toBeInTheDocument()
             expect(screen.getByText("Recipes")).toBeInTheDocument()
+            expect(screen.getByText(/I'm the theme mode toggler/i)).toBeInTheDocument()
         })
     })
 

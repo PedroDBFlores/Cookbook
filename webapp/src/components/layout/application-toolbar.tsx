@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {Box, Flex, Heading, Text} from "@chakra-ui/react"
 import {useHistory} from "react-router-dom"
+import ThemeModeToggler from "../theme-mode-toggler/theme-mode-toggler";
 
 interface MenuItemProps {
     onClick?: () => void
@@ -36,7 +37,7 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
             justify="space-between"
             wrap="wrap"
             padding="1.5rem"
-            bg="teal.500"
+            bg="blue.500"
             color="white"
         >
             <Flex align="center" mr={5}>
@@ -64,6 +65,10 @@ const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
                 flexGrow={1}>
                 <MenuItem onClick={() => history.push("/recipetype")}>Recipe types</MenuItem>
                 <MenuItem onClick={() => history.push("/recipe")}>Recipes</MenuItem>
+            </Box>
+
+            <Box>
+                <ThemeModeToggler />
             </Box>
 
         </Flex>
