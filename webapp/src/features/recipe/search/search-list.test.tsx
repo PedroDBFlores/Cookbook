@@ -1,15 +1,30 @@
 import React from "react"
 import {render, screen, waitFor} from "@testing-library/react"
 import RecipeSearchList from "./search-list"
-import {generateRecipeDetails} from "../../../../tests/helpers/generators/dto-generators"
 import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 import {RecipeDetails} from "services/recipe-service"
 
 describe("Recipe search list component", () => {
     const expectedRecipes: Array<RecipeDetails> = [
-        generateRecipeDetails(),
-        generateRecipeDetails()
+        {
+            id: 123,
+            recipeTypeId: 4,
+            name: "Roasted sweet potato",
+            description: "Roasted sweet potato",
+            recipeTypeName: "Dessert",
+            ingredients: "Potato",
+            preparingSteps: "Take potato to oven"
+        },
+        {
+            id: 144,
+            recipeTypeId: 2,
+            name: "Roasted codfish",
+            description: "Roasted codfish",
+            recipeTypeName: "Fish",
+            ingredients: "Codfish, Potato, Olive Oil, Onion, Paprika, Garlic, Salt",
+            preparingSteps: "All into baking tray, put in oven at 200ºC for 45-60 minutes until potatoes are golden"
+        }
     ]
 
     const searchResult = {

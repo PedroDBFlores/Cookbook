@@ -1,11 +1,10 @@
 import React, {useEffect} from "react"
 import {render, screen} from "@testing-library/react"
 import RecipeTypeDetails from "./details"
-import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
 import Modal from "components/modal/modal"
-import createRecipeTypeService from "services/recipe-type-service"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
-import {WrapWithCommonContexts, WrapperWithRoutes} from "../../../../tests/render-helpers"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 
 jest.mock("services/recipe-type-service")
 const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFunction<typeof createRecipeTypeService>
@@ -19,6 +18,8 @@ jest.mock("components/modal/modal", () => {
 const basicModalDialogMock = Modal as jest.MockedFunction<typeof Modal>
 
 describe("Recipe type details", () => {
+    const baseRecipeType: RecipeType = {id: 99, name: "A recipe type"}
+
     const findRecipeTypeMock = jest.fn()
     const deleteRecipeTypeMock = jest.fn()
 
@@ -35,9 +36,8 @@ describe("Recipe type details", () => {
     beforeEach(jest.clearAllMocks)
 
     it("renders the recipe type details", async () => {
-        const expectedRecipeType = {...generateRecipeType(), id: 99}
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-        findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
+        findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
 
         render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
             <RecipeTypeDetails id={99}/>
@@ -49,8 +49,8 @@ describe("Recipe type details", () => {
         expect(await screen.findByText(/^recipe type details$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Id:$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Name:$/i)).toBeInTheDocument()
-        expect(await screen.findByText(expectedRecipeType.id.toString())).toBeInTheDocument()
-        expect(await screen.findByText(expectedRecipeType.name)).toBeInTheDocument()
+        expect(await screen.findByText(baseRecipeType.id.toString())).toBeInTheDocument()
+        expect(await screen.findByText(baseRecipeType.name)).toBeInTheDocument()
     })
 
     it("renders an error if the recipe type cannot be obtained", async () => {
@@ -69,31 +69,29 @@ describe("Recipe type details", () => {
     describe("Actions", () => {
 
         it("takes the user to the edit recipe type page", async () => {
-            const expectedRecipeType = generateRecipeType()
-            findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
+            findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
             render(<WrapWithCommonContexts>
-                <WrapperWithRoutes initialPath={`/recipetype/${expectedRecipeType.id}/details`} routeConfiguration={[
+                <WrapperWithRoutes initialPath={`/recipetype/${baseRecipeType.id}/details`} routeConfiguration={[
                     {
-                        path: `/recipetype/${expectedRecipeType.id}/details`,
+                        path: `/recipetype/${baseRecipeType.id}/details`,
                         exact: true,
-                        component: () => <RecipeTypeDetails id={expectedRecipeType.id}/>
+                        component: () => <RecipeTypeDetails id={baseRecipeType.id}/>
                     },
                     {
-                        path: `/recipetype/${expectedRecipeType.id}/edit`,
+                        path: `/recipetype/${baseRecipeType.id}/edit`,
                         exact: true,
                         component: () => <div>I'm the recipe type edit page</div>
                     }
                 ]}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Edit recipe type '${expectedRecipeType.name}'`))
+            userEvent.click(await screen.findByLabelText(`Edit recipe type '${baseRecipeType.name}'`))
 
             expect(screen.getByText(/I'm the recipe type edit page/i)).toBeInTheDocument()
         })
 
         it("deletes the recipe type", async () => {
-            const expectedRecipeType = generateRecipeType()
-            findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
+            findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
             deleteRecipeTypeMock.mockResolvedValueOnce({})
             basicModalDialogMock.mockImplementationOnce(({content, onAction}) => {
                 useEffect(() => onAction(), [])
@@ -101,11 +99,11 @@ describe("Recipe type details", () => {
             })
 
             render(<WrapWithCommonContexts>
-                <WrapperWithRoutes initialPath={`/recipetype/${expectedRecipeType.id}/details`} routeConfiguration={[
+                <WrapperWithRoutes initialPath={`/recipetype/${baseRecipeType.id}/details`} routeConfiguration={[
                     {
-                        path: `/recipetype/${expectedRecipeType.id}/details`,
+                        path: `/recipetype/${baseRecipeType.id}/details`,
                         exact: true,
-                        component: () => <RecipeTypeDetails id={expectedRecipeType.id}/>
+                        component: () => <RecipeTypeDetails id={baseRecipeType.id}/>
                     },
                     {
                         path: "/recipetype",
@@ -115,18 +113,17 @@ describe("Recipe type details", () => {
                 ]}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe type '${expectedRecipeType.name}'`))
+            userEvent.click(await screen.findByLabelText(`Delete recipe type '${baseRecipeType.name}'`))
 
             expect(screen.getByText(/are you sure you want to delete this recipe type?/i)).toBeInTheDocument()
 
-            expect(deleteRecipeTypeMock).toHaveBeenCalledWith(expectedRecipeType.id)
-            expect(await screen.findByText(`Recipe type ${expectedRecipeType.name} was deleted`)).toBeInTheDocument()
+            expect(deleteRecipeTypeMock).toHaveBeenCalledWith(baseRecipeType.id)
+            expect(await screen.findByText(`Recipe type ${baseRecipeType.name} was deleted`)).toBeInTheDocument()
             expect(await screen.findByText(/I'm the recipe type list page/i)).toBeInTheDocument()
         })
 
         it("shows an error if deleting the recipe type fails", async () => {
-            const expectedRecipeType = generateRecipeType()
-            findRecipeTypeMock.mockResolvedValueOnce(expectedRecipeType)
+            findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
             deleteRecipeTypeMock.mockRejectedValueOnce({message: "In use"})
             basicModalDialogMock.mockImplementationOnce(({content, onAction}) => {
                 useEffect(() => onAction(), [])
@@ -136,7 +133,7 @@ describe("Recipe type details", () => {
                 <RecipeTypeDetails id={99}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe type '${expectedRecipeType.name}'`))
+            userEvent.click(await screen.findByLabelText(`Delete recipe type '${baseRecipeType.name}'`))
 
             expect(await screen.findByText(/^An error occurred while trying to delete this recipe type$/i)).toBeInTheDocument()
             expect(await screen.findByText(/^in use$/i)).toBeInTheDocument()

@@ -1,10 +1,8 @@
 import axios from "axios"
-import {generateRecipe, generateRecipeDetails} from "../../tests/helpers/generators/dto-generators"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "utils/error-handling"
-import createRecipeService, {RecipeDetails, SearchRecipeParameters} from "./recipe-service"
+import createRecipeService, {Recipe, RecipeDetails, SearchRecipeParameters} from "./recipe-service"
 import ApiHandler from "./api-handler"
-import {random} from "faker"
 import {SearchResult} from "model"
 
 const mockedAxios = new MockAdapter(axios)
@@ -12,6 +10,19 @@ const handleErrorsSpy = jest.spyOn(errorHandler, "default")
 const service = createRecipeService(ApiHandler("http://localhost"))
 
 describe("Recipe service", () => {
+    const baseRecipe: Recipe = {
+        id: 123,
+        recipeTypeId: 456,
+        name: "Roasted sweet potato",
+        description: "Roasted sweet potato",
+        ingredients: "Potato",
+        preparingSteps: "Take potato to oven"
+    }
+    const baseRecipeTypeDetails: RecipeDetails = {
+        ...baseRecipe,
+        recipeTypeName: "Dessert"
+    }
+
     beforeEach(() => {
         mockedAxios.reset()
         handleErrorsSpy.mockClear()
@@ -19,15 +30,14 @@ describe("Recipe service", () => {
 
     describe("Find recipe", () => {
         it("finds a recipe by it's id", async () => {
-            const expectedRecipe = generateRecipeDetails()
-            mockedAxios.onGet(`/recipe/${expectedRecipe.id}`)
-                .replyOnce(200, expectedRecipe)
+            mockedAxios.onGet(`/recipe/${baseRecipe.id}`)
+                .replyOnce(200, baseRecipe)
 
-            const recipe = await service.find(expectedRecipe.id)
+            const recipe = await service.find(baseRecipe.id)
 
             expect(mockedAxios.history.get.length).toBe(1)
-            expect(mockedAxios.history.get[0].url).toBe(`/recipe/${expectedRecipe.id}`)
-            expect(recipe).toStrictEqual(expectedRecipe)
+            expect(mockedAxios.history.get[0].url).toBe(`/recipe/${baseRecipe.id}`)
+            expect(recipe).toStrictEqual(baseRecipe)
         })
 
         it("calls the error handler", async () => {
@@ -46,14 +56,14 @@ describe("Recipe service", () => {
     describe("Search recipe", () => {
         it("searches recipes with the sent parameters", async () => {
             const searchParameters = {
-                name: "Tikka Masala",
+                name: "Potato",
                 pageNumber: 1,
                 itemsPerPage: 10
             } as SearchRecipeParameters
             const expectedResponse = {
                 count: 1,
                 numberOfPages: 1,
-                results: [generateRecipeDetails({name: "Tikka Masala"})]
+                results: [baseRecipeTypeDetails]
             } as SearchResult<RecipeDetails>
             mockedAxios.onPost("/recipe/search", searchParameters)
                 .replyOnce(200, expectedResponse)
@@ -73,7 +83,7 @@ describe("Recipe service", () => {
                 })
 
             await service.search({
-                name: "Tikka Masala",
+                name: "Potato",
                 pageNumber: 1,
                 itemsPerPage: 10
             }).catch(() => {
@@ -85,7 +95,11 @@ describe("Recipe service", () => {
 
     describe("Get all recipes", () => {
         it("gets all the recipes", async () => {
-            const expectedRecipes = [generateRecipeDetails(), generateRecipeDetails()]
+            const expectedRecipes = [baseRecipeTypeDetails, {
+                ...baseRecipeTypeDetails,
+                name: "Boiled Sweet Potato",
+                description: "Boiled Sweet Potato"
+            }]
             mockedAxios.onGet("/recipe")
                 .replyOnce(200, expectedRecipes)
 
@@ -111,16 +125,14 @@ describe("Recipe service", () => {
 
     describe("Create", () => {
         it("creates a recipe", async () => {
-            const recipeTypeToCreate = generateRecipe()
-            const expectedResponse = {id: random.number()}
-            mockedAxios.onPost("/recipe", recipeTypeToCreate)
-                .replyOnce(201, expectedResponse)
+            mockedAxios.onPost("/recipe", baseRecipe)
+                .replyOnce(201, {id: 59})
 
-            const result = await service.create(recipeTypeToCreate)
+            const result = await service.create(baseRecipe)
 
             expect(mockedAxios.history.post.length).toBe(1)
             expect(mockedAxios.history.post[0].url).toBe("/recipe")
-            expect(result).toStrictEqual(expectedResponse)
+            expect(result).toStrictEqual({id: 59})
         })
 
         it("calls the error handler", async () => {
@@ -130,7 +142,7 @@ describe("Recipe service", () => {
                     message: "Database Error"
                 })
 
-            await service.create(generateRecipe()).catch(() => {
+            await service.create(baseRecipe).catch(() => {
                 expect(handleErrorsSpy).toHaveBeenCalled()
             })
         })
@@ -138,11 +150,10 @@ describe("Recipe service", () => {
 
     describe("Update", () => {
         it("updates a recipe", async () => {
-            const recipeToUpdate = generateRecipe()
-            mockedAxios.onPut("/recipe", recipeToUpdate)
+            mockedAxios.onPut("/recipe", baseRecipe)
                 .replyOnce(200)
 
-            await service.update(recipeToUpdate)
+            await service.update(baseRecipe)
 
             expect(mockedAxios.history.put.length).toBe(1)
             expect(mockedAxios.history.put[0].url).toBe("/recipe")
@@ -156,7 +167,7 @@ describe("Recipe service", () => {
                     message: "Database Error"
                 })
 
-            await service.update(generateRecipe()).catch(() => {
+            await service.update(baseRecipe).catch(() => {
                 expect(handleErrorsSpy).toHaveBeenCalled()
             })
         })
@@ -164,14 +175,13 @@ describe("Recipe service", () => {
 
     describe("Delete", () => {
         it("deletes a recipe", async () => {
-            const idToDelete = random.number()
-            mockedAxios.onDelete(`/recipe/${idToDelete}`)
+            mockedAxios.onDelete("/recipe/549")
                 .replyOnce(204)
 
-            await service.delete(idToDelete)
+            await service.delete(549)
 
             expect(mockedAxios.history.delete.length).toBe(1)
-            expect(mockedAxios.history.delete[0].url).toBe(`/recipe/${idToDelete}`)
+            expect(mockedAxios.history.delete[0].url).toBe("/recipe/549")
 
         })
 

@@ -1,14 +1,14 @@
 import React from "react"
 import {render, screen} from "@testing-library/react"
 import RecipeTypeList from "./list"
-import {generateRecipeType} from "../../../../tests/helpers/generators/dto-generators"
 import userEvent from "@testing-library/user-event"
 import {WrapperWithRoutes} from "../../../../tests/render-helpers"
+import {RecipeType} from "../../../services/recipe-type-service"
 
 describe("Recipe type list component", () => {
-    const recipeTypes = [
-        generateRecipeType(),
-        generateRecipeType()
+    const recipeTypes: Array<RecipeType> = [
+        {id: 1, name: "Vegetarian"},
+        {id: 2, name: "Fish"}
     ]
 
     describe("Render", () => {

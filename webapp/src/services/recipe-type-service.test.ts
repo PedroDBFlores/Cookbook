@@ -1,9 +1,7 @@
 import axios from "axios"
-import {generateRecipeType} from "../../tests/helpers/generators/dto-generators"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "utils/error-handling"
-import {name, random} from "faker"
-import createRecipeTypeService from "./recipe-type-service"
+import createRecipeTypeService, {RecipeType} from "./recipe-type-service"
 import ApiHandler from "./api-handler"
 
 const mockedAxios = new MockAdapter(axios)
@@ -19,7 +17,7 @@ describe("Recipe type service", () => {
 
     describe("Find recipe type", () => {
         it("finds a recipe type by id", async () => {
-            const expectedRecipeType = generateRecipeType()
+            const expectedRecipeType: RecipeType = {id: 1, name: "A recipe type"}
             mockedAxios.onGet(`/recipetype/${expectedRecipeType.id}`)
                 .replyOnce(200, expectedRecipeType)
 
@@ -45,7 +43,10 @@ describe("Recipe type service", () => {
 
     describe("Get all", () => {
         it("gets all the recipe types", async () => {
-            const expectedRecipeTypes = [generateRecipeType(), generateRecipeType()]
+            const expectedRecipeTypes: Array<RecipeType> = [{id: 1, name: "A recipe type"}, {
+                id: 2,
+                name: "Another recipe type"
+            }]
             mockedAxios.onGet("/recipetype")
                 .replyOnce(200, expectedRecipeTypes)
 
@@ -71,8 +72,8 @@ describe("Recipe type service", () => {
 
     describe("Create", () => {
         it("creates a recipe", async () => {
-            const recipeTypeToCreate = {name: name.lastName()}
-            const expectedResponse = {id: random.number()}
+            const recipeTypeToCreate = {name: "Fish"}
+            const expectedResponse = {id: 12345}
             mockedAxios.onPost("/recipetype", recipeTypeToCreate)
                 .replyOnce(201, expectedResponse)
 
@@ -98,7 +99,7 @@ describe("Recipe type service", () => {
 
     describe("Update", () => {
         it("updates a recipe type", async () => {
-            const recipeTypeToUpdate = generateRecipeType()
+            const recipeTypeToUpdate = { id: 1, name: "A better recipe type"}
             mockedAxios.onPut("/recipetype", recipeTypeToUpdate)
                 .replyOnce(200)
 
@@ -124,7 +125,7 @@ describe("Recipe type service", () => {
 
     describe("Delete", () => {
         it("deletes a recipe type", async () => {
-            const idToDelete = random.number()
+            const idToDelete = 709
             mockedAxios.onDelete(`/recipetype/${idToDelete}`)
                 .replyOnce(204)
 
