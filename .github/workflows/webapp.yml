@@ -18,7 +18,7 @@ defaults:
     working-directory: ./webapp
 
 jobs:
-  tests:
+  lint_and_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies 
         run: npm ci
       - name: Lint webapp 
-        run: npm run test
+        run: npm run lint
         continue-on-error: true
       - name: Test webapp 
         run: npm run test
