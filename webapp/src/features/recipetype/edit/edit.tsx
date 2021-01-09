@@ -20,7 +20,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
             title: "An error occurred while fetching the recipe type",
             description: message,
             status: "error",
-            duration: null
+            duration: 5000
         })
     })
 
@@ -34,7 +34,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
                 title: "An error occurred while updating the recipe type",
                 description: message,
                 status: "error",
-                duration: null
+                duration: 5000
             })
         }
     }

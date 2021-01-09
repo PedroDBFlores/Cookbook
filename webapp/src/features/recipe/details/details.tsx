@@ -8,7 +8,7 @@ import createRecipeService, {RecipeDetails as RecipeDetail} from "services/recip
 import {Button, ButtonGroup, Grid, GridItem, Heading, Text, useToast} from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
-import DataDisplay from "../../../components/data-display/data-display";
+import DataDisplay from "../../../components/data-display/data-display"
 
 const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
     const {setModalState} = useContext(ModalContext)
@@ -23,7 +23,7 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
             title: "An error occurred while fetching the recipe",
             description: message,
             status: "error",
-            duration: null
+            duration: 5000
         })
     })
 
@@ -50,7 +50,7 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
                 title: "An error occurred while trying to delete this recipe",
                 description: message,
                 status: "error",
-                duration: null
+                duration: 5000
             })
         }
     }
@@ -70,11 +70,11 @@ const RecipeDetails: React.FC<{ id: number }> = ({id}) => {
                     <Heading>Recipe details</Heading>
                 </GridItem>
                 <GridItem colSpan={12}>
-                    <DataDisplay title="Id" content={data.id.toString()} />
-                    <DataDisplay title="Name" content={data.name} />
-                    <DataDisplay title="Description" content={data.description} />
-                    <DataDisplay title="Ingredients" content={data.ingredients} />
-                    <DataDisplay title="Preparing steps" content={data.preparingSteps} />
+                    <DataDisplay title="Id" content={data.id.toString()}/>
+                    <DataDisplay title="Name" content={data.name}/>
+                    <DataDisplay title="Description" content={data.description}/>
+                    <DataDisplay title="Ingredients" content={data.ingredients}/>
+                    <DataDisplay title="Preparing steps" content={data.preparingSteps}/>
                 </GridItem>
                 <GridItem colSpan={12}>
                     <ButtonGroup>

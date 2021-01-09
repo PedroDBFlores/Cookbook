@@ -21,7 +21,7 @@ const CreateRecipe: React.FC = () => {
             title: "An error occurred while fetching the recipe types",
             description: message,
             status: "error",
-            duration: null
+            duration: 5000
         })
     })
 
@@ -35,7 +35,7 @@ const CreateRecipe: React.FC = () => {
                 title: "An error occurred while creating the recipe",
                 description: message,
                 status: "error",
-                duration: null
+                duration: 5000
             })
         }
     }

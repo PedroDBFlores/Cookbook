@@ -56,8 +56,8 @@ describe("Recipe type list page", () => {
             <RecipeTypeListPage/>
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
-        await screen.findByText(/error: database error/i)
+        expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
     })
 

@@ -43,7 +43,7 @@ const RecipeSearchPage: React.FC = () => {
             title: "An error occurred while fetching the recipe types",
             description: message,
             status: "error",
-            duration: null
+            duration: 5000
         })
     })
 
@@ -81,7 +81,7 @@ const RecipeSearchPage: React.FC = () => {
                 title: `An error occurred while trying to delete recipe '${name}'`,
                 description: message,
                 status: "error",
-                duration: null
+                duration: 5000
             })
         }
     }

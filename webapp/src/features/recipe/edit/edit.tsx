@@ -28,7 +28,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
             title: "An error occurred while fetching the recipe types",
             description: message,
             status: "error",
-            duration: null
+            duration: 5000
         })
     })
     const findPromiseRef = useRef(() => find(id))
@@ -38,7 +38,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({id}) => {
             title: "An error occurred while fetching the recipe",
             description: message,
             status: "error",
-            duration: null,
+            duration: 5000,
         })
     })
 

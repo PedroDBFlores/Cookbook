@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {Box, Flex, Heading, Text} from "@chakra-ui/react"
 import {useHistory} from "react-router-dom"
-import ThemeModeToggler from "../theme-mode-toggler/theme-mode-toggler";
+import ThemeModeToggler from "../theme-mode-toggler/theme-mode-toggler"
 
 interface MenuItemProps {
     onClick?: () => void

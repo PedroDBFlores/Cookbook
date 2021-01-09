@@ -60,6 +60,7 @@ module.exports = {
       "rules": {
         "react/display-name": "off",
         "no-restricted-globals": ["error", "console"],
+        "react/prop-types": "off"
       }
     }
   ]
