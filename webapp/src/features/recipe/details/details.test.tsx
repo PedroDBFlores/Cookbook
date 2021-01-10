@@ -1,9 +1,9 @@
-import React, {useEffect} from "react"
-import {render, screen} from "@testing-library/react"
+import React, { useEffect } from "react"
+import { render, screen } from "@testing-library/react"
 import RecipeDetails from "./details"
-import createRecipeService, {RecipeDetails as RecipeDetailsModel} from "services/recipe-service"
+import createRecipeService, { RecipeDetails as RecipeDetailsModel } from "services/recipe-service"
 import Modal from "components/modal/modal"
-import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
+import { WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 
 jest.mock("services/recipe-service")
@@ -49,13 +49,13 @@ describe("Recipe details component", () => {
         findRecipeMock.mockResolvedValueOnce(baseRecipe)
 
         render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
-            <RecipeDetails id={123}/>
+            <RecipeDetails id={123} />
         </WrapWithCommonContexts>)
 
+        expect(screen.getByText(/^recipe details$/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeMock).toHaveBeenCalledWith(123)
-        expect(await screen.findByText(/^recipe details$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Id$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Name$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Description$/i)).toBeInTheDocument()
@@ -72,7 +72,7 @@ describe("Recipe details component", () => {
         findRecipeMock.mockRejectedValueOnce(new Error("failure"))
 
         render(<WrapWithCommonContexts>
-            <RecipeDetails id={123}/>
+            <RecipeDetails id={123} />
         </WrapWithCommonContexts>)
 
         expect(await screen.findByText(/^an error occurred while fetching the recipe$/i)).toBeInTheDocument()
@@ -89,14 +89,14 @@ describe("Recipe details component", () => {
                     {
                         path: `/recipe/${baseRecipe.id}/details`,
                         exact: true,
-                        component: () => <RecipeDetails id={baseRecipe.id}/>
+                        component: () => <RecipeDetails id={baseRecipe.id} />
                     },
                     {
                         path: `/recipe/${baseRecipe.id}/edit`,
                         exact: true,
                         component: () => <>I'm the recipe edit page</>
                     }
-                ]}/>
+                ]} />
             </WrapWithCommonContexts>)
 
             userEvent.click(await screen.findByLabelText(`Edit recipe '${baseRecipe.name}'`))
@@ -107,7 +107,7 @@ describe("Recipe details component", () => {
         it("deletes the recipe", async () => {
             findRecipeMock.mockResolvedValueOnce(baseRecipe)
             deleteRecipeMock.mockResolvedValueOnce({})
-            basicModalDialogMock.mockImplementationOnce(({content, onAction}) => {
+            basicModalDialogMock.mockImplementationOnce(({ content, onAction }) => {
                 useEffect(() => onAction(), [])
                 return <div>{content}</div>
             })
@@ -117,14 +117,14 @@ describe("Recipe details component", () => {
                     {
                         path: `/recipe/${baseRecipe.id}/details`,
                         exact: true,
-                        component: () => <RecipeDetails id={baseRecipe.id}/>
+                        component: () => <RecipeDetails id={baseRecipe.id} />
                     },
                     {
                         path: "/recipe",
                         exact: true,
                         component: () => <>I'm the recipe search page</>
                     }
-                ]}/>
+                ]} />
             </WrapWithCommonContexts>)
 
             userEvent.click(await screen.findByLabelText(`Delete recipe '${baseRecipe.name}'`))
@@ -137,14 +137,14 @@ describe("Recipe details component", () => {
 
         it("shows an error if deleting the recipe fails", async () => {
             findRecipeMock.mockResolvedValueOnce(baseRecipe)
-            deleteRecipeMock.mockRejectedValueOnce({message: "Something went wrong"})
-            basicModalDialogMock.mockImplementationOnce(({content, onAction}) => {
+            deleteRecipeMock.mockRejectedValueOnce({ message: "Something went wrong" })
+            basicModalDialogMock.mockImplementationOnce(({ content, onAction }) => {
                 useEffect(() => onAction(), [])
                 return <div>{content}</div>
             })
 
             render(<WrapWithCommonContexts>
-                <RecipeDetails id={baseRecipe.id}/>
+                <RecipeDetails id={baseRecipe.id} />
             </WrapWithCommonContexts>)
 
             userEvent.click(await screen.findByLabelText(`Delete recipe '${baseRecipe.name}'`))

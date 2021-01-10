@@ -4,8 +4,9 @@ import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
 import { useHistory } from "react-router-dom"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
 import { ApiHandlerContext } from "services/api-handler"
-import { Button, Grid, GridItem, Heading, useToast, Text } from "@chakra-ui/react"
+import { Button, useToast, Text } from "@chakra-ui/react"
 import Loader from "components/loader/loader"
+import Section from "components/section/section"
 
 const RecipeTypeListPage: React.FC = () => {
     const { getAll, delete: deleteRecipeType } = createRecipeTypeService(useContext(ApiHandlerContext))
@@ -40,26 +41,18 @@ const RecipeTypeListPage: React.FC = () => {
 
     const navigateToCreateRecipeType = () => history.push("/recipetype/new")
 
-    return <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-        <GridItem colSpan={11}>
-            <Heading>Recipe types</Heading>
-        </GridItem>
-        <GridItem colSpan={1}>
-            <Button aria-label="Create new recipe type"
-                onClick={navigateToCreateRecipeType}>Create</Button>
-        </GridItem>
-        <GridItem colSpan={12}>
-            <IfPending state={state}>
-                <Loader />
-            </IfPending>
-            <IfRejected state={state}>
-                <Text>Failed to fetch the recipe types</Text>
-            </IfRejected>
-            <IfFulfilled state={state}>
-                {data => <RecipeTypeList recipeTypes={data} onDelete={handleDelete} />}
-            </IfFulfilled>
-        </GridItem>
-    </Grid>
+    return <Section title="Recipe types" actions={<Button aria-label="Create new recipe type"
+        onClick={navigateToCreateRecipeType}>Create</Button>}>
+        <IfPending state={state}>
+            <Loader />
+        </IfPending>
+        <IfRejected state={state}>
+            <Text>Failed to fetch the recipe types</Text>
+        </IfRejected>
+        <IfFulfilled state={state}>
+            {data => <RecipeTypeList recipeTypes={data} onDelete={handleDelete} />}
+        </IfFulfilled>
+    </Section >
 }
 
 export default RecipeTypeListPage

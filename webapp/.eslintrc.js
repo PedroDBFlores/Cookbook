@@ -36,7 +36,6 @@ module.exports = {
   },
   "rules": {
     "react/no-unescaped-entities": "off",
-    "react/display-name": ["off"],
     "react/prop-types": [2, { ignore: ["children"] }],
     "semi": [2, "never"],
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
@@ -51,16 +50,16 @@ module.exports = {
       },
     }],
     "@typescript-eslint/ban-ts-comment": 0,
-    "testing-library/no-debug": "error",
-    "testing-library/prefer-find-by": "warn"
   },
   "overrides": [
     {
-      "files": ["*.test.tsx", "*.test.ts"],
+      "files": ["*.test.tsx", "*.test.ts", "tests/**"],
       "rules": {
+        "testing-library/prefer-find-by": "error",
+        "testing-library/no-debug": "error",
         "react/display-name": "off",
         "no-restricted-globals": ["error", "console"],
-        "react/prop-types": "off"
+        "react/prop-types": "off",
       }
     }
   ]

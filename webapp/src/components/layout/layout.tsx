@@ -1,25 +1,21 @@
 import React from "react"
-import PropTypes from "prop-types"
 import ApplicationToolbar from "./application-toolbar"
-import { Container, Grid } from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout: React.FC = ({ children }) => {
     return (
-        <>
+        <Flex
+            direction="column"
+            align="center"
+            maxW={{
+                base: "auto",
+                xl: "1200px"
+            }}
+            m="0 auto">
             <ApplicationToolbar title={"Cookbook"} />
-            <main>
-                <div style={{ minHeight: "48px" }} />
-                <Container maxW="6xl">
-                    <Grid>
-                        {children}
-                    </Grid>
-                </Container>
-            </main>
-        </>
+            {children}
+        </Flex>
     )
-}
-Layout.propTypes = {
-    children: PropTypes.node.isRequired
 }
 
 export default Layout

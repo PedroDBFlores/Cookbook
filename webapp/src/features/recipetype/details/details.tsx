@@ -5,10 +5,11 @@ import { MdDelete, MdEdit } from "react-icons/md"
 import { useHistory } from "react-router-dom"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
 import { ApiHandlerContext } from "services/api-handler"
-import { Button, ButtonGroup, Grid, GridItem, Heading, Text, useToast } from "@chakra-ui/react"
+import { Button, ButtonGroup, Grid, GridItem, Text, useToast } from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
 import DataDisplay from "../../../components/data-display/data-display"
+import Section from "components/section/section"
 
 const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
     const { setModalState } = useContext(ModalContext)
@@ -57,7 +58,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
 
-    return <>
+    return <Section title="Recipe type details">
         <IfPending state={state}>
             <Loader />
         </IfPending>
@@ -66,9 +67,6 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
         </IfRejected>
         <IfFulfilled state={state}>
             {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                <GridItem colSpan={12}>
-                    <Heading>Recipe type details</Heading>
-                </GridItem>
                 <GridItem colSpan={12}>
                     <DataDisplay title="Id:" content={data.id.toString()} />
                     <DataDisplay title="Name:" content={data.name} />
@@ -88,7 +86,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
             </Grid>
             }
         </IfFulfilled>
-    </>
+    </Section>
 }
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired

@@ -1,77 +1,63 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Box, Flex, Heading, Text} from "@chakra-ui/react"
-import {useHistory} from "react-router-dom"
+import { Flex, Heading, Text } from "@chakra-ui/react"
+import { Link } from "react-router-dom"
 import ThemeModeToggler from "../theme-mode-toggler/theme-mode-toggler"
 
 interface MenuItemProps {
-    onClick?: () => void
+    to?: string
+    isLast?: boolean
 }
 
-const MenuItem: React.FC<MenuItemProps> =
-    ({children, onClick}) => {
-        return <Text mt={{base: 4, md: 0}} mr={6} display="block" onClick={onClick}>
-            {children}
+const MenuItem: React.FC<MenuItemProps> = ({ children, isLast, to = "/" }) => {
+    return (
+        <Text
+            mb={{ base: isLast ? 0 : 8, sm: 0 }}
+            mr={{ base: 0, sm: isLast ? 0 : 8 }}
+            display="block"
+        >
+            <Link to={to}>{children}</Link>
         </Text>
-    }
+    )
+}
 
 MenuItem.propTypes = {
-    onClick: PropTypes.func
+    to: PropTypes.string,
+    isLast: PropTypes.bool
 }
 
 interface ApplicationToolbarProps {
     title: string
 }
 
-const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({
-                                                                   title,
-                                                               }) => {
-    const history = useHistory()
-    const [show, setShow] = React.useState(false)
-    const handleToggle = () => setShow(!show)
-
+const ApplicationToolbar: React.FC<ApplicationToolbarProps> = ({ title }) => {
     return (
         <Flex
             as="nav"
             align="center"
             justify="space-between"
             wrap="wrap"
-            padding="1.5rem"
+            w="100%"
+            mb={8}
+            p={8}
             bg="blue.500"
-            color="white"
-        >
-            <Flex align="center" mr={5}>
-                <Heading as="h1" size="lg" letterSpacing={"-.1rem"} onClick={() => history.push("/")}>
-                    {title}
+            color="white">
+            <Flex align="center">
+                <Heading as="h1" size="lg" letterSpacing={"-.1rem"}>
+                    <Link to="/">{title}</Link>
                 </Heading>
             </Flex>
 
-            <Box display={{base: "block", md: "none"}} onClick={handleToggle}>
-                <svg
-                    fill="white"
-                    width="12px"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <title>Menu</title>
-                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/>
-                </svg>
-            </Box>
-
-            <Box
-                display={{sm: show ? "block" : "none", md: "flex"}}
-                width={{sm: "full", md: "auto"}}
-                alignItems="center"
-                flexGrow={1}>
-                <MenuItem onClick={() => history.push("/recipetype")}>Recipe types</MenuItem>
-                <MenuItem onClick={() => history.push("/recipe")}>Recipes</MenuItem>
-            </Box>
-
-            <Box>
+            <Flex
+                align={["center", "center", "center", "center"]}
+                justify={["center", "space-between", "flex-end", "flex-end"]}
+                direction={["column", "row", "row", "row"]}
+                pt={[4, 4, 0, 0]}>
+                <MenuItem to="/recipetype">Recipe types</MenuItem>
+                <MenuItem to="/recipe">Recipes</MenuItem>
                 <ThemeModeToggler />
-            </Box>
-
-        </Flex>
+            </Flex>
+        </Flex >
     )
 }
 ApplicationToolbar.propTypes = {
