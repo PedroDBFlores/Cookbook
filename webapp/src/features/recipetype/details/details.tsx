@@ -41,7 +41,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
         })
     }
 
-    const handleDelete = async (id: number, name: string) => {
+    const handleDelete = async(id: number, name: string) => {
         try {
             await deleteRecipeType(id)
             toast({ title: `Recipe type ${name} was deleted`, status: "success" })
@@ -88,6 +88,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
         </IfFulfilled>
     </Section>
 }
+
 RecipeTypeDetails.propTypes = {
     id: PropTypes.number.isRequired
 }

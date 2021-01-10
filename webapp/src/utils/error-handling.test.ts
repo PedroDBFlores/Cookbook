@@ -2,7 +2,7 @@ import { AxiosError } from "axios"
 import handleApiError from "./error-handling"
 
 describe("Error handling", () => {
-    it("handles the errors provided by the API", async () => {
+    it("handles the errors provided by the API", async() => {
         const axiosError = {
             response: {
                 data: `{

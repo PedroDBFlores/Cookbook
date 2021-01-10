@@ -1,14 +1,14 @@
 import React from "react"
-import {render, screen} from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import RecipeTypeList from "./list"
 import userEvent from "@testing-library/user-event"
-import {WrapperWithRoutes} from "../../../../tests/render-helpers"
-import {RecipeType} from "../../../services/recipe-type-service"
+import { WrapperWithRoutes } from "../../../../tests/render-helpers"
+import { RecipeType } from "../../../services/recipe-type-service"
 
 describe("Recipe type list component", () => {
     const recipeTypes: Array<RecipeType> = [
-        {id: 1, name: "Vegetarian"},
-        {id: 2, name: "Fish"}
+        { id: 1, name: "Vegetarian" },
+        { id: 2, name: "Fish" }
     ]
 
     describe("Render", () => {
@@ -32,8 +32,9 @@ describe("Recipe type list component", () => {
     })
 
     describe("Actions", () => {
-        it("navigates to the recipe type details", async () => {
+        it("navigates to the recipe type details", async() => {
             const firstRecipeType = recipeTypes[0]
+
             render(<WrapperWithRoutes initialPath={"/recipetype"} routeConfiguration={[
                 {
                     path: "/recipetype",
@@ -54,8 +55,9 @@ describe("Recipe type list component", () => {
             expect(await screen.findByText(/i'm the recipe type details page/i)).toBeInTheDocument()
         })
 
-        it("navigates to the recipe type edit page", async () => {
+        it("navigates to the recipe type edit page", async() => {
             const firstRecipeType = recipeTypes[0]
+
             render(<WrapperWithRoutes initialPath={"/recipetype"} routeConfiguration={[
                 {
                     path: "/recipetype",
@@ -79,6 +81,7 @@ describe("Recipe type list component", () => {
         it("deletes a recipe type", () => {
             const onDeleteMock = jest.fn()
             const firstRecipeType = recipeTypes[0]
+
             render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteMock}/>)
 
             userEvent.click(screen.getByLabelText(`Delete Recipe type with id ${firstRecipeType.id}`, {

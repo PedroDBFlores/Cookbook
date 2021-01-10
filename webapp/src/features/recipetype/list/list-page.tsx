@@ -23,7 +23,7 @@ const RecipeTypeListPage: React.FC = () => {
             duration: 5000
         })
     })
-    const handleDelete = async (id: number, name: string) => {
+    const handleDelete = async(id: number, name: string) => {
         try {
             await deleteRecipeType(id)
             state.reload()

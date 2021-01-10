@@ -7,9 +7,7 @@ interface IfProps {
     elseRender?: React.ReactNode
 }
 
-const If: React.FC<IfProps> = ({condition, children, elseRender}) => {
-    return <>{condition ? children : elseRender}</>
-}
+const If: React.FC<IfProps> = ({ condition, children, elseRender }) => <>{condition ? children : elseRender}</>
 
 If.propTypes = {
     condition: PropTypes.bool.isRequired,

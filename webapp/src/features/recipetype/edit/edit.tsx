@@ -25,7 +25,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({ id }) => {
         })
     })
 
-    const handleOnSubmit = async (recipeType: RecipeType) => {
+    const handleOnSubmit = async(recipeType: RecipeType) => {
         try {
             await update(recipeType)
             toast({ title: `Recipe type '${recipeType.name}' updated successfully!`, status: "success" })
@@ -52,6 +52,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({ id }) => {
         </IfFulfilled>
     </Section>
 }
+
 EditRecipeType.propTypes = {
     id: PropTypes.number.isRequired
 }

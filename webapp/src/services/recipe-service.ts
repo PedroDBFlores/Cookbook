@@ -1,5 +1,5 @@
-import {CreateResult, SearchResult} from "model"
-import {AxiosInstance} from "axios"
+import { CreateResult, SearchResult } from "model"
+import { AxiosInstance } from "axios"
 import handleApiError from "utils/error-handling"
 
 export interface RecipeService {
@@ -16,51 +16,56 @@ export interface RecipeService {
     delete(id: number): Promise<void>
 }
 
-const findRecipe = (instance: AxiosInstance) => async (id: number): Promise<RecipeDetails> => {
+const findRecipe = (instance: AxiosInstance) => async(id: number): Promise<RecipeDetails> => {
     try {
         const response = await instance.get<RecipeDetails>(`/recipe/${id}`)
+
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const searchRecipes = (instance: AxiosInstance) => async (searchParameters: SearchRecipeParameters): Promise<SearchResult<RecipeDetails>> => {
+const searchRecipes = (instance: AxiosInstance) => async(searchParameters: SearchRecipeParameters): Promise<SearchResult<RecipeDetails>> => {
     try {
         const response = await instance.post<SearchResult<RecipeDetails>>("/recipe/search", searchParameters)
+
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const getAllRecipes = (instance: AxiosInstance) => async (): Promise<Array<RecipeDetails>> => {
+const getAllRecipes = (instance: AxiosInstance) => async(): Promise<Array<RecipeDetails>> => {
     try {
         const response = await instance.get<Array<RecipeDetails>>("/recipe")
+
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const createRecipe = (instance: AxiosInstance) => async (recipe: Omit<Recipe, "id">): Promise<CreateResult> => {
+const createRecipe = (instance: AxiosInstance) => async(recipe: Omit<Recipe, "id">): Promise<CreateResult> => {
     try {
         const response = await instance.post<CreateResult>("/recipe", recipe)
+
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const updateRecipe = (instance: AxiosInstance) => async (recipe: Recipe): Promise<void> => {
+const updateRecipe = (instance: AxiosInstance) => async(recipe: Recipe): Promise<void> => {
     try {
         const response = await instance.put("/recipe", recipe)
+
         return response.data
     } catch (err) {
         throw handleApiError(err)
     }
 }
-const deleteRecipe = (instance: AxiosInstance) => async (id: number): Promise<void> => {
+const deleteRecipe = (instance: AxiosInstance) => async(id: number): Promise<void> => {
     try {
         await instance.delete(`/recipe/${id}`)
     } catch (err) {

@@ -17,8 +17,8 @@ const Section: React.FC<SectionProps> = ({ title, actions, children }) => <Flex
         mb="8">
         <Flex align="center">
             {
-                React.isValidElement(title) ? title :
-                    <Heading as="h4">{title}</Heading>
+                React.isValidElement(title) ? title
+                    : <Heading as="h4">{title}</Heading>
             }
         </Flex>
         <Flex align="center">
@@ -29,6 +29,7 @@ const Section: React.FC<SectionProps> = ({ title, actions, children }) => <Flex
         {children}
     </Box>
 </Flex>
+
 Section.propTypes = {
     title: PropTypes.oneOfType([
         PropTypes.string,

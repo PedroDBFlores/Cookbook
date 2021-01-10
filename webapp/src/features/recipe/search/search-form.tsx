@@ -1,9 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Form, Formik, FormikHelpers} from "formik"
-import {RecipeType} from "services/recipe-type-service"
-import {Button, Grid, GridItem} from "@chakra-ui/react"
-import {InputControl, SelectControl} from "formik-chakra-ui"
+import { Form, Formik, FormikHelpers } from "formik"
+import { RecipeType } from "services/recipe-type-service"
+import { Button, Grid, GridItem } from "@chakra-ui/react"
+import { InputControl, SelectControl } from "formik-chakra-ui"
 
 export interface RecipeSearchFormData {
     name: string | undefined
@@ -16,9 +16,9 @@ interface RecipeSearchFormProps {
     onSearch: (data: RecipeSearchFormData) => void
 }
 
-const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearch}) => {
+const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({ recipeTypes, onSearch }) => {
     const handleSubmit = (values: RecipeSearchFormData,
-                          {setSubmitting}: FormikHelpers<{
+        { setSubmitting }: FormikHelpers<{
                               name: string
                               description: string
                               recipeTypeId: number
@@ -28,7 +28,7 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
     }
 
     return <Formik
-        initialValues={{name: "", description: "", recipeTypeId: 0}}
+        initialValues={{ name: "", description: "", recipeTypeId: 0 }}
         validateOnBlur={true}
         onSubmit={
             (values, helpers) =>
@@ -41,30 +41,30 @@ const RecipeSearchForm: React.FC<RecipeSearchFormProps> = ({recipeTypes, onSearc
                 </GridItem>
                 <GridItem colSpan={12}>
                     <InputControl aria-label="Recipe description parameter" name={"description"}
-                                  label={"Description"}/>
+                        label={"Description"}/>
                 </GridItem>
                 <GridItem colSpan={12}>
                     <SelectControl aria-label="Recipe type parameter"
-                                   name={"recipeTypeId"}
-                                   label={"Recipe type"}
-                                   selectProps={{placeholder: " "}}>
+                        name={"recipeTypeId"}
+                        label={"Recipe type"}
+                        selectProps={{ placeholder: " " }}>
                         {
-                            recipeTypes.map(({id, name}) => (
+                            recipeTypes.map(({ id, name }) => (
                                 <option key={`recipeType-${id}`} value={id}>
                                     {name}
-                                </option>)
-                            )
+                                </option>))
                         }
                     </SelectControl>
                 </GridItem>
                 <Grid colSpan={12}>
                     <Button aria-label="Search recipe with parameters"
-                            type="submit">Search</Button>
+                        type="submit">Search</Button>
                 </Grid>
             </Grid>
         </Form>
     </Formik>
 }
+
 RecipeSearchForm.propTypes = {
     recipeTypes: PropTypes.array.isRequired,
     onSearch: PropTypes.func.isRequired

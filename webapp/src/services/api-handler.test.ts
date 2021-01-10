@@ -6,9 +6,9 @@ describe("API handler", () => {
 
         expect(api.defaults.baseURL).toBe("http://localhost:8000")
         expect(api.defaults.headers.post)
-            .toEqual(expect.objectContaining({"Content-Type": "application/json"}))
+            .toEqual(expect.objectContaining({ "Content-Type": "application/json" }))
         expect(api.defaults.headers.put)
-            .toEqual(expect.objectContaining({"Content-Type": "application/json"}))
+            .toEqual(expect.objectContaining({ "Content-Type": "application/json" }))
 
     })
 })

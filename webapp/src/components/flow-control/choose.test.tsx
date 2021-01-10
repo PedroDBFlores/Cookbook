@@ -1,6 +1,6 @@
 import React from "react"
-import {render, screen} from "@testing-library/react"
-import {Choose, Otherwise, When} from "./choose"
+import { render, screen } from "@testing-library/react"
+import { Choose, Otherwise, When } from "./choose"
 
 describe("Choose flow control component", () => {
     describe("with only one 'When' element", () => {

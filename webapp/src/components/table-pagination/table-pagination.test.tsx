@@ -1,4 +1,4 @@
-import {render, screen} from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import React from "react"
 import TablePagination from "./table-pagination"
 import userEvent from "@testing-library/user-event"
@@ -21,10 +21,10 @@ describe("Table pagination actions", () => {
     })
 
     test.each([
-        ["5 of 6", {count: 60, page: 5, rowsPerPage: 10, expectedMaxPages: 6}],
-        ["1 of 5", {count: 100, page: 1, rowsPerPage: 20, expectedMaxPages: 5}],
-        ["2 of 8", {count: 400, page: 2, rowsPerPage: 50, expectedMaxPages: 8}]
-    ])("renders the appropriate number of pages (%s)", (_, {count, page, rowsPerPage, expectedMaxPages}) => {
+        ["5 of 6", { count: 60, page: 5, rowsPerPage: 10, expectedMaxPages: 6 }],
+        ["1 of 5", { count: 100, page: 1, rowsPerPage: 20, expectedMaxPages: 5 }],
+        ["2 of 8", { count: 400, page: 2, rowsPerPage: 50, expectedMaxPages: 8 }]
+    ])("renders the appropriate number of pages (%s)", (_, { count, page, rowsPerPage, expectedMaxPages }) => {
         render(<TablePagination
             count={count}
             page={page}
@@ -38,9 +38,10 @@ describe("Table pagination actions", () => {
     describe("Actions", () => {
         test.each([
             [20],
-            [50],
-        ])("changes to %s rows per page", (value) => {
+            [50]
+        ])("changes to %s rows per page", value => {
             const onChangeRowsPerPageMock = jest.fn()
+
             render(<TablePagination
                 count={100}
                 page={4}
@@ -54,12 +55,13 @@ describe("Table pagination actions", () => {
         })
 
         test.each([
-            ["first page button is clicked", {label: "first page", expectedPage: 1}],
-            ["previous page button is clicked", {label: "previous page", expectedPage: 4}],
-            ["next page button is clicked", {label: "next page", expectedPage: 6}],
-            ["last page button is clicked", {label: "last page", expectedPage: 10}]
-        ])("it calls the 'onChangePage' function when the %s", (_, {label, expectedPage}) => {
+            ["first page button is clicked", { label: "first page", expectedPage: 1 }],
+            ["previous page button is clicked", { label: "previous page", expectedPage: 4 }],
+            ["next page button is clicked", { label: "next page", expectedPage: 6 }],
+            ["last page button is clicked", { label: "last page", expectedPage: 10 }]
+        ])("it calls the 'onChangePage' function when the %s", (_, { label, expectedPage }) => {
             const onChangePageMock = jest.fn()
+
             render(<TablePagination
                 count={100}
                 page={5}

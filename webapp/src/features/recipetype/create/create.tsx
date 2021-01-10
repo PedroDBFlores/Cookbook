@@ -11,9 +11,10 @@ const CreateRecipeType: React.FC = () => {
     const toast = useToast()
     const history = useHistory()
 
-    const handleOnSubmit = async ({ name }: Omit<RecipeType, "id">) => {
+    const handleOnSubmit = async({ name }: Omit<RecipeType, "id">) => {
         try {
             const { id } = await create({ name })
+
             toast({ title: `Recipe type '${name}' created successfully!`, status: "success" })
             history.push(`/recipetype/${id}/details`)
         } catch ({ message }) {

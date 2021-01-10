@@ -1,4 +1,4 @@
-import React, {Children, ReactNode, ReactNodeArray} from "react"
+import React, { Children, ReactNode, ReactNodeArray } from "react"
 import PropTypes from "prop-types"
 
 interface ChooseProps {
@@ -6,7 +6,7 @@ interface ChooseProps {
 }
 
 export const Choose: React.FC<ChooseProps> = (
-    {children}
+    { children }
 ) => {
     const chooseChildren = Children.toArray(children)
 
@@ -16,6 +16,7 @@ export const Choose: React.FC<ChooseProps> = (
 
     const whenChildren = chooseChildren.filter(child => componentTypePredicate(child, "When"))
     const otherwiseChildren = chooseChildren.filter(child => componentTypePredicate(child, "Otherwise"))
+
     // @ts-ignore
     const singleWhen = whenChildren.filter(c => c.props.condition)[0]
 
@@ -34,7 +35,7 @@ interface WhenProps {
 }
 
 export const When: React.FC<WhenProps> = (
-    {condition, children}
+    { condition, children }
 ) => <>{condition && children}</>
 
 When.propTypes = {
@@ -42,7 +43,7 @@ When.propTypes = {
     children: PropTypes.element.isRequired
 }
 export const Otherwise: React.FC = (
-    {children}
+    { children }
 ) => <>{children}</>
 
 Otherwise.propTypes = {

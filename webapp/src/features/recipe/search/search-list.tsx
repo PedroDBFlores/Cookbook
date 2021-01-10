@@ -1,10 +1,10 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
-import {SearchResult} from "model"
-import {MdDelete, MdEdit, MdVisibility} from "react-icons/md"
-import {useHistory} from "react-router-dom"
-import {RecipeDetails} from "services/recipe-service"
-import {Table, Thead, Th, Tr, Tbody, Td, Tfoot, ButtonGroup, Button} from "@chakra-ui/react"
+import { SearchResult } from "model"
+import { MdDelete, MdEdit, MdVisibility } from "react-icons/md"
+import { useHistory } from "react-router-dom"
+import { RecipeDetails } from "services/recipe-service"
+import { Table, Thead, Th, Tr, Tbody, Td, Tfoot, ButtonGroup, Button } from "@chakra-ui/react"
 import TablePagination from "components/table-pagination/table-pagination"
 
 interface RecipeSearchListProps {
@@ -15,11 +15,11 @@ interface RecipeSearchListProps {
 }
 
 const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
-                                                               searchResult,
-                                                               onDelete,
-                                                               onChangeRowsPerPage,
-                                                               onPageChange
-                                                           }) => {
+    searchResult,
+    onDelete,
+    onChangeRowsPerPage,
+    onPageChange
+}) => {
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
     const [page, setPage] = useState<number>(1)
     const history = useHistory()
@@ -49,13 +49,13 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
         </Thead>
         <Tbody>
             {
-                !searchResult?.count ?
-                    <Tr>
+                !searchResult?.count
+                    ? <Tr>
                         <Td colSpan={5}>
                             No matching recipes
                         </Td>
-                    </Tr> :
-                    searchResult.results.map(({id, name, recipeTypeName}) =>
+                    </Tr>
+                    : searchResult.results.map(({ id, name, recipeTypeName }) =>
                         <Tr key={`recipe-${id}`}>
                             <Td>{id}</Td>
                             <Td>{name}</Td>
@@ -63,15 +63,15 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                             <Td align="center">
                                 <ButtonGroup>
                                     <Button aria-label={`Recipe details for id ${id}`}
-                                            onClick={() => navigateToDetails(id)}>
+                                        onClick={() => navigateToDetails(id)}>
                                         <MdVisibility/>
                                     </Button>
                                     <Button aria-label={`Edit Recipe with id ${id}`}
-                                            onClick={() => navigateToEdit(id)}>
+                                        onClick={() => navigateToEdit(id)}>
                                         <MdEdit/>
                                     </Button>
                                     <Button aria-label={`Delete Recipe with id ${id}`}
-                                            onClick={() => onDelete(id, name)}>
+                                        onClick={() => onDelete(id, name)}>
                                         <MdDelete/>
                                     </Button>
                                 </ButtonGroup>

@@ -1,7 +1,7 @@
-import React, {useContext} from "react"
-import ModalContext, {useModalState, WithModal} from "./modal-context"
-import {render, screen} from "@testing-library/react"
-import {act, renderHook} from "@testing-library/react-hooks"
+import React, { useContext } from "react"
+import ModalContext, { useModalState, WithModal } from "./modal-context"
+import { render, screen } from "@testing-library/react"
+import { act, renderHook } from "@testing-library/react-hooks"
 import userEvent from "@testing-library/user-event"
 
 jest.mock("./modal", () => ({
@@ -13,7 +13,7 @@ describe("Modal context", () => {
     describe("Modal context provider", () => {
         it("provides open/close state and props to the modal", () => {
             const Component = () => {
-                const {modalState: {props}} = useContext(ModalContext)
+                const { modalState: { props } } = useContext(ModalContext)
 
                 return <>
                     <span>{props?.title}</span>
@@ -47,8 +47,8 @@ describe("Modal context", () => {
 
     describe("Use modal state hook", () => {
         it("starts closed and with empty state information if no initial state is provided", () => {
-            const {result: {current}} = renderHook(() => useModalState(undefined))
-            const {modalState} = current
+            const { result: { current } } = renderHook(() => useModalState(undefined))
+            const { modalState } = current
 
             expect(modalState).toStrictEqual({
                 isOpen: false,
@@ -57,7 +57,7 @@ describe("Modal context", () => {
         })
 
         it("starts with the provided initial state", () => {
-            const {result: {current}} = renderHook(() => useModalState({
+            const { result: { current } } = renderHook(() => useModalState({
                 isOpen: true,
                 props: {
                     title: "Ein",
@@ -67,7 +67,7 @@ describe("Modal context", () => {
                     onClose: () => void (0)
                 }
             }))
-            const {modalState} = current
+            const { modalState } = current
 
             expect(modalState).toStrictEqual({
                 isOpen: true,
@@ -82,7 +82,7 @@ describe("Modal context", () => {
         })
 
         it("updates the modal state", () => {
-            const {result} = renderHook(() => useModalState(undefined))
+            const { result } = renderHook(() => useModalState(undefined))
 
             act(() => result.current.setModalState({
                 isOpen: true,
@@ -120,7 +120,7 @@ describe("Modal context", () => {
 
         it("allows the children to open and close the modal", () => {
             const Component = () => {
-                const {setModalState} = useContext(ModalContext)
+                const { setModalState } = useContext(ModalContext)
 
                 const handleOnOpenModal = () => setModalState({
                     isOpen: true,
@@ -133,7 +133,7 @@ describe("Modal context", () => {
                     }
                 })
 
-                const handleOnCloseModal = () => setModalState({isOpen: false})
+                const handleOnCloseModal = () => setModalState({ isOpen: false })
 
                 return <>
                     <button onClick={handleOnOpenModal}>Open Modal</button>

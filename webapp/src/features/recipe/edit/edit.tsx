@@ -39,11 +39,11 @@ const EditRecipe: React.FC<EditRecipeProps> = ({ id }) => {
             title: "An error occurred while fetching the recipe",
             description: message,
             status: "error",
-            duration: 5000,
+            duration: 5000
         })
     })
 
-    const handleOnSubmit = async (formData: FormikValues) => {
+    const handleOnSubmit = async(formData: FormikValues) => {
         try {
             await update({ ...formData, recipeTypeId: Number(formData.recipeTypeId) } as Recipe)
             toast({ title: `Recipe '${formData.name}' updated successfully!`, status: "success" })
@@ -75,6 +75,7 @@ const EditRecipe: React.FC<EditRecipeProps> = ({ id }) => {
         </IfFulfilled>
     </Section>
 }
+
 EditRecipe.propTypes = {
     id: PropTypes.number.isRequired
 }

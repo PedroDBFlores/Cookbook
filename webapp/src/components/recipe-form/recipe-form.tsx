@@ -1,10 +1,10 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Recipe} from "services/recipe-service"
-import {RecipeType} from "services/recipe-type-service"
-import {Form, Formik, FormikValues} from "formik"
-import {ButtonGroup, Grid, GridItem} from "@chakra-ui/react"
-import {InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl} from "formik-chakra-ui"
+import { Recipe } from "services/recipe-service"
+import { RecipeType } from "services/recipe-type-service"
+import { Form, Formik, FormikValues } from "formik"
+import { ButtonGroup, Grid, GridItem } from "@chakra-ui/react"
+import { InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl } from "formik-chakra-ui"
 import * as yup from "yup"
 
 const RecipeFormSchema = yup.object({
@@ -26,7 +26,7 @@ const RecipeFormSchema = yup.object({
     preparingSteps: yup.string()
         .required("Preparing steps is required")
         .min(1, "Preparing steps is required")
-        .max(4096, "Preparing steps exceeds the character limit"),
+        .max(4096, "Preparing steps exceeds the character limit")
 })
 
 interface RecipeFormProps {
@@ -35,7 +35,7 @@ interface RecipeFormProps {
     onSubmit: (recipe: Recipe) => void
 }
 
-const RecipeForm: React.FC<RecipeFormProps> = ({initialValues, recipeTypes, onSubmit}) => {
+const RecipeForm: React.FC<RecipeFormProps> = ({ initialValues, recipeTypes, onSubmit }) => {
     const isCreateMode = initialValues?.id === undefined
     const buttonLabel = isCreateMode ? "Create" : "Edit"
 
@@ -67,15 +67,14 @@ const RecipeForm: React.FC<RecipeFormProps> = ({initialValues, recipeTypes, onSu
                 </GridItem>
                 <GridItem colSpan={6}>
                     <SelectControl aria-label="Recipe type parameter"
-                                   name="recipeTypeId"
-                                   label="Recipe type"
-                                   selectProps={{placeholder: " "}}>
+                        name="recipeTypeId"
+                        label="Recipe type"
+                        selectProps={{ placeholder: " " }}>
                         {
-                            recipeTypes?.map(({id, name}) => (
+                            recipeTypes?.map(({ id, name }) => (
                                 <option key={`recipeType-${id}`} value={id}>
                                     {name}
-                                </option>)
-                            )
+                                </option>))
                         }
                     </SelectControl>
                 </GridItem>

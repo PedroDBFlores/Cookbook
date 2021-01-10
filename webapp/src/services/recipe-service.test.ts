@@ -1,9 +1,9 @@
 import axios from "axios"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "utils/error-handling"
-import createRecipeService, {Recipe, RecipeDetails, SearchRecipeParameters} from "./recipe-service"
+import createRecipeService, { Recipe, RecipeDetails, SearchRecipeParameters } from "./recipe-service"
 import ApiHandler from "./api-handler"
-import {SearchResult} from "model"
+import { SearchResult } from "model"
 
 const mockedAxios = new MockAdapter(axios)
 const handleErrorsSpy = jest.spyOn(errorHandler, "default")
@@ -29,7 +29,7 @@ describe("Recipe service", () => {
     })
 
     describe("Find recipe", () => {
-        it("finds a recipe by it's id", async () => {
+        it("finds a recipe by it's id", async() => {
             mockedAxios.onGet(`/recipe/${baseRecipe.id}`)
                 .replyOnce(200, baseRecipe)
 
@@ -40,7 +40,7 @@ describe("Recipe service", () => {
             expect(recipe).toStrictEqual(baseRecipe)
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onGet("/recipe/1")
                 .replyOnce(404, {
                     code: "NOT_FOUND",
@@ -54,7 +54,7 @@ describe("Recipe service", () => {
     })
 
     describe("Search recipe", () => {
-        it("searches recipes with the sent parameters", async () => {
+        it("searches recipes with the sent parameters", async() => {
             const searchParameters = {
                 name: "Potato",
                 pageNumber: 1,
@@ -65,6 +65,7 @@ describe("Recipe service", () => {
                 numberOfPages: 1,
                 results: [baseRecipeTypeDetails]
             } as SearchResult<RecipeDetails>
+
             mockedAxios.onPost("/recipe/search", searchParameters)
                 .replyOnce(200, expectedResponse)
 
@@ -75,7 +76,7 @@ describe("Recipe service", () => {
             expect(result).toStrictEqual(expectedResponse)
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onPost("/recipe/search")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
@@ -94,12 +95,13 @@ describe("Recipe service", () => {
     })
 
     describe("Get all recipes", () => {
-        it("gets all the recipes", async () => {
+        it("gets all the recipes", async() => {
             const expectedRecipes = [baseRecipeTypeDetails, {
                 ...baseRecipeTypeDetails,
                 name: "Boiled Sweet Potato",
                 description: "Boiled Sweet Potato"
             }]
+
             mockedAxios.onGet("/recipe")
                 .replyOnce(200, expectedRecipes)
 
@@ -110,7 +112,7 @@ describe("Recipe service", () => {
             expect(response).toStrictEqual(expectedRecipes)
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onGet("/recipe")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
@@ -124,18 +126,18 @@ describe("Recipe service", () => {
     })
 
     describe("Create", () => {
-        it("creates a recipe", async () => {
+        it("creates a recipe", async() => {
             mockedAxios.onPost("/recipe", baseRecipe)
-                .replyOnce(201, {id: 59})
+                .replyOnce(201, { id: 59 })
 
             const result = await service.create(baseRecipe)
 
             expect(mockedAxios.history.post.length).toBe(1)
             expect(mockedAxios.history.post[0].url).toBe("/recipe")
-            expect(result).toStrictEqual({id: 59})
+            expect(result).toStrictEqual({ id: 59 })
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onPost("/recipe")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
@@ -149,7 +151,7 @@ describe("Recipe service", () => {
     })
 
     describe("Update", () => {
-        it("updates a recipe", async () => {
+        it("updates a recipe", async() => {
             mockedAxios.onPut("/recipe", baseRecipe)
                 .replyOnce(200)
 
@@ -160,7 +162,7 @@ describe("Recipe service", () => {
 
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onPut("/recipe")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
@@ -174,7 +176,7 @@ describe("Recipe service", () => {
     })
 
     describe("Delete", () => {
-        it("deletes a recipe", async () => {
+        it("deletes a recipe", async() => {
             mockedAxios.onDelete("/recipe/549")
                 .replyOnce(204)
 
@@ -185,7 +187,7 @@ describe("Recipe service", () => {
 
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onDelete("/recipe/1")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",

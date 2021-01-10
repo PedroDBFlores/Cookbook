@@ -14,6 +14,7 @@ describe("Section component", () => {
 
     it("renders an actions component for the section", () => {
         const Actions = () => <button>Some action</button>
+
         render(<Section title="A title" actions={<Actions />}>
             The content
         </Section>)

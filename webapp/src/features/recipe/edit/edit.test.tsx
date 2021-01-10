@@ -1,8 +1,8 @@
 import React from "react"
-import {render, screen} from "@testing-library/react"
-import createRecipeService, {RecipeDetails} from "services/recipe-service"
-import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
-import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
+import { render, screen } from "@testing-library/react"
+import createRecipeService, { RecipeDetails } from "services/recipe-service"
+import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
+import { WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 import EditRecipe from "./edit"
 import "jest-chain"
@@ -14,17 +14,17 @@ const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeo
 
 jest.mock("components/recipe-form/recipe-form", () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(({onSubmit}) => <>
+    default: jest.fn().mockImplementation(({ onSubmit }) => <>
         <p>Edit recipe form</p>
         <button aria-label="Edit recipe"
-                onClick={() => onSubmit({
-                    id: 1,
-                    recipeTypeId: 1,
-                    name: "Name",
-                    description: "Description",
-                    ingredients: "Ingredients",
-                    preparingSteps: "PreparingSteps"
-                })}>
+            onClick={() => onSubmit({
+                id: 1,
+                recipeTypeId: 1,
+                name: "Name",
+                description: "Description",
+                ingredients: "Ingredients",
+                preparingSteps: "PreparingSteps"
+            })}>
             Edit
         </button>
     </>)
@@ -42,7 +42,7 @@ describe("Edit recipe component", () => {
     const updateRecipeMock = jest.fn()
     const getRecipeTypesMock = jest.fn().mockImplementation(() =>
         Promise.resolve([
-            {id: 1, name: "ABC"}
+            { id: 1, name: "ABC" }
         ] as Array<RecipeType>))
 
     createRecipeTypeServiceMock.mockImplementation(() => ({
@@ -61,7 +61,7 @@ describe("Edit recipe component", () => {
         getAll: jest.fn()
     }))
 
-    it("renders the initial layout", async () => {
+    it("renders the initial layout", async() => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
 
         render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
@@ -78,7 +78,7 @@ describe("Edit recipe component", () => {
     })
 
     describe("Error rendering", () => {
-        it("renders an error if it fails to get the recipe types", async () => {
+        it("renders an error if it fails to get the recipe types", async() => {
             getRecipeTypesMock.mockRejectedValueOnce(new Error("Failed to fetch recipe types"))
 
             render(<WrapWithCommonContexts>
@@ -92,7 +92,7 @@ describe("Edit recipe component", () => {
             expect(findRecipeMock).not.toHaveBeenCalled()
         })
 
-        it("renders an error if it fails to get the recipe", async () => {
+        it("renders an error if it fails to get the recipe", async() => {
             findRecipeMock.mockRejectedValueOnce(new Error("Failed to fetch recipe"))
 
             render(<WrapWithCommonContexts>
@@ -105,12 +105,12 @@ describe("Edit recipe component", () => {
         })
     })
 
-    it("calls the 'updateRecipe' function on submit", async () => {
+    it("calls the 'updateRecipe' function on submit", async() => {
         updateRecipeMock.mockResolvedValueOnce({})
         render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipe/1/edit" routeConfiguration={[
-                {path: "/recipe/1/edit", exact: true, component: () => <EditRecipe id={1}/>},
-                {path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</>},
+                { path: "/recipe/1/edit", exact: true, component: () => <EditRecipe id={1}/> },
+                { path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</> }
             ]}/>
         </WrapWithCommonContexts>)
         await screen.findByText(/Edit recipe form/i)
@@ -129,8 +129,8 @@ describe("Edit recipe component", () => {
         })
     })
 
-    it("shows an error message if the update API call fails", async () => {
-        updateRecipeMock.mockRejectedValueOnce({message: "A wild error has appeared"})
+    it("shows an error message if the update API call fails", async() => {
+        updateRecipeMock.mockRejectedValueOnce({ message: "A wild error has appeared" })
         render(<WrapWithCommonContexts>
             <EditRecipe id={1}/>
         </WrapWithCommonContexts>)

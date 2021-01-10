@@ -1,7 +1,7 @@
-import {render, screen} from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import React from "react"
 import EditRecipeType from "./edit"
-import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
+import { WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -10,33 +10,33 @@ const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFuncti
 
 jest.mock("components/recipe-type-form/recipe-type-form", () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(({onSubmit}) => <>
+    default: jest.fn().mockImplementation(({ onSubmit }) => <>
         <p>Edit recipe type form</p>
         <button aria-label="Edit recipe type"
-                onClick={() => onSubmit({id: 1, name: "Cake"})}>
+            onClick={() => onSubmit({ id: 1, name: "Cake" })}>
             Edit
         </button>
     </>)
 }))
 
 describe("Edit recipe type", () => {
-    const baseRecipeType = {id: 1, name: "Meat"}
+    const baseRecipeType = { id: 1, name: "Meat" }
     const findRecipeTypeMock = jest.fn()
     const updateRecipeTypeMock = jest.fn()
-    createRecipeTypeServiceMock.mockImplementation(() => {
-        return {
-            getAll: jest.fn(),
-            update: updateRecipeTypeMock,
-            find: findRecipeTypeMock,
-            delete: jest.fn(),
-            create: jest.fn()
-        }
-    })
+
+    createRecipeTypeServiceMock.mockImplementation(() => ({
+        getAll: jest.fn(),
+        update: updateRecipeTypeMock,
+        find: findRecipeTypeMock,
+        delete: jest.fn(),
+        create: jest.fn()
+    }))
 
     beforeEach(jest.clearAllMocks)
 
-    it("renders the initial form", async () => {
+    it("renders the initial form", async() => {
         const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
+
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
 
         render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
@@ -50,7 +50,7 @@ describe("Edit recipe type", () => {
         expect(await screen.findByText(/edit recipe type form/i)).toBeInTheDocument()
     })
 
-    it("renders an error if the recipe type cannot be obtained", async () => {
+    it("renders an error if the recipe type cannot be obtained", async() => {
         findRecipeTypeMock.mockRejectedValueOnce(new Error("failure"))
 
         render(<WrapWithCommonContexts>
@@ -63,7 +63,7 @@ describe("Edit recipe type", () => {
         expect(findRecipeTypeMock).toHaveBeenCalled()
     })
 
-   it("updates the recipe type in the Cookbook API and navigates to the details", async () => {
+    it("updates the recipe type in the Cookbook API and navigates to the details", async() => {
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
         updateRecipeTypeMock.mockResolvedValueOnce({})
         render(<WrapWithCommonContexts>
@@ -86,12 +86,12 @@ describe("Edit recipe type", () => {
 
         expect(await screen.findByText(/^recipe type 'Cake' updated successfully!$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^I'm the recipe type details page$/i)).toBeInTheDocument()
-        expect(updateRecipeTypeMock).toHaveBeenCalledWith({...baseRecipeType, name: "Cake"})
+        expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
     })
 
-    it("shows an error message if the update API call fails", async () => {
+    it("shows an error message if the update API call fails", async() => {
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
-        updateRecipeTypeMock.mockRejectedValueOnce({message: "Duplicate recipe type"})
+        updateRecipeTypeMock.mockRejectedValueOnce({ message: "Duplicate recipe type" })
         render(<WrapWithCommonContexts>
             <EditRecipeType id={1}/>
         </WrapWithCommonContexts>)
@@ -101,6 +101,6 @@ describe("Edit recipe type", () => {
 
         expect(await screen.findByText(/^an error occurred while updating the recipe type$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^duplicate recipe type$/i)).toBeInTheDocument()
-        expect(updateRecipeTypeMock).toHaveBeenCalledWith({...baseRecipeType, name: "Cake"})
+        expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
     })
 })

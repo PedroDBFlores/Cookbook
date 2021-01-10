@@ -72,7 +72,7 @@ const RecipeSearchPage: React.FC = () => {
         })
     }
 
-    const handleDelete = async (id: number, name: string) => {
+    const handleDelete = async(id: number, name: string) => {
         try {
             await deleteRecipe(id)
             toast({ title: `Recipe '${name}' was deleted`, status: "success" })
@@ -89,7 +89,8 @@ const RecipeSearchPage: React.FC = () => {
 
     useEffect(() => {
         search({
-            ...formData, ...pageParams,
+            ...formData,
+            ...pageParams,
             recipeTypeId: formData.recipeTypeId > 0 ? formData.recipeTypeId : undefined
         }).then(setRecipes)
     }, [formData, pageParams])

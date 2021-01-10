@@ -1,9 +1,9 @@
-import axios, {AxiosInstance} from "axios"
+import axios, { AxiosInstance } from "axios"
 import React from "react"
 
 const ApiHandler = (baseURL: string): AxiosInstance => {
     const api = axios.create({
-        baseURL: baseURL,
+        baseURL,
         headers: {
             post: {
                 "Content-Type": "application/json"

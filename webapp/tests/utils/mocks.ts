@@ -1,9 +1,8 @@
-export const localStorageMock = (function () {
+export const localStorageMock = (function() {
     let store: { [key: string]: string } = {}
+
     return {
-        getItem: (key: string) => {
-            return store[key]
-        },
+        getItem: (key: string) => store[key],
         setItem: (key: string, value: string) => {
             store[key] = value.toString()
         },
@@ -14,4 +13,4 @@ export const localStorageMock = (function () {
             delete store[key]
         }
     }
-})()
+}())

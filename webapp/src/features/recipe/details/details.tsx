@@ -41,7 +41,7 @@ const RecipeDetails: React.FC<{ id: number }> = ({ id }) => {
         })
     }
 
-    const handleDelete = async (id: number, name: string) => {
+    const handleDelete = async(id: number, name: string) => {
         try {
             await deleteRecipe(id)
             toast({ title: `Recipe '${name}' was deleted`, status: "success" })

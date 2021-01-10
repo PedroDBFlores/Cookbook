@@ -1,19 +1,19 @@
 import React from "react"
-import {render, screen, waitFor} from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import RecipeTypeForm from "./recipe-type-form"
 import userEvent from "@testing-library/user-event"
-import {RecipeType} from "services/recipe-type-service"
+import { RecipeType } from "services/recipe-type-service"
 
 describe("Recipe type form", () => {
     describe("Initial rendering", () => {
         test.each([
             ["create", undefined],
-            ["edit", {id: 1, name: ""}]
+            ["edit", { id: 1, name: "" }]
         ])("renders the necessary elements for the %s form", (formModeName, initialValues) => {
             render(<RecipeTypeForm initialValues={initialValues} onSubmit={jest.fn()}/>)
 
             expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-            expect(screen.getByLabelText(`${formModeName} recipe type`, {exact: false})).toHaveAttribute("type", "submit")
+            expect(screen.getByLabelText(`${formModeName} recipe type`, { exact: false })).toHaveAttribute("type", "submit")
             expect(screen.getByLabelText(/reset form/i)).toHaveAttribute("type", "button")
         })
 
@@ -25,7 +25,7 @@ describe("Recipe type form", () => {
 
         it("sets the initial values when editing", () => {
             render(<RecipeTypeForm initialValues={
-                {id: 1, name: "The great recipe type"}
+                { id: 1, name: "The great recipe type" }
             } onSubmit={jest.fn()}/>)
 
             expect(screen.getByLabelText(/name/i)).toHaveValue("The great recipe type")
@@ -33,8 +33,9 @@ describe("Recipe type form", () => {
     })
 
     describe("Validation", () => {
-        it("disallows submitting with an empty name", async () => {
+        it("disallows submitting with an empty name", async() => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeTypeForm onSubmit={onSubmitMock}/>)
 
             userEvent.clear(screen.getByLabelText(/name/i))
@@ -44,8 +45,9 @@ describe("Recipe type form", () => {
             expect(onSubmitMock).not.toHaveBeenCalled()
         })
 
-        it("disallows submitting with a name that exceeds the limit of 64 characters", async () => {
+        it("disallows submitting with a name that exceeds the limit of 64 characters", async() => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeTypeForm onSubmit={onSubmitMock}/>)
 
             userEvent.clear(screen.getByLabelText(/name/i))
@@ -59,13 +61,14 @@ describe("Recipe type form", () => {
 
     describe("Submit action", () => {
         test.each([
-            ["creating", undefined, /^create recipe type$/i, {name: "The best recipe type"}],
-            ["updating", {id: 1, name: "The great recipe type"} as RecipeType, /^edit recipe type$/i, {
+            ["creating", undefined, /^create recipe type$/i, { name: "The best recipe type" }],
+            ["updating", { id: 1, name: "The great recipe type" } as RecipeType, /^edit recipe type$/i, {
                 id: 1,
                 name: "The best recipe type"
-            }],
-        ])("it provides the inputted values to the onSubmit callback while %s", async (_, initialValues, submitRegExp, expectedRecipeType) => {
+            }]
+        ])("it provides the inputted values to the onSubmit callback while %s", async(_, initialValues, submitRegExp, expectedRecipeType) => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeTypeForm initialValues={initialValues} onSubmit={onSubmitMock}/>)
 
             userEvent.clear(screen.getByLabelText(/name/i))
@@ -79,7 +82,7 @@ describe("Recipe type form", () => {
     describe("Reset action", () => {
         test.each([
             ["creating", undefined],
-            ["updating", {id: 1, name: "The great recipe type"} as RecipeType]
+            ["updating", { id: 1, name: "The great recipe type" } as RecipeType]
         ])("resets the form to the original values while %s", (_, initialValues) => {
             render(<RecipeTypeForm initialValues={initialValues} onSubmit={jest.fn}/>)
 

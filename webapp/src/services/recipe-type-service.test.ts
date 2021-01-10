@@ -1,7 +1,7 @@
 import axios from "axios"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "utils/error-handling"
-import createRecipeTypeService, {RecipeType} from "./recipe-type-service"
+import createRecipeTypeService, { RecipeType } from "./recipe-type-service"
 import ApiHandler from "./api-handler"
 
 const mockedAxios = new MockAdapter(axios)
@@ -16,8 +16,9 @@ describe("Recipe type service", () => {
     })
 
     describe("Find recipe type", () => {
-        it("finds a recipe type by id", async () => {
-            const expectedRecipeType: RecipeType = {id: 1, name: "A recipe type"}
+        it("finds a recipe type by id", async() => {
+            const expectedRecipeType: RecipeType = { id: 1, name: "A recipe type" }
+
             mockedAxios.onGet(`/recipetype/${expectedRecipeType.id}`)
                 .replyOnce(200, expectedRecipeType)
 
@@ -28,7 +29,7 @@ describe("Recipe type service", () => {
             expect(response).toStrictEqual(expectedRecipeType)
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onGet("/recipetype/1")
                 .replyOnce(404, {
                     code: "NOT_FOUND",
@@ -42,11 +43,12 @@ describe("Recipe type service", () => {
     })
 
     describe("Get all", () => {
-        it("gets all the recipe types", async () => {
-            const expectedRecipeTypes: Array<RecipeType> = [{id: 1, name: "A recipe type"}, {
+        it("gets all the recipe types", async() => {
+            const expectedRecipeTypes: Array<RecipeType> = [{ id: 1, name: "A recipe type" }, {
                 id: 2,
                 name: "Another recipe type"
             }]
+
             mockedAxios.onGet("/recipetype")
                 .replyOnce(200, expectedRecipeTypes)
 
@@ -57,7 +59,7 @@ describe("Recipe type service", () => {
             expect(response).toStrictEqual(expectedRecipeTypes)
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onGet("/recipetype")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
@@ -71,9 +73,10 @@ describe("Recipe type service", () => {
     })
 
     describe("Create", () => {
-        it("creates a recipe", async () => {
-            const recipeTypeToCreate = {name: "Fish"}
-            const expectedResponse = {id: 12345}
+        it("creates a recipe", async() => {
+            const recipeTypeToCreate = { name: "Fish" }
+            const expectedResponse = { id: 12345 }
+
             mockedAxios.onPost("/recipetype", recipeTypeToCreate)
                 .replyOnce(201, expectedResponse)
 
@@ -84,22 +87,23 @@ describe("Recipe type service", () => {
             expect(result).toStrictEqual(expectedResponse)
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onPost("/recipetype")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Database Error"
                 })
 
-            await service.create({name: ""}).catch(() => {
+            await service.create({ name: "" }).catch(() => {
                 expect(handleErrorsSpy).toHaveBeenCalled()
             })
         })
     })
 
     describe("Update", () => {
-        it("updates a recipe type", async () => {
-            const recipeTypeToUpdate = { id: 1, name: "A better recipe type"}
+        it("updates a recipe type", async() => {
+            const recipeTypeToUpdate = { id: 1, name: "A better recipe type" }
+
             mockedAxios.onPut("/recipetype", recipeTypeToUpdate)
                 .replyOnce(200)
 
@@ -110,22 +114,23 @@ describe("Recipe type service", () => {
 
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onPut("/recipetype")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Database Error"
                 })
 
-            await service.update({id: 123, name: ""}).catch(() => {
+            await service.update({ id: 123, name: "" }).catch(() => {
                 expect(handleErrorsSpy).toHaveBeenCalled()
             })
         })
     })
 
     describe("Delete", () => {
-        it("deletes a recipe type", async () => {
+        it("deletes a recipe type", async() => {
             const idToDelete = 709
+
             mockedAxios.onDelete(`/recipetype/${idToDelete}`)
                 .replyOnce(204)
 
@@ -136,7 +141,7 @@ describe("Recipe type service", () => {
 
         })
 
-        it("calls the error handler", async () => {
+        it("calls the error handler", async() => {
             mockedAxios.onDelete("/recipetype/1")
                 .replyOnce(500, {
                     code: "INTERNAL_SERVER_ERROR",

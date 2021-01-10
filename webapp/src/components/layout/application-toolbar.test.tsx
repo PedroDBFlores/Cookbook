@@ -1,15 +1,13 @@
 import React from "react"
 import ApplicationToolbar from "./application-toolbar"
-import {WrapperWithRouter, WrapperWithRoutes} from "../../../tests/render-helpers"
-import {render, screen} from "@testing-library/react"
+import { WrapperWithRouter, WrapperWithRoutes } from "../../../tests/render-helpers"
+import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
-jest.mock("components/theme-mode-toggler/theme-mode-toggler", () => {
-    return {
-        __esModule: true,
-        default: () => <>I'm the theme mode toggler</>
-    }
-})
+jest.mock("components/theme-mode-toggler/theme-mode-toggler", () => ({
+    __esModule: true,
+    default: () => <>I'm the theme mode toggler</>
+}))
 
 
 describe("Application Toolbar", () => {
@@ -43,20 +41,20 @@ describe("Application Toolbar", () => {
                 expectedRoute: "/recipe",
                 expectedContent: "The best recipes"
             }]
-        ])("navigates to the %s", (_, {elementText, expectedRoute, expectedContent}) => {
+        ])("navigates to the %s", (_, { elementText, expectedRoute, expectedContent }) => {
             render(<WrapperWithRoutes initialPath={"/apptoolbar"}
-                                      routeConfiguration={[
-                                          {
-                                              path: "/apptoolbar",
-                                              exact: true,
-                                              component: () => <ApplicationToolbar title="A title"/>
-                                          },
-                                          {
-                                              path: expectedRoute,
-                                              exact: true,
-                                              component: () => <>{expectedContent}</>
-                                          }
-                                      ]}
+                routeConfiguration={[
+                    {
+                        path: "/apptoolbar",
+                        exact: true,
+                        component: () => <ApplicationToolbar title="A title"/>
+                    },
+                    {
+                        path: expectedRoute,
+                        exact: true,
+                        component: () => <>{expectedContent}</>
+                    }
+                ]}
             />)
 
             userEvent.click(screen.getByText(elementText))

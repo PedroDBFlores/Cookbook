@@ -1,9 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {ButtonGroup, Grid, GridItem} from "@chakra-ui/react"
-import {Form, Formik, FormikValues} from "formik"
-import {InputControl, ResetButton, SubmitButton} from "formik-chakra-ui"
-import {RecipeType} from "services/recipe-type-service"
+import { ButtonGroup, Grid, GridItem } from "@chakra-ui/react"
+import { Form, Formik, FormikValues } from "formik"
+import { InputControl, ResetButton, SubmitButton } from "formik-chakra-ui"
+import { RecipeType } from "services/recipe-type-service"
 import * as yup from "yup"
 
 const RecipeTypeFormSchema = yup.object({
@@ -18,14 +18,14 @@ interface RecipeTypeFormProps {
     onSubmit: (recipeType: RecipeType) => void
 }
 
-const RecipeTypeForm: React.FC<RecipeTypeFormProps> = ({initialValues, onSubmit}) => {
+const RecipeTypeForm: React.FC<RecipeTypeFormProps> = ({ initialValues, onSubmit }) => {
     const isCreateMode = initialValues?.id === undefined
     const buttonLabel = isCreateMode ? "Create" : "Edit"
 
     const handleOnSubmit = (formValues: FormikValues) => onSubmit(formValues as RecipeType)
 
     return <Formik
-        initialValues={initialValues ?? {name: ""}}
+        initialValues={initialValues ?? { name: "" }}
         validateOnBlur={true}
         onSubmit={handleOnSubmit}
         validationSchema={RecipeTypeFormSchema}>
@@ -44,6 +44,7 @@ const RecipeTypeForm: React.FC<RecipeTypeFormProps> = ({initialValues, onSubmit}
         </Form>
     </Formik>
 }
+
 RecipeTypeForm.propTypes = {
     initialValues: PropTypes.any,
     onSubmit: PropTypes.func.isRequired

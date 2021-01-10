@@ -1,14 +1,14 @@
 import React from "react"
-import {fireEvent, render, screen, waitFor} from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import RecipeForm from "./recipe-form"
-import {Recipe} from "services/recipe-service"
-import {RecipeType} from "services/recipe-type-service"
+import { Recipe } from "services/recipe-service"
+import { RecipeType } from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
 describe("Recipe form", () => {
     const recipeTypes: Array<RecipeType> = [
-        {id: 1, name: "The first"},
-        {id: 2, name: "The second"}
+        { id: 1, name: "The first" },
+        { id: 2, name: "The second" }
     ]
 
     describe("Initial rendering", () => {
@@ -27,8 +27,8 @@ describe("Recipe form", () => {
         ])("renders the necessary elements for the %s form",
             (_, initialValues, submitRegExp) => {
                 render(<RecipeForm recipeTypes={recipeTypes}
-                                   initialValues={initialValues}
-                                   onSubmit={jest.fn()}/>)
+                    initialValues={initialValues}
+                    onSubmit={jest.fn()}/>)
 
                 expect(screen.getByLabelText(/^name$/i)).toBeInTheDocument()
                 expect(screen.getByLabelText(/^description$/i)).toBeInTheDocument()
@@ -43,7 +43,7 @@ describe("Recipe form", () => {
             [
                 "creating",
                 undefined,
-                {recipeTypeId: undefined, name: "", description: "", ingredients: "", preparingSteps: ""}
+                { recipeTypeId: undefined, name: "", description: "", ingredients: "", preparingSteps: "" }
             ],
             [
                 "updating",
@@ -65,8 +65,8 @@ describe("Recipe form", () => {
             ]
         ])("sets the initial values while %s", (_, initialValues, expectedValues) => {
             render(<RecipeForm recipeTypes={recipeTypes}
-                               initialValues={initialValues}
-                               onSubmit={jest.fn()}/>)
+                initialValues={initialValues}
+                onSubmit={jest.fn()}/>)
 
             expect(screen.getByLabelText(/^name$/i)).toHaveValue(expectedValues.name)
             expect(screen.getByLabelText(/^description$/i)).toHaveValue(expectedValues.description)
@@ -79,13 +79,15 @@ describe("Recipe form", () => {
     describe("Form validation", () => {
         test.each([
             ["Name is required", ""],
-            ["Name exceeds the character limit", "a".repeat(129)],
-        ])("it displays an error when '%s'", async (message, name) => {
+            ["Name exceeds the character limit", "a".repeat(129)]
+        ])("it displays an error when '%s'", async(message, name) => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeForm recipeTypes={recipeTypes}
-                               onSubmit={onSubmitMock}/>)
+                onSubmit={onSubmitMock}/>)
 
             const nameInput = await screen.findByLabelText(/^name$/i)
+
             userEvent.clear(nameInput)
             userEvent.paste(nameInput, name)
             userEvent.click(screen.getByLabelText(/create recipe/i))
@@ -96,13 +98,15 @@ describe("Recipe form", () => {
 
         test.each([
             ["Description is required", ""],
-            ["Description exceeds the character limit", "b".repeat(257)],
-        ])("it displays an error when '%s'", async (message, description) => {
+            ["Description exceeds the character limit", "b".repeat(257)]
+        ])("it displays an error when '%s'", async(message, description) => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeForm recipeTypes={recipeTypes}
-                               onSubmit={onSubmitMock}/>)
+                onSubmit={onSubmitMock}/>)
 
             const descriptionInput = await screen.findByLabelText(/^description$/i)
+
             userEvent.clear(descriptionInput)
             userEvent.paste(descriptionInput, description)
             userEvent.click(screen.getByLabelText(/create recipe/i))
@@ -111,10 +115,11 @@ describe("Recipe form", () => {
             expect(onSubmitMock).not.toHaveBeenCalled()
         })
 
-        it("displays an error if no recipe type is selected", async () => {
+        it("displays an error if no recipe type is selected", async() => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeForm recipeTypes={recipeTypes}
-                               onSubmit={onSubmitMock}/>)
+                onSubmit={onSubmitMock}/>)
 
             userEvent.selectOptions(await screen.findByLabelText("Recipe type"), "")
             userEvent.click(screen.getByLabelText(/create recipe/i))
@@ -124,13 +129,15 @@ describe("Recipe form", () => {
 
         test.each([
             ["Ingredients is required", ""],
-            ["Ingredients exceeds the character limit", "i".repeat(2049)],
-        ])("it displays an error when '%s'", async (message, ingredients) => {
+            ["Ingredients exceeds the character limit", "i".repeat(2049)]
+        ])("it displays an error when '%s'", async(message, ingredients) => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeForm recipeTypes={recipeTypes}
-                               onSubmit={onSubmitMock}/>)
+                onSubmit={onSubmitMock}/>)
 
             const ingredientsInput = await screen.findByLabelText(/^ingredients$/i)
+
             userEvent.clear(ingredientsInput)
             userEvent.paste(ingredientsInput, ingredients)
             userEvent.click(screen.getByLabelText(/create recipe/i))
@@ -141,13 +148,15 @@ describe("Recipe form", () => {
 
         test.each([
             ["Preparing steps is required", ""],
-            ["Preparing steps exceeds the character limit", "i".repeat(4099)],
-        ])("it displays an error when '%s'", async (message, preparingSteps) => {
+            ["Preparing steps exceeds the character limit", "i".repeat(4099)]
+        ])("it displays an error when '%s'", async(message, preparingSteps) => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeForm recipeTypes={recipeTypes}
-                               onSubmit={onSubmitMock}/>)
+                onSubmit={onSubmitMock}/>)
 
             const preparingStepsInput = await screen.findByLabelText(/^preparing steps$/i)
+
             userEvent.clear(preparingStepsInput)
             userEvent.paste(preparingStepsInput, preparingSteps)
             userEvent.click(screen.getByLabelText(/create recipe/i))
@@ -189,20 +198,22 @@ describe("Recipe form", () => {
                     preparingSteps: "Four"
                 }
             }]
-        ])("it provides the inputted values to the onSubmit callback while %s", async (_, {
+        ])("it provides the inputted values to the onSubmit callback while %s", async(_, {
             initialValues,
             submitRegExp,
             expectedRecipeCalled
         }) => {
             const onSubmitMock = jest.fn()
+
             render(<RecipeForm recipeTypes={recipeTypes}
-                               initialValues={initialValues}
-                               onSubmit={onSubmitMock}/>)
+                initialValues={initialValues}
+                onSubmit={onSubmitMock}/>)
 
             const nameInput = screen.getByLabelText(/^name$/i)
             const descriptionInput = screen.getByLabelText(/^description$/i)
             const ingredientsInput = screen.getByLabelText(/^ingredients$/i)
             const preparingStepsInput = screen.getByLabelText(/^preparing steps$/i)
+
             userEvent.clear(nameInput)
             userEvent.clear(descriptionInput)
             userEvent.clear(ingredientsInput)
@@ -233,13 +244,14 @@ describe("Recipe form", () => {
             ]
         ])("resets the form to the original values while %s", (_, initialValues) => {
             render(<RecipeForm recipeTypes={recipeTypes}
-                               initialValues={initialValues}
-                               onSubmit={jest.fn()}/>)
+                initialValues={initialValues}
+                onSubmit={jest.fn()}/>)
             const nameInput = screen.getByLabelText(/name/i)
             const descriptionInput = screen.getByLabelText(/description/i)
             const recipeTypeInput = screen.getByLabelText(/^recipe type$/i)
             const ingredientsInput = screen.getByLabelText(/ingredients/i)
             const preparingStepsInput = screen.getByLabelText(/preparing steps/i)
+
             userEvent.clear(nameInput)
             userEvent.clear(descriptionInput)
             userEvent.selectOptions(recipeTypeInput, "")

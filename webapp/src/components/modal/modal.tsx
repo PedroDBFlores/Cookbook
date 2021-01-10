@@ -21,12 +21,12 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({
-                                         title,
-                                         content,
-                                         actionText,
-                                         onAction,
-                                         onClose
-                                     }) => <ChakraModal isOpen={true} onClose={onClose}>
+    title,
+    content,
+    actionText,
+    onAction,
+    onClose
+}) => <ChakraModal isOpen={true} onClose={onClose}>
     <ModalOverlay/>
     <ModalContent>
         <ModalHeader>{title}</ModalHeader>
