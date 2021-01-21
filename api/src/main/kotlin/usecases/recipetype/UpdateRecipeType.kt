@@ -8,7 +8,7 @@ class UpdateRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
     operator fun invoke(parameters: Parameters) {
         val (id, name) = parameters
 
-        require(recipeTypeRepository.find(id) != null) {
+        check(recipeTypeRepository.find(id) != null) {
             throw RecipeTypeNotFound(id = id)
         }
 

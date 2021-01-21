@@ -6,10 +6,7 @@ import ports.RecipeTypeRepository
 class DeleteRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
 
     operator fun invoke(parameters: Parameters) {
-        val (recipeTypeId) = parameters
-
-        val deleted = recipeTypeRepository.delete(recipeTypeId)
-        if (!deleted) throw RecipeTypeNotFound(recipeTypeId)
+        if (!recipeTypeRepository.delete(parameters.recipeTypeId)) throw RecipeTypeNotFound(parameters.recipeTypeId)
     }
 
     data class Parameters(val recipeTypeId: Int)

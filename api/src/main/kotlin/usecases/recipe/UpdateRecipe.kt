@@ -6,7 +6,7 @@ import ports.RecipeRepository
 
 class UpdateRecipe(private val recipeRepository: RecipeRepository) {
     operator fun invoke(parameters: Parameters) {
-        require(recipeRepository.find(parameters.id) != null) {
+        check(recipeRepository.find(parameters.id) != null) {
             throw RecipeNotFound(id = parameters.id)
         }
 

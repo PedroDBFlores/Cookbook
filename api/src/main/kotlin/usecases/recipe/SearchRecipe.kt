@@ -5,17 +5,14 @@ import model.SearchResult
 import ports.RecipeRepository
 
 class SearchRecipe(private val recipeRepository: RecipeRepository) {
-    operator fun invoke(parameters: Parameters): SearchResult<Recipe> {
-        val (name, description, recipeTypeId, pageNumber, itemsPerPage) = parameters
-
-        return recipeRepository.search(
-            name = name,
-            description = description,
-            recipeTypeId = recipeTypeId,
-            pageNumber = pageNumber,
-            itemsPerPage = itemsPerPage
+    operator fun invoke(parameters: Parameters): SearchResult<Recipe> =
+        recipeRepository.search(
+            name = parameters.name,
+            description = parameters.description,
+            recipeTypeId = parameters.recipeTypeId,
+            pageNumber = parameters.pageNumber,
+            itemsPerPage = parameters.itemsPerPage
         )
-    }
 
     data class Parameters(
         val name: String? = null,

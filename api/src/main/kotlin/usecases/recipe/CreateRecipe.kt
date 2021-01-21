@@ -4,9 +4,8 @@ import model.Recipe
 import ports.RecipeRepository
 
 class CreateRecipe(private val recipeRepository: RecipeRepository) {
-    operator fun invoke(parameters: Parameters): Int {
-        return recipeRepository.create(parameters.toRecipe())
-    }
+    operator fun invoke(parameters: Parameters): Int =
+        recipeRepository.create(parameters.toRecipe())
 
     data class Parameters(
         val recipeTypeId: Int,
