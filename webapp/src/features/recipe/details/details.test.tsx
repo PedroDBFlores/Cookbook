@@ -41,17 +41,14 @@ describe("Recipe details component", () => {
     beforeEach(jest.clearAllMocks)
 
     it("renders the recipe details component", async() => {
-        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-
         findRecipeMock.mockResolvedValueOnce(baseRecipe)
 
-        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+        render(<WrapWithCommonContexts>
             <RecipeDetails id={123} />
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/^recipe details$/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
-        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeMock).toHaveBeenCalledWith(123)
         expect(await screen.findByText(/^Id$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Name$/i)).toBeInTheDocument()

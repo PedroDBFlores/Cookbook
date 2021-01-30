@@ -24,7 +24,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
     fun createTestServer(searchRecipe: SearchRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            post("/recipe/search") { SearchRecipeHandler(searchRecipe).handle(call) }
+            post("/api/recipe/search") { SearchRecipeHandler(searchRecipe).handle(call) }
         }
     }
 
@@ -56,7 +56,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
 
             withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
                 with(
-                    handleRequest(HttpMethod.Post, "/recipe/search") {
+                    handleRequest(HttpMethod.Post, "/api/recipe/search") {
                         setBody(requestBody)
                         addHeader("Content-Type", "application/json")
                     }
@@ -78,7 +78,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
 
                 withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
                     with(
-                        handleRequest(HttpMethod.Post, "/recipe/search") {
+                        handleRequest(HttpMethod.Post, "/api/recipe/search") {
                             setBody(jsonBody)
                             addHeader("Content-Type", "application/json")
                         }

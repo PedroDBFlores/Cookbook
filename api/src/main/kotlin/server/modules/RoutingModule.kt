@@ -2,6 +2,7 @@ package server.modules
 
 import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.kodein.di.instance
@@ -13,12 +14,19 @@ import web.recipetype.*
 
 fun Application.routingModule() {
     routing {
+        staticRoute()
         healthCheckRoute()
         recipeTypeRoutes()
         recipeRoutes()
-
         optionsRoutes()
     }
+}
+
+fun Routing.staticRoute() {
+    static("/") {
+        resources(resourcePackage = "static")
+    }
+    defaultResource(resource = "index.html", resourcePackage = "static")
 }
 
 fun Routing.optionsRoutes() {
@@ -27,22 +35,27 @@ fun Routing.optionsRoutes() {
         respond(HttpStatusCode.OK)
     }
 
+    //Root route
+    options("/"){
+        call.handleOptionsHeaders("GET")
+    }
+
     // Recipe type
-    options("recipetype") {
+    options("/api/recipetype") {
         call.handleOptionsHeaders("GET,POST,PUT")
     }
-    options("recipetype/{id}") {
+    options("/api/recipetype/{id}") {
         call.handleOptionsHeaders("GET,DELETE")
     }
 
     // Recipe
-    options("recipe") {
+    options("/api/recipe") {
         call.handleOptionsHeaders("GET,POST,PUT")
     }
-    options("recipe/{id}") {
+    options("/api/recipe/{id}") {
         call.handleOptionsHeaders("GET,DELETE")
     }
-    options("recipe/search") {
+    options("/api/recipe/search") {
         call.handleOptionsHeaders("POST")
     }
 }
@@ -54,7 +67,7 @@ fun Routing.healthCheckRoute() {
 }
 
 fun Routing.recipeTypeRoutes() {
-    route("recipetype") {
+    route("/api/recipetype") {
         get {
             val useCase by call.di().instance<GetAllRecipeTypes>()
             GetAllRecipeTypesHandler(useCase).handle(call)
@@ -79,7 +92,7 @@ fun Routing.recipeTypeRoutes() {
 }
 
 fun Routing.recipeRoutes() {
-    route("recipe") {
+    route("/api/recipe") {
         get {
             val useCase by call.di().instance<GetAllRecipes>()
             GetAllRecipesHandler(useCase).handle(call)

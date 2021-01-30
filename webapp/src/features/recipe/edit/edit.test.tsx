@@ -62,17 +62,13 @@ describe("Edit recipe component", () => {
     }))
 
     it("renders the initial layout", async() => {
-        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-
-        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+        render(<WrapWithCommonContexts>
             <EditRecipe id={1}/>
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/Edit recipe/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
         expect(await screen.findByText(/Edit recipe form/i)).toBeInTheDocument()
-        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeMock).toHaveBeenCalledWith(1)
         expect(getRecipeTypesMock).toHaveBeenCalled()
     })

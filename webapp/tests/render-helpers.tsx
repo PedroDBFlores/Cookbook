@@ -1,13 +1,11 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { MemoryRouter, Route, Switch } from "react-router-dom"
-import { AxiosInstance } from "axios"
-import { ApiHandlerContext } from "../src/services/api-handler"
-import { WithModal } from "../src/components/modal/modal-context"
+import {MemoryRouter, Route, Switch} from "react-router-dom"
+import {WithModal} from "../src/components/modal/modal-context"
 
 const MemoryRouterWrapper: React.FC<{ initialPath: string }> =
-    ({ children, initialPath }) =>
-        <MemoryRouter initialEntries={[{ pathname: initialPath }]}>
+    ({children, initialPath}) =>
+        <MemoryRouter initialEntries={[{pathname: initialPath}]}>
             <Switch>
                 {children}
             </Switch>
@@ -27,9 +25,9 @@ interface WrapperWithRouterProps {
 }
 
 export const WrapperWithRoutes: React.FC<WrapperWithRouterProps> = ({
-    initialPath = "/",
-    routeConfiguration
-}) =>
+                                                                        initialPath = "/",
+                                                                        routeConfiguration
+                                                                    }) =>
     <MemoryRouterWrapper initialPath={initialPath}>
         {
             routeConfiguration.map(routeConfiguration => <Route
@@ -41,7 +39,7 @@ WrapperWithRoutes.propTypes = {
     routeConfiguration: PropTypes.array.isRequired
 }
 
-export const WrapperWithRouter: React.FC = ({ children }) => <WrapperWithRoutes
+export const WrapperWithRouter: React.FC = ({children}) => <WrapperWithRoutes
     routeConfiguration={[
         {
             path: "/",
@@ -51,19 +49,13 @@ export const WrapperWithRouter: React.FC = ({ children }) => <WrapperWithRoutes
     }
 />
 
-interface WrapperWithCommonContexts {
-    apiHandler?: () => AxiosInstance
-}
 
-export const WrapWithCommonContexts: React.FC<WrapperWithCommonContexts> = ({
-    children,
-    apiHandler = jest.fn()
-}) => (
-    <ApiHandlerContext.Provider value={apiHandler()}>
-        <WithModal>
-            {children}
-        </WithModal>
-    </ApiHandlerContext.Provider>
+export const WrapWithCommonContexts: React.FC = ({
+                                                     children,
+                                                 }) => (
+    <WithModal>
+        {children}
+    </WithModal>
 )
 
 WrapWithCommonContexts.propTypes = {

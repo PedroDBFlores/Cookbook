@@ -4,7 +4,6 @@ import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
 import { MdDelete, MdEdit } from "react-icons/md"
 import { useHistory } from "react-router-dom"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import { ApiHandlerContext } from "services/api-handler"
 import { Button, ButtonGroup, Grid, GridItem, Text, useToast } from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
@@ -16,7 +15,7 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
     const history = useHistory()
     const toast = useToast()
 
-    const { find, delete: deleteRecipeType } = createRecipeTypeService(useContext(ApiHandlerContext))
+    const { find, delete: deleteRecipeType } = createRecipeTypeService()
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current,

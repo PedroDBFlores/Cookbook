@@ -1,5 +1,5 @@
-import { AxiosInstance } from "axios"
-import { CreateResult } from "model"
+import axios from "axios"
+import {CreateResult} from "model"
 import handleApiError from "utils/error-handling"
 
 export interface RecipeTypeService {
@@ -14,9 +14,9 @@ export interface RecipeTypeService {
     delete(id: number): Promise<void>
 }
 
-const findRecipeType = (instance: AxiosInstance) => async(id: number): Promise<RecipeType> => {
+const findRecipeType = () => async (id: number): Promise<RecipeType> => {
     try {
-        const response = await instance.get<RecipeType>(`/recipetype/${id}`)
+        const response = await axios.get<RecipeType>(`/api/recipetype/${id}`)
 
         return response.data
     } catch (err) {
@@ -24,9 +24,9 @@ const findRecipeType = (instance: AxiosInstance) => async(id: number): Promise<R
     }
 }
 
-const getAllRecipeTypes = (instance: AxiosInstance) => async(): Promise<Array<RecipeType>> => {
+const getAllRecipeTypes = () => async (): Promise<Array<RecipeType>> => {
     try {
-        const response = await instance.get<Array<RecipeType>>("/recipetype")
+        const response = await axios.get<Array<RecipeType>>("/api/recipetype")
 
         return response.data
     } catch (err) {
@@ -34,9 +34,9 @@ const getAllRecipeTypes = (instance: AxiosInstance) => async(): Promise<Array<Re
     }
 }
 
-const createRecipeType = (instance: AxiosInstance) => async(recipeType: Omit<RecipeType, "id">): Promise<CreateResult> => {
+const createRecipeType = () => async (recipeType: Omit<RecipeType, "id">): Promise<CreateResult> => {
     try {
-        const response = await instance.post<CreateResult>("/recipetype", recipeType)
+        const response = await axios.post<CreateResult>("/api/recipetype", recipeType)
 
         return response.data
     } catch (err) {
@@ -44,31 +44,31 @@ const createRecipeType = (instance: AxiosInstance) => async(recipeType: Omit<Rec
     }
 }
 
-const updateRecipeType = (instance: AxiosInstance) => async(recipeType: RecipeType): Promise<void> => {
+const updateRecipeType = () => async (recipeType: RecipeType): Promise<void> => {
     try {
-        await instance.put("/recipetype", recipeType)
+        await axios.put("/api/recipetype", recipeType)
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const deleteRecipeType = (instance: AxiosInstance) => async(id: number): Promise<void> => {
+const deleteRecipeType = () => async (id: number): Promise<void> => {
     try {
-        await instance.delete(`/recipetype/${id}`)
+        await axios.delete(`/api/recipetype/${id}`)
     } catch (err) {
         throw handleApiError(err)
     }
 }
 
-const createRecipeTypeService = (instance: AxiosInstance): RecipeTypeService => ({
-    find: findRecipeType(instance),
-    getAll: getAllRecipeTypes(instance),
-    create: createRecipeType(instance),
-    update: updateRecipeType(instance),
-    delete: deleteRecipeType(instance)
+const createRecipeTypeService = (): RecipeTypeService => ({
+    find: findRecipeType(),
+    getAll: getAllRecipeTypes(),
+    create: createRecipeType(),
+    update: updateRecipeType(),
+    delete: deleteRecipeType()
 })
 
-export interface RecipeType{
+export interface RecipeType {
     id: number
     name: string
 }

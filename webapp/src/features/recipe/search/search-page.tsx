@@ -4,7 +4,6 @@ import RecipeSearchForm, { RecipeSearchFormData } from "./search-form"
 import createRecipeService, { RecipeDetails } from "services/recipe-service"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
 import { useHistory } from "react-router-dom"
-import { ApiHandlerContext } from "services/api-handler"
 import { Button, Grid, GridItem, Text, useToast } from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
@@ -35,8 +34,8 @@ const RecipeSearchPage: React.FC = () => {
     const { setModalState } = useContext(ModalContext)
     const history = useHistory()
 
-    const { search, delete: deleteRecipe } = createRecipeService(useContext(ApiHandlerContext))
-    const { getAll: getAllRecipeTypes } = createRecipeTypeService(useContext(ApiHandlerContext))
+    const { search, delete: deleteRecipe } = createRecipeService()
+    const { getAll: getAllRecipeTypes } = createRecipeTypeService()
     const getAllRecipeTypesRef = useRef(getAllRecipeTypes)
     const getAllRecipeTypesState = useAsync<Array<RecipeType>>({
         promiseFn: getAllRecipeTypesRef.current,

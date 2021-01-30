@@ -5,6 +5,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.36.0"
     id("com.adarshr.test-logger") version "2.1.1"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("com.github.node-gradle.node") version "3.0.0-rc7"
 }
 
 group = "pt.pedro"
@@ -95,4 +96,23 @@ task<Test>("testIntegration") {
 
 ktlint {
     disabledRules.set(setOf("no-wildcard-imports"))
+}
+
+/* Frontend building and Dockerizing */
+
+node {
+    download.set(false)
+    npmInstallCommand.set("ci")
+    nodeProjectDir.set(File("${projectDir}/../webapp"))
+}
+
+tasks.register("Build frontend", com.github.gradle.node.npm.task.NpmTask::class) {
+    // dependsOn("npmInstall")
+    args.set(listOf("run", "build"))
+    doLast {
+        copy {
+            from(File("${projectDir}/../webapp/dist"))
+            into("${projectDir}/src/main/resources/static")
+        }
+    }
 }

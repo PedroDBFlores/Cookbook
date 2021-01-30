@@ -1,12 +1,11 @@
-import React, { useContext, useRef } from "react"
+import React, {useRef} from "react"
 import PropTypes from "prop-types"
-import { FormikValues } from "formik"
-import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import createRecipeService, { Recipe, RecipeDetails } from "services/recipe-service"
-import { useHistory } from "react-router-dom"
-import { ApiHandlerContext } from "services/api-handler"
-import { Text, useToast } from "@chakra-ui/react"
-import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
+import {FormikValues} from "formik"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
+import createRecipeService, {Recipe, RecipeDetails} from "services/recipe-service"
+import {useHistory} from "react-router-dom"
+import {Text, useToast} from "@chakra-ui/react"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Loader from "components/loader/loader"
 import RecipeForm from "components/recipe-form/recipe-form"
 import Section from "components/section/section"
@@ -19,8 +18,8 @@ const EditRecipe: React.FC<EditRecipeProps> = ({ id }) => {
     const history = useHistory()
     const toast = useToast()
 
-    const { getAll: getAllRecipeTypes } = createRecipeTypeService(useContext(ApiHandlerContext))
-    const { find, update } = createRecipeService(useContext(ApiHandlerContext))
+    const { getAll: getAllRecipeTypes } = createRecipeTypeService()
+    const { find, update } = createRecipeService()
     const getAllRecipeTypesRef = useRef(getAllRecipeTypes)
     const getAllRecipeTypesState = useAsync<Array<RecipeType>>({
         promiseFn: getAllRecipeTypesRef.current,

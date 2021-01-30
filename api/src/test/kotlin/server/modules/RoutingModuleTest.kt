@@ -3,6 +3,7 @@ package server.modules
 import io.kotest.assertions.ktor.shouldHaveHeader
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -39,6 +40,21 @@ class RoutingModuleTest : DescribeSpec({
     }
 
     describe("Routing module test") {
+        it("checks that getting from '/' serves static content") {
+            withTestApplication(moduleFunction = createTestServer()) {
+                with(handleRequest(HttpMethod.Get, "/")) {
+                    with(response) {
+                        status().shouldBe(HttpStatusCode.OK)
+                        contentType().shouldBe(ContentType.parse("text/html; charset=UTF-8"))
+                        content.shouldContain("I'm a great HTML application")
+                    }
+                }
+                with(handleRequest(HttpMethod.Options, "/")) {
+                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET")
+                }
+            }
+        }
+
         it("checks that the health check endpoint is mapped") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Get, "/health-check")) {
@@ -52,10 +68,10 @@ class RoutingModuleTest : DescribeSpec({
 
         it("checks that the routes for the recipe types are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
-                with(handleRequest(HttpMethod.Options, "/recipetype")) {
+                with(handleRequest(HttpMethod.Options, "/api/recipetype")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,POST,PUT")
                 }
-                with(handleRequest(HttpMethod.Options, "/recipetype/123")) {
+                with(handleRequest(HttpMethod.Options, "/api/recipetype/123")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")
                 }
             }
@@ -63,13 +79,13 @@ class RoutingModuleTest : DescribeSpec({
 
         it("checks that the routes for the recipe are mapped with OPTIONS handler") {
             withTestApplication(moduleFunction = createTestServer()) {
-                with(handleRequest(HttpMethod.Options, "/recipe")) {
+                with(handleRequest(HttpMethod.Options, "/api/recipe")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,POST,PUT")
                 }
-                with(handleRequest(HttpMethod.Options, "/recipe/123")) {
+                with(handleRequest(HttpMethod.Options, "/api/recipe/123")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "GET,DELETE")
                 }
-                with(handleRequest(HttpMethod.Options, "/recipe/search")) {
+                with(handleRequest(HttpMethod.Options, "/api/recipe/search")) {
                     response.shouldHaveHeader("Access-Control-Allow-Methods", "POST")
                 }
             }

@@ -14,7 +14,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
 
     fun createTestServer(deleteRecipe: DeleteRecipe): Application.() -> Unit = {
         routing {
-            delete("/recipe/{id}") { DeleteRecipeHandler(deleteRecipe).handle(call) }
+            delete("/api/recipe/{id}") { DeleteRecipeHandler(deleteRecipe).handle(call) }
         }
     }
 
@@ -25,7 +25,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(deleteRecipeMock)) {
-                with(handleRequest(HttpMethod.Delete, "/recipe/1")) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipe/1")) {
                     response.status().shouldBe(HttpStatusCode.NoContent)
                     verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(1)) }
                 }
@@ -46,7 +46,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
                 val deleteRecipeMock = mockk<DeleteRecipe>()
 
                 withTestApplication(moduleFunction = createTestServer(deleteRecipeMock)) {
-                    with(handleRequest(HttpMethod.Delete, "/recipe/$pathParam")) {
+                    with(handleRequest(HttpMethod.Delete, "/api/recipe/$pathParam")) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { deleteRecipeMock wasNot called }
                     }

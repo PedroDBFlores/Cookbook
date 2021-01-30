@@ -54,14 +54,10 @@ describe("Create recipe component", () => {
     beforeEach(() => getRecipeTypesMock.mockClear())
 
     it("renders the initial form", async() => {
-        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-
-        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+        render(<WrapWithCommonContexts>
             <CreateRecipe/>
         </WrapWithCommonContexts>)
 
-        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(getRecipeTypesMock).toHaveBeenCalled()
         expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()

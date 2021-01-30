@@ -7,11 +7,11 @@ const devConfig = merge(commonConfig, {
     devServer: {
         contentBase: "./",
         historyApiFallback: true,
-        port: 8080
+        port: 8080,
+        proxy: {
+            "/api": "http://localhost:9000"
+        }
     },
-    // plugins: [
-    //     new BundleAnalyzerPlugin()
-    // ]
 })
 
 export default devConfig

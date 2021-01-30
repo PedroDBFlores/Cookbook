@@ -1,11 +1,10 @@
-import React, { useContext, useRef } from "react"
+import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
-import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
-import { MdDelete, MdEdit } from "react-icons/md"
-import { ApiHandlerContext } from "services/api-handler"
-import { useHistory } from "react-router-dom"
-import createRecipeService, { RecipeDetails as RecipeDetail } from "services/recipe-service"
-import { Button, ButtonGroup, Grid, GridItem, Text, useToast } from "@chakra-ui/react"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
+import {MdDelete, MdEdit} from "react-icons/md"
+import {useHistory} from "react-router-dom"
+import createRecipeService, {RecipeDetails as RecipeDetail} from "services/recipe-service"
+import {Button, ButtonGroup, Grid, GridItem, Text, useToast} from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
 import DataDisplay from "../../../components/data-display/data-display"
@@ -16,7 +15,7 @@ const RecipeDetails: React.FC<{ id: number }> = ({ id }) => {
     const history = useHistory()
     const toast = useToast()
 
-    const { find, delete: deleteRecipe } = createRecipeService(useContext(ApiHandlerContext))
+    const { find, delete: deleteRecipe } = createRecipeService()
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeDetail>({
         promiseFn: findPromiseRef.current,

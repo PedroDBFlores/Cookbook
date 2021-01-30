@@ -17,7 +17,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
     fun createTestServer(updateRecipeType: UpdateRecipeType): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            put("/recipetype") { UpdateRecipeTypeHandler(updateRecipeType).handle(call) }
+            put("/api/recipetype") { UpdateRecipeTypeHandler(updateRecipeType).handle(call) }
         }
     }
 
@@ -33,7 +33,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
             withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
                 with(
-                    handleRequest(HttpMethod.Put, "/recipetype") {
+                    handleRequest(HttpMethod.Put, "/api/recipetype") {
                         setBody(requestBody)
                         addHeader("Content-Type", "application/json")
                     }
@@ -65,7 +65,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
                 withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
                     with(
-                        handleRequest(HttpMethod.Put, "/recipetype") {
+                        handleRequest(HttpMethod.Put, "/api/recipetype") {
                             setBody(jsonBody)
                             addHeader("Content-Type", "application/json")
                         }

@@ -20,7 +20,7 @@ internal class GetAllRecipesHandlerTest : DescribeSpec({
     fun createTestServer(getAllRecipes: GetAllRecipes): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            get("/recipe") { GetAllRecipesHandler(getAllRecipes).handle(call) }
+            get("/api/recipe") { GetAllRecipesHandler(getAllRecipes).handle(call) }
         }
     }
 
@@ -45,7 +45,7 @@ internal class GetAllRecipesHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(getAllRecipes)) {
-                with(handleRequest(HttpMethod.Get, "/recipe")) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe")) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedRecipes.toJson())
                     verify(exactly = 1) { getAllRecipes() }

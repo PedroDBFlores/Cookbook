@@ -35,16 +35,13 @@ describe("Edit recipe type", () => {
     beforeEach(jest.clearAllMocks)
 
     it("renders the initial form", async() => {
-        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
 
-        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+        render(<WrapWithCommonContexts>
             <EditRecipeType id={1}/>
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/loading.../i)).toBeInTheDocument()
-        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
         expect(findRecipeTypeMock).toHaveBeenCalledWith(1)
         expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
         expect(await screen.findByText(/edit recipe type form/i)).toBeInTheDocument()

@@ -1,13 +1,12 @@
-import React, { useContext } from "react"
+import React from "react"
 import { useHistory } from "react-router-dom"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import { ApiHandlerContext } from "services/api-handler"
 import { useToast } from "@chakra-ui/react"
 import RecipeTypeForm from "../../../components/recipe-type-form/recipe-type-form"
 import Section from "components/section/section"
 
 const CreateRecipeType: React.FC = () => {
-    const { create } = createRecipeTypeService(useContext(ApiHandlerContext))
+    const { create } = createRecipeTypeService()
     const toast = useToast()
     const history = useHistory()
 

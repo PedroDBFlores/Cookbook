@@ -25,7 +25,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
     fun createTestServer(createRecipeType: CreateRecipeType): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            post("/recipetype") { CreateRecipeTypeHandler(createRecipeType).handle(call) }
+            post("/api/recipetype") { CreateRecipeTypeHandler(createRecipeType).handle(call) }
         }
     }
 
@@ -38,7 +38,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
             withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
                 with(
-                    handleRequest(HttpMethod.Post, "/recipetype") {
+                    handleRequest(HttpMethod.Post, "/api/recipetype") {
                         setBody(jsonBody)
                         addHeader("Content-Type", "application/json")
                     }
@@ -58,7 +58,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
             shouldThrow<RecipeTypeAlreadyExists> {
                 withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
-                    handleRequest(HttpMethod.Post, "/recipetype") {
+                    handleRequest(HttpMethod.Post, "/api/recipetype") {
                         setBody(jsonBody)
                         addHeader("Content-Type", "application/json")
                     }
@@ -75,7 +75,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
                 withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
                     with(
-                        handleRequest(HttpMethod.Post, "/recipetype") {
+                        handleRequest(HttpMethod.Post, "/api/recipetype") {
                             setBody(requestBody)
                             addHeader("Content-Type", "application/json")
                         }

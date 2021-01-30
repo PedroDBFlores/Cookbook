@@ -110,15 +110,13 @@ describe("Search recipe page component", () => {
     })
 
     it("renders the initial component", async() => {
-        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-
         searchRecipesMock.mockResolvedValueOnce({
             count: 0,
             numberOfPages: 1,
             results: []
         } as SearchResult<RecipeDetails>)
 
-        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+        render(<WrapWithCommonContexts>
             <RecipeSearchPage/>
         </WrapWithCommonContexts>)
 
@@ -129,8 +127,6 @@ describe("Search recipe page component", () => {
         expect(screen.getByText("Meat")).toBeInTheDocument()
         expect(screen.getByText("Search Recipe List")).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
-        expect(createRecipeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
-        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
     })
 
     it("renders an error if fetching the recipe types fails", async() => {

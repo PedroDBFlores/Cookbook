@@ -33,15 +33,12 @@ describe("Create recipe type", () => {
     beforeEach(jest.clearAllMocks)
 
     it("renders the initial form", () => {
-        const apiHandlerMock = jest.fn().mockReturnValue("My api handler")
-
-        render(<WrapWithCommonContexts apiHandler={apiHandlerMock}>
+        render(<WrapWithCommonContexts>
             <CreateRecipeType/>
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
         expect(screen.getByText(/Create recipe type form/i)).toBeInTheDocument()
-        expect(createRecipeTypeServiceMock).toHaveBeenCalledWith(apiHandlerMock())
     })
 
     it("creates the recipe type in the Cookbook API and navigates to the details", async() => {

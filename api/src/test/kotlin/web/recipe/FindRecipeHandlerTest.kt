@@ -22,7 +22,7 @@ internal class FindRecipeHandlerTest : DescribeSpec({
     fun createTestServer(findRecipe: FindRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
-            get("/recipe/{id}") { FindRecipeHandler(findRecipe).handle(call) }
+            get("/api/recipe/{id}") { FindRecipeHandler(findRecipe).handle(call) }
         }
     }
 
@@ -42,7 +42,7 @@ internal class FindRecipeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-                with(handleRequest(HttpMethod.Get, "/recipe/${expectedRecipe.id}")) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedRecipe.toJson())
                     verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
@@ -64,7 +64,7 @@ internal class FindRecipeHandlerTest : DescribeSpec({
                 val findRecipe = mockk<FindRecipe>()
 
                 withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-                    with(handleRequest(HttpMethod.Get, "/recipe/$pathParam")) {
+                    with(handleRequest(HttpMethod.Get, "/api/recipe/$pathParam")) {
                         response.status().shouldBe(HttpStatusCode.BadRequest)
                         verify { findRecipe wasNot called }
                     }

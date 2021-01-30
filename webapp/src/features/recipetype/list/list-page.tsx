@@ -1,15 +1,14 @@
-import React, { useContext, useRef } from "react"
+import React, { useRef } from "react"
 import RecipeTypeList from "./list"
 import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
 import { useHistory } from "react-router-dom"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import { ApiHandlerContext } from "services/api-handler"
 import { Button, useToast, Text } from "@chakra-ui/react"
 import Loader from "components/loader/loader"
 import Section from "components/section/section"
 
 const RecipeTypeListPage: React.FC = () => {
-    const { getAll, delete: deleteRecipeType } = createRecipeTypeService(useContext(ApiHandlerContext))
+    const { getAll, delete: deleteRecipeType } = createRecipeTypeService()
     const history = useHistory()
     const toast = useToast()
 
