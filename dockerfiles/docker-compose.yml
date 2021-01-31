@@ -11,10 +11,10 @@ services:
     networks:
       - cookbook-network
     environment:
-      - COOKBOOK_API_PORT=9000
-      - COOKBOOK_DATABASE_JDBCURL=jdbc:mysql://cookbook-database:3306/cookbook
-      - COOKBOOK_DATABASE_USERNAME=root
-      - COOKBOOK_DATABASE_PASSWORD=am!28--zQ
+      - API_PORT=9000
+      - DATABASE_URL=jdbc:mysql://cookbook-database:3306/cookbook
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=am!28--zQ
   cookbook-database:
     container_name: cookbook-database
     image: mysql:latest
