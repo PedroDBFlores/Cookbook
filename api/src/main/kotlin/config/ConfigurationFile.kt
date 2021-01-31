@@ -9,7 +9,6 @@ data class ConfigurationFile(
         val testing: Boolean
     )
     data class DatabaseSettings(
-        val driver: String,
         val jdbcUrl: String,
         val username: String,
         val password: String

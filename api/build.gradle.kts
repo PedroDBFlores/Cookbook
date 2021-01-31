@@ -5,7 +5,6 @@ plugins {
     id("com.github.ben-manes.versions") version "0.36.0"
     id("com.adarshr.test-logger") version "2.1.1"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
-    // id("com.github.node-gradle.node") version "3.0.0-rc7"
 }
 
 group = "pt.pedro"

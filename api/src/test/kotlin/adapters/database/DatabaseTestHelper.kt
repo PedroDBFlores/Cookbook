@@ -19,7 +19,6 @@ object DatabaseTestHelper {
         val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/application.conf")
         val dataSource = HikariDataSource()
         with(configuration.database) {
-            dataSource.driverClassName = driver
             dataSource.jdbcUrl = jdbcUrl
             dataSource.username = username
             dataSource.password = password

@@ -22,7 +22,6 @@ fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
     val db by lazy {
         val dataSource = HikariDataSource()
         with(configuration.database) {
-            dataSource.driverClassName = driver
             dataSource.jdbcUrl = jdbcUrl
             dataSource.username = username
             dataSource.password = password
