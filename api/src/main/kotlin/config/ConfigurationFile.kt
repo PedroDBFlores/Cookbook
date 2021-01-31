@@ -9,8 +9,6 @@ data class ConfigurationFile(
         val testing: Boolean
     )
     data class DatabaseSettings(
-        val jdbcUrl: String,
-        val username: String,
-        val password: String
+        val jdbcUrl: String
     )
 }

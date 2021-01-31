@@ -20,8 +20,6 @@ object DatabaseTestHelper {
         val dataSource = HikariDataSource()
         with(configuration.database) {
             dataSource.jdbcUrl = jdbcUrl
-            dataSource.username = username
-            dataSource.password = password
         }
         migrateDB(configuration)
         val db = Database.connect(dataSource)
@@ -29,9 +27,11 @@ object DatabaseTestHelper {
     }
 
     private fun migrateDB(configuration: ConfigurationFile) {
+        val dataSource = HikariDataSource()
         with(configuration.database) {
+            dataSource.jdbcUrl = jdbcUrl
             val flyway = Flyway.configure()
-                .dataSource(jdbcUrl, username, password)
+                .dataSource(dataSource)
                 .load()
 
             flyway.migrate()

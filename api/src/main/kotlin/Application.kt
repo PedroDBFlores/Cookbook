@@ -1,4 +1,6 @@
 import com.sksamuel.hoplite.ConfigLoader
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.util.*
 import org.flywaydb.core.Flyway
@@ -16,9 +18,11 @@ fun main() {
  * @param configuration The configuration file for the Cookbook API
  */
 private fun migrateDB(configuration: ConfigurationFile) {
+    val dataSource = HikariDataSource()
     with(configuration.database) {
+        dataSource.jdbcUrl = jdbcUrl
         val flyway = Flyway.configure()
-            .dataSource(jdbcUrl, username, password)
+            .dataSource(dataSource)
             .load()
 
         flyway.migrate()
