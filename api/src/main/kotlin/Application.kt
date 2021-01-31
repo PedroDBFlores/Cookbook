@@ -1,5 +1,5 @@
+
 import com.sksamuel.hoplite.ConfigLoader
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.util.*
@@ -21,6 +21,7 @@ private fun migrateDB(configuration: ConfigurationFile) {
     val dataSource = HikariDataSource()
     with(configuration.database) {
         dataSource.jdbcUrl = jdbcUrl
+        dataSource.driverClassName = "org.postgresql.Driver"
         val flyway = Flyway.configure()
             .dataSource(dataSource)
             .load()

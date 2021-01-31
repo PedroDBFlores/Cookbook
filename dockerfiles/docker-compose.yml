@@ -1,4 +1,7 @@
-version: '3.7'
+version: "3.7"
+
+networks:
+  cookbook-network:
 
 services:
   cookbook:
@@ -8,24 +11,18 @@ services:
       dockerfile: ./dockerfiles/cookbook.Dockerfile
     ports:
       - 9000:9000
-    networks:
-      - cookbook-network
     environment:
       - API_PORT=9000
-      - DATABASE_URL=jdbc:mysql://cookbook-database:3306/cookbook
-      - DATABASE_USERNAME=root
-      - DATABASE_PASSWORD=am!28--zQ
-  cookbook-database:
-    container_name: cookbook-database
-    image: mysql:latest
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_DATABASE: cookbook
-      MYSQL_ROOT_PASSWORD: am!28--zQ
-    ports:
-      - 40000:3306
+      - DATABASE_URL=jdbc:postgresql://cookbook-database:5432/cookbook?user=postgres&password=am!28--zQ
     networks:
       - cookbook-network
-networks:
-  cookbook-network:
-    name: "cookbook-network"
+  cookbook-database:
+    container_name: cookbook-database
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: cookbook
+      POSTGRES_PASSWORD: am!28--zQ
+    ports:
+      - 40000:5432
+    networks:
+      - cookbook-network

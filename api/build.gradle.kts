@@ -27,7 +27,7 @@ val kodeinVersion = "7.1.0"
 val ktorVersion = "1.5.0"
 val exposedVersion = "0.29.1"
 val h2Version = "1.4.200"
-val mySQLVersion = "8.0.23"
+val postgresVersion = "42.2.18"
 val flywayVersion = "7.5.2"
 val auth0Version = "3.11.0"
 val jodaDataTypeVersion = "2.12.0"
@@ -47,7 +47,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
-    implementation("mysql:mysql-connector-java:$mySQLVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:4.0.1")
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")

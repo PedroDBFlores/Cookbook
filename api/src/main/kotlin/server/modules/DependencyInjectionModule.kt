@@ -7,7 +7,6 @@ import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import io.ktor.application.*
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.statements.api.ExposedConnection
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -18,15 +17,12 @@ import ports.RecipeRepository
 import ports.RecipeTypeRepository
 import usecases.recipe.*
 import usecases.recipetype.*
-import java.sql.DriverManager
 
 fun Application.dependencyInjectionModule(configuration: ConfigurationFile) {
     val db by lazy {
         val dataSource = HikariDataSource()
         with(configuration.database) {
             dataSource.jdbcUrl = jdbcUrl
-            // dataSource.username = username
-            // dataSource.password = password
         }
         val db = Database.connect(dataSource)
         db
