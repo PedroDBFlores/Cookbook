@@ -35,8 +35,8 @@ fun Routing.optionsRoutes() {
         respond(HttpStatusCode.OK)
     }
 
-    //Root route
-    options("/"){
+    // Root route
+    options("/") {
         call.handleOptionsHeaders("GET")
     }
 
