@@ -22,17 +22,17 @@ repositories {
 
 val logbackVersion = "1.2.1"
 val kotlinVersion = "1.4.20"
-val hopliteVersion = "1.3.12"
+val hopliteVersion = "1.3.13"
 val kodeinVersion = "7.1.0"
 val ktorVersion = "1.5.0"
-val exposedVersion = "0.28.1"
+val exposedVersion = "0.29.1"
 val h2Version = "1.4.200"
-val mySQLVersion = "8.0.22"
-val flywayVersion = "7.3.2"
+val mySQLVersion = "8.0.23"
+val flywayVersion = "7.5.2"
 val auth0Version = "3.11.0"
 val jodaDataTypeVersion = "2.12.0"
 val kotestVersion = "4.3.2"
-val mockkVersion = "1.10.4"
+val mockkVersion = "1.10.5"
 
 dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -48,7 +48,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("mysql:mysql-connector-java:$mySQLVersion")
-    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("com.zaxxer:HikariCP:4.0.1")
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")

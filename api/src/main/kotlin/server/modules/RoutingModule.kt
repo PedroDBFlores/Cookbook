@@ -61,7 +61,7 @@ fun Routing.optionsRoutes() {
 }
 
 fun Routing.healthCheckRoute() {
-    get("health-check") {
+    get("/health-check") {
         call.respond(HttpStatusCode.OK, "I'm alive, thanks for asking 👋")
     }
 }

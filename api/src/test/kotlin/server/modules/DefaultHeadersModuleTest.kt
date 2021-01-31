@@ -28,11 +28,6 @@ class DefaultHeadersModuleTest : DescribeSpec({
                     response.headers["Date"].shouldNotBeEmpty()
                     response.shouldHaveHeader("Server", "Cookbook Server")
                     response.shouldHaveHeader("X-CreatedBy", "Mr. Flowers")
-                    response.shouldHaveHeader("Access-Control-Allow-Origin", "http://localhost:8080")
-                    response.shouldHaveHeader(
-                        "Access-Control-Allow-Headers",
-                        "Authorization, Origin, X-Requested-With, Content-Type, Accept"
-                    )
                 }
             }
         }
