@@ -21,5 +21,6 @@ RUN gradle shadowJar -i
 FROM openjdk:11-jre-slim as run
 WORKDIR  /usr/src/app/api
 ENV JAVA_TOOL_OPTIONS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8999
+COPY ./heroku_jdbc.sh ./
 COPY --from=api_build /usr/src/app/api/build/libs ./
-CMD ["java", "-jar", "cookbook-api-all.jar"]
+CMD ["chmod +x heroku_jdbc.sh && ./heroku_jdbc.sh" ,"&&", "java", "-jar", "cookbook-api-all.jar"]

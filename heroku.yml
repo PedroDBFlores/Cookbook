@@ -2,4 +2,4 @@ build:
   docker:
     web: heroku.Dockerfile
 run:
-  web: java -jar cookbook-api-all.jar
+  web: java -jar cookbook-api-all.jar 
