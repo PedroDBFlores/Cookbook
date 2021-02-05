@@ -1,6 +1,6 @@
 plugins {
     application
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.30"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.github.ben-manes.versions") version "0.36.0"
     id("com.adarshr.test-logger") version "2.1.1"
@@ -15,26 +15,27 @@ application {
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
     jcenter()
-    maven { url = uri("https://jitpack.io") }
+    maven("https://dl.bintray.com/kodein-framework/Kodein-DI")
+    maven("https://dl.bintray.com/kotlin/exposed")
+    maven("https://jitpack.io")
 }
 
 val logbackVersion = "1.2.1"
-val kotlinVersion = "1.4.20"
 val hopliteVersion = "1.3.13"
-val kodeinVersion = "7.1.0"
+val kodeinVersion = "7.2.0"
 val ktorVersion = "1.5.0"
 val exposedVersion = "0.29.1"
 val h2Version = "1.4.200"
 val postgresVersion = "42.2.18"
 val flywayVersion = "7.5.2"
-val auth0Version = "3.11.0"
 val jodaDataTypeVersion = "2.12.0"
-val kotestVersion = "4.3.2"
+val kotestVersion = "4.4.0"
 val mockkVersion = "1.10.5"
 
 dependencies {
+    implementation(kotlin("stdlib"))
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -52,7 +53,6 @@ dependencies {
     implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
-
     implementation("org.flywaydb:flyway-core:$flywayVersion")
 
     /* Tests */
