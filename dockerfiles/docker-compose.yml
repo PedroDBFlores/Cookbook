@@ -12,7 +12,7 @@ services:
     ports:
       - 9000:9000
     environment:
-      - API_PORT=9000
+      - PORT=9000
       - JDBC_DATABASE_URL=jdbc:postgresql://cookbook-database:5432/cookbook?user=postgres&password=am!28--zQ
     networks:
       - cookbook-network
