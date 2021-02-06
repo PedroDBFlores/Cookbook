@@ -1,0 +1,39 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and Push API
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: pedrodbflores/cookbook/cookbook-api
+        tag_with_ref: true
+        context: ./
+        file: ./ci/dockerfiles/cookbook-api.Dockerfile
+    - name: Build and Push Webapp
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: pedrodbflores/cookbook/cookbook-webapp
+        tag_with_ref: true
+        context: ./
+        file: ./ci/dockerfiles/cookbook-webapp.Dockerfile    
