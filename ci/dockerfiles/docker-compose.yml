@@ -4,11 +4,11 @@ networks:
   cookbook-network:
 
 services:
-  cookbook:
-    container_name: cookbook
+  cookbook-api:
+    container_name: cookbook-api
     build:
-      context: ../
-      dockerfile: ./dockerfiles/cookbook.Dockerfile
+      context: ../../
+      dockerfile: ./ci/dockerfiles/cookbook-api.Dockerfile
     ports:
       - 9000:9000
     environment:
@@ -16,6 +16,18 @@ services:
       - JDBC_DATABASE_URL=jdbc:postgresql://cookbook-database:5432/cookbook?user=postgres&password=am!28--zQ
     networks:
       - cookbook-network
+  cookbook-webapp:
+    container_name: cookbook-webapp
+    build:
+      context: ../../
+      dockerfile: ./ci/dockerfiles/cookbook-webapp.Dockerfile
+    environment:
+      PORT: 80
+      BACKEND_URL: http://cookbook-api:9000
+    ports:
+      - 8080:80
+    networks:
+      - cookbook-network    
   cookbook-database:
     container_name: cookbook-database
     image: postgres:alpine

@@ -14,19 +14,11 @@ import web.recipetype.*
 
 fun Application.routingModule() {
     routing {
-        staticRoute()
         healthCheckRoute()
         recipeTypeRoutes()
         recipeRoutes()
         optionsRoutes()
     }
-}
-
-fun Routing.staticRoute() {
-    static("/") {
-        resources(resourcePackage = "static")
-    }
-    defaultResource(resource = "index.html", resourcePackage = "static")
 }
 
 fun Routing.optionsRoutes() {

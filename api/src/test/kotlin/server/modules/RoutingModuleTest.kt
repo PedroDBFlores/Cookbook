@@ -40,21 +40,6 @@ class RoutingModuleTest : DescribeSpec({
     }
 
     describe("Routing module test") {
-        it("checks that getting from '/' serves static content") {
-            withTestApplication(moduleFunction = createTestServer()) {
-                with(handleRequest(HttpMethod.Get, "/")) {
-                    with(response) {
-                        status().shouldBe(HttpStatusCode.OK)
-                        contentType().shouldBe(ContentType.parse("text/html; charset=UTF-8"))
-                        content.shouldContain("I'm a great HTML application")
-                    }
-                }
-                with(handleRequest(HttpMethod.Options, "/")) {
-                    response.shouldHaveHeader("Access-Control-Allow-Methods", "GET")
-                }
-            }
-        }
-
         it("checks that the health check endpoint is mapped") {
             withTestApplication(moduleFunction = createTestServer()) {
                 with(handleRequest(HttpMethod.Get, "/health-check")) {
