@@ -26,8 +26,8 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
         repository: pedrodbflores/cookbook/cookbook-api
-        tag_with_ref: true
-        context: ./
+        tags: cookbook/cookbook-api:latest 
+        context: .
         file: ./ci/dockerfiles/cookbook-api.Dockerfile
         push: true
     - name: Build and Push Webapp
@@ -37,7 +37,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
         repository: pedrodbflores/cookbook/cookbook-webapp
-        tag_with_ref: true
-        context: ./
+        tags: cookbook/cookbook-webapp:latest
+        context: .
         file: ./ci/dockerfiles/cookbook-webapp.Dockerfile
         push: true  
