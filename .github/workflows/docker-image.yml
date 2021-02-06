@@ -32,8 +32,6 @@ jobs:
       with:
         username: ${{ github.actor }}
         password: ${{ secrets.GHCR_PAT }}
-        registry: docker.pkg.github.com
-        repository: ghcr.io/cookbook-api
         tags: pedrodbflores/cookbook-api:latest 
         context: .
         file: ./ci/dockerfiles/cookbook-api.Dockerfile
@@ -43,8 +41,6 @@ jobs:
       with:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_PAT }}
-        registry: docker.pkg.github.com
-        repository: ghcr.io/cookbook-webapp
         tags: pedrodbflores/cookbook-webapp:latest
         context: .
         file: ./ci/dockerfiles/cookbook-webapp.Dockerfile
