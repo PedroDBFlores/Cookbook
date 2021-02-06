@@ -23,10 +23,10 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.GHCR_PAT }}
         registry: docker.pkg.github.com
-        repository: pedrodbflores/cookbook/cookbook-api
-        tags: cookbook/cookbook-api:latest 
+        repository: ghcr.io/cookbook-api
+        tags: pedrodbflores/cookbook-api:latest 
         context: .
         file: ./ci/dockerfiles/cookbook-api.Dockerfile
         push: true
@@ -34,10 +34,10 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.GHCR_PAT }}
         registry: docker.pkg.github.com
-        repository: pedrodbflores/cookbook/cookbook-webapp
-        tags: cookbook/cookbook-webapp:latest
+        repository: ghcr.io/cookbook-webapp
+        tags: pedrodbflores/cookbook-webapp:latest
         context: .
         file: ./ci/dockerfiles/cookbook-webapp.Dockerfile
         push: true  
