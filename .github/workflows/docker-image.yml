@@ -17,8 +17,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build and Push API
-      uses: docker/build-push-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Build and push API
+      uses: docker/build-push-action@v2
       with:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -27,8 +29,9 @@ jobs:
         tag_with_ref: true
         context: ./
         file: ./ci/dockerfiles/cookbook-api.Dockerfile
+        push: true
     - name: Build and Push Webapp
-      uses: docker/build-push-action@v1
+      uses: docker/build-push-action@v2
       with:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -36,4 +39,5 @@ jobs:
         repository: pedrodbflores/cookbook/cookbook-webapp
         tag_with_ref: true
         context: ./
-        file: ./ci/dockerfiles/cookbook-webapp.Dockerfile    
+        file: ./ci/dockerfiles/cookbook-webapp.Dockerfile
+        push: true  

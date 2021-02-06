@@ -5,7 +5,6 @@ COPY ./api/gradle.properties /usr/src/app/api
 WORKDIR /usr/src/app/api
 RUN gradle build -i
 COPY ./api ./
-COPY --from=webapp_build /usr/src/app/webapp/dist /usr/src/app/api/src/main/resources/static
 RUN gradle shadowJar -i
 
 # Deploy project step
