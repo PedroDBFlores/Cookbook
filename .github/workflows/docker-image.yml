@@ -30,14 +30,14 @@ jobs:
     - name: Build and push API
       uses: docker/build-push-action@v2
       with:
-        tags: pedrodbflores/cookbook-api:latest 
+        tags: ghcr.io/pedrodbflores/cookbook-api:latest 
         context: .
         file: ./ci/dockerfiles/cookbook-api.Dockerfile
         push: true
     - name: Build and Push Webapp
       uses: docker/build-push-action@v2
       with:
-        tags: pedrodbflores/cookbook-webapp:latest
+        tags: ghcr.io/pedrodbflores/cookbook-webapp:latest
         context: .
         file: ./ci/dockerfiles/cookbook-webapp.Dockerfile
         push: true  
