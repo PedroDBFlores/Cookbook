@@ -23,7 +23,7 @@ jobs:
         email: ${{ secrets.HEROKU_EMAIL }} # your heroku email
         api_key: ${{ secrets.HEROKU_API_KEY }} # your  heroku api key
         app_name: ${{ secrets.HEROKU_API_APP_NAME }} # you aplication name
-        dockerfile_path: ./ci/dockerfiles/cookbook-api.Dockerfile
+        dockerfile_path: ci/dockerfiles/cookbook-api.Dockerfile
         options: '' # Docker Build Options
         formation: '' # Docker Dyno Formation. By default is web
     - name: Deploy API Image to Heroku App
@@ -32,6 +32,6 @@ jobs:
         email: ${{ secrets.HEROKU_EMAIL }} # your heroku email
         api_key: ${{ secrets.HEROKU_API_KEY }} # your  heroku api key
         app_name: ${{ secrets.HEROKU_CLIENT_APP_NAME }} # you aplication name
-        dockerfile_path: ./ci/dockerfiles/cookbook-webapp.Dockerfile
+        dockerfile_path: ci/dockerfiles/cookbook-webapp.Dockerfile
         options: '' # Docker Build Options
         formation: '' # Docker Dyno Formation. By default is web
