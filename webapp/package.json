@@ -62,7 +62,8 @@
     "webpack-merge": "^5.7.3"
   },
   "scripts": {
-    "start": "webpack serve --hot --config webpack.dev.ts",
+    "dev": "webpack serve --hot --config webpack.dev.ts",
+    "start": "webpack serve --config webpack.prod.ts",
     "build": "webpack --config webpack.prod.ts",
     "lint": "eslint ./tests/. ./src/. --ext ts --ext tsx --fix",
     "test": "jest --testTimeout=10000",
