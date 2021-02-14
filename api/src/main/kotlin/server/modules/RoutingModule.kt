@@ -1,14 +1,10 @@
 package server.modules
 
+import config.Dependencies
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
-import usecases.recipe.*
-import usecases.recipetype.*
 import web.recipe.*
 import web.recipetype.*
 
@@ -60,54 +56,47 @@ fun Routing.healthCheckRoute() {
 
 fun Routing.recipeTypeRoutes() {
     route("/api/recipetype") {
-        get {
-            val useCase by call.di().instance<GetAllRecipeTypes>()
-            GetAllRecipeTypesHandler(useCase).handle(call)
-        }
-        get("{id}") {
-            val useCase by call.di().instance<FindRecipeType>()
-            FindRecipeTypeHandler(useCase).handle(call)
-        }
-        post {
-            val useCase by call.di().instance<CreateRecipeType>()
-            CreateRecipeTypeHandler(useCase).handle(call)
-        }
-        put {
-            val useCase by call.di().instance<UpdateRecipeType>()
-            UpdateRecipeTypeHandler(useCase).handle(call)
-        }
-        delete("{id}") {
-            val useCase by call.di().instance<DeleteRecipeType>()
-            DeleteRecipeTypeHandler(useCase).handle(call)
+        with(Dependencies) {
+            get {
+                GetAllRecipeTypesHandler(getAllRecipeTypes = getAllRecipeTypes).handle(call)
+            }
+            get("{id}") {
+                FindRecipeTypeHandler(findRecipeType = findRecipeType).handle(call)
+            }
+            post {
+                CreateRecipeTypeHandler(createRecipeType = createRecipeType).handle(call)
+            }
+            put {
+                UpdateRecipeTypeHandler(updateRecipeType = updateRecipeType).handle(call)
+            }
+            delete("{id}") {
+                DeleteRecipeTypeHandler(deleteRecipeType = deleteRecipeType).handle(call)
+            }
         }
     }
 }
 
 fun Routing.recipeRoutes() {
     route("/api/recipe") {
-        get {
-            val useCase by call.di().instance<GetAllRecipes>()
-            GetAllRecipesHandler(useCase).handle(call)
-        }
-        get("{id}") {
-            val useCase by call.di().instance<FindRecipe>()
-            FindRecipeHandler(useCase).handle(call)
-        }
-        post("search") {
-            val useCase by call.di().instance<SearchRecipe>()
-            SearchRecipeHandler(useCase).handle(call)
-        }
-        post {
-            val useCase by call.di().instance<CreateRecipe>()
-            CreateRecipeHandler(useCase).handle(call)
-        }
-        put {
-            val useCase by call.di().instance<UpdateRecipe>()
-            UpdateRecipeHandler(useCase).handle(call)
-        }
-        delete("{id}") {
-            val useCase by call.di().instance<DeleteRecipe>()
-            DeleteRecipeHandler(useCase).handle(call)
+        with(Dependencies) {
+            get {
+                GetAllRecipesHandler(getAllRecipes = getAllRecipes).handle(call)
+            }
+            get("{id}") {
+                FindRecipeHandler(findRecipe = findRecipe).handle(call)
+            }
+            post("search") {
+                SearchRecipeHandler(searchRecipe = searchRecipe).handle(call)
+            }
+            post {
+                CreateRecipeHandler(createRecipe = createRecipe).handle(call)
+            }
+            put {
+                UpdateRecipeHandler(updateRecipe = updateRecipe).handle(call)
+            }
+            delete("{id}") {
+                DeleteRecipeHandler(deleteRecipe = deleteRecipe).handle(call)
+            }
         }
     }
 }

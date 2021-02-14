@@ -24,7 +24,6 @@ repositories {
 
 val logbackVersion = "1.2.1"
 val hopliteVersion = "1.3.13"
-val kodeinVersion = "7.2.0"
 val ktorVersion = "1.5.0"
 val exposedVersion = "0.29.1"
 val h2Version = "1.4.200"
@@ -41,7 +40,6 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-host-common:$ktorVersion")
-    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:$kodeinVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-joda:$jodaDataTypeVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")

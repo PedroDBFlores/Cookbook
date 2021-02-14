@@ -12,7 +12,6 @@ class CookbookApi(private val configuration: ConfigurationFile) : AutoCloseable 
     private val server = embeddedServer(Netty, configuration.api.port) {
         contentNegotiationModule()
         exceptionInterceptorModule()
-        dependencyInjectionModule(configuration)
         routingModule()
         defaultHeadersModule()
     }

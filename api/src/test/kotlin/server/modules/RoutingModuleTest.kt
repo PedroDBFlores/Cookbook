@@ -6,35 +6,11 @@ import io.kotest.matchers.shouldBe
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import io.mockk.mockk
-import org.kodein.di.bind
-import org.kodein.di.ktor.di
-import org.kodein.di.singleton
-import usecases.recipe.*
-import usecases.recipetype.*
 
 class RoutingModuleTest : DescribeSpec({
 
-    fun Application.injectTestDependencies() {
-        di {
-            // Recipe type
-            bind<FindRecipeType>() with singleton { mockk(relaxed = true) }
-            bind<GetAllRecipeTypes>() with singleton { mockk(relaxed = true) }
-            bind<CreateRecipeType>() with singleton { mockk(relaxed = true) }
-            bind<UpdateRecipeType>() with singleton { mockk(relaxed = true) }
-            bind<DeleteRecipeType>() with singleton { mockk(relaxed = true) }
-            // Recipe
-            bind<FindRecipe>() with singleton { mockk(relaxed = true) }
-            bind<GetAllRecipes>() with singleton { mockk(relaxed = true) }
-            bind<CreateRecipe>() with singleton { mockk(relaxed = true) }
-            bind<UpdateRecipe>() with singleton { mockk(relaxed = true) }
-            bind<DeleteRecipe>() with singleton { mockk(relaxed = true) }
-        }
-    }
-
     fun createTestServer(): Application.() -> Unit = {
         contentNegotiationModule()
-        injectTestDependencies()
         routingModule()
     }
 
