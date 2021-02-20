@@ -23,7 +23,7 @@ object Dependencies {
         db
     }
 
-    //Recipe types
+    // Recipe types
     private val recipeTypeRepository = RecipeTypeRepositoryImpl(database = database)
     val findRecipeType = FindRecipeType(recipeTypeRepository = recipeTypeRepository)
     val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeRepository = recipeTypeRepository)
@@ -31,7 +31,7 @@ object Dependencies {
     val updateRecipeType = UpdateRecipeType(recipeTypeRepository = recipeTypeRepository)
     val deleteRecipeType = DeleteRecipeType(recipeTypeRepository = recipeTypeRepository)
 
-    //Recipe
+    // Recipe
     private val recipeRepository = RecipeRepositoryImpl(database = database)
     val findRecipe = FindRecipe(recipeRepository = recipeRepository)
     val searchRecipe = SearchRecipe(recipeRepository = recipeRepository)

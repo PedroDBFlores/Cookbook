@@ -3,6 +3,7 @@ package web.recipetype
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
+import kotlinx.serialization.Serializable
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
 import usecases.recipetype.UpdateRecipeType
@@ -16,6 +17,7 @@ class UpdateRecipeTypeHandler(private val updateRecipeType: UpdateRecipeType) : 
         call.respond(HttpStatusCode.OK)
     }
 
+    @Serializable
     data class UpdateRecipeTypeRepresenter(val id: Int, val name: String) {
         init {
             check(id > 0) { "Field 'id' must be bigger than zero" }

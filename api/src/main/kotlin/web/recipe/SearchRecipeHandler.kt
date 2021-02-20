@@ -3,6 +3,7 @@ package web.recipe
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
+import kotlinx.serialization.Serializable
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
 import usecases.recipe.SearchRecipe
@@ -15,6 +16,7 @@ class SearchRecipeHandler(private val searchRecipe: SearchRecipe) : KtorHandler 
         call.respond(HttpStatusCode.OK, results)
     }
 
+    @Serializable
     private data class SearchRecipeRepresenter(
         val name: String? = null,
         val description: String? = null,

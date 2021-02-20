@@ -3,6 +3,7 @@ package web.recipetype
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
+import kotlinx.serialization.Serializable
 import model.CreateResult
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
@@ -17,6 +18,7 @@ class CreateRecipeTypeHandler(private val createRecipeType: CreateRecipeType) : 
         call.respond(HttpStatusCode.Created, CreateResult(id))
     }
 
+    @Serializable
     private data class CreateRecipeTypeRepresenter(val name: String) {
         init {
             check(name.isNotBlank()) { "Field 'name' must not be empty or blank" }

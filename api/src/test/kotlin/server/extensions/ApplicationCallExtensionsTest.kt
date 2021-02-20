@@ -8,13 +8,16 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.testing.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import server.modules.contentNegotiationModule
 import utils.JsonHelpers.createJSONObject
-import utils.JsonHelpers.toJson
 
 internal class ApplicationCallExtensionsTest : DescribeSpec({
 
     describe("Receive or Throw") {
+        @Serializable
         data class ExampleClass(val id: Int, val name: String)
 
         describe("with custom validation") {
@@ -27,7 +30,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
             }
 
             it("receives and returns the body as an object when it's successful") {
-                val jsonBody = ExampleClass(1, "Marco").toJson()
+                val jsonBody = Json.encodeToString(ExampleClass(1, "Marco"))
 
                 withTestApplication(
                     moduleFunction = {
@@ -74,7 +77,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
                 ) {
                     with(
                         handleRequest(HttpMethod.Post, "/something") {
-                            setBody(ExampleClass(99, "Polo").toJson())
+                            setBody(Json.encodeToString(ExampleClass(99, "Polo")))
                             addHeader("Content-Type", "application/json")
                         }
                     ) {
@@ -85,6 +88,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
         }
 
         describe("no custom validation") {
+            @Serializable
             data class ExampleClass(val id: Int, val name: String) {
                 init {
                     check(id < 100) { "Id must be at most 99" }
@@ -98,7 +102,7 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
             }
 
             it("receives and returns the body as an object when it's successful") {
-                val jsonBody = ExampleClass(1, "Marco").toJson()
+                val jsonBody = Json.encodeToString(ExampleClass(1, "Marco"))
 
                 withTestApplication(
                     moduleFunction = {

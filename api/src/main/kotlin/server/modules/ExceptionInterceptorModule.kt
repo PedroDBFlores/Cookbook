@@ -9,6 +9,7 @@ import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.response.*
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.serialization.Serializable
 import java.util.concurrent.TimeoutException
 
 fun Application.exceptionInterceptorModule() {
@@ -30,6 +31,7 @@ fun Application.exceptionInterceptorModule() {
     }
 }
 
+@Serializable
 data class ResponseError(
     val code: String,
     val message: String

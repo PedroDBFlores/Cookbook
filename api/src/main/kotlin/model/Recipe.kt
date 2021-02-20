@@ -1,7 +1,9 @@
 package model
 
 import errors.ValidationError
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Recipe(
     val id: Int = 0,
     val recipeTypeId: Int,

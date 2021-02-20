@@ -3,6 +3,7 @@ package web.recipe
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
+import kotlinx.serialization.Serializable
 import model.CreateResult
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
@@ -17,6 +18,7 @@ class CreateRecipeHandler(private val createRecipe: CreateRecipe) : KtorHandler 
         call.respond(HttpStatusCode.Created, CreateResult(id))
     }
 
+    @Serializable
     private data class CreateRecipeRepresenter(
         val recipeTypeId: Int,
         val name: String,
