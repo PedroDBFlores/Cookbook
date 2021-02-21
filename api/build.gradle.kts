@@ -5,7 +5,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.github.ben-manes.versions") version "0.36.0"
     id("com.adarshr.test-logger") version "2.1.1"
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 group = "pt.pedro"
@@ -48,7 +48,6 @@ dependencies {
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:4.0.2")
-    implementation("at.favre.lib:bcrypt:0.9.+")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
@@ -89,6 +88,10 @@ task<Test>("testIntegration") {
     group = "verification"
     testClassesDirs = sourceSets["testIntegration"].output.classesDirs
     classpath = sourceSets["testIntegration"].runtimeClasspath
+}
+
+tasks.check {
+    dependsOn("testIntegration")
 }
 
 ktlint {

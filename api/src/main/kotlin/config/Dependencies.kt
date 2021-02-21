@@ -1,7 +1,7 @@
 package config
 
-import adapters.database.RecipeRepositoryImpl
-import adapters.database.RecipeTypeRepositoryImpl
+import adapters.database.ExposedRecipeRepository
+import adapters.database.ExposedRecipeTypeRepository
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
@@ -23,7 +23,7 @@ object Dependencies {
     }
 
     // Recipe types
-    private val recipeTypeRepository = RecipeTypeRepositoryImpl(database = database)
+    private val recipeTypeRepository = ExposedRecipeTypeRepository(database = database)
     val findRecipeType = FindRecipeType(recipeTypeRepository = recipeTypeRepository)
     val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeRepository = recipeTypeRepository)
     val createRecipeType = CreateRecipeType(recipeTypeRepository = recipeTypeRepository)
@@ -31,7 +31,7 @@ object Dependencies {
     val deleteRecipeType = DeleteRecipeType(recipeTypeRepository = recipeTypeRepository)
 
     // Recipe
-    private val recipeRepository = RecipeRepositoryImpl(database = database)
+    private val recipeRepository = ExposedRecipeRepository(database = database)
     val findRecipe = FindRecipe(recipeRepository = recipeRepository)
     val searchRecipe = SearchRecipe(recipeRepository = recipeRepository)
     val getAllRecipes = GetAllRecipes(recipeRepository = recipeRepository)

@@ -22,8 +22,7 @@ object DatabaseTestHelper {
             dataSource.jdbcUrl = jdbcUrl
         }
         migrateDB(configuration)
-        val db = Database.connect(dataSource)
-        db
+        Database.connect(dataSource)
     }
 
     private fun migrateDB(configuration: ConfigurationFile) {
@@ -39,13 +38,13 @@ object DatabaseTestHelper {
     }
 
     fun createRecipeTypeInDatabase(recipeType: RecipeType): RecipeType {
-        val repo = RecipeTypeRepositoryImpl(database = database)
+        val repo = ExposedRecipeTypeRepository(database = database)
         val id = repo.create(recipeType)
         return recipeType.copy(id = id)
     }
 
     fun createRecipeInDatabase(recipe: Recipe): Recipe {
-        val repo = RecipeRepositoryImpl(database = database)
+        val repo = ExposedRecipeRepository(database = database)
         val id = repo.create(recipe = recipe.copy(id = 0))
         return recipe.copy(id = id)
     }

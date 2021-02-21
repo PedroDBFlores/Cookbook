@@ -2,9 +2,11 @@ FROM gradle:6.8.1-jdk11 as api_build
 RUN mkdir -p /usr/src/app/api
 COPY ./api/build.gradle.kts /usr/src/app/api
 COPY ./api/gradle.properties /usr/src/app/api
+COPY ./api/settings.gradle.kts /usr/src/app/api
+COPY ./api/.dockerignore /usr/src/app/api
 WORKDIR /usr/src/app/api
 RUN gradle build -i
-COPY ./api ./
+COPY ./api/src ./src
 RUN gradle shadowJar -i
 
 # Deploy project step

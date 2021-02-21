@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 
-internal class RecipeTypeRepositoryImplTest : DescribeSpec({
+internal class ExposedRecipeTypeRepositoryTest : DescribeSpec({
     val database = DatabaseTestHelper.database
 
     afterTest {
@@ -27,7 +27,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
         describe("find by") {
             it("finds a recipe type by id") {
                 val createdRecipeType = createRecipeTypeInDatabase(basicRecipeType)
-                val repo = RecipeTypeRepositoryImpl(database = database)
+                val repo = ExposedRecipeTypeRepository(database = database)
 
                 val returnedRecipeType = repo.find(id = createdRecipeType.id)
 
@@ -37,7 +37,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
             it("finds a recipe type by name") {
                 val createdRecipeType = createRecipeTypeInDatabase(basicRecipeType)
-                val repo = RecipeTypeRepositoryImpl(database = database)
+                val repo = ExposedRecipeTypeRepository(database = database)
 
                 val returnedRecipeType = repo.find(name = createdRecipeType.name)
 
@@ -51,7 +51,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
                 createRecipeTypeInDatabase(basicRecipeType),
                 createRecipeTypeInDatabase(basicRecipeType.copy(name = "Second recipe type"))
             )
-            val repo = RecipeTypeRepositoryImpl(database = database)
+            val repo = ExposedRecipeTypeRepository(database = database)
 
             val allRecipeTypes = repo.getAll()
 
@@ -64,7 +64,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
                 createRecipeTypeInDatabase(basicRecipeType.copy(name = "Second recipe type")),
                 createRecipeTypeInDatabase(basicRecipeType.copy(name = "Third recipe type"))
             )
-            val repo = RecipeTypeRepositoryImpl(database = database)
+            val repo = ExposedRecipeTypeRepository(database = database)
 
             val recipeTypeCount = repo.count()
 
@@ -73,7 +73,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
         describe("create") {
             it("creates a recipe type") {
-                val repo = RecipeTypeRepositoryImpl(database = database)
+                val repo = ExposedRecipeTypeRepository(database = database)
 
                 val createdRecipeTypeId = repo.create(recipeType = basicRecipeType)
 
@@ -84,7 +84,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
             it("should throw when the name set is bigger than 64 characters") {
                 val recipeType = basicRecipeType.copy(name = "x".repeat(70))
-                val repo = RecipeTypeRepositoryImpl(database)
+                val repo = ExposedRecipeTypeRepository(database)
 
                 val act = { repo.create(recipeType) }
 
@@ -95,7 +95,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
         describe("update") {
             it("updates a recipe type on the database") {
                 val createdRecipeType = createRecipeTypeInDatabase(basicRecipeType)
-                val repo = RecipeTypeRepositoryImpl(database)
+                val repo = ExposedRecipeTypeRepository(database)
 
                 repo.update(createdRecipeType.copy(name = "Arroz"))
 
@@ -106,7 +106,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
         }
 
         it("deletes a recipe type from the database") {
-            val repo = RecipeTypeRepositoryImpl(database)
+            val repo = ExposedRecipeTypeRepository(database)
             val recipeTypeId = repo.create(recipeType = basicRecipeType)
 
             val deleted = repo.delete(id = recipeTypeId)
@@ -116,7 +116,7 @@ internal class RecipeTypeRepositoryImplTest : DescribeSpec({
 
         describe("RecipeType table constraints") {
             it("should throw if a recipe type with the same name is inserted") {
-                val repo = RecipeTypeRepositoryImpl(database)
+                val repo = ExposedRecipeTypeRepository(database)
 
                 val act = {
                     repo.create(basicRecipeType)

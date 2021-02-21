@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeRepository
 import kotlin.math.ceil
 
-class RecipeRepositoryImpl(private val database: Database) : RecipeRepository {
+class ExposedRecipeRepository(private val database: Database) : RecipeRepository {
 
     override fun find(id: Int): Recipe? = transaction(database) {
         RecipeEntity.findById(id)?.run(::mapToRecipe)

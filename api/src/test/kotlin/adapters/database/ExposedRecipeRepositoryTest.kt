@@ -14,7 +14,7 @@ import model.RecipeType
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-internal class RecipeRepositoryImplTest : DescribeSpec({
+internal class ExposedRecipeRepositoryTest : DescribeSpec({
     val database = DatabaseTestHelper.database
     var firstRecipeType = RecipeType(name = "First recipe type")
 
@@ -42,7 +42,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         it("finds a recipe") {
             val expectedRecipe = createRecipeInDatabase(basicRecipe)
-            val repo = RecipeRepositoryImpl(database = database)
+            val repo = ExposedRecipeRepository(database = database)
             val recipe = repo.find(id = expectedRecipe.id)
 
             recipe.shouldNotBeNull()
@@ -56,7 +56,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                     createRecipeInDatabase(basicRecipe.copy(name = "Second Recipe Name"))
                 )
 
-                val repo = RecipeRepositoryImpl(database = database)
+                val repo = ExposedRecipeRepository(database = database)
                 val recipes = repo.getAll()
 
                 recipes.shouldBe(createdRecipes)
@@ -69,7 +69,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 createRecipeInDatabase(basicRecipe),
                 createRecipeInDatabase(basicRecipe)
             )
-            val repo = RecipeRepositoryImpl(database = database)
+            val repo = ExposedRecipeRepository(database = database)
 
             val count = repo.count()
 
@@ -85,7 +85,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 createRecipes(numberOfRecipes = 10)
                 val pickedRecipe =
                     createRecipeInDatabase(basicRecipe.copy(name = "Lichens with creamy sauce"))
-                val repo = RecipeRepositoryImpl(database = database)
+                val repo = ExposedRecipeRepository(database = database)
 
                 val result = repo.search(
                     name = pickedRecipe.name,
@@ -109,7 +109,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                             description = "Hearthy stone soup for the winter times"
                         )
                     )
-                val repo = RecipeRepositoryImpl(database = database)
+                val repo = ExposedRecipeRepository(database = database)
 
                 val result = repo.search(
                     description = pickedRecipe.description,
@@ -131,7 +131,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 it("returns all the values $testDescription") {
                     val createdRecipes = createRecipes(5)
 
-                    val repo = RecipeRepositoryImpl(database = database)
+                    val repo = ExposedRecipeRepository(database = database)
 
                     val searchResult = repo.search(
                         pageNumber = 1,
@@ -154,7 +154,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
             ).forEach { (pageNumber, itemsPerPage) ->
                 it("returns the paginated results for page $pageNumber and $itemsPerPage items per page") {
                     val createdRecipes = createRecipes(100)
-                    val repo = RecipeRepositoryImpl(database = database)
+                    val repo = ExposedRecipeRepository(database = database)
 
                     val searchResult = repo.search(
                         pageNumber = pageNumber,
@@ -176,7 +176,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         describe("Create") {
             it("creates a new recipe") {
-                val repo = RecipeRepositoryImpl(database = database)
+                val repo = ExposedRecipeRepository(database = database)
 
                 val createdRecipeId = repo.create(recipe = basicRecipe)
 
@@ -187,7 +187,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
         describe("Update") {
             it("updates a recipe on the database") {
                 val createdRecipe = createRecipeInDatabase(basicRecipe)
-                val repo = RecipeRepositoryImpl(database = database)
+                val repo = ExposedRecipeRepository(database = database)
                 val recipeToBeUpdated = createdRecipe.copy(id = createdRecipe.id, name = "I want to be renamed")
 
                 repo.update(recipeToBeUpdated)
@@ -196,7 +196,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
 
         it("deletes a recipe type") {
             val createdRecipe = createRecipeInDatabase(basicRecipe)
-            val repo = RecipeRepositoryImpl(database = database)
+            val repo = ExposedRecipeRepository(database = database)
             val deleted = repo.delete(createdRecipe.id)
 
             deleted.shouldBe(true)
@@ -222,7 +222,7 @@ internal class RecipeRepositoryImplTest : DescribeSpec({
                 )
             ).forEach { (recipe: Recipe, description: String) ->
                 it("throws when $description") {
-                    val repo = RecipeRepositoryImpl(database = database)
+                    val repo = ExposedRecipeRepository(database = database)
                     val act = { repo.create(recipe = recipe) }
 
                     shouldThrow<IllegalArgumentException>(act)
