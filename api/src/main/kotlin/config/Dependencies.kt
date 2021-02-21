@@ -1,6 +1,5 @@
 package config
 
-import adapters.BcryptHashingService
 import adapters.database.RecipeRepositoryImpl
 import adapters.database.RecipeTypeRepositoryImpl
 import com.sksamuel.hoplite.ConfigLoader
@@ -39,6 +38,4 @@ object Dependencies {
     val createRecipe = CreateRecipe(recipeRepository = recipeRepository)
     val updateRecipe = UpdateRecipe(recipeRepository = recipeRepository)
     val deleteRecipe = DeleteRecipe(recipeRepository = recipeRepository)
-
-    private val hashingService = BcryptHashingService()
 }
