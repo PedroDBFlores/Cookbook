@@ -75,6 +75,7 @@ sourceSets {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
+        useIR = true
         jvmTarget = "11"
     }
 }
