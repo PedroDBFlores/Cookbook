@@ -31,6 +31,7 @@ val h2Version = "1.4.200"
 val postgresVersion = "42.2.18"
 val flywayVersion = "7.5.3"
 val jodaDataTypeVersion = "2.12.1"
+
 val kotestVersion = "4.4.1"
 val mockkVersion = "1.10.6"
 
