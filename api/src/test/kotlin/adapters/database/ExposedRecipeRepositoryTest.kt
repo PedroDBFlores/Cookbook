@@ -86,7 +86,7 @@ internal class ExposedRecipeRepositoryTest : DescribeSpec({
             it("searches for a specific recipe name") {
                 createRecipes(numberOfRecipes = 10)
                 val pickedRecipe =
-                    createRecipeInDatabase(basicRecipe.copy(name = faker.food.dish()))
+                    createRecipeInDatabase(basicRecipe.copy(name = "Duckling"))
                 val repo = ExposedRecipeRepository(database = database)
 
                 val result = repo.search(
