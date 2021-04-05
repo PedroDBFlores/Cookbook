@@ -3,6 +3,7 @@ package adapters.database
 import adapters.database.DatabaseTestHelper.createRecipeInDatabase
 import adapters.database.DatabaseTestHelper.createRecipeTypeInDatabase
 import adapters.database.schema.Recipes
+import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -15,8 +16,9 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class ExposedRecipeRepositoryTest : DescribeSpec({
+    val faker = Faker()
     val database = DatabaseTestHelper.database
-    var firstRecipeType = RecipeType(name = "First recipe type")
+    var firstRecipeType = RecipeType(name = faker.food.dish())
 
     beforeSpec {
         transaction(database) {
@@ -34,10 +36,10 @@ internal class ExposedRecipeRepositoryTest : DescribeSpec({
         val basicRecipe = Recipe(
             recipeTypeId = firstRecipeType.id,
             recipeTypeName = firstRecipeType.name,
-            name = "Recipe Name",
-            description = "Recipe description",
-            ingredients = "Oh so many ingredients",
-            preparingSteps = "This will be so easy..."
+            name = faker.food.dish(),
+            description = faker.food.descriptions(),
+            ingredients = faker.food.ingredients(),
+            preparingSteps = faker.food.measurements()
         )
 
         it("finds a recipe") {
@@ -53,7 +55,7 @@ internal class ExposedRecipeRepositoryTest : DescribeSpec({
             it("gets all the recipe types") {
                 val createdRecipes = listOf(
                     createRecipeInDatabase(basicRecipe),
-                    createRecipeInDatabase(basicRecipe.copy(name = "Second Recipe Name"))
+                    createRecipeInDatabase(basicRecipe.copy(name = faker.food.dish()))
                 )
 
                 val repo = ExposedRecipeRepository(database = database)
@@ -84,7 +86,7 @@ internal class ExposedRecipeRepositoryTest : DescribeSpec({
             it("searches for a specific recipe name") {
                 createRecipes(numberOfRecipes = 10)
                 val pickedRecipe =
-                    createRecipeInDatabase(basicRecipe.copy(name = "Lichens with creamy sauce"))
+                    createRecipeInDatabase(basicRecipe.copy(name = faker.food.dish()))
                 val repo = ExposedRecipeRepository(database = database)
 
                 val result = repo.search(
@@ -106,7 +108,7 @@ internal class ExposedRecipeRepositoryTest : DescribeSpec({
                     createRecipeInDatabase(
                         basicRecipe.copy(
                             name = "Stone soup",
-                            description = "Hearthy stone soup for the winter times"
+                            description = faker.food.descriptions()
                         )
                     )
                 val repo = ExposedRecipeRepository(database = database)

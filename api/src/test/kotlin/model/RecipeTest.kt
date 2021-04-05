@@ -1,6 +1,7 @@
 package model
 
 import errors.ValidationError
+import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -9,13 +10,14 @@ import io.kotest.matchers.shouldBe
 internal class RecipeTest : DescribeSpec({
     describe("Recipe data class") {
         it("is created succesfully") {
+            val faker = Faker()
             val id = 1
             val recipeTypeId = 1
-            val recipeTypeName = "recipeTypeName"
-            val name = "name"
-            val description = "description"
-            val ingredients = "ingredients"
-            val preparingSteps = "preparingSteps"
+            val recipeTypeName = faker.food.dish()
+            val name = faker.food.dish()
+            val description = faker.food.descriptions()
+            val ingredients = faker.food.ingredients()
+            val preparingSteps = faker.food.vegetables()
 
             val recipe = Recipe(
                 id = id,
@@ -56,7 +58,7 @@ internal class RecipeTest : DescribeSpec({
                     )
                 }
 
-                shouldThrow<ValidationError> (act)
+                shouldThrow<ValidationError>(act)
             }
         }
     }
