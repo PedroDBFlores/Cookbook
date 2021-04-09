@@ -61,6 +61,7 @@ dependencies {
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion") // for kotest property test
     testImplementation("io.kotest:kotest-assertions-ktor-jvm:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("io.github.serpro69:kotlin-faker:1.6.0")
 }
 
 sourceSets {

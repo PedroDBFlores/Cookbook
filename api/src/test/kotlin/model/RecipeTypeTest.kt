@@ -1,6 +1,7 @@
 package model
 
 import errors.ValidationError
+import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -10,7 +11,7 @@ internal class RecipeTypeTest : DescribeSpec({
     describe("Recipe type data class") {
         it("is created successfully") {
             val id = 1
-            val name = "name"
+            val name = Faker().name.name()
 
             val recipeType = RecipeType(
                 id = id,
