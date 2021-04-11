@@ -7,13 +7,13 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import javax.imageio.ImageIO
 
-internal class JpegImageResizerTest : DescribeSpec({
-    describe("Jpeg image resizer") {
+internal class ImageResizerTest : DescribeSpec({
+    describe("Image resizer") {
         it("resizes an image to a specific size") {
             val source = this.javaClass.getResourceAsStream("/resize_test.png")!!
             val imageBytes = source.readBytes()
 
-            val resizedByteArray = resizeJpegImage(
+            val resizedByteArray = resizeImage(
                 targetWidth = 200,
                 targetHeight = 200,
                 imageSourceStream = imageBytes.inputStream()
@@ -33,7 +33,7 @@ internal class JpegImageResizerTest : DescribeSpec({
                 val imageBytes = source.readBytes()
                 val originalImage = ImageIO.read(imageBytes.inputStream())
 
-                val resizedByteArray = resizeJpegImage(
+                val resizedByteArray = resizeImage(
                     targetWidth = originalImage.width + widthAddition,
                     targetHeight = originalImage.height + heightAddition,
                     imageSourceStream = imageBytes.inputStream()
@@ -50,7 +50,7 @@ internal class JpegImageResizerTest : DescribeSpec({
             val imageBytes = source.readBytes()
 
             runCatching {
-                resizeJpegImage(
+                resizeImage(
                     targetWidth = 200,
                     targetHeight = 200,
                     imageSourceStream = imageBytes.inputStream()

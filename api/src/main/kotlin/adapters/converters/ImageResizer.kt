@@ -8,7 +8,7 @@ import java.io.InputStream
 import java.lang.Exception
 import javax.imageio.ImageIO
 
-fun resizeJpegImage(
+fun resizeImage(
     targetWidth: Int,
     targetHeight: Int,
     imageSourceStream: InputStream
