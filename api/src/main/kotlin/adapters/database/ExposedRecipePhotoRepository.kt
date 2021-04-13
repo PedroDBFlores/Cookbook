@@ -1,4 +1,3 @@
 package adapters.database
 
-class ExposedRecipePhotoRepository  {
-}
+class ExposedRecipePhotoRepository

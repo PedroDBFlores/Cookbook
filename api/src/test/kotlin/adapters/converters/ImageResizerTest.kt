@@ -63,4 +63,3 @@ internal class ImageResizerTest : DescribeSpec({
         }
     }
 })
-
