@@ -17,16 +17,13 @@ application {
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven("https://dl.bintray.com/kodein-framework/Kodein-DI")
-    maven("https://dl.bintray.com/kotlin/exposed")
     maven("https://jitpack.io")
 }
 
 val logbackVersion = "1.2.1"
 val hopliteVersion = "1.4.0"
 val ktorVersion = "1.5.1"
-val exposedVersion = "0.29.1"
+val exposedVersion = "0.30.1"
 val h2Version = "1.4.200"
 val postgresVersion = "42.2.18"
 val flywayVersion = "7.5.3"
