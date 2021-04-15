@@ -4,17 +4,18 @@ import errors.RecipeTypeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import model.RecipeType
 import ports.RecipeTypeRepository
 
 internal class FindRecipeTypeTest : DescribeSpec({
     describe("Find recipe type use case") {
-
         it("Find a recipe type by id") {
-            val basicRecipeType = RecipeType(id = 1, name = "Recipe type")
+            val basicRecipeType = recipeTypeGenerator.next()
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
                 every { find(basicRecipeType.id) } returns basicRecipeType
             }
@@ -27,16 +28,17 @@ internal class FindRecipeTypeTest : DescribeSpec({
         }
 
         it("throws if a recipe type is not found") {
+            val recipeTypeId = Arb.int(1..100).next()
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(ofType<Int>()) } returns null
+                every { find(recipeTypeId) } returns null
             }
             val findRecipeType = FindRecipeType(recipeTypeRepository)
 
-            val act = { findRecipeType(FindRecipeType.Parameters(1)) }
+            val act = { findRecipeType(FindRecipeType.Parameters(recipeTypeId)) }
 
             val recipeTypeNotFound = shouldThrow<RecipeTypeNotFound> (act)
-            recipeTypeNotFound.message.shouldBe("Recipe type with id 1 not found")
-            verify(exactly = 1) { recipeTypeRepository.find(ofType<Int>()) }
+            recipeTypeNotFound.message.shouldBe("Recipe type with id $recipeTypeId not found")
+            verify(exactly = 1) { recipeTypeRepository.find(recipeTypeId) }
         }
     }
 })

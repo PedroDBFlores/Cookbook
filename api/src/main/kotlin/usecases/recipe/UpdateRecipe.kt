@@ -9,7 +9,6 @@ class UpdateRecipe(private val recipeRepository: RecipeRepository) {
         check(recipeRepository.find(parameters.id) != null) {
             throw RecipeNotFound(id = parameters.id)
         }
-
         recipeRepository.update(parameters.toRecipe())
     }
 

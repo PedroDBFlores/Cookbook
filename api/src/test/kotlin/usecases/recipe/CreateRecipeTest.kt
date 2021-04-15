@@ -2,6 +2,10 @@ package usecases.recipe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -12,12 +16,13 @@ internal class CreateRecipeTest : DescribeSpec({
 
     describe("Create recipe use case") {
         it("creates a recipe") {
+            val stringSource = Arb.string(16)
             val expectedRecipe = Recipe(
-                recipeTypeId = 1,
-                name = "Recipe Name",
-                description = "Recipe description",
-                ingredients = "Oh so many ingredients",
-                preparingSteps = "This will be so easy..."
+                recipeTypeId = Arb.int(1..100).next(),
+                name = stringSource.next(),
+                description = stringSource.next(),
+                ingredients = stringSource.next(),
+                preparingSteps = stringSource.next()
             )
             val recipeRepository = mockk<RecipeRepository> {
                 every { create(expectedRecipe) } returns 1
@@ -26,11 +31,11 @@ internal class CreateRecipeTest : DescribeSpec({
             val createRecipe = CreateRecipe(recipeRepository)
             val recipeId = createRecipe(
                 CreateRecipe.Parameters(
-                    recipeTypeId = 1,
-                    name = "Recipe Name",
-                    description = "Recipe description",
-                    ingredients = "Oh so many ingredients",
-                    preparingSteps = "This will be so easy..."
+                    recipeTypeId = expectedRecipe.recipeTypeId,
+                    name = expectedRecipe.name,
+                    description = expectedRecipe.description,
+                    ingredients = expectedRecipe.ingredients,
+                    preparingSteps = expectedRecipe.preparingSteps
                 )
             )
 

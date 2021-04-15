@@ -3,13 +3,13 @@ package usecases.recipetype
 import errors.RecipeTypeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.property.arbitrary.next
 import io.mockk.*
-import model.RecipeType
 import ports.RecipeTypeRepository
 
 internal class UpdateRecipeTypeTest : DescribeSpec({
     describe("Update recipe type use case") {
-        val currentRecipeType = RecipeType(id = 1, name = "Recipe type")
+        val currentRecipeType = recipeTypeGenerator.next()
 
         it("updates a recipe type") {
             val expectedRecipeType = currentRecipeType.copy(name = "Cake")

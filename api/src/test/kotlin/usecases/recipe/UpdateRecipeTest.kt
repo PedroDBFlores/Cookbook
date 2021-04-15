@@ -3,42 +3,34 @@ package usecases.recipe
 import errors.RecipeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.property.arbitrary.next
 import io.mockk.*
-import model.Recipe
 import ports.RecipeRepository
 
 internal class UpdateRecipeTest : DescribeSpec({
     describe("Update recipe use case") {
+        val basicRecipe = recipeGenerator.next()
         val parameters = UpdateRecipe.Parameters(
-            id = 1,
-            recipeTypeId = 1,
+            id = basicRecipe.id,
+            recipeTypeId = basicRecipe.recipeTypeId,
             name = "NOT",
             description = "EQUAL",
-            ingredients = "Oh so many ingredients",
-            preparingSteps = "This will be so easy..."
+            ingredients = basicRecipe.ingredients,
+            preparingSteps = basicRecipe.preparingSteps
         )
 
         it("updates an existing recipe") {
-            val currentRecipe = Recipe(
-                id = 1,
-                recipeTypeId = 1,
-                recipeTypeName = "Recipe type name",
-                name = "Recipe Name",
-                description = "Recipe description",
-                ingredients = "Oh so many ingredients",
-                preparingSteps = "This will be so easy..."
-            )
-            val expectedRecipe = currentRecipe.copy(name = "NOT", description = "EQUAL")
+            val expectedRecipe = basicRecipe.copy(name = "NOT", description = "EQUAL")
             val recipeRepository = mockk<RecipeRepository> {
-                every { find(parameters.id) } returns currentRecipe
-                every { update(expectedRecipe.copy(recipeTypeName = null)) } just runs
+                every { find(parameters.id) } returns basicRecipe
+                every { update(expectedRecipe) } just runs
             }
             val updateRecipe = UpdateRecipe(recipeRepository)
 
             updateRecipe(parameters)
 
             verify(exactly = 1) {
-                recipeRepository.update(expectedRecipe.copy(recipeTypeName = null))
+                recipeRepository.update(expectedRecipe)
             }
         }
 

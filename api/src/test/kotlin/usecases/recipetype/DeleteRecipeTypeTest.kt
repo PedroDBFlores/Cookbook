@@ -4,6 +4,9 @@ import errors.RecipeTypeNotFound
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -11,28 +14,32 @@ import ports.RecipeTypeRepository
 
 internal class DeleteRecipeTypeTest : DescribeSpec({
     describe("Delete recipe type use case") {
+        val intSource = Arb.int(1..100)
+
         it("deletes a recipe type") {
+            val recipeTypeId = intSource.next()
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { delete(1) } returns true
+                every { delete(recipeTypeId) } returns true
             }
             val deleteRecipeType = DeleteRecipeType(recipeTypeRepository)
 
-            deleteRecipeType(DeleteRecipeType.Parameters(1))
+            deleteRecipeType(DeleteRecipeType.Parameters(recipeTypeId))
 
-            verify(exactly = 1) { recipeTypeRepository.delete(1) }
+            verify(exactly = 1) { recipeTypeRepository.delete(recipeTypeId) }
         }
 
         it("throws 'RecipeTypeNotFound' if no rows were affected") {
+            val recipeTypeId = intSource.next()
             val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { delete(any()) } throws RecipeTypeNotFound(1)
+                every { delete(recipeTypeId) } throws RecipeTypeNotFound(recipeTypeId)
             }
             val deleteRecipeType = DeleteRecipeType(recipeTypeRepository)
 
-            val act = { deleteRecipeType(DeleteRecipeType.Parameters(1)) }
+            val act = { deleteRecipeType(DeleteRecipeType.Parameters(recipeTypeId)) }
 
             val recipeTypeNotFound = shouldThrow<RecipeTypeNotFound>(act)
-            recipeTypeNotFound.message.shouldBe(RecipeTypeNotFound(1).message)
-            verify(exactly = 1) { recipeTypeRepository.delete(any()) }
+            recipeTypeNotFound.message.shouldBe(RecipeTypeNotFound(recipeTypeId).message)
+            verify(exactly = 1) { recipeTypeRepository.delete(recipeTypeId) }
         }
     }
 })
