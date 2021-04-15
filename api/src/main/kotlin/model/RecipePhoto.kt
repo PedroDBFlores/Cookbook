@@ -11,8 +11,8 @@ data class RecipePhoto(
     val data: ByteArray,
 ) {
     init {
-        check(id >= 0)  { throw ValidationError("id") }
-        check(recipeId >= 0)  { throw ValidationError("recipeId") }
+        check(id >= 0) { throw ValidationError("id") }
+        check(recipeId >= 0) { throw ValidationError("recipeId") }
     }
 
     override fun equals(other: Any?): Boolean {
