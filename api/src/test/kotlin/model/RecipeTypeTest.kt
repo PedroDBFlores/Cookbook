@@ -1,17 +1,19 @@
 package model
 
 import errors.ValidationError
-import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 
 internal class RecipeTypeTest : DescribeSpec({
     describe("Recipe type data class") {
         it("is created successfully") {
             val id = 1
-            val name = Faker().name.name()
+            val name = Arb.string(16).next()
 
             val recipeType = RecipeType(
                 id = id,

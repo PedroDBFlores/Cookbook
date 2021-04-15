@@ -2,19 +2,21 @@ package adapters.database
 
 import adapters.database.DatabaseTestHelper.createRecipeTypeInDatabase
 import adapters.database.schema.RecipeTypes
-import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.ints.shouldNotBeZero
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 import model.RecipeType
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 
 internal class ExposedRecipeTypeRepositoryTest : DescribeSpec({
-    val faker = Faker()
+    val stringSource = Arb.string(16)
     val database = DatabaseTestHelper.database
 
     afterTest {
@@ -24,7 +26,7 @@ internal class ExposedRecipeTypeRepositoryTest : DescribeSpec({
     }
 
     describe("RecipeType repository") {
-        val basicRecipeType = RecipeType(name = faker.food.spices())
+        val basicRecipeType = RecipeType(name = stringSource.next())
 
         describe("find by") {
             it("finds a recipe type by id") {
@@ -51,7 +53,7 @@ internal class ExposedRecipeTypeRepositoryTest : DescribeSpec({
         it("gets all the recipe types from the database") {
             val createdRecipeTypes = arrayOf(
                 createRecipeTypeInDatabase(basicRecipeType),
-                createRecipeTypeInDatabase(basicRecipeType.copy(name = faker.food.sushi()))
+                createRecipeTypeInDatabase(basicRecipeType.copy(name = stringSource.next()))
             )
             val repo = ExposedRecipeTypeRepository(database = database)
 
@@ -63,8 +65,8 @@ internal class ExposedRecipeTypeRepositoryTest : DescribeSpec({
         it("gets the count of recipe types") {
             val createdRecipeTypes = arrayOf(
                 createRecipeTypeInDatabase(basicRecipeType),
-                createRecipeTypeInDatabase(basicRecipeType.copy(name = faker.food.sushi())),
-                createRecipeTypeInDatabase(basicRecipeType.copy(name = faker.food.fruits()))
+                createRecipeTypeInDatabase(basicRecipeType.copy(name = stringSource.next())),
+                createRecipeTypeInDatabase(basicRecipeType.copy(name = stringSource.next()))
             )
             val repo = ExposedRecipeTypeRepository(database = database)
 
@@ -98,7 +100,7 @@ internal class ExposedRecipeTypeRepositoryTest : DescribeSpec({
             it("updates a recipe type on the database") {
                 val createdRecipeType = createRecipeTypeInDatabase(basicRecipeType)
                 val repo = ExposedRecipeTypeRepository(database)
-                val newName = faker.name.firstName()
+                val newName = stringSource.next()
 
                 repo.update(createdRecipeType.copy(name = newName))
 

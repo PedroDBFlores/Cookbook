@@ -1,23 +1,27 @@
 package model
 
 import errors.ValidationError
-import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 
 internal class RecipeTest : DescribeSpec({
+    val (intSource, stringSource) = Pair(Arb.int(1..1000), Arb.string(1..32))
+
     describe("Recipe data class") {
         it("is created succesfully") {
-            val faker = Faker()
-            val id = 1
-            val recipeTypeId = 1
-            val recipeTypeName = faker.food.dish()
-            val name = faker.food.dish()
-            val description = faker.food.descriptions()
-            val ingredients = faker.food.ingredients()
-            val preparingSteps = faker.food.vegetables()
+            val id = intSource.next()
+            val recipeTypeId = intSource.next()
+            val recipeTypeName = stringSource.next()
+            val name = stringSource.next()
+            val description = stringSource.next()
+            val ingredients = stringSource.next()
+            val preparingSteps = stringSource.next()
 
             val recipe = Recipe(
                 id = id,

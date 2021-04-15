@@ -1,24 +1,22 @@
 package model
 
 import errors.ValidationError
-import io.github.serpro69.kfaker.Faker
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import org.joda.time.DateTime
-import java.util.*
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.*
 
 internal class RecipePhotoTest : DescribeSpec({
     describe("Recipe photo data class") {
         it("is created successfully") {
-            val faker = Faker()
-            val id = Random(DateTime.now().secondOfDay().remainder()).nextInt(32)
-            val recipeId = Random(DateTime.now().secondOfDay().remainder()).nextInt(32)
-            val name = faker.name.firstName()
-            val data = ByteArray(2)
-            data[0] = Random(DateTime.now().secondOfDay().remainder()).nextInt(32).toByte()
-            data[1] = Random(DateTime.now().secondOfDay().remainder()).nextInt(32).toByte()
+            val intSource = Arb.int(1..100)
+
+            val id = intSource.next()
+            val recipeId = intSource.next()
+            val name = Arb.string(16).next()
+            val data = Arb.byteArrays(intSource, Arb.byte()).next()
 
             val recipePhoto = RecipePhoto(
                 id = id,

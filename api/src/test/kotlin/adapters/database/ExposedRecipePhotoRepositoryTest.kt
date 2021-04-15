@@ -3,7 +3,6 @@ package adapters.database
 import adapters.database.schema.RecipePhotos
 import adapters.database.schema.RecipeTypes
 import adapters.database.schema.Recipes
-import io.github.serpro69.kfaker.Faker
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
@@ -11,6 +10,8 @@ import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.*
 import model.Recipe
 import model.RecipePhoto
 import model.RecipeType
@@ -18,10 +19,10 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
-    val faker = Faker()
+    val (stringSource, byteArraySource) = Pair(Arb.string(16), Arb.byteArrays(Arb.int(8..16), Arb.byte()))
     val database = DatabaseTestHelper.database
 
-    var basicRecipeType = RecipeType(name = faker.food.spices())
+    var basicRecipeType = RecipeType(name = stringSource.next())
     lateinit var basicRecipe: Recipe
 
     beforeSpec {
@@ -30,10 +31,10 @@ internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
             basicRecipe = Recipe(
                 recipeTypeId = basicRecipeType.id,
                 recipeTypeName = basicRecipeType.name,
-                name = faker.food.dish(),
-                description = faker.food.descriptions(),
-                ingredients = faker.food.ingredients(),
-                preparingSteps = faker.food.measurements()
+                name = stringSource.next(),
+                description = stringSource.next(),
+                ingredients = stringSource.next(),
+                preparingSteps = stringSource.next()
             )
             basicRecipe = DatabaseTestHelper.createRecipeInDatabase(basicRecipe)
         }
@@ -57,9 +58,10 @@ internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
             it("finds the created recipe photo") {
                 val photoToCreate = RecipePhoto(
                     recipeId = basicRecipe.id,
-                    name = faker.name.neutralFirstName(),
-                    data = byteArrayOf(0x33, 0x22)
+                    name = stringSource.next(),
+                    data = byteArraySource.next()
                 )
+
                 val repo = ExposedRecipePhotoRepository(database)
                 val id = repo.create(photoToCreate)
 
@@ -81,8 +83,8 @@ internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
         it("creates a new photo for the specified recipe") {
             val recipePhoto = RecipePhoto(
                 recipeId = basicRecipe.id,
-                name = faker.name.neutralFirstName(),
-                data = byteArrayOf(0x2, 0x11)
+                name = stringSource.next(),
+                data = byteArraySource.next()
             )
             val repo = ExposedRecipePhotoRepository(database)
 
@@ -94,13 +96,13 @@ internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
         it("finds the recipe photos created for the recipe") {
             val firstPhoto = RecipePhoto(
                 recipeId = basicRecipe.id,
-                name = faker.name.neutralFirstName(),
-                data = byteArrayOf(0x2, 0x15)
+                name = stringSource.next(),
+                data = byteArraySource.next()
             )
             val secondPhoto = RecipePhoto(
                 recipeId = basicRecipe.id,
-                name = faker.name.neutralFirstName(),
-                data = byteArrayOf(0x3, 0x19)
+                name = stringSource.next(),
+                data = byteArraySource.next()
             )
             val repo = ExposedRecipePhotoRepository(database)
             val firstId = repo.create(firstPhoto)
@@ -117,8 +119,8 @@ internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
         it("deletes a recipe photo") {
             val photo = RecipePhoto(
                 recipeId = basicRecipe.id,
-                name = faker.name.neutralFirstName(),
-                data = byteArrayOf(0x2, 0x15)
+                name = stringSource.next(),
+                data = byteArraySource.next()
             )
             val repo = ExposedRecipePhotoRepository(database)
             val id = repo.create(photo)
@@ -133,13 +135,13 @@ internal class ExposedRecipePhotoRepositoryTest : DescribeSpec({
         it("deletes all the recipe photos") {
             val firstPhoto = RecipePhoto(
                 recipeId = basicRecipe.id,
-                name = faker.name.neutralFirstName(),
-                data = byteArrayOf(0x2, 0x15)
+                name = stringSource.next(),
+                data = byteArraySource.next()
             )
             val secondPhoto = RecipePhoto(
                 recipeId = basicRecipe.id,
-                name = faker.name.neutralFirstName(),
-                data = byteArrayOf(0x3, 0x19)
+                name = stringSource.next(),
+                data = byteArraySource.next()
             )
             val repo = ExposedRecipePhotoRepository(database)
             repo.create(firstPhoto)
