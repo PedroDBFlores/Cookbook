@@ -3,6 +3,7 @@ package web.recipetype
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.next
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -10,10 +11,10 @@ import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import model.RecipeType
 import server.modules.contentNegotiationModule
 import usecases.recipetype.GetAllRecipeTypes
 import utils.JsonHelpers.toJson
+import utils.recipeTypeGenerator
 
 internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
 
@@ -25,10 +26,11 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
     }
 
     describe("Get all recipe types handler") {
-        val basicRecipeType = RecipeType(id = 1, name = "Recipe type")
-
         it("gets all the recipe types") {
-            val expectedRecipeTypes = listOf(basicRecipeType, basicRecipeType.copy(id = 2))
+            val expectedRecipeTypes = listOf(
+                recipeTypeGenerator.next(),
+                recipeTypeGenerator.next()
+            )
             val getAllRecipeTypesMock = mockk<GetAllRecipeTypes> {
                 every { this@mockk() } returns expectedRecipeTypes
             }

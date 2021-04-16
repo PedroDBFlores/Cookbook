@@ -4,6 +4,7 @@ import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.next
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -12,10 +13,10 @@ import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import model.Recipe
 import server.modules.contentNegotiationModule
 import usecases.recipe.FindRecipe
 import utils.JsonHelpers.toJson
+import utils.recipeGenerator
 
 internal class FindRecipeHandlerTest : DescribeSpec({
 
@@ -28,15 +29,7 @@ internal class FindRecipeHandlerTest : DescribeSpec({
 
     describe("Find recipe handler") {
         it("returns a recipe with status code 200") {
-            val expectedRecipe = Recipe(
-                id = 1,
-                recipeTypeId = 1,
-                recipeTypeName = "Recipe type name",
-                name = "Recipe Name",
-                description = "Recipe description",
-                ingredients = "Oh so many ingredients",
-                preparingSteps = "This will be so easy..."
-            )
+            val expectedRecipe = recipeGenerator.next()
             val findRecipe = mockk<FindRecipe> {
                 every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
             }

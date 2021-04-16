@@ -3,6 +3,10 @@ package web.recipe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -12,17 +16,9 @@ import server.modules.contentNegotiationModule
 import usecases.recipe.UpdateRecipe
 import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
+import utils.getTyped
 
 internal class UpdateRecipeHandlerTest : DescribeSpec({
-    val updateRecipeRepresenterMap = mapOf<String, Any>(
-        "id" to 1,
-        "recipeTypeId" to 1,
-        "name" to "name",
-        "description" to "description",
-        "ingredients" to "ingredients",
-        "preparingSteps" to "preparingSteps"
-    )
-
     fun createTestServer(updateRecipe: UpdateRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
@@ -31,9 +27,28 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
     }
 
     describe("Update recipe handler") {
+        val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
+
+        val updateRecipeRepresenterMap = mapOf<String, Any>(
+            "id" to intSource.next(),
+            "recipeTypeId" to intSource.next(),
+            "name" to stringSource.next(),
+            "description" to stringSource.next(),
+            "ingredients" to stringSource.next(),
+            "preparingSteps" to stringSource.next()
+        )
+
         it("updates a recipe type returning 200") {
+            val updateParameters = UpdateRecipe.Parameters(
+                id = updateRecipeRepresenterMap.getTyped("id"),
+                recipeTypeId = updateRecipeRepresenterMap.getTyped("recipeTypeId"),
+                name = updateRecipeRepresenterMap.getTyped("name"),
+                description = updateRecipeRepresenterMap.getTyped("description"),
+                ingredients = updateRecipeRepresenterMap.getTyped("ingredients"),
+                preparingSteps = updateRecipeRepresenterMap.getTyped("preparingSteps")
+            )
             val updateRecipe = mockk<UpdateRecipe> {
-                every { this@mockk(any()) } just runs
+                every { this@mockk(updateParameters) } just runs
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
@@ -44,7 +59,7 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                     }
                 ) {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipe(any()) }
+                    verify(exactly = 1) { updateRecipe(updateParameters) }
                 }
             }
         }

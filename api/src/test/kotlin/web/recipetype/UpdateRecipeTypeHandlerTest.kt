@@ -3,6 +3,10 @@ package web.recipetype
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -22,14 +26,20 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
     }
 
     describe("Update recipe type handler") {
+        val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
+
         it("updates a recipe type returning 200") {
-            val requestBody = createJSONObject(
-                "id" to 1,
-                "name" to "update recipe type"
+            val expectedParameters = UpdateRecipeType.Parameters(
+                id = intSource.next(),
+                name = stringSource.next()
             )
             val updateRecipeTypeMock = mockk<UpdateRecipeType> {
-                every { this@mockk(any()) } just runs
+                every { this@mockk(expectedParameters) } just runs
             }
+            val requestBody = createJSONObject(
+                "id" to expectedParameters.id,
+                "name" to expectedParameters.name
+            )
 
             withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
                 with(
@@ -39,7 +49,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                     }
                 ) {
                     response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipeTypeMock(UpdateRecipeType.Parameters(1, "update recipe type")) }
+                    verify(exactly = 1) { updateRecipeTypeMock(expectedParameters) }
                 }
             }
         }

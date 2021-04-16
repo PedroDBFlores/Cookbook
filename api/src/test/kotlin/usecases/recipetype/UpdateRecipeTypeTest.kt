@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.property.arbitrary.next
 import io.mockk.*
 import ports.RecipeTypeRepository
+import utils.recipeTypeGenerator
 
 internal class UpdateRecipeTypeTest : DescribeSpec({
     describe("Update recipe type use case") {

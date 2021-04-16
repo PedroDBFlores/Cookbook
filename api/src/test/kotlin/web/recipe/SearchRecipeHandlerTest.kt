@@ -4,6 +4,7 @@ import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.next
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -12,12 +13,12 @@ import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import model.Recipe
 import model.SearchResult
 import server.modules.contentNegotiationModule
 import usecases.recipe.SearchRecipe
 import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
+import utils.recipeGenerator
 
 internal class SearchRecipeHandlerTest : DescribeSpec({
 
@@ -29,23 +30,13 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
     }
 
     describe("Search recipe handler") {
-        val basicRecipe = Recipe(
-            id = 1,
-            recipeTypeId = 1,
-            recipeTypeName = "Recipe type name",
-            name = "Recipe Name",
-            description = "Recipe description",
-            ingredients = "Oh so many ingredients",
-            preparingSteps = "This will be so easy..."
-        )
-
         it("searches for recipes") {
             val expectedSearchResult = SearchResult(
                 count = 2,
                 numberOfPages = 1,
                 results = listOf(
-                    basicRecipe,
-                    basicRecipe.copy(id = 2)
+                    recipeGenerator.next(),
+                    recipeGenerator.next()
                 )
             )
             val requestBody = createJSONObject("name" to "name")

@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import ports.RecipeTypeRepository
+import utils.recipeTypeGenerator
 
 internal class GetAllRecipeTypesTest : DescribeSpec({
     describe("Get all recipe types use case") {

@@ -3,6 +3,9 @@ package web.recipe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -19,15 +22,18 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
     }
 
     describe("Delete recipe handler") {
+        val intSource = Arb.int(1..100)
+
         it("deletes a recipe returning 204") {
+            val recipeId = intSource.next()
             val deleteRecipeMock = mockk<DeleteRecipe> {
-                every { this@mockk(any()) } just runs
+                every { this@mockk(DeleteRecipe.Parameters(recipeId)) } just runs
             }
 
             withTestApplication(moduleFunction = createTestServer(deleteRecipeMock)) {
-                with(handleRequest(HttpMethod.Delete, "/api/recipe/1")) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipe/$recipeId")) {
                     response.status().shouldBe(HttpStatusCode.NoContent)
-                    verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(1)) }
+                    verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
                 }
             }
         }

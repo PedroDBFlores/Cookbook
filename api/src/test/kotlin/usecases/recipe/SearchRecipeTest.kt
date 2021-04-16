@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import model.SearchResult
 import ports.RecipeRepository
+import utils.recipeGenerator
 
 internal class SearchRecipeTest : DescribeSpec({
     describe("Search recipes use case") {

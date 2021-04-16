@@ -4,6 +4,10 @@ import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.string
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -17,9 +21,9 @@ import server.modules.contentNegotiationModule
 import usecases.recipe.CreateRecipe
 import utils.JsonHelpers.createJSONObject
 import utils.JsonHelpers.toJson
+import utils.getTyped
 
 internal class CreateRecipeHandlerTest : DescribeSpec({
-
     fun createTestServer(createRecipe: CreateRecipe): Application.() -> Unit = {
         contentNegotiationModule()
         routing {
@@ -28,24 +32,27 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
     }
 
     describe("Create recipe type handler") {
+        val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
+
         val createRecipeRepresenterMap = mapOf<String, Any>(
-            "recipeTypeId" to 1,
-            "name" to "name",
-            "description" to "description",
-            "ingredients" to "ingredients",
-            "preparingSteps" to "preparingSteps"
+            "recipeTypeId" to intSource.next(),
+            "name" to stringSource.next(),
+            "description" to stringSource.next(),
+            "ingredients" to stringSource.next(),
+            "preparingSteps" to stringSource.next()
         )
 
         it("creates a recipe returning 201") {
             val expectedParameters = CreateRecipe.Parameters(
-                recipeTypeId = 1,
-                name = "name",
-                description = "description",
-                ingredients = "ingredients",
-                preparingSteps = "preparingSteps"
+                recipeTypeId = createRecipeRepresenterMap.getTyped("recipeTypeId"),
+                name = createRecipeRepresenterMap.getTyped("name"),
+                description = createRecipeRepresenterMap.getTyped("description"),
+                ingredients = createRecipeRepresenterMap.getTyped("ingredients"),
+                preparingSteps = createRecipeRepresenterMap.getTyped("preparingSteps")
             )
+            val expectedRecipeId = intSource.next()
             val createRecipe = mockk<CreateRecipe> {
-                every { this@mockk(expectedParameters) } returns 1
+                every { this@mockk(expectedParameters) } returns expectedRecipeId
             }
 
             withTestApplication(moduleFunction = createTestServer(createRecipe)) {
@@ -56,7 +63,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                     }
                 ) {
                     response.status().shouldBe(HttpStatusCode.Created)
-                    response.content.shouldMatchJson(CreateResult(1).toJson())
+                    response.content.shouldMatchJson(CreateResult(expectedRecipeId).toJson())
                     verify(exactly = 1) { createRecipe(expectedParameters) }
                 }
             }
