@@ -1,10 +1,10 @@
 plugins {
     application
-    kotlin("jvm") version "1.4.30"
-    kotlin("plugin.serialization") version "1.4.30"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("com.github.ben-manes.versions") version "0.36.0"
-    id("com.adarshr.test-logger") version "2.1.1"
+    kotlin("jvm") version "1.4.32"
+    kotlin("plugin.serialization") version "1.4.32"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.adarshr.test-logger") version "3.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
@@ -22,15 +22,15 @@ repositories {
 
 val logbackVersion = "1.2.1"
 val hopliteVersion = "1.4.0"
-val ktorVersion = "1.5.1"
-val exposedVersion = "0.30.1"
+val ktorVersion = "1.5.4"
+val exposedVersion = "0.31.1"
 val h2Version = "1.4.200"
-val postgresVersion = "42.2.18"
-val flywayVersion = "7.5.3"
+val postgresVersion = "42.2.20"
+val flywayVersion = "7.8.2"
 val jodaDataTypeVersion = "2.12.1"
 
-val kotestVersion = "4.4.1"
-val mockkVersion = "1.10.6"
+val kotestVersion = "4.4.3"
+val mockkVersion = "1.11.0"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -45,7 +45,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresVersion")
-    implementation("com.zaxxer:HikariCP:4.0.2")
+    implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
@@ -73,7 +73,6 @@ sourceSets {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        useIR = true
         jvmTarget = "11"
     }
 }

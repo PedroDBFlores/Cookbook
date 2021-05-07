@@ -11,14 +11,14 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.next
-import io.kotest.property.arbitrary.string
+import io.kotest.property.arbitrary.stringPattern
 import model.Recipe
 import model.RecipeType
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class ExposedRecipeRepositoryTest : DescribeSpec({
-    val stringSource = Arb.string(16)
+    val stringSource = Arb.stringPattern("[0-3]([a-c]|[e-g]{1,2})")
     val database = DatabaseTestHelper.database
     var firstRecipeType = RecipeType(name = stringSource.next())
 
