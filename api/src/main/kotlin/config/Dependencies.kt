@@ -1,5 +1,7 @@
 package config
 
+import adapters.converters.resizeImage
+import adapters.database.ExposedRecipePhotoRepository
 import adapters.database.ExposedRecipeRepository
 import adapters.database.ExposedRecipeTypeRepository
 import com.sksamuel.hoplite.ConfigLoader
@@ -22,6 +24,8 @@ object Dependencies {
         db
     }
 
+    private val recipePhotoRepository = ExposedRecipePhotoRepository(database = database)
+
     // Recipe types
     private val recipeTypeRepository = ExposedRecipeTypeRepository(database = database)
     val findRecipeType = FindRecipeType(recipeTypeRepository = recipeTypeRepository)
@@ -35,7 +39,11 @@ object Dependencies {
     val findRecipe = FindRecipe(recipeRepository = recipeRepository)
     val searchRecipe = SearchRecipe(recipeRepository = recipeRepository)
     val getAllRecipes = GetAllRecipes(recipeRepository = recipeRepository)
-    val createRecipe = CreateRecipe(recipeRepository = recipeRepository)
+    val createRecipe = CreateRecipe(
+        recipeRepository = recipeRepository,
+        recipePhotoRepository = recipePhotoRepository,
+        imageResizer = ::resizeImage
+    )
     val updateRecipe = UpdateRecipe(recipeRepository = recipeRepository)
     val deleteRecipe = DeleteRecipe(recipeRepository = recipeRepository)
 }

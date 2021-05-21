@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipePhotoRepository
 
-class ExposedRecipePhotoRepository(private val database: Database) : RecipePhotoRepository {
+class ExposedRecipePhotoRepository(database: Database) : ExposedRepository(database), RecipePhotoRepository {
     override fun find(id: Int): RecipePhoto? = transaction(database) {
         RecipePhotoEntity.findById(id)?.run(::toRecipePhoto)
     }

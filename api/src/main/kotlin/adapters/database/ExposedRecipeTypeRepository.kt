@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import ports.RecipeTypeRepository
 
-class ExposedRecipeTypeRepository(private val database: Database) : RecipeTypeRepository {
+class ExposedRecipeTypeRepository(database: Database) : ExposedRepository(database), RecipeTypeRepository {
     override fun find(id: Int): RecipeType? = transaction(database) {
         RecipeTypeEntity.findById(id)?.run(::mapToRecipeType)
     }

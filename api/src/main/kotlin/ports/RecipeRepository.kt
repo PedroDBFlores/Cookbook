@@ -57,4 +57,6 @@ interface RecipeRepository {
      * @return True if deleted, false otherwise
      */
     fun delete(id: Int): Boolean
+
+    fun <T> runWrappedInTransaction(action: () -> T): T
 }

@@ -56,7 +56,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion") // for kotest json assertions
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion") // for kotest property test
-    testImplementation("io.kotest:kotest-assertions-ktor-jvm:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-ktor:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
