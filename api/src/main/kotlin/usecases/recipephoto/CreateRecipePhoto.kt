@@ -4,7 +4,9 @@ import model.RecipePhoto
 import ports.RecipePhotoRepository
 
 class CreateRecipePhoto(private val repository: RecipePhotoRepository) {
-    operator fun invoke(recipePhoto: RecipePhoto): Int {
-        return repository.create(recipePhoto)
+    operator fun invoke(parameters: Parameters): Int {
+        return repository.create(parameters.recipePhoto)
     }
+
+    data class Parameters(val recipePhoto: RecipePhoto)
 }

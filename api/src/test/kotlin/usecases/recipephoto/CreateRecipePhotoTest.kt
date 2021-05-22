@@ -25,7 +25,7 @@ internal class CreateRecipePhotoTest : DescribeSpec({
                 repository = repository
             )
 
-            val id = createRecipePhoto.invoke(recipePhoto)
+            val id = createRecipePhoto.invoke(CreateRecipePhoto.Parameters(recipePhoto))
 
             id.shouldBe(expectedId)
             verify(exactly = 1) {

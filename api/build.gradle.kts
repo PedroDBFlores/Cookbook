@@ -94,4 +94,10 @@ tasks.check {
 
 ktlint {
     disabledRules.set(setOf("no-wildcard-imports"))
+    coloredOutput.set(true)
+    filter {
+        exclude("**/generated/**")
+        exclude("**/build/**")
+        include("**/kotlin/**")
+    }
 }

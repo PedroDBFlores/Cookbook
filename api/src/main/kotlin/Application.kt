@@ -1,4 +1,3 @@
-
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
@@ -8,24 +7,20 @@ import server.CookbookApi
 
 /** Application entry point */
 @KtorExperimentalAPI
-fun main() {
-    val configuration: ConfigurationFile = ConfigLoader().loadConfigOrThrow("/application.conf")
-    migrateDB(configuration)
-    CookbookApi(configuration = configuration).start()
-}
+fun main() = ConfigLoader().loadConfigOrThrow<ConfigurationFile>("/application.conf")
+    .let { conf ->
+        migrateDB(conf)
+        CookbookApi(configuration = conf).start()
+    }
 
 /** Executes the database migrations present on the /resources folder with Flyway
  * @param configuration The configuration file for the Cookbook API
  */
-private fun migrateDB(configuration: ConfigurationFile) {
-    val dataSource = HikariDataSource()
-    with(configuration.database) {
-        dataSource.jdbcUrl = jdbcUrl
-        dataSource.driverClassName = "org.postgresql.Driver"
-        val flyway = Flyway.configure()
-            .dataSource(dataSource)
+private fun migrateDB(configuration: ConfigurationFile) =
+    HikariDataSource().let {
+        it.jdbcUrl = configuration.database.jdbcUrl
+        Flyway.configure()
+            .dataSource(it)
             .load()
-
-        flyway.migrate()
+            .migrate()
     }
-}

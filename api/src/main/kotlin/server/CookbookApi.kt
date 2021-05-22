@@ -18,6 +18,9 @@ class CookbookApi(private val configuration: ConfigurationFile) : AutoCloseable 
 
     /** Starts the server at the provided port. Only waits if the application isn't on testing mode. */
     fun start() {
+        server.addShutdownHook {
+            println("Cookbook API stopped")
+        }
         println("Cookbook API started at port ${configuration.api.port}")
         server.start(wait = !configuration.api.testing)
     }
@@ -26,6 +29,5 @@ class CookbookApi(private val configuration: ConfigurationFile) : AutoCloseable 
     override fun close() {
         val graceStopPeriod = if (configuration.api.testing) 0 else 5000L
         server.stop(graceStopPeriod, graceStopPeriod)
-        println("Cookbook API stopped")
     }
 }

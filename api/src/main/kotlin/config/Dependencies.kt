@@ -1,6 +1,5 @@
 package config
 
-import adapters.converters.resizeImage
 import adapters.database.ExposedRecipePhotoRepository
 import adapters.database.ExposedRecipeRepository
 import adapters.database.ExposedRecipeTypeRepository
@@ -16,12 +15,10 @@ object Dependencies {
     }
 
     private val database: Database by lazy {
-        val dataSource = HikariDataSource()
-        with(configurationFile.database) {
-            dataSource.jdbcUrl = jdbcUrl
+        HikariDataSource().let {
+            it.jdbcUrl = configurationFile.database.jdbcUrl
+            Database.connect(it)
         }
-        val db = Database.connect(dataSource)
-        db
     }
 
     private val recipePhotoRepository = ExposedRecipePhotoRepository(database = database)
@@ -39,11 +36,7 @@ object Dependencies {
     val findRecipe = FindRecipe(recipeRepository = recipeRepository)
     val searchRecipe = SearchRecipe(recipeRepository = recipeRepository)
     val getAllRecipes = GetAllRecipes(recipeRepository = recipeRepository)
-    val createRecipe = CreateRecipe(
-        recipeRepository = recipeRepository,
-        recipePhotoRepository = recipePhotoRepository,
-        imageResizer = ::resizeImage
-    )
+    val createRecipe = CreateRecipe(recipeRepository = recipeRepository)
     val updateRecipe = UpdateRecipe(recipeRepository = recipeRepository)
     val deleteRecipe = DeleteRecipe(recipeRepository = recipeRepository)
 }
