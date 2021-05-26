@@ -55,6 +55,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
         }
 
         arrayOf(
+            row(null, "no body was provided"),
             row(
                 createJSONObject("non" to "conformant"),
                 "the provided body doesn't match the required JSON"
@@ -76,7 +77,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
                     with(
                         handleRequest(HttpMethod.Put, "/api/recipetype") {
-                            setBody(jsonBody)
+                            jsonBody?.run { setBody(this) }
                             addHeader("Content-Type", "application/json")
                         }
                     ) {

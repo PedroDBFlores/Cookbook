@@ -15,7 +15,7 @@ internal class ImageResizerTest : DescribeSpec({
             val resizeResult = resizeImage(
                 targetWidth = 200,
                 targetHeight = 200,
-                validImage = ImageState.Valid(imageBytes.inputStream())
+                validImage = ImageState.Valid(imageBytes)
             )
 
             val resizedImage = ImageIO.read(resizeResult.result.inputStream())
@@ -35,7 +35,7 @@ internal class ImageResizerTest : DescribeSpec({
                 val resizeResult = resizeImage(
                     targetWidth = originalImage.width + widthAddition,
                     targetHeight = originalImage.height + heightAddition,
-                    validImage = ImageState.Valid(imageBytes.inputStream())
+                    validImage = ImageState.Valid(imageBytes)
                 )
 
                 val resizedImage = ImageIO.read(resizeResult.result.inputStream())

@@ -76,16 +76,17 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         }
 
         arrayOf(
+            row(null, "no body was provided"),
             row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
             row(createJSONObject("name" to " "), "the name is invalid")
-        ).forEach { (requestBody, description) ->
+        ).forEach { (jsonBody, description) ->
             it("returns 400 when $description") {
                 val createRecipeType = mockk<CreateRecipeType>()
 
                 withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
                     with(
                         handleRequest(HttpMethod.Post, "/api/recipetype") {
-                            setBody(requestBody)
+                            jsonBody?.run { setBody(this) }
                             addHeader("Content-Type", "application/json")
                         }
                     ) {

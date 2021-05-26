@@ -42,12 +42,12 @@ internal class CreateRecipePhotoHandlerTest : DescribeSpec({
 
     describe("Create recipe photo handler") {
         it("receives a valid photo") {
-            val imageStreamSource = { this.javaClass.getResourceAsStream("/resize_test.png")!! }
+            val imageData = this.javaClass.getResourceAsStream("/resize_test.png")!!.readAllBytes()
             val expectedRecipeId = Arb.int(1..100).next()
             val expectedId = Arb.int(1..100).next()
-            val validImage = ImageState.Valid(imageStreamSource())
+            val validImage = ImageState.Valid(imageData)
             val imageChecker = mockk<ImageChecker> {
-                every { check(any()) } returns validImage
+                every { check(imageData) } returns validImage
             }
             val createRecipePhotoMock = mockk<CreateRecipePhoto> {
                 every { this@mockk(ofType()) } returns expectedId
@@ -56,7 +56,7 @@ internal class CreateRecipePhotoHandlerTest : DescribeSpec({
             withTestApplication(createTestServer(createRecipePhotoMock, imageChecker)) {
                 with(
                     handleRequest(HttpMethod.Post, "/api/recipe/$expectedRecipeId/photo?name=Main") {
-                        setBody(imageStreamSource().readAllBytes())
+                        setBody(imageData)
                         addHeader("Content-Type", "image/png")
                     }
                 ) {
@@ -77,6 +77,7 @@ internal class CreateRecipePhotoHandlerTest : DescribeSpec({
         }
 
         arrayOf(
+            row(null, "name=Eins", "no image is provided"),
             row(byteArrayOf(1, 2, 3), "", "name query parameter is missing"),
             row(byteArrayOf(1, 2, 3), "name=", "no name is provided"),
         ).forEach { (image, imageNameParameter, testDescription) ->
@@ -87,7 +88,7 @@ internal class CreateRecipePhotoHandlerTest : DescribeSpec({
                 withTestApplication(createTestServer(createRecipePhotoMock, imageCheckerMock)) {
                     with(
                         handleRequest(HttpMethod.Post, "/api/recipe/123/photo?$imageNameParameter") {
-                            setBody(image)
+                            image?.run { setBody(this) }
                             addHeader("Content-Type", "image/png")
                         }
                     ) {

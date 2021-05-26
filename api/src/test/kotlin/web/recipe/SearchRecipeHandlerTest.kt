@@ -13,6 +13,7 @@ import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import model.Recipe
 import model.SearchResult
 import server.modules.contentNegotiationModule
 import usecases.recipe.SearchRecipe
@@ -59,7 +60,34 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             }
         }
 
+        it("accepts an empty body and searches with the default parameters") {
+            val expectedSearchResult = SearchResult<Recipe>(
+                count = 0,
+                numberOfPages = 1,
+                results = listOf()
+            )
+            val searchRecipe = mockk<SearchRecipe> {
+                every { this@mockk(SearchRecipe.Parameters()) } returns expectedSearchResult
+            }
+
+            withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
+                with(
+                    handleRequest(HttpMethod.Post, "/api/recipe/search") {
+                        setBody("{}")
+                        addHeader("Content-Type", "application/json")
+                    }
+                ) {
+                    response.status().shouldBe(HttpStatusCode.OK)
+                    response.content.shouldMatchJson(expectedSearchResult.toJson())
+                    verify(exactly = 1) {
+                        searchRecipe(SearchRecipe.Parameters())
+                    }
+                }
+            }
+        }
+
         arrayOf(
+            row(null, "no body was provided"),
             row(createJSONObject("recipeTypeId" to 0), "the recipeTypeId field is invalid"),
             row(createJSONObject("pageNumber" to -1), "the pageNumber field is invalid"),
             row(createJSONObject("itemsPerPage" to 0), "the itemsPerPage field is invalid")
@@ -70,7 +98,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
                 withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
                     with(
                         handleRequest(HttpMethod.Post, "/api/recipe/search") {
-                            setBody(jsonBody)
+                            jsonBody?.run { setBody(this) }
                             addHeader("Content-Type", "application/json")
                         }
                     ) {

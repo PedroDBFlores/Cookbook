@@ -17,14 +17,9 @@ class CreateRecipePhotoHandler(
     private val imageChecker: ImageChecker
 ) : KtorHandler {
     override suspend fun handle(call: ApplicationCall) {
-        val recipeId = call.parameters.getOrFail<Int>("id")
+        val (recipeId, photoName, imageData) = getAndValidateParams(call)
 
-        val photoName = call.request.queryParameters.getOrFail("name")
-        require(photoName.isNotEmpty()) { throw BadRequestException("Name cannot be empty") }
-
-        val image = call.receiveStream()
-
-        when (val result = imageChecker.check(image)) {
+        when (val result = imageChecker.check(imageData)) {
             is ImageState.NotAnImage -> call.respond(HttpStatusCode.UnsupportedMediaType)
             is ImageState.Valid -> {
                 val id = createRecipePhoto(
@@ -37,6 +32,17 @@ class CreateRecipePhotoHandler(
                 call.respond(HttpStatusCode.Created, CreateResult(id))
             }
         }
+    }
+
+    private suspend fun getAndValidateParams(call: ApplicationCall): Triple<Int, String, ByteArray> {
+        val recipeId = call.parameters.getOrFail<Int>("id")
+
+        val photoName = call.request.queryParameters.getOrFail("name")
+        require(photoName.isNotEmpty()) { throw BadRequestException("Name cannot be empty") }
+
+        val imageData = call.receiveStream().readAllBytes()
+        require(imageData.isNotEmpty()) { throw BadRequestException("Must have image content") }
+        return Triple(recipeId, photoName, imageData)
     }
 
     private fun toParameters(recipeId: Int, photoName: String, validImage: ImageState.Valid) =

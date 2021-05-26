@@ -1,15 +1,13 @@
 package ports
 
-import java.io.InputStream
-
 sealed class ImageState {
-    class Valid(val imageStream: InputStream) : ImageState()
+    class Valid(val imageData: ByteArray) : ImageState()
     class Resized(val result: ByteArray) : ImageState()
     object NotAnImage : ImageState()
 }
 
 fun interface ImageChecker {
-    fun check(imageStream: InputStream): ImageState
+    fun check(imageData: ByteArray): ImageState
 }
 
 fun interface ImageResizer {

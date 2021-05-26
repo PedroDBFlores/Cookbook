@@ -9,7 +9,7 @@ internal class ImageCheckerTest : DescribeSpec({
         it("checks a valid image") {
             val imageStream = this.javaClass.getResourceAsStream("/resize_test.png")!!
 
-            val result = checkImage(imageStream)
+            val result = checkImage(imageStream.readAllBytes())
 
             result.shouldBeInstanceOf<ImageState.Valid>()
         }
@@ -17,7 +17,7 @@ internal class ImageCheckerTest : DescribeSpec({
         it("returns not an image if it's not one") {
             val imageStream = this.javaClass.getResourceAsStream("/logback.xml")!!
 
-            val result = checkImage(imageStream)
+            val result = checkImage(imageStream.readAllBytes())
 
             result.shouldBeInstanceOf<ImageState.NotAnImage>()
         }

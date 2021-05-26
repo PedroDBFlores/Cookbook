@@ -14,7 +14,7 @@ fun resizeImage(
     targetHeight: Int,
 ): ImageState.Resized {
     with(validImage) {
-        imageStream.readAsImage().run {
+        imageData.readAsImage().run {
             if (width < targetWidth || height < targetHeight)
                 return ImageState.Resized(this.toByteArray("jpg"))
 
@@ -26,7 +26,7 @@ fun resizeImage(
     }
 }
 
-private fun InputStream.readAsImage() = ImageIO.read(this)
+private fun ByteArray.readAsImage() = ImageIO.read(this.inputStream())
 
 private fun BufferedImage.scaleImage(
     targetWidth: Int,

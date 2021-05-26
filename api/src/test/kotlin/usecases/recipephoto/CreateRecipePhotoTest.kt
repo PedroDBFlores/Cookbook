@@ -42,7 +42,7 @@ internal class CreateRecipePhotoTest : DescribeSpec({
                 CreateRecipePhoto.Parameters(
                     recipeId = expectedRecipeId,
                     name = expectedName,
-                    validImage = ImageState.Valid(byteArraySource.next().inputStream())
+                    validImage = ImageState.Valid(byteArraySource.next())
                 )
             )
 
