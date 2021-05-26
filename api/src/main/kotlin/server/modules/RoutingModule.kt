@@ -1,11 +1,13 @@
 package server.modules
 
+import adapters.validators.checkImage
 import config.Dependencies
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import web.recipe.*
+import web.recipephoto.CreateRecipePhotoHandler
 import web.recipetype.*
 
 fun Application.routingModule() = routing {
@@ -41,6 +43,9 @@ fun Routing.optionsRoutes() {
     options("/api/recipe/{id}") {
         call.handleOptionsHeaders("GET,DELETE")
     }
+    options("/api/recipe/{id}/photo") {
+        call.handleOptionsHeaders("POST")
+    }
     options("/api/recipe/search") {
         call.handleOptionsHeaders("POST")
     }
@@ -55,17 +60,25 @@ fun Routing.recipeTypeRoutes() = route("/api/recipetype") {
         get {
             GetAllRecipeTypesHandler(getAllRecipeTypes = getAllRecipeTypes).handle(call)
         }
-        get("{id}") {
-            FindRecipeTypeHandler(findRecipeType = findRecipeType).handle(call)
-        }
         post {
             CreateRecipeTypeHandler(createRecipeType = createRecipeType).handle(call)
         }
         put {
             UpdateRecipeTypeHandler(updateRecipeType = updateRecipeType).handle(call)
         }
-        delete("{id}") {
-            DeleteRecipeTypeHandler(deleteRecipeType = deleteRecipeType).handle(call)
+        route("{id}") {
+            get {
+                FindRecipeTypeHandler(findRecipeType = findRecipeType).handle(call)
+            }
+            delete {
+                DeleteRecipeTypeHandler(deleteRecipeType = deleteRecipeType).handle(call)
+            }
+            post("photo") {
+                CreateRecipePhotoHandler(
+                    createRecipePhoto = createRecipePhoto,
+                    imageChecker = ::checkImage
+                )
+            }
         }
     }
 }

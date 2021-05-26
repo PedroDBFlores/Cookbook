@@ -1,5 +1,6 @@
 package config
 
+import adapters.converters.resizeImage
 import adapters.database.ExposedRecipePhotoRepository
 import adapters.database.ExposedRecipeRepository
 import adapters.database.ExposedRecipeTypeRepository
@@ -7,6 +8,7 @@ import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import usecases.recipe.*
+import usecases.recipephoto.CreateRecipePhoto
 import usecases.recipetype.*
 
 object Dependencies {
@@ -22,6 +24,10 @@ object Dependencies {
     }
 
     private val recipePhotoRepository = ExposedRecipePhotoRepository(database = database)
+    val createRecipePhoto = CreateRecipePhoto(
+        repository = recipePhotoRepository,
+        imageResizer = ::resizeImage
+    )
 
     // Recipe types
     private val recipeTypeRepository = ExposedRecipeTypeRepository(database = database)

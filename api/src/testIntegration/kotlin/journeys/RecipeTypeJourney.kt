@@ -32,8 +32,8 @@ class RecipeTypeJourney : BehaviorSpec({
     }
 
     Given("I want to get all the recipe types") {
-        `when`("I am at the endpoint") {
-            then("I'm able to access the route and get them") {
+        `when`("I use the endpoint") {
+            then("I'm able to get them") {
                 val firstRecipeTypeBody = createJSONObject("name" to "First Recipe Type name")
                 val secondRecipeTypeBody = createJSONObject("name" to "Second Recipe Type name")
                 RecipeTypeActions.createRecipeType(baseUrl, firstRecipeTypeBody)
@@ -44,10 +44,10 @@ class RecipeTypeJourney : BehaviorSpec({
                 with(getRecipeTypeResponse) {
                     statusCode().shouldBe(HttpStatus.OK_200)
                     body().shouldMatchJson(
-                        """[
-                            { "id": 1, "name" : "First Recipe Type name" },
-                            { "id": 2, "name" : "Second Recipe Type name" }
-                        ]""".trimMargin()
+                        arrayOf(
+                            RecipeType(id = 1, name = "First Recipe Type name"),
+                            RecipeType(id = 2, name = "Second Recipe Type name"),
+                        ).toJson()
                     )
                 }
             }
@@ -55,7 +55,7 @@ class RecipeTypeJourney : BehaviorSpec({
     }
 
     Given("I want to create a new recipe type") {
-        `when`("I am at the endpoint") {
+        `when`("I use the endpoint") {
             then("I'm able to create it") {
                 val requestBody = createJSONObject("name" to "Recipe Type name")
 
@@ -70,8 +70,8 @@ class RecipeTypeJourney : BehaviorSpec({
     }
 
     Given("I want to find a recipe type") {
-        `when`("I am at the endpoint") {
-            then("I'm able to create it") {
+        `when`("I use the endpoint") {
+            then("I'm able to find it") {
                 val createRecipeTypeResponse =
                     RecipeTypeActions.createRecipeType(
                         baseUrl = baseUrl,
@@ -95,8 +95,8 @@ class RecipeTypeJourney : BehaviorSpec({
     }
 
     Given("I want to update a recipe type") {
-        `when`("I am at the endpont") {
-            then("I'm able to access the route and update it") {
+        `when`("I use the endpoint") {
+            then("I'm able to update it") {
                 val createResult =
                     RecipeTypeActions.createRecipeType(
                         baseUrl = baseUrl,
@@ -116,8 +116,8 @@ class RecipeTypeJourney : BehaviorSpec({
     }
 
     Given("I want to delete a recipe type") {
-        `when`("I am at the endpont") {
-            then("I'm able to access the route and delete it") {
+        `when`("I use the endpoint") {
+            then("I'm able to delete it") {
                 val createResult =
                     RecipeTypeActions.createRecipeType(
                         baseUrl = baseUrl,

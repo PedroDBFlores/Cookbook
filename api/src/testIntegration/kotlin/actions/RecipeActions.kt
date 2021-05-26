@@ -10,7 +10,7 @@ object RecipeActions {
             requestBody = requestBody,
         )
 
-    suspend fun getRecipeType(baseUrl: String, id: Int) = executeGETRequest(
+    suspend fun getRecipe(baseUrl: String, id: Int) = executeGETRequest(
         uri = URI("$baseUrl/api/recipe/$id")
     )
 
@@ -26,7 +26,7 @@ object RecipeActions {
             requestBody = requestBody
         )
 
-    suspend fun deleteRecipeType(baseUrl: String, id: Int) = executeDELETERequest(
+    suspend fun deleteRecipe(baseUrl: String, id: Int) = executeDELETERequest(
         uri = URI("$baseUrl/api/recipe/$id")
     )
 }

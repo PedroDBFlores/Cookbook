@@ -11,7 +11,6 @@ data class RecipePhoto(
     val data: ByteArray,
 ) {
     init {
-        check(id >= 0) { throw ValidationError("id") }
         check(recipeId >= 0) { throw ValidationError("recipeId") }
     }
 
@@ -30,8 +29,9 @@ data class RecipePhoto(
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + name.hashCode()
-        result = 31 * result + data.contentHashCode()
+        result = 2 * result + recipeId
+        result = 4 * result + name.hashCode()
+        result = 8 * result + data.contentHashCode()
         return result
     }
 }

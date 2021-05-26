@@ -32,7 +32,6 @@ internal class RecipePhotoTest : DescribeSpec({
         }
 
         arrayOf(
-            row(-1, 1, "name", byteArrayOf(0x12, 0x1F), "an invalid id is provided"),
             row(1, -1, "name", byteArrayOf(0x12, 0x1F), "an invalid recipeId is provided"),
         ).forEach { (id, recipeId, name, data, conditionDescription) ->
             it("throws ValidationError when $conditionDescription") {

@@ -1,10 +1,9 @@
 package adapters.converters
 
-import io.kotest.assertions.fail
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
+import ports.ImageState
 import javax.imageio.ImageIO
 
 internal class ImageResizerTest : DescribeSpec({
@@ -13,13 +12,13 @@ internal class ImageResizerTest : DescribeSpec({
             val source = this.javaClass.getResourceAsStream("/resize_test.png")!!
             val imageBytes = source.readBytes()
 
-            val resizedByteArray = resizeImage(
+            val resizeResult = resizeImage(
                 targetWidth = 200,
                 targetHeight = 200,
-                imageSourceStream = imageBytes.inputStream()
+                validImage = ImageState.Valid(imageBytes.inputStream())
             )
 
-            val resizedImage = ImageIO.read(resizedByteArray.inputStream())
+            val resizedImage = ImageIO.read(resizeResult.result.inputStream())
             resizedImage.width.shouldBe(200)
             resizedImage.height.shouldBe(200)
         }
@@ -33,32 +32,15 @@ internal class ImageResizerTest : DescribeSpec({
                 val imageBytes = source.readBytes()
                 val originalImage = ImageIO.read(imageBytes.inputStream())
 
-                val resizedByteArray = resizeImage(
+                val resizeResult = resizeImage(
                     targetWidth = originalImage.width + widthAddition,
                     targetHeight = originalImage.height + heightAddition,
-                    imageSourceStream = imageBytes.inputStream()
+                    validImage = ImageState.Valid(imageBytes.inputStream())
                 )
 
-                val resizedImage = ImageIO.read(resizedByteArray.inputStream())
+                val resizedImage = ImageIO.read(resizeResult.result.inputStream())
                 resizedImage.width.shouldBe(originalImage.width)
                 resizedImage.height.shouldBe(originalImage.height)
-            }
-        }
-
-        it("throws UnsupportedImageFormat if it's not an supported format") {
-            val source = this.javaClass.getResourceAsStream("/application.conf")!!
-            val imageBytes = source.readBytes()
-
-            runCatching {
-                resizeImage(
-                    targetWidth = 200,
-                    targetHeight = 200,
-                    imageSourceStream = imageBytes.inputStream()
-                )
-            }.onFailure {
-                it.shouldBeInstanceOf<UnsupportedImageFormat>()
-            }.onSuccess {
-                fail("Shouldn't be able to read a config file as an image")
             }
         }
     }
