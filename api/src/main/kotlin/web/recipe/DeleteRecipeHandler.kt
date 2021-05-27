@@ -21,4 +21,3 @@ class DeleteRecipeHandler(private val deleteRecipe: DeleteRecipe) : KtorHandler 
             call.respond(HttpStatusCode.NotFound)
         }
 }
-

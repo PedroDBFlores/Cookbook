@@ -41,4 +41,3 @@ private data class CreateRecipeRepresenter(
         preparingSteps = preparingSteps
     )
 }
-

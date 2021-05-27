@@ -52,7 +52,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
             }
 
             withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeTypeId}")) {
+                with(handleRequest(HttpMethod.Get, "/api/recipetype/$expectedRecipeTypeId")) {
                     response.status().shouldBe(HttpStatusCode.NotFound)
                     verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
                 }

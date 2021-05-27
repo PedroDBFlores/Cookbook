@@ -21,4 +21,3 @@ class DeleteRecipeTypeHandler(private val deleteRecipeType: DeleteRecipeType) : 
             call.respond(HttpStatusCode.NotFound)
         }
 }
-

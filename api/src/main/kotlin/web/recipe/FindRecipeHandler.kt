@@ -21,4 +21,3 @@ class FindRecipeHandler(private val findRecipe: FindRecipe) : KtorHandler {
             call.respond(HttpStatusCode.NotFound)
         }
 }
-

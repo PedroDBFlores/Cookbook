@@ -30,7 +30,7 @@ class RecipeJourney : BehaviorSpec({
 
     Given("I want to search for a recipe") {
         `when`("I am at the endpoint") {
-            then("I'm able to search") {
+            then("I'm able to search without parameters") {
                 val searchRecipesResponse = RecipeActions.searchRecipe(
                     baseUrl = baseUrl,
                     requestBody = "{}"
@@ -38,7 +38,7 @@ class RecipeJourney : BehaviorSpec({
 
                 val expectedResponse = SearchResult<Recipe>(
                     count = 0,
-                    numberOfPages = 1,
+                    numberOfPages = 0,
                     results = listOf()
                 )
 
