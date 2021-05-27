@@ -6,6 +6,10 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import model.CreateResult
 import ports.ImageChecker
 import ports.ImageState
@@ -31,6 +35,7 @@ class CreateRecipePhotoHandler(
                 )
                 call.respond(HttpStatusCode.Created, CreateResult(id))
             }
+            else -> call.respond(HttpStatusCode.InternalServerError)
         }
     }
 

@@ -9,17 +9,17 @@ import ports.RecipeTypeRepository
 
 class ExposedRecipeTypeRepository(database: Database) : ExposedRepository(database), RecipeTypeRepository {
     override fun find(id: Int): RecipeType? = transaction(database) {
-        RecipeTypeEntity.findById(id)?.run(::mapToRecipeType)
+        RecipeTypeEntity.findById(id)?.run(RecipeTypeEntity::mapToRecipeType)
     }
 
     override fun find(name: String): RecipeType? = transaction(database) {
         RecipeTypeEntity.find { RecipeTypes.name eq name }
-            .map(::mapToRecipeType)
+            .map(RecipeTypeEntity::mapToRecipeType)
             .firstOrNull()
     }
 
     override fun getAll(): List<RecipeType> = transaction(database) {
-        RecipeTypeEntity.all().map(::mapToRecipeType)
+        RecipeTypeEntity.all().map(RecipeTypeEntity::mapToRecipeType)
     }
 
     override fun count(): Long = transaction(database) {
@@ -42,9 +42,4 @@ class ExposedRecipeTypeRepository(database: Database) : ExposedRepository(databa
             true
         } ?: false
     }
-
-    private fun mapToRecipeType(entity: RecipeTypeEntity) = RecipeType(
-        id = entity.id.value,
-        name = entity.name
-    )
 }

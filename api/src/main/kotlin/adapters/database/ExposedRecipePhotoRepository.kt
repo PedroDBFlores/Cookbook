@@ -11,12 +11,12 @@ import ports.RecipePhotoRepository
 
 class ExposedRecipePhotoRepository(database: Database) : ExposedRepository(database), RecipePhotoRepository {
     override fun find(id: Int): RecipePhoto? = transaction(database) {
-        RecipePhotoEntity.findById(id)?.run(::toRecipePhoto)
+        RecipePhotoEntity.findById(id)?.run(RecipePhotoEntity::toRecipePhoto)
     }
 
     override fun getAll(recipeId: Int): List<RecipePhoto> = transaction(database) {
         RecipePhotoEntity.find { RecipePhotos.recipe eq recipeId }
-            .map(::toRecipePhoto)
+            .map(RecipePhotoEntity::toRecipePhoto)
     }
 
     override fun create(recipePhoto: RecipePhoto): Int = transaction(database) {
@@ -39,11 +39,4 @@ class ExposedRecipePhotoRepository(database: Database) : ExposedRepository(datab
             .takeUnless { x -> x.empty() }
             ?.forEach { it.delete() }?.run { true } ?: false
     }
-
-    private fun toRecipePhoto(entity: RecipePhotoEntity) = RecipePhoto(
-        id = entity.id.value,
-        recipeId = entity.recipe.id.value,
-        name = entity.name,
-        data = entity.data.bytes
-    )
 }

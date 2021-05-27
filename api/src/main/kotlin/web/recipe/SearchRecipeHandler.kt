@@ -4,7 +4,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import ports.KtorHandler
 import server.extensions.receiveOrThrow
 import usecases.recipe.SearchRecipe
@@ -13,8 +12,7 @@ class SearchRecipeHandler(private val searchRecipe: SearchRecipe) : KtorHandler 
     override suspend fun handle(call: ApplicationCall) {
         val parameters = call.receiveOrThrow<SearchRecipeRepresenter>()
             .toParameters()
-        val results = searchRecipe(parameters)
-        call.respond(HttpStatusCode.OK, results)
+        call.respond(HttpStatusCode.OK, searchRecipe(parameters))
     }
 
     @Serializable

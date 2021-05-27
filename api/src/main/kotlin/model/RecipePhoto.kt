@@ -18,20 +18,17 @@ data class RecipePhoto(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as RecipePhoto
-
-        if (id != other.id) return false
-        if (name != other.name) return false
-        if (!data.contentEquals(other.data)) return false
+        (other as RecipePhoto).let {
+            if (id != it.id) return false
+            if (name != it.name) return false
+            if (!data.contentEquals(it.data)) return false
+        }
 
         return true
     }
 
-    override fun hashCode(): Int {
-        var result = id
-        result = 2 * result + recipeId
-        result = 4 * result + name.hashCode()
-        result = 8 * result + data.contentHashCode()
-        return result
-    }
+    override fun hashCode(): Int = id
+        .plus(2 * recipeId)
+        .plus(4 * name.hashCode())
+        .plus(8 * data.contentHashCode())
 }

@@ -8,8 +8,5 @@ import usecases.recipetype.GetAllRecipeTypes
 
 class GetAllRecipeTypesHandler(private val getAllRecipeTypes: GetAllRecipeTypes) : KtorHandler {
 
-    override suspend fun handle(call: ApplicationCall) {
-        val recipeTypes = getAllRecipeTypes()
-        call.respond(HttpStatusCode.OK, recipeTypes)
-    }
+    override suspend fun handle(call: ApplicationCall) = call.respond(HttpStatusCode.OK, getAllRecipeTypes())
 }

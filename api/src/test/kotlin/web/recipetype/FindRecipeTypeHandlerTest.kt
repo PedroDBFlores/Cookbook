@@ -1,9 +1,12 @@
 package web.recipetype
 
+import errors.RecipeTypeNotFound
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 import io.ktor.application.*
 import io.ktor.http.*
@@ -38,6 +41,20 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedRecipeType.toJson())
                     verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
+                }
+            }
+        }
+
+        it("returns 404 if the recipe type was not found") {
+            val expectedRecipeTypeId = Arb.int(1..100).next()
+            val getRecipeTypeMock = mockk<FindRecipeType> {
+                every { this@mockk(FindRecipeType.Parameters(expectedRecipeTypeId)) } throws RecipeTypeNotFound(expectedRecipeTypeId)
+            }
+
+            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeTypeId}")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
+                    verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
                 }
             }
         }

@@ -1,5 +1,6 @@
 package web.recipetype
 
+import errors.RecipeTypeNotFound
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -34,6 +35,22 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
                 with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
                     response.status().shouldBe(HttpStatusCode.NoContent)
+                    verify(exactly = 1) { deleteRecipeType(expectedParameters) }
+                }
+            }
+        }
+
+        it("returns 404 if the recipe type is not found") {
+            val expectedParameters = DeleteRecipeType.Parameters(
+                recipeTypeId = intSource.next()
+            )
+            val deleteRecipeType = mockk<DeleteRecipeType> {
+                every { this@mockk(expectedParameters) } throws RecipeTypeNotFound(expectedParameters.recipeTypeId)
+            }
+
+            withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
                     verify(exactly = 1) { deleteRecipeType(expectedParameters) }
                 }
             }

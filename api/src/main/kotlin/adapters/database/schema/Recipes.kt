@@ -1,5 +1,6 @@
 package adapters.database.schema
 
+import model.Recipe
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -16,9 +17,20 @@ object Recipes : IntIdTable() {
 
 class RecipeEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<RecipeEntity>(Recipes)
+
     var recipeType by RecipeTypeEntity referencedOn Recipes.recipeType
     var name by Recipes.name
     var description by Recipes.description
     var ingredients by Recipes.ingredients
     var preparingSteps by Recipes.preparingSteps
+
+    fun mapToRecipe() = Recipe(
+        id = this.id.value,
+        recipeTypeId = this.recipeType.id.value,
+        recipeTypeName = this.recipeType.name,
+        name = this.name,
+        description = this.description,
+        ingredients = this.ingredients,
+        preparingSteps = this.preparingSteps
+    )
 }

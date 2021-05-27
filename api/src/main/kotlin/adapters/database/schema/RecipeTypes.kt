@@ -1,5 +1,6 @@
 package adapters.database.schema
 
+import model.RecipeType
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -15,4 +16,9 @@ class RecipeTypeEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by RecipeTypes.name
 
     val recipes by RecipeEntity referrersOn Recipes.recipeType
+
+    fun mapToRecipeType() = RecipeType(
+        id = this.id.value,
+        name = this.name
+    )
 }

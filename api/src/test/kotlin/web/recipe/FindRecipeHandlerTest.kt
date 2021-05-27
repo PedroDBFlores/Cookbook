@@ -1,5 +1,6 @@
 package web.recipe
 
+import errors.RecipeNotFound
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -38,6 +39,20 @@ internal class FindRecipeHandlerTest : DescribeSpec({
                 with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
                     response.status().shouldBe(HttpStatusCode.OK)
                     response.content.shouldMatchJson(expectedRecipe.toJson())
+                    verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
+                }
+            }
+        }
+
+        it("returns 404 if the recipe doesn't exist") {
+            val expectedRecipe = recipeGenerator.next()
+            val findRecipe = mockk<FindRecipe> {
+                every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } throws RecipeNotFound(expectedRecipe.id)
+            }
+
+            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
                     verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
                 }
             }

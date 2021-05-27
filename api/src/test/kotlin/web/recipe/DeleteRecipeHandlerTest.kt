@@ -1,5 +1,6 @@
 package web.recipe
 
+import errors.RecipeNotFound
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -33,6 +34,20 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
             withTestApplication(moduleFunction = createTestServer(deleteRecipeMock)) {
                 with(handleRequest(HttpMethod.Delete, "/api/recipe/$recipeId")) {
                     response.status().shouldBe(HttpStatusCode.NoContent)
+                    verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
+                }
+            }
+        }
+
+        it("returns 404 if the recipe doesn't exist") {
+            val recipeId = intSource.next()
+            val deleteRecipeMock = mockk<DeleteRecipe> {
+                every { this@mockk(DeleteRecipe.Parameters(recipeId)) } throws RecipeNotFound(recipeId)
+            }
+
+            withTestApplication(moduleFunction = createTestServer(deleteRecipeMock)) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipe/$recipeId")) {
+                    response.status().shouldBe(HttpStatusCode.NotFound)
                     verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
                 }
             }

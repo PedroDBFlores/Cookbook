@@ -13,11 +13,11 @@ import kotlin.math.ceil
 class ExposedRecipeRepository(database: Database) : ExposedRepository(database), RecipeRepository {
 
     override fun find(id: Int): Recipe? = transaction(database) {
-        RecipeEntity.findById(id)?.run(::mapToRecipe)
+        RecipeEntity.findById(id)?.run(RecipeEntity::mapToRecipe)
     }
 
     override fun getAll(): List<Recipe> = transaction(database) {
-        RecipeEntity.all().map(::mapToRecipe)
+        RecipeEntity.all().map(RecipeEntity::mapToRecipe)
     }
 
     override fun count(): Long = transaction(database) {
@@ -54,7 +54,7 @@ class ExposedRecipeRepository(database: Database) : ExposedRepository(database),
         }
 
         val numberOfPages = ceil(count.toDouble() / itemsPerPage).toInt()
-        val results = RecipeEntity.wrapRows(query).map(::mapToRecipe)
+        val results = RecipeEntity.wrapRows(query).map(RecipeEntity::mapToRecipe)
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }
 
@@ -84,14 +84,4 @@ class ExposedRecipeRepository(database: Database) : ExposedRepository(database),
             true
         } ?: false
     }
-
-    private fun mapToRecipe(entity: RecipeEntity) = Recipe(
-        id = entity.id.value,
-        recipeTypeId = entity.recipeType.id.value,
-        recipeTypeName = entity.recipeType.name,
-        name = entity.name,
-        description = entity.description,
-        ingredients = entity.ingredients,
-        preparingSteps = entity.preparingSteps
-    )
 }
