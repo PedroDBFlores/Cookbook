@@ -40,88 +40,86 @@ internal class CreateRecipePhotoHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Create recipe photo handler") {
-        it("receives a valid photo") {
-            val imageData = this.javaClass.getResourceAsStream("/resize_test.png")!!.readAllBytes()
-            val expectedRecipeId = Arb.int(1..100).next()
-            val expectedId = Arb.int(1..100).next()
-            val validImage = ImageState.Valid(imageData)
-            val imageChecker = mockk<ImageChecker> {
-                every { check(imageData) } returns validImage
-            }
-            val createRecipePhotoMock = mockk<CreateRecipePhoto> {
-                every { this@mockk(ofType()) } returns expectedId
-            }
+    it("receives a valid photo") {
+        val imageData = this.javaClass.getResourceAsStream("/resize_test.png")!!.readAllBytes()
+        val expectedRecipeId = Arb.int(1..100).next()
+        val expectedId = Arb.int(1..100).next()
+        val validImage = ImageState.Valid(imageData)
+        val imageChecker = mockk<ImageChecker> {
+            every { check(imageData) } returns validImage
+        }
+        val createRecipePhotoMock = mockk<CreateRecipePhoto> {
+            every { this@mockk(ofType()) } returns expectedId
+        }
 
-            withTestApplication(createTestServer(createRecipePhotoMock, imageChecker)) {
-                with(
-                    handleRequest(HttpMethod.Post, "/api/recipe/$expectedRecipeId/photo?name=Main") {
-                        setBody(imageData)
-                        addHeader("Content-Type", "image/png")
-                    }
-                ) {
-                    response.status().shouldBe(HttpStatusCode.Created)
-                    response.content.shouldMatchJson(CreateResult(expectedId).toJson())
-                    verify(exactly = 1) {
-                        imageChecker.check(ofType())
-                        createRecipePhotoMock(
-                            CreateRecipePhoto.Parameters(
-                                name = "Main",
-                                recipeId = expectedRecipeId,
-                                validImage = validImage,
-                            )
+        withTestApplication(createTestServer(createRecipePhotoMock, imageChecker)) {
+            with(
+                handleRequest(HttpMethod.Post, "/api/recipe/$expectedRecipeId/photo?name=Main") {
+                    setBody(imageData)
+                    addHeader("Content-Type", "image/png")
+                }
+            ) {
+                response.status().shouldBe(HttpStatusCode.Created)
+                response.content.shouldMatchJson(CreateResult(expectedId).toJson())
+                verify(exactly = 1) {
+                    imageChecker.check(ofType())
+                    createRecipePhotoMock(
+                        CreateRecipePhoto.Parameters(
+                            name = "Main",
+                            recipeId = expectedRecipeId,
+                            validImage = validImage,
                         )
-                    }
+                    )
                 }
             }
         }
+    }
 
-        arrayOf(
-            row(null, "name=Eins", "no image is provided"),
-            row(byteArrayOf(1, 2, 3), "", "name query parameter is missing"),
-            row(byteArrayOf(1, 2, 3), "name=", "no name is provided"),
-        ).forEach { (image, imageNameParameter, testDescription) ->
-            it("returns 400 when $testDescription") {
-                val imageCheckerMock = mockk<ImageChecker>()
-                val createRecipePhotoMock = mockk<CreateRecipePhoto>()
-
-                withTestApplication(createTestServer(createRecipePhotoMock, imageCheckerMock)) {
-                    with(
-                        handleRequest(HttpMethod.Post, "/api/recipe/123/photo?$imageNameParameter") {
-                            image?.run { setBody(this) }
-                            addHeader("Content-Type", "image/png")
-                        }
-                    ) {
-                        response.status().shouldBe(HttpStatusCode.BadRequest)
-                        verify {
-                            imageCheckerMock wasNot called
-                            createRecipePhotoMock wasNot called
-                        }
-                    }
-                }
-            }
-        }
-
-        it("returns 415 if provided photo is not valid") {
-            val imageChecker = mockk<ImageChecker> {
-                every { check(any()) } returns ImageState.NotAnImage
-            }
+    arrayOf(
+        row(null, "name=Eins", "no image is provided"),
+        row(byteArrayOf(1, 2, 3), "", "name query parameter is missing"),
+        row(byteArrayOf(1, 2, 3), "name=", "no name is provided"),
+    ).forEach { (image, imageNameParameter, testDescription) ->
+        it("returns 400 when $testDescription") {
+            val imageCheckerMock = mockk<ImageChecker>()
             val createRecipePhotoMock = mockk<CreateRecipePhoto>()
 
-            withTestApplication(createTestServer(createRecipePhotoMock, imageChecker)) {
+            withTestApplication(createTestServer(createRecipePhotoMock, imageCheckerMock)) {
                 with(
-                    handleRequest(HttpMethod.Post, "/api/recipe/123/photo?name=Main") {
-                        setBody(byteArrayOf(1, 2, 3))
+                    handleRequest(HttpMethod.Post, "/api/recipe/123/photo?$imageNameParameter") {
+                        image?.run { setBody(this) }
                         addHeader("Content-Type", "image/png")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.UnsupportedMediaType)
-                    verify(exactly = 1) {
-                        imageChecker.check(ofType())
-                    }
+                    response.status().shouldBe(HttpStatusCode.BadRequest)
                     verify {
+                        imageCheckerMock wasNot called
                         createRecipePhotoMock wasNot called
                     }
+                }
+            }
+        }
+    }
+
+    it("returns 415 if provided photo is not valid") {
+        val imageChecker = mockk<ImageChecker> {
+            every { check(any()) } returns ImageState.NotAnImage
+        }
+        val createRecipePhotoMock = mockk<CreateRecipePhoto>()
+
+        withTestApplication(createTestServer(createRecipePhotoMock, imageChecker)) {
+            with(
+                handleRequest(HttpMethod.Post, "/api/recipe/123/photo?name=Main") {
+                    setBody(byteArrayOf(1, 2, 3))
+                    addHeader("Content-Type", "image/png")
+                }
+            ) {
+                response.status().shouldBe(HttpStatusCode.UnsupportedMediaType)
+                verify(exactly = 1) {
+                    imageChecker.check(ofType())
+                }
+                verify {
+                    createRecipePhotoMock wasNot called
                 }
             }
         }

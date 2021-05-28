@@ -17,40 +17,37 @@ import ports.RecipeRepository
 internal class FindRecipeTest : DescribeSpec({
     val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
 
-    describe("Find recipe use case") {
-        it("Find a recipe by id") {
-            val expectedRecipe = Recipe(
-                id = intSource.next(),
-                recipeTypeId = intSource.next(),
-                recipeTypeName = stringSource.next(),
-                name = stringSource.next(),
-                description = stringSource.next(),
-                ingredients = stringSource.next(),
-                preparingSteps = stringSource.next()
-            )
-            val recipeRepository = mockk<RecipeRepository> {
-                every { find(expectedRecipe.id) } returns expectedRecipe
-            }
-            val findRecipe = FindRecipe(recipeRepository)
-
-            val recipe = findRecipe(FindRecipe.Parameters(expectedRecipe.id))
-
-            recipe.shouldBe(expectedRecipe)
-            verify(exactly = 1) { recipeRepository.find(expectedRecipe.id) }
+    it("Find a recipe by id") {
+        val expectedRecipe = Recipe(
+            id = intSource.next(),
+            recipeTypeId = intSource.next(),
+            recipeTypeName = stringSource.next(),
+            name = stringSource.next(),
+            description = stringSource.next(),
+            ingredients = stringSource.next(),
+            preparingSteps = stringSource.next()
+        )
+        val recipeRepository = mockk<RecipeRepository> {
+            every { find(expectedRecipe.id) } returns expectedRecipe
         }
+        val findRecipe = FindRecipe(recipeRepository)
 
-        it("throws if the recipe is not found") {
-            val recipeId = intSource.next()
-            val recipeRepository = mockk<RecipeRepository> {
-                every { find(recipeId) } throws RecipeNotFound(recipeId)
-            }
-            val findRecipe = FindRecipe(recipeRepository)
+        val recipe = findRecipe(FindRecipe.Parameters(expectedRecipe.id))
 
-            val act = { findRecipe(FindRecipe.Parameters(recipeId)) }
+        recipe.shouldBe(expectedRecipe)
+        verify(exactly = 1) { recipeRepository.find(expectedRecipe.id) }
+    }
 
-            val recipeNotFound = shouldThrow<RecipeNotFound>(act)
-            recipeNotFound.message.shouldBe("Recipe with id $recipeId not found")
-            verify(exactly = 1) { recipeRepository.find(any()) }
+    it("throws if the recipe is not found") {
+        val recipeId = intSource.next()
+        val recipeRepository = mockk<RecipeRepository> {
+            every { find(recipeId) } throws RecipeNotFound(recipeId)
         }
+        val findRecipe = FindRecipe(recipeRepository)
+
+        val act = { findRecipe(FindRecipe.Parameters(recipeId)) }
+
+        shouldThrow<RecipeNotFound>(act)
+        verify(exactly = 1) { recipeRepository.find(any()) }
     }
 })

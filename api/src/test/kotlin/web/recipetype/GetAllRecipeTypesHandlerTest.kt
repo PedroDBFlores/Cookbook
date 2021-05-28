@@ -25,22 +25,20 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Get all recipe types handler") {
-        it("gets all the recipe types") {
-            val expectedRecipeTypes = listOf(
-                recipeTypeGenerator.next(),
-                recipeTypeGenerator.next()
-            )
-            val getAllRecipeTypesMock = mockk<GetAllRecipeTypes> {
-                every { this@mockk() } returns expectedRecipeTypes
-            }
+    it("gets all the recipe types") {
+        val expectedRecipeTypes = listOf(
+            recipeTypeGenerator.next(),
+            recipeTypeGenerator.next()
+        )
+        val getAllRecipeTypesMock = mockk<GetAllRecipeTypes> {
+            every { this@mockk() } returns expectedRecipeTypes
+        }
 
-            withTestApplication(moduleFunction = createTestServer(getAllRecipeTypesMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype")) {
-                    response.status().shouldBe(HttpStatusCode.OK)
-                    response.content.shouldMatchJson(expectedRecipeTypes.toJson())
-                    verify(exactly = 1) { getAllRecipeTypesMock() }
-                }
+        withTestApplication(moduleFunction = createTestServer(getAllRecipeTypesMock)) {
+            with(handleRequest(HttpMethod.Get, "/api/recipetype")) {
+                response.status().shouldBe(HttpStatusCode.OK)
+                response.content.shouldMatchJson(expectedRecipeTypes.toJson())
+                verify(exactly = 1) { getAllRecipeTypesMock() }
             }
         }
     }

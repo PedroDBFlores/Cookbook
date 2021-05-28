@@ -28,54 +28,52 @@ internal class FindRecipeHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Find recipe handler") {
-        it("returns a recipe with status code 200") {
-            val expectedRecipe = recipeGenerator.next()
-            val findRecipe = mockk<FindRecipe> {
-                every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
-            }
-
-            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
-                    response.status().shouldBe(HttpStatusCode.OK)
-                    response.content.shouldMatchJson(expectedRecipe.toJson())
-                    verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
-                }
-            }
+    it("returns a recipe with status code 200") {
+        val expectedRecipe = recipeGenerator.next()
+        val findRecipe = mockk<FindRecipe> {
+            every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
         }
 
-        it("returns 404 if the recipe doesn't exist") {
-            val expectedRecipe = recipeGenerator.next()
-            val findRecipe = mockk<FindRecipe> {
-                every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } throws RecipeNotFound(expectedRecipe.id)
-            }
-
-            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
-                    response.status().shouldBe(HttpStatusCode.NotFound)
-                    verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
-                }
+        withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+            with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
+                response.status().shouldBe(HttpStatusCode.OK)
+                response.content.shouldMatchJson(expectedRecipe.toJson())
+                verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
             }
         }
+    }
 
-        arrayOf(
-            row(
-                "arroz",
-                "a non-number is provided"
-            ),
-            row(
-                "-99",
-                "an invalid id is provided"
-            )
-        ).forEach { (pathParam, description) ->
-            it("should return 400 if $description") {
-                val findRecipe = mockk<FindRecipe>()
+    it("returns 404 if the recipe doesn't exist") {
+        val expectedRecipe = recipeGenerator.next()
+        val findRecipe = mockk<FindRecipe> {
+            every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } throws RecipeNotFound(expectedRecipe.id)
+        }
 
-                withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-                    with(handleRequest(HttpMethod.Get, "/api/recipe/$pathParam")) {
-                        response.status().shouldBe(HttpStatusCode.BadRequest)
-                        verify { findRecipe wasNot called }
-                    }
+        withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+            with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
+                response.status().shouldBe(HttpStatusCode.NotFound)
+                verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
+            }
+        }
+    }
+
+    arrayOf(
+        row(
+            "arroz",
+            "a non-number is provided"
+        ),
+        row(
+            "-99",
+            "an invalid id is provided"
+        )
+    ).forEach { (pathParam, description) ->
+        it("should return 400 if $description") {
+            val findRecipe = mockk<FindRecipe>()
+
+            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipe/$pathParam")) {
+                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    verify { findRecipe wasNot called }
                 }
             }
         }

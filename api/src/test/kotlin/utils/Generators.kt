@@ -5,6 +5,7 @@ import io.kotest.property.arbitrary.*
 import model.Recipe
 import model.RecipePhoto
 import model.RecipeType
+import usecases.recipe.SearchRecipe
 
 internal val recipeGenerator = arbitrary { rs ->
     val stringSource = Arb.string(16)
@@ -33,5 +34,16 @@ internal val recipePhotoGenerator = arbitrary { rs ->
         recipeId = rs.random.nextInt(1, 100),
         name = stringSource.next(),
         data = Arb.byteArrays(Arb.int(8..16), Arb.byte()).next()
+    )
+}
+
+internal val searchRecipeParametersGenerator = arbitrary { rs ->
+    val stringSource = Arb.string(16)
+    SearchRecipe.Parameters(
+        name = stringSource.next(),
+        description = stringSource.next(),
+        recipeTypeId = rs.random.nextInt(1, 100),
+        pageNumber = rs.random.nextInt(1, 100),
+        itemsPerPage = rs.random.nextInt(1, 100),
     )
 }

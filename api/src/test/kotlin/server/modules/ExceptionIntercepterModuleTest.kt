@@ -26,61 +26,59 @@ class ExceptionIntercepterModuleTest : DescribeSpec({
         }
     }
 
-    describe("Exception interceptor module test") {
-        arrayOf(
-            row(
-                { throw BadRequestException("BAD_REQUEST") },
-                HttpStatusCode.BadRequest,
-                ResponseError(HttpStatusCode.BadRequest.value.toString(), "BAD_REQUEST"),
-                "a BadRequestException (Ktor) occurs"
+    arrayOf(
+        row(
+            { throw BadRequestException("BAD_REQUEST") },
+            HttpStatusCode.BadRequest,
+            ResponseError(HttpStatusCode.BadRequest.value.toString(), "BAD_REQUEST"),
+            "a BadRequestException (Ktor) occurs"
+        ),
+        row(
+            { throw OperationNotAllowed("You are not allowed") },
+            HttpStatusCode.Forbidden,
+            ResponseError(HttpStatusCode.Forbidden.value.toString(), "You are not allowed"),
+            "a OperationNotAllowed occurs"
+        ),
+        row(
+            { throw NotFoundException() },
+            HttpStatusCode.NotFound,
+            ResponseError(HttpStatusCode.NotFound.value.toString(), "Resource not found"),
+            "a NotFoundException (Ktor) occurs"
+        ),
+        row(
+            { throw UnsupportedMediaTypeException(ContentType.Any) },
+            HttpStatusCode.UnsupportedMediaType,
+            ResponseError(
+                HttpStatusCode.UnsupportedMediaType.value.toString(),
+                "Content type */* is not supported"
             ),
-            row(
-                { throw OperationNotAllowed("You are not allowed") },
-                HttpStatusCode.Forbidden,
-                ResponseError(HttpStatusCode.Forbidden.value.toString(), "You are not allowed"),
-                "a OperationNotAllowed occurs"
-            ),
-            row(
-                { throw NotFoundException() },
-                HttpStatusCode.NotFound,
-                ResponseError(HttpStatusCode.NotFound.value.toString(), "Resource not found"),
-                "a NotFoundException (Ktor) occurs"
-            ),
-            row(
-                { throw UnsupportedMediaTypeException(ContentType.Any) },
-                HttpStatusCode.UnsupportedMediaType,
-                ResponseError(
-                    HttpStatusCode.UnsupportedMediaType.value.toString(),
-                    "Content type */* is not supported"
-                ),
-                "a UnsupportedMediaTypeException (Ktor) occurs"
-            ),
-            row(
-                { throw TimeoutException("Timeout") },
-                HttpStatusCode.GatewayTimeout,
-                ResponseError(HttpStatusCode.GatewayTimeout.value.toString(), "Timeout"),
-                "a TimeoutException (Ktor) occurs"
-            ),
-            row(
-                { throw ValidationError("id") },
-                HttpStatusCode.BadRequest,
-                ResponseError(HttpStatusCode.BadRequest.value.toString(), "Field 'id' is invalid"),
-                "a ValidationError occurs"
-            ),
-            row(
-                { throw SQLException("Denied") },
-                HttpStatusCode.InternalServerError,
-                ResponseError(HttpStatusCode.InternalServerError.value.toString(), "Denied"),
-                "any other type of error occurs"
-            ),
-        ).forEach { (action, expectedStatusCode, expectedResponseError, description) ->
-            it("returns ${expectedStatusCode.value} when $description during the Call phase") {
-                withTestApplication(moduleFunction = createTestServerForCallPhase(action)) {
-                    with(handleRequest(HttpMethod.Get, "/will-throw-error")) {
-                        with(response) {
-                            status().shouldBe(expectedStatusCode)
-                            content.shouldMatchJson(expectedResponseError.toJson())
-                        }
+            "a UnsupportedMediaTypeException (Ktor) occurs"
+        ),
+        row(
+            { throw TimeoutException("Timeout") },
+            HttpStatusCode.GatewayTimeout,
+            ResponseError(HttpStatusCode.GatewayTimeout.value.toString(), "Timeout"),
+            "a TimeoutException (Ktor) occurs"
+        ),
+        row(
+            { throw ValidationError("id") },
+            HttpStatusCode.BadRequest,
+            ResponseError(HttpStatusCode.BadRequest.value.toString(), "Field 'id' is invalid"),
+            "a ValidationError occurs"
+        ),
+        row(
+            { throw SQLException("Denied") },
+            HttpStatusCode.InternalServerError,
+            ResponseError(HttpStatusCode.InternalServerError.value.toString(), "Denied"),
+            "any other type of error occurs"
+        ),
+    ).forEach { (action, expectedStatusCode, expectedResponseError, description) ->
+        it("returns ${expectedStatusCode.value} when $description during the Call phase") {
+            withTestApplication(moduleFunction = createTestServerForCallPhase(action)) {
+                with(handleRequest(HttpMethod.Get, "/will-throw-error")) {
+                    with(response) {
+                        status().shouldBe(expectedStatusCode)
+                        content.shouldMatchJson(expectedResponseError.toJson())
                     }
                 }
             }

@@ -21,59 +21,57 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Delete recipe type handler") {
-        val intSource = Arb.int(1..100)
+    val intSource = Arb.int(1..100)
 
-        it("deletes a recipe type returning 204") {
-            val expectedParameters = DeleteRecipeType.Parameters(
-                recipeTypeId = intSource.next()
-            )
-            val deleteRecipeType = mockk<DeleteRecipeType> {
-                every { this@mockk(expectedParameters) } just runs
-            }
-
-            withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
-                with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
-                    response.status().shouldBe(HttpStatusCode.NoContent)
-                    verify(exactly = 1) { deleteRecipeType(expectedParameters) }
-                }
-            }
+    it("deletes a recipe type returning 204") {
+        val expectedParameters = DeleteRecipeType.Parameters(
+            recipeTypeId = intSource.next()
+        )
+        val deleteRecipeType = mockk<DeleteRecipeType> {
+            every { this@mockk(expectedParameters) } just runs
         }
 
-        it("returns 404 if the recipe type is not found") {
-            val expectedParameters = DeleteRecipeType.Parameters(
-                recipeTypeId = intSource.next()
-            )
-            val deleteRecipeType = mockk<DeleteRecipeType> {
-                every { this@mockk(expectedParameters) } throws RecipeTypeNotFound(expectedParameters.recipeTypeId)
-            }
-
-            withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
-                with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
-                    response.status().shouldBe(HttpStatusCode.NotFound)
-                    verify(exactly = 1) { deleteRecipeType(expectedParameters) }
-                }
+        withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
+            with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
+                response.status().shouldBe(HttpStatusCode.NoContent)
+                verify(exactly = 1) { deleteRecipeType(expectedParameters) }
             }
         }
+    }
 
-        arrayOf(
-            row(
-                "massa",
-                "a non-number is provided"
-            ),
-            row(
-                "-99",
-                "an invalid id is provided",
-            )
-        ).forEach { (pathParam, description) ->
-            it("should return 400 if $description") {
-                val deleteRecipeType = mockk<DeleteRecipeType>()
+    it("returns 404 if the recipe type is not found") {
+        val expectedParameters = DeleteRecipeType.Parameters(
+            recipeTypeId = intSource.next()
+        )
+        val deleteRecipeType = mockk<DeleteRecipeType> {
+            every { this@mockk(expectedParameters) } throws RecipeTypeNotFound(expectedParameters.recipeTypeId)
+        }
 
-                withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
-                    with(handleRequest(HttpMethod.Delete, "/api/recipetype/$pathParam")) {
-                        response.status().shouldBe(HttpStatusCode.BadRequest)
-                        verify { deleteRecipeType wasNot called }
-                    }
+        withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
+            with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
+                response.status().shouldBe(HttpStatusCode.NotFound)
+                verify(exactly = 1) { deleteRecipeType(expectedParameters) }
+            }
+        }
+    }
+
+    arrayOf(
+        row(
+            "massa",
+            "a non-number is provided"
+        ),
+        row(
+            "-99",
+            "an invalid id is provided",
+        )
+    ).forEach { (pathParam, description) ->
+        it("should return 400 if $description") {
+            val deleteRecipeType = mockk<DeleteRecipeType>()
+
+            withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
+                with(handleRequest(HttpMethod.Delete, "/api/recipetype/$pathParam")) {
+                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    verify { deleteRecipeType wasNot called }
                 }
             }
         }

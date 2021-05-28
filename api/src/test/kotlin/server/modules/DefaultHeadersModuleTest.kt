@@ -19,16 +19,14 @@ class DefaultHeadersModuleTest : DescribeSpec({
         }
     }
 
-    describe("Default headers module") {
-        it("adds a set of default headers to the response") {
-            withTestApplication(moduleFunction = createTestServer()) {
-                with(handleRequest(HttpMethod.Get, "/route")) {
-                    response shouldHaveStatus HttpStatusCode.OK
-                    response.status().shouldBe(HttpStatusCode.OK)
-                    response.headers["Date"].shouldNotBeEmpty()
-                    response.shouldHaveHeader("Server", "Cookbook Server")
-                    response.shouldHaveHeader("X-CreatedBy", "Mr. Flowers")
-                }
+    it("adds a set of default headers to the response") {
+        withTestApplication(moduleFunction = createTestServer()) {
+            with(handleRequest(HttpMethod.Get, "/route")) {
+                response shouldHaveStatus HttpStatusCode.OK
+                response.status().shouldBe(HttpStatusCode.OK)
+                response.headers["Date"].shouldNotBeEmpty()
+                response.shouldHaveHeader("Server", "Cookbook Server")
+                response.shouldHaveHeader("X-CreatedBy", "Mr. Flowers")
             }
         }
     }

@@ -26,87 +26,85 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Update recipe handler") {
-        val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
+    val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
 
-        val updateRecipeRepresenterMap = mapOf<String, Any>(
-            "id" to intSource.next(),
-            "recipeTypeId" to intSource.next(),
-            "name" to stringSource.next(),
-            "description" to stringSource.next(),
-            "ingredients" to stringSource.next(),
-            "preparingSteps" to stringSource.next()
+    val updateRecipeRepresenterMap = mapOf<String, Any>(
+        "id" to intSource.next(),
+        "recipeTypeId" to intSource.next(),
+        "name" to stringSource.next(),
+        "description" to stringSource.next(),
+        "ingredients" to stringSource.next(),
+        "preparingSteps" to stringSource.next()
+    )
+
+    it("updates a recipe type returning 200") {
+        val updateParameters = UpdateRecipe.Parameters(
+            id = updateRecipeRepresenterMap.getTyped("id"),
+            recipeTypeId = updateRecipeRepresenterMap.getTyped("recipeTypeId"),
+            name = updateRecipeRepresenterMap.getTyped("name"),
+            description = updateRecipeRepresenterMap.getTyped("description"),
+            ingredients = updateRecipeRepresenterMap.getTyped("ingredients"),
+            preparingSteps = updateRecipeRepresenterMap.getTyped("preparingSteps")
         )
+        val updateRecipe = mockk<UpdateRecipe> {
+            every { this@mockk(updateParameters) } just runs
+        }
 
-        it("updates a recipe type returning 200") {
-            val updateParameters = UpdateRecipe.Parameters(
-                id = updateRecipeRepresenterMap.getTyped("id"),
-                recipeTypeId = updateRecipeRepresenterMap.getTyped("recipeTypeId"),
-                name = updateRecipeRepresenterMap.getTyped("name"),
-                description = updateRecipeRepresenterMap.getTyped("description"),
-                ingredients = updateRecipeRepresenterMap.getTyped("ingredients"),
-                preparingSteps = updateRecipeRepresenterMap.getTyped("preparingSteps")
-            )
+        withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
+            with(
+                handleRequest(HttpMethod.Put, "/api/recipe") {
+                    setBody(updateRecipeRepresenterMap.toJson())
+                    addHeader("Content-Type", "application/json")
+                }
+            ) {
+                response.status().shouldBe(HttpStatusCode.OK)
+                verify(exactly = 1) { updateRecipe(updateParameters) }
+            }
+        }
+    }
+
+    arrayOf(
+        row(null, "no body is provided"),
+        row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
+        row(
+            (updateRecipeRepresenterMap + mapOf<String, Any>("id" to 0)).toJson(),
+            "the id field is invalid"
+        ),
+        row(
+            (updateRecipeRepresenterMap + mapOf<String, Any>("recipeTypeId" to 0)).toJson(),
+            "the recipeTypeId field is invalid"
+        ),
+        row(
+            (updateRecipeRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(),
+            "the name field is invalid"
+        ),
+        row(
+            (updateRecipeRepresenterMap + mapOf<String, Any>("description" to " ")).toJson(),
+            "the description field is invalid"
+        ),
+        row(
+            (updateRecipeRepresenterMap + mapOf<String, Any>("ingredients" to " ")).toJson(),
+            "the ingredients field is invalid"
+        ),
+        row(
+            (updateRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to " ")).toJson(),
+            "the preparingSteps field is invalid"
+        )
+    ).forEach { (jsonBody, description) ->
+        it("returns 400 when $description") {
             val updateRecipe = mockk<UpdateRecipe> {
-                every { this@mockk(updateParameters) } just runs
+                every { this@mockk(any()) } just runs
             }
 
             withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
                 with(
                     handleRequest(HttpMethod.Put, "/api/recipe") {
-                        setBody(updateRecipeRepresenterMap.toJson())
+                        jsonBody?.run { setBody(this) }
                         addHeader("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.OK)
-                    verify(exactly = 1) { updateRecipe(updateParameters) }
-                }
-            }
-        }
-
-        arrayOf(
-            row(null, "no body is provided"),
-            row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("id" to 0)).toJson(),
-                "the id field is invalid"
-            ),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("recipeTypeId" to 0)).toJson(),
-                "the recipeTypeId field is invalid"
-            ),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("name" to " ")).toJson(),
-                "the name field is invalid"
-            ),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("description" to " ")).toJson(),
-                "the description field is invalid"
-            ),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("ingredients" to " ")).toJson(),
-                "the ingredients field is invalid"
-            ),
-            row(
-                (updateRecipeRepresenterMap + mapOf<String, Any>("preparingSteps" to " ")).toJson(),
-                "the preparingSteps field is invalid"
-            )
-        ).forEach { (jsonBody, description) ->
-            it("returns 400 when $description") {
-                val updateRecipe = mockk<UpdateRecipe> {
-                    every { this@mockk(any()) } just runs
-                }
-
-                withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
-                    with(
-                        handleRequest(HttpMethod.Put, "/api/recipe") {
-                            jsonBody?.run { setBody(this) }
-                            addHeader("Content-Type", "application/json")
-                        }
-                    ) {
-                        response.status().shouldBe(HttpStatusCode.BadRequest)
-                        verify { updateRecipe wasNot called }
-                    }
+                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    verify { updateRecipe wasNot called }
                 }
             }
         }

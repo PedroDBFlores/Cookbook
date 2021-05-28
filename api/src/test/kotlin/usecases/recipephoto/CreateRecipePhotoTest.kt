@@ -19,44 +19,42 @@ internal class CreateRecipePhotoTest : DescribeSpec({
         Arb.byteArrays(Arb.int(8..16), Arb.byte())
     )
 
-    describe("Create recipe photo use case") {
-        it("creates a new recipe photo") {
-            val expectedId = intSource.next()
-            val (expectedRecipeId, expectedName, expectedImageBytes) = Triple(
-                intSource.next(),
-                stringSource.next(),
-                byteArraySource.next()
-            )
-            val repository = mockk<RecipePhotoRepository> {
-                every { create(ofType()) } returns expectedId
-            }
-            val imageResizer = mockk<ImageResizer> {
-                every { resize(ofType(), 200, 200) } returns ImageState.Resized(expectedImageBytes)
-            }
-            val createRecipePhoto = CreateRecipePhoto(
-                repository = repository,
-                imageResizer = imageResizer
-            )
+    it("creates a new recipe photo") {
+        val expectedId = intSource.next()
+        val (expectedRecipeId, expectedName, expectedImageBytes) = Triple(
+            intSource.next(),
+            stringSource.next(),
+            byteArraySource.next()
+        )
+        val repository = mockk<RecipePhotoRepository> {
+            every { create(ofType()) } returns expectedId
+        }
+        val imageResizer = mockk<ImageResizer> {
+            every { resize(ofType(), 200, 200) } returns ImageState.Resized(expectedImageBytes)
+        }
+        val createRecipePhoto = CreateRecipePhoto(
+            repository = repository,
+            imageResizer = imageResizer
+        )
 
-            val id = createRecipePhoto.invoke(
-                CreateRecipePhoto.Parameters(
+        val id = createRecipePhoto.invoke(
+            CreateRecipePhoto.Parameters(
+                recipeId = expectedRecipeId,
+                name = expectedName,
+                validImage = ImageState.Valid(byteArraySource.next())
+            )
+        )
+
+        id.shouldBe(expectedId)
+        verify(exactly = 1) {
+            imageResizer.resize(ofType(), 200, 200)
+            repository.create(
+                RecipePhoto(
                     recipeId = expectedRecipeId,
                     name = expectedName,
-                    validImage = ImageState.Valid(byteArraySource.next())
+                    data = expectedImageBytes
                 )
             )
-
-            id.shouldBe(expectedId)
-            verify(exactly = 1) {
-                imageResizer.resize(ofType(), 200, 200)
-                repository.create(
-                    RecipePhoto(
-                        recipeId = expectedRecipeId,
-                        name = expectedName,
-                        data = expectedImageBytes
-                    )
-                )
-            }
         }
     }
 })

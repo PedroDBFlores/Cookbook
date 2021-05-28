@@ -33,66 +33,64 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Create recipe type handler") {
-        val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
+    val (intSource, stringSource) = Pair(Arb.int(1..100), Arb.string(16))
 
-        it("creates a recipe type returning 201") {
-            val expectedRecipeId = intSource.next()
-            val expectedParameters = CreateRecipeType.Parameters(stringSource.next())
-            val createRecipeTypeMock = mockk<CreateRecipeType> {
-                every { this@mockk(expectedParameters) } returns expectedRecipeId
+    it("creates a recipe type returning 201") {
+        val expectedRecipeId = intSource.next()
+        val expectedParameters = CreateRecipeType.Parameters(stringSource.next())
+        val createRecipeTypeMock = mockk<CreateRecipeType> {
+            every { this@mockk(expectedParameters) } returns expectedRecipeId
+        }
+        val jsonBody = createJSONObject("name" to expectedParameters.name)
+
+        withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
+            with(
+                handleRequest(HttpMethod.Post, "/api/recipetype") {
+                    setBody(jsonBody)
+                    addHeader("Content-Type", "application/json")
+                }
+            ) {
+                response.status().shouldBe(HttpStatusCode.Created)
+                response.content.shouldMatchJson(CreateResult(expectedRecipeId).toJson())
+                verify(exactly = 1) { createRecipeTypeMock(expectedParameters) }
             }
-            val jsonBody = createJSONObject("name" to expectedParameters.name)
+        }
+    }
 
+    it("throws if a recipe type with the same name already exists") {
+        val expectedName = stringSource.next()
+        val jsonBody = createJSONObject("name" to expectedName)
+        val createRecipeTypeMock = mockk<CreateRecipeType> {
+            every { this@mockk(any()) } throws RecipeTypeAlreadyExists(expectedName)
+        }
+
+        shouldThrow<RecipeTypeAlreadyExists> {
             withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
+                handleRequest(HttpMethod.Post, "/api/recipetype") {
+                    setBody(jsonBody)
+                    addHeader("Content-Type", "application/json")
+                }
+            }
+        }
+    }
+
+    arrayOf(
+        row(null, "no body was provided"),
+        row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
+        row(createJSONObject("name" to " "), "the name is invalid")
+    ).forEach { (jsonBody, description) ->
+        it("returns 400 when $description") {
+            val createRecipeType = mockk<CreateRecipeType>()
+
+            withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
                 with(
                     handleRequest(HttpMethod.Post, "/api/recipetype") {
-                        setBody(jsonBody)
+                        jsonBody?.run { setBody(this) }
                         addHeader("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.Created)
-                    response.content.shouldMatchJson(CreateResult(expectedRecipeId).toJson())
-                    verify(exactly = 1) { createRecipeTypeMock(expectedParameters) }
-                }
-            }
-        }
-
-        it("throws if a recipe type with the same name already exists") {
-            val expectedName = stringSource.next()
-            val jsonBody = createJSONObject("name" to expectedName)
-            val createRecipeTypeMock = mockk<CreateRecipeType> {
-                every { this@mockk(any()) } throws RecipeTypeAlreadyExists(expectedName)
-            }
-
-            shouldThrow<RecipeTypeAlreadyExists> {
-                withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
-                    handleRequest(HttpMethod.Post, "/api/recipetype") {
-                        setBody(jsonBody)
-                        addHeader("Content-Type", "application/json")
-                    }
-                }
-            }
-        }
-
-        arrayOf(
-            row(null, "no body was provided"),
-            row(createJSONObject("non" to "conformant"), "the provided body doesn't match the required JSON"),
-            row(createJSONObject("name" to " "), "the name is invalid")
-        ).forEach { (jsonBody, description) ->
-            it("returns 400 when $description") {
-                val createRecipeType = mockk<CreateRecipeType>()
-
-                withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
-                    with(
-                        handleRequest(HttpMethod.Post, "/api/recipetype") {
-                            jsonBody?.run { setBody(this) }
-                            addHeader("Content-Type", "application/json")
-                        }
-                    ) {
-                        response.status().shouldBe(HttpStatusCode.BadRequest)
-                        verify { createRecipeType wasNot called }
-                    }
+                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    verify { createRecipeType wasNot called }
                 }
             }
         }

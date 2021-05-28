@@ -29,54 +29,54 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
         }
     }
 
-    describe("Find recipe type handler") {
-        it("returns a recipe type with status code 200") {
-            val expectedRecipeType = recipeTypeGenerator.next()
-            val getRecipeTypeMock = mockk<FindRecipeType> {
-                every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
-            }
-
-            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeType.id}")) {
-                    response.status().shouldBe(HttpStatusCode.OK)
-                    response.content.shouldMatchJson(expectedRecipeType.toJson())
-                    verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
-                }
-            }
+    it("returns a recipe type with status code 200") {
+        val expectedRecipeType = recipeTypeGenerator.next()
+        val getRecipeTypeMock = mockk<FindRecipeType> {
+            every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
         }
 
-        it("returns 404 if the recipe type was not found") {
-            val expectedRecipeTypeId = Arb.int(1..100).next()
-            val getRecipeTypeMock = mockk<FindRecipeType> {
-                every { this@mockk(FindRecipeType.Parameters(expectedRecipeTypeId)) } throws RecipeTypeNotFound(expectedRecipeTypeId)
-            }
-
-            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype/$expectedRecipeTypeId")) {
-                    response.status().shouldBe(HttpStatusCode.NotFound)
-                    verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
-                }
+        withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+            with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeType.id}")) {
+                response.status().shouldBe(HttpStatusCode.OK)
+                response.content.shouldMatchJson(expectedRecipeType.toJson())
+                verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
             }
         }
+    }
 
-        arrayOf(
-            row(
-                "arroz",
-                "a non-number is provided"
-            ),
-            row(
-                "-99",
-                "an invalid id is provided"
+    it("returns 404 if the recipe type was not found") {
+        val expectedRecipeTypeId = Arb.int(1..100).next()
+        val getRecipeTypeMock = mockk<FindRecipeType> {
+            every { this@mockk(FindRecipeType.Parameters(expectedRecipeTypeId)) } throws RecipeTypeNotFound(
+                expectedRecipeTypeId
             )
-        ).forEach { (pathParam, description) ->
-            it("should return BAD_REQUEST if $description") {
-                val getRecipeTypeMock = mockk<FindRecipeType>()
+        }
 
-                withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                    with(handleRequest(HttpMethod.Get, "/api/recipetype/$pathParam")) {
-                        response.status().shouldBe(HttpStatusCode.BadRequest)
-                        verify(exactly = 0) { getRecipeTypeMock(any()) }
-                    }
+        withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+            with(handleRequest(HttpMethod.Get, "/api/recipetype/$expectedRecipeTypeId")) {
+                response.status().shouldBe(HttpStatusCode.NotFound)
+                verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
+            }
+        }
+    }
+
+    arrayOf(
+        row(
+            "arroz",
+            "a non-number is provided"
+        ),
+        row(
+            "-99",
+            "an invalid id is provided"
+        )
+    ).forEach { (pathParam, description) ->
+        it("should return BAD_REQUEST if $description") {
+            val getRecipeTypeMock = mockk<FindRecipeType>()
+
+            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
+                with(handleRequest(HttpMethod.Get, "/api/recipetype/$pathParam")) {
+                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    verify(exactly = 0) { getRecipeTypeMock(any()) }
                 }
             }
         }

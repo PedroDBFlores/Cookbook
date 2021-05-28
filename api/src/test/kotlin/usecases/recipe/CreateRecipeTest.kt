@@ -26,27 +26,25 @@ internal class CreateRecipeTest : DescribeSpec({
         )
     }
 
-    describe("Create recipe use case") {
-        it("creates a recipe") {
-            val expectedRecipeId = provideRandomId()
-            val expectedRecipe = provideRandomRecipe()
-            val recipeRepository = mockk<RecipeRepository> {
-                every { create(expectedRecipe) } returns expectedRecipeId
-            }
-
-            val createRecipe = CreateRecipe(recipeRepository)
-            val recipeId = createRecipe(
-                CreateRecipe.Parameters(
-                    recipeTypeId = expectedRecipe.recipeTypeId,
-                    name = expectedRecipe.name,
-                    description = expectedRecipe.description,
-                    ingredients = expectedRecipe.ingredients,
-                    preparingSteps = expectedRecipe.preparingSteps
-                )
-            )
-
-            recipeId.shouldBe(expectedRecipeId)
-            verify(exactly = 1) { recipeRepository.create(expectedRecipe) }
+    it("creates a recipe") {
+        val expectedRecipeId = provideRandomId()
+        val expectedRecipe = provideRandomRecipe()
+        val recipeRepository = mockk<RecipeRepository> {
+            every { create(expectedRecipe) } returns expectedRecipeId
         }
+
+        val createRecipe = CreateRecipe(recipeRepository)
+        val recipeId = createRecipe(
+            CreateRecipe.Parameters(
+                recipeTypeId = expectedRecipe.recipeTypeId,
+                name = expectedRecipe.name,
+                description = expectedRecipe.description,
+                ingredients = expectedRecipe.ingredients,
+                preparingSteps = expectedRecipe.preparingSteps
+            )
+        )
+
+        recipeId.shouldBe(expectedRecipeId)
+        verify(exactly = 1) { recipeRepository.create(expectedRecipe) }
     }
 })
