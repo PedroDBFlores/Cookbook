@@ -26,7 +26,7 @@ val ktorVersion = "1.5.4"
 val exposedVersion = "0.31.1"
 val h2Version = "1.4.200"
 val postgresVersion = "42.2.20"
-val flywayVersion = "7.8.2"
+val flywayVersion = "7.9.1"
 val jodaDataTypeVersion = "2.12.1"
 
 val kotestVersion = "4.4.3"
@@ -101,4 +101,8 @@ ktlint {
         exclude("**/build/**")
         include("**/kotlin/**")
     }
+}
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    mergeServiceFiles()
 }

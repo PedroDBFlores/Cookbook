@@ -3,9 +3,8 @@ RUN mkdir -p /usr/src/app/api
 COPY ./api/build.gradle.kts /usr/src/app/api
 COPY ./api/gradle.properties /usr/src/app/api
 COPY ./api/settings.gradle.kts /usr/src/app/api
-COPY ./api/.dockerignore /usr/src/app/api
 WORKDIR /usr/src/app/api
-RUN gradle build -i
+RUN gradle dependencies --refresh-dependencies -i
 COPY ./api/src ./src
 RUN gradle shadowJar -i
 

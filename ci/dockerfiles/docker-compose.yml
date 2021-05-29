@@ -1,9 +1,22 @@
 version: "3.7"
 
-networks:
-  cookbook-network:
+networks: 
+  frontend:
+    name: cookbook_frontend
+  backend:
+    name: cookbook_backend
 
 services:
+  cookbook-database:
+    container_name: cookbook-database
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: cookbook
+      POSTGRES_PASSWORD: am!28--zQ
+    networks: 
+        - backend
+    ports:
+      - 40000:5432
   cookbook-api:
     container_name: cookbook-api
     build:
@@ -13,9 +26,14 @@ services:
       - 9000:9000
     environment:
       - PORT=9000
-      - JDBC_DATABASE_URL=jdbc:postgresql://cookbook-database:5432/cookbook?user=postgres&password=am!28--zQ
-    networks:
-      - cookbook-network
+      - JDBC_DATABASE_URL=jdbc:postgresql://cookbook-database/cookbook?user=postgres&password=am!28--zQ
+    networks: 
+      - frontend
+      - backend
+    links: 
+      - cookbook-database
+    depends_on: 
+      - cookbook-database
   cookbook-webapp:
     container_name: cookbook-webapp
     build:
@@ -24,17 +42,9 @@ services:
     environment:
       PORT: 80
       BACKEND_URL: http://cookbook-api:9000
+    networks: 
+      - frontend
     ports:
       - 8080:80
-    networks:
-      - cookbook-network    
-  cookbook-database:
-    container_name: cookbook-database
-    image: postgres:alpine
-    environment:
-      POSTGRES_DB: cookbook
-      POSTGRES_PASSWORD: am!28--zQ
-    ports:
-      - 40000:5432
-    networks:
-      - cookbook-network
+    depends_on: 
+      - cookbook-api

@@ -8,19 +8,19 @@ import server.CookbookApi
 /** Application entry point */
 @KtorExperimentalAPI
 fun main() = ConfigLoader().loadConfigOrThrow<ConfigurationFile>("/application.conf")
-    .let { conf ->
-        migrateDB(conf)
-        CookbookApi(configuration = conf).start()
+    .run {
+        migrateDB(this)
+        CookbookApi(configuration = this).start()
     }
 
 /** Executes the database migrations present on the /resources folder with Flyway
  * @param configuration The configuration file for the Cookbook API
  */
 private fun migrateDB(configuration: ConfigurationFile) =
-    HikariDataSource().let {
-        it.jdbcUrl = configuration.database.jdbcUrl
+    HikariDataSource().run {
+        jdbcUrl = configuration.database.jdbcUrl
         Flyway.configure()
-            .dataSource(it)
+            .dataSource(this)
             .load()
             .migrate()
     }
