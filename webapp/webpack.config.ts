@@ -3,6 +3,7 @@ import {Configuration} from "webpack"
 import {resolve} from "path"
 
 const commonConfig: Configuration = {
+    mode: "production",
     entry: "./index.tsx",
     output: {
         path: resolve(__dirname, "dist"),

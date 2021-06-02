@@ -20,6 +20,17 @@ describe("Table pagination actions", () => {
         expect(screen.getByLabelText(/last page/i)).toBeInTheDocument()
     })
 
+    it("renders no pages if there is no results", () => {
+        render(<TablePagination
+            count={0}
+            page={0}
+            rowsPerPage={10}
+            onChangeRowsPerPage={jest.fn()}
+            onChangePage={jest.fn()}/>)
+
+        expect(screen.getByText(/no pages/i)).toBeInTheDocument()
+    })
+
     test.each([
         ["5 of 6", { count: 60, page: 5, rowsPerPage: 10, expectedMaxPages: 6 }],
         ["1 of 5", { count: 100, page: 1, rowsPerPage: 20, expectedMaxPages: 5 }],

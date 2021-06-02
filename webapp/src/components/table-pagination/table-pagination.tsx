@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { MdFirstPage, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLastPage } from "react-icons/md"
-import { Box, ButtonGroup, Flex, IconButton, Select, Spacer, Text } from "@chakra-ui/react"
+import {MdFirstPage, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLastPage} from "react-icons/md"
+import {Box, ButtonGroup, Flex, IconButton, Select, Spacer, Text} from "@chakra-ui/react"
 
 interface TablePaginationProps {
     count: number
@@ -12,12 +12,12 @@ interface TablePaginationProps {
 }
 
 const TablePagination: React.FC<TablePaginationProps> = ({
-    count,
-    page,
-    rowsPerPage,
-    onChangeRowsPerPage,
-    onChangePage
-}) => {
+                                                             count,
+                                                             page,
+                                                             rowsPerPage,
+                                                             onChangeRowsPerPage,
+                                                             onChangePage
+                                                         }) => {
     const pageNumber = Math.ceil(count / rowsPerPage)
 
     const handleFirstPageButtonClick = () => {
@@ -39,7 +39,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({
     return <Flex>
         <Box>
             <Select aria-label={"Rows per page"}
-                onChange={ev => onChangeRowsPerPage(Number(ev.target.value))}>
+                    onChange={ev => onChangeRowsPerPage(Number(ev.target.value))}>
                 <option value={10}>10</option>
                 <option value={20}>20</option>
                 <option value={50}>50</option>
@@ -47,7 +47,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({
         </Box>
         <Spacer/>
         <Box>
-            <Text>{`Page ${page} of ${pageNumber}`}</Text>
+            <Text>{count !== 0 ? `Page ${page} of ${pageNumber}` : "No pages"}</Text>
         </Box>
         <Spacer/>
         <Box>
