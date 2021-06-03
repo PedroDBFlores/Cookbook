@@ -1,0 +1,123 @@
+{
+  "app-name": "Cookbook",
+  "common": {
+    "loading": "Loading...",
+    "close": "Close",
+    "create": "Create",
+    "edit": "Edit",
+    "reset": "Reset",
+    "delete": "Delete",
+    "question": "Question",
+    "search" : "Search",
+    "reset-form-aria-label": "Reset form"
+  },
+  "recipe-type-feature": {
+    "singular": "Recipe type",
+    "plural": "Recipe types",
+    "create": {
+      "success": "Recipe type {{name}} created successfully!",
+      "failure": "An error occurred while creating this recipe type"
+    },
+    "delete": {
+      "question": "Are you sure you want to delete this recipe type?",
+      "success": "Recipe type ${{name}} was deleted",
+      "failure": "Failed to delete recipe type ${{name}}"
+    },
+    "details": {
+      "title": "Recipe type details",
+      "id": "Id:",
+      "name": "Name:"
+    },
+    "edit": {
+      "title": "Edit a recipe type",
+      "success": "Recipe type {{name}} updated successfully!",
+      "failure": "An error occurred while updating this recipe type"
+    },
+    "errors": {
+      "occurred-fetching": "An error occurred while fetching a recipe type",
+      "cannot-load": "Cannot load recipe type"
+    },
+    "list": {
+      "no-results": "No recipe types",
+      "details-for-label": "Recipe type details for {{id}}",
+      "edit-for-label": "Edit recipe type {{id}}",
+      "delete-for-label": "Delete recipe type for {{id}}"
+    },
+    "create-label": "Create new recipe type",
+    "edit-label": "Edit recipe type",
+    "delete-label": "Delete recipe type"
+  },
+  "recipe-feature": {
+    "singular": "Recipe",
+    "plural": "Recipes",
+    "create": {
+      "success": "Recipe {{name}} created successfully!",
+      "failure": "An error occurred while creating this recipe"
+    },
+    "delete": {
+      "question": "Are you sure you want to delete this recipe?",
+      "success": "Recipe {{name}} was deleted",
+      "failure": "Failed to delete recipe {{name}}"
+    },
+    "details": {
+      "title": "Recipe details",
+      "id": "Id:",
+      "name": "Name:",
+      "description": "Description:",
+      "ingredients": "Ingredients:",
+      "preparing-steps": "Preparing steps:"
+    },
+    "edit": {
+      "title": "Edit a recipe",
+      "success": "Recipe {{name}} updated successfully!",
+      "failure": "An error occurred while updating this recipe"
+    },
+    "errors": {
+      "occurred-fetching": "An error occurred while fetching a recipe",
+      "occurred-fetching-recipe-types": "An error occurred while fetching the recipe types",
+      "cannot-load": "Cannot load recipe",
+      "cannot-load-recipe-types": "Cannot load the recipe types"
+    },
+    "list": {
+      "no-results": "No recipes",
+      "details-for-label": "Recipe details for {{id}}",
+      "edit-for-label": "Recipe details for {{id}}",
+      "delete-for-label": "Recipe details for {{id}}"
+    },
+    "search": {
+      "title": "Search recipes",
+      "no-matching-recipes": "No matching ",
+      "recipe-name-parameter": "Recipe name parameter",
+      "recipe-description-parameter": "Recipe description parameter"
+    },
+    "create-label": "Create new recipe",
+    "details-label": "Recipe details",
+    "edit-label": "Edit recipe",
+    "delete-label": "Delete recipe",
+    "recipe-type-parameter": "Recipe type parameter"
+  },
+  "id": "Id",
+  "name": "Name",
+  "description": "Description",
+  "ingredients": "Ingredients",
+  "preparing-steps": "Preparing steps",
+  "change-to-theme": "Change to {{themeName}} theme",
+  "actions": "Actions",
+  "modal": {
+    "cancel-modal-aria-label": "Cancel modal",
+    "accept-modal-action-aria-label": "Accept modal action"
+  },
+  "pagination": {
+    "rows-per-page": "Rows per page",
+    "no-pages": "No pages",
+    "page-x-of-y": "Page {{page}} of {{totalPages}}",
+    "first-page-aria-label": "Go to first page",
+    "previous-page-aria-label": "Go to previous page",
+    "next-page-aria-label": "Go to next page",
+    "last-page-aria-label": "Go to first page"
+  },
+  "validations": {
+    "is-required": "{{field}} is required",
+    "exceeds-the-character-limit": "{{field}} exceeds the character limit"
+  }
+}

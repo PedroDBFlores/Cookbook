@@ -59,8 +59,8 @@ describe("Create recipe component", () => {
         </WrapWithCommonContexts>)
 
         expect(getRecipeTypesMock).toHaveBeenCalled()
-        expect(screen.getByText(/create a new recipe/i)).toBeInTheDocument()
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(screen.getByText(/translated recipe-feature.create-label/i)).toBeInTheDocument()
+        expect(screen.getByText(/translated common.loading/i)).toBeInTheDocument()
         expect(await screen.findByText(/^Create recipe form$/i)).toBeInTheDocument()
     })
 
@@ -71,9 +71,9 @@ describe("Create recipe component", () => {
         </WrapWithCommonContexts>)
 
         expect(getRecipeTypesMock).toHaveBeenCalled()
-        expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^failed to fetch$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.errors.cannot-load$/i)).toBeInTheDocument()
     })
 
 
@@ -89,7 +89,7 @@ describe("Create recipe component", () => {
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 
-        expect(await screen.findByText(/^recipe 'Name' created successfully!$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.create.success #Name#$/i)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
         expect(createRecipeMock).toHaveBeenCalledWith({
             recipeTypeId: 1,
@@ -109,7 +109,7 @@ describe("Create recipe component", () => {
 
         userEvent.click(screen.getByLabelText(/create recipe/i))
 
-        expect(await screen.findByText(/^an error occurred while creating the recipe$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.create.failure$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^a wild error has appeared$/i)).toBeInTheDocument()
         expect(createRecipeMock).toHaveBeenCalledWith({
             recipeTypeId: 1,

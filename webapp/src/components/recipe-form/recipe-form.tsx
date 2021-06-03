@@ -1,33 +1,12 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { Recipe } from "services/recipe-service"
-import { RecipeType } from "services/recipe-type-service"
-import { Form, Formik, FormikValues } from "formik"
-import { ButtonGroup, Grid, GridItem } from "@chakra-ui/react"
-import { InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl } from "formik-chakra-ui"
+import {Recipe} from "services/recipe-service"
+import {RecipeType} from "services/recipe-type-service"
+import {Form, Formik, FormikValues} from "formik"
+import {ButtonGroup, Grid, GridItem} from "@chakra-ui/react"
+import {InputControl, ResetButton, SelectControl, SubmitButton, TextareaControl} from "formik-chakra-ui"
 import * as yup from "yup"
-
-const RecipeFormSchema = yup.object({
-    name: yup.string()
-        .required("Name is required")
-        .min(1, "Name is required")
-        .max(128, "Name exceeds the character limit"),
-    description: yup.string()
-        .required("Description is required")
-        .min(1, "Description is required")
-        .max(256, "Description exceeds the character limit"),
-    recipeTypeId: yup.number()
-        .required("Recipe type is required")
-        .min(1, "Recipe type is required"),
-    ingredients: yup.string()
-        .required("Ingredients is required")
-        .min(1, "Ingredients is required")
-        .max(2048, "Ingredients exceeds the character limit"),
-    preparingSteps: yup.string()
-        .required("Preparing steps is required")
-        .min(1, "Preparing steps is required")
-        .max(4096, "Preparing steps exceeds the character limit")
-})
+import {useTranslation} from "react-i18next"
 
 interface RecipeFormProps {
     recipeTypes: Array<RecipeType>
@@ -35,9 +14,33 @@ interface RecipeFormProps {
     onSubmit: (recipe: Recipe) => void
 }
 
-const RecipeForm: React.FC<RecipeFormProps> = ({ initialValues, recipeTypes, onSubmit }) => {
+const RecipeForm: React.VFC<RecipeFormProps> = ({initialValues, recipeTypes, onSubmit}) => {
+    const {t} = useTranslation()
+
+    const RecipeFormSchema = yup.object({
+        name: yup.string()
+            .required(t("validations.is-required", {field: t("name")}))
+            .min(1, t("validations.is-required", {field: t("name")}))
+            .max(128, t("validations.exceeds-the-character-limit", {field: t("name")})),
+        description: yup.string()
+            .required(t("validations.is-required", {field: t("description")}))
+            .min(1, t("validations.is-required", {field: t("description")}))
+            .max(256, t("validations.exceeds-the-character-limit", {field: t("description")})),
+        recipeTypeId: yup.number()
+            .required(t("validations.is-required", {field: t("recipe-type-feature.singular")}))
+            .min(1, t("validations.is-required", {field: t("recipe-type-feature.singular")})),
+        ingredients: yup.string()
+            .required(t("validations.is-required", {field: t("ingredients")}))
+            .min(1, t("validations.is-required", {field: t("ingredients")}))
+            .max(2048, t("validations.exceeds-the-character-limit", {field: t("ingredients")})),
+        preparingSteps: yup.string()
+            .required(t("validations.is-required", {field: t("preparing-steps")}))
+            .min(1, t("validations.is-required", {field: t("preparing-steps")}))
+            .max(4096, t("validations.exceeds-the-character-limit", {field: t("preparing-steps")})),
+    })
+
     const isCreateMode = initialValues?.id === undefined
-    const buttonLabel = isCreateMode ? "Create" : "Edit"
+    const buttonLabel = isCreateMode ? t("common.create") : t("common.edit")
 
     const handleOnSubmit = (formValues: FormikValues) => {
         onSubmit({
@@ -60,18 +63,18 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ initialValues, recipeTypes, onS
         <Form>
             <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                 <GridItem colSpan={6}>
-                    <InputControl name="name" label="Name"/>
+                    <InputControl name="name" label={t("name")}/>
                 </GridItem>
                 <GridItem colSpan={6}>
-                    <InputControl name="description" label="Description"/>
+                    <InputControl name="description" label={t("description")}/>
                 </GridItem>
                 <GridItem colSpan={6}>
-                    <SelectControl aria-label="Recipe type parameter"
-                        name="recipeTypeId"
-                        label="Recipe type"
-                        selectProps={{ placeholder: " " }}>
+                    <SelectControl aria-label={t("recipe-feature.recipe-type-parameter")}
+                                   name="recipeTypeId"
+                                   label={t("recipe-type-feature.singular")}
+                                   selectProps={{placeholder: " "}}>
                         {
-                            recipeTypes?.map(({ id, name }) => (
+                            recipeTypes?.map(({id, name}) => (
                                 <option key={`recipeType-${id}`} value={id}>
                                     {name}
                                 </option>))
@@ -79,15 +82,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ initialValues, recipeTypes, onS
                     </SelectControl>
                 </GridItem>
                 <GridItem colSpan={6}>
-                    <TextareaControl name="ingredients" label="Ingredients"/>
+                    <TextareaControl name="ingredients" label={t("ingredients")}/>
                 </GridItem>
                 <GridItem colSpan={6}>
-                    <TextareaControl name="preparingSteps" label="Preparing steps"/>
+                    <TextareaControl name="preparingSteps" label={t("preparing-steps")}/>
                 </GridItem>
                 <GridItem colSpan={12}>
                     <ButtonGroup>
-                        <SubmitButton aria-label={`${buttonLabel} recipe`}>{buttonLabel}</SubmitButton>
-                        <ResetButton aria-label="Reset form">Reset</ResetButton>
+                        <SubmitButton aria-label={buttonLabel}>{buttonLabel}</SubmitButton>
+                        <ResetButton aria-label={t("common.reset-form-aria-label")}>{t("common.reset")}</ResetButton>
                     </ButtonGroup>
                 </GridItem>
             </Grid>

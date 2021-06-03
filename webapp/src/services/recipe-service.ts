@@ -1,4 +1,4 @@
-import { CreateResult, SearchResult } from "model"
+import {CreateResult, SearchResult} from "model"
 import axios from "axios"
 import handleApiError from "utils/error-handling"
 
@@ -16,62 +16,48 @@ export interface RecipeService {
     delete(id: number): Promise<void>
 }
 
-const findRecipe = () => async(id: number): Promise<RecipeDetails> => {
-    try {
-        const response = await axios.get<RecipeDetails>(`/api/recipe/${id}`)
+const findRecipe = () => async (id: number): Promise<RecipeDetails> =>
+    axios.get<RecipeDetails>(`/api/recipe/${id}`)
+        .then(response => response.data)
+        .catch(err => {
+            throw handleApiError(err)
+        })
 
-        return response.data
-    } catch (err) {
-        throw handleApiError(err)
-    }
-}
+const searchRecipes = () => async (searchParameters: SearchRecipeParameters): Promise<SearchResult<RecipeDetails>> =>
+    axios.post<SearchResult<RecipeDetails>>("/api/recipe/search", searchParameters)
+        .then(response => response.data)
+        .catch(err => {
+            throw handleApiError(err)
+        })
 
-const searchRecipes = () => async(searchParameters: SearchRecipeParameters): Promise<SearchResult<RecipeDetails>> => {
-    try {
-        const response = await axios.post<SearchResult<RecipeDetails>>("/api/recipe/search", searchParameters)
+const getAllRecipes = () => async (): Promise<Array<RecipeDetails>> =>
+    axios.get<Array<RecipeDetails>>("/api/recipe")
+        .then(response => response.data)
+        .catch(err => {
+            throw handleApiError(err)
+        })
 
-        return response.data
-    } catch (err) {
-        throw handleApiError(err)
-    }
-}
+const createRecipe = () => async (recipe: Omit<Recipe, "id">): Promise<CreateResult> =>
+    axios.post<CreateResult>("/api/recipe", recipe)
+        .then(response => response.data)
+        .catch(err => {
+            throw handleApiError(err)
+        })
 
-const getAllRecipes = () => async(): Promise<Array<RecipeDetails>> => {
-    try {
-        const response = await axios.get<Array<RecipeDetails>>("/api/recipe")
 
-        return response.data
-    } catch (err) {
-        throw handleApiError(err)
-    }
-}
+const updateRecipe = () => async (recipe: Recipe): Promise<void> =>
+    axios.put("/api/recipe", recipe)
+        .then(response => response.data)
+        .catch(err => {
+            throw handleApiError(err)
+        })
 
-const createRecipe = () => async(recipe: Omit<Recipe, "id">): Promise<CreateResult> => {
-    try {
-        const response = await axios.post<CreateResult>("/api/recipe", recipe)
-
-        return response.data
-    } catch (err) {
-        throw handleApiError(err)
-    }
-}
-
-const updateRecipe = () => async(recipe: Recipe): Promise<void> => {
-    try {
-        const response = await axios.put("/api/recipe", recipe)
-
-        return response.data
-    } catch (err) {
-        throw handleApiError(err)
-    }
-}
-const deleteRecipe = () => async(id: number): Promise<void> => {
-    try {
-        await axios.delete(`/api/recipe/${id}`)
-    } catch (err) {
-        throw handleApiError(err)
-    }
-}
+const deleteRecipe = () => async (id: number): Promise<void> =>
+    axios.delete(`/api/recipe/${id}`)
+        .then(response => response.data)
+        .catch(err => {
+            throw handleApiError(err)
+        })
 
 const createRecipeService = (): RecipeService => ({
     find: findRecipe(),

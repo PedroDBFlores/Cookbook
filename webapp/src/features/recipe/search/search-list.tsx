@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom"
 import { RecipeDetails } from "services/recipe-service"
 import { Table, Thead, Th, Tr, Tbody, Td, Tfoot, ButtonGroup, Button } from "@chakra-ui/react"
 import TablePagination from "components/table-pagination/table-pagination"
+import {useTranslation} from "react-i18next"
 
 interface RecipeSearchListProps {
     searchResult: SearchResult<RecipeDetails>
@@ -14,12 +15,13 @@ interface RecipeSearchListProps {
     onPageChange: (page: number) => void
 }
 
-const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
+const RecipeSearchList: React.VFC<RecipeSearchListProps> = ({
     searchResult,
     onDelete,
     onChangeRowsPerPage,
     onPageChange
 }) => {
+    const {t} = useTranslation()
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
     const [page, setPage] = useState<number>(1)
     const history = useHistory()
@@ -41,10 +43,10 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
     return <Table>
         <Thead>
             <Tr>
-                <Th>Id</Th>
-                <Th>Name</Th>
-                <Th>Recipe type</Th>
-                <Th align="center">Actions</Th>
+                <Th>{t("id")}</Th>
+                <Th>{t("name")}</Th>
+                <Th>{t("recipe-type-feature.singular")}</Th>
+                <Th align="center">{t("actions")}</Th>
             </Tr>
         </Thead>
         <Tbody>
@@ -52,7 +54,7 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                 !searchResult?.count
                     ? <Tr>
                         <Td colSpan={5}>
-                            No matching recipes
+                            {t("recipe-feature.search.no-matching-recipes")}
                         </Td>
                     </Tr>
                     : searchResult.results.map(({ id, name, recipeTypeName }) =>
@@ -62,15 +64,15 @@ const RecipeSearchList: React.FC<RecipeSearchListProps> = ({
                             <Td>{recipeTypeName}</Td>
                             <Td align="center">
                                 <ButtonGroup>
-                                    <Button aria-label={`Recipe details for id ${id}`}
+                                    <Button aria-label={t("recipe-feature.details-label")}
                                         onClick={() => navigateToDetails(id)}>
                                         <MdVisibility/>
                                     </Button>
-                                    <Button aria-label={`Edit Recipe with id ${id}`}
+                                    <Button aria-label={t("recipe-feature.edit-label")}
                                         onClick={() => navigateToEdit(id)}>
                                         <MdEdit/>
                                     </Button>
-                                    <Button aria-label={`Delete Recipe with id ${id}`}
+                                    <Button aria-label={t("recipe-feature.delete-label")}
                                         onClick={() => onDelete(id, name)}>
                                         <MdDelete/>
                                     </Button>

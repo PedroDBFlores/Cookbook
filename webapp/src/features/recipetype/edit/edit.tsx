@@ -7,8 +7,10 @@ import {Text, useToast} from "@chakra-ui/react"
 import Loader from "components/loader/loader"
 import RecipeTypeForm from "components/recipe-type-form/recipe-type-form"
 import Section from "components/section/section"
+import {useTranslation} from "react-i18next"
 
-const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
+const EditRecipeType: React.VFC<{ id: number }> = ({id}) => {
+    const {t} = useTranslation()
     const toast = useToast()
     const history = useHistory()
 
@@ -17,7 +19,7 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current,
         onReject: ({message}) => toast({
-            title: "An error occurred while fetching the recipe type",
+            title: t("recipe-type-feature.errors.occurred-fetching"),
             description: message,
             status: "error",
             duration: 5000
@@ -27,11 +29,11 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
     const handleOnSubmit = async (recipeType: RecipeType) => {
         try {
             await update(recipeType)
-            toast({title: `Recipe type '${recipeType.name}' updated successfully!`, status: "success"})
+            toast({title: t("recipe-type-feature.update.success", {name: recipeType.name}), status: "success"})
             history.push(`/recipetype/${id}`)
         } catch ({message}) {
             toast({
-                title: "An error occurred while updating the recipe type",
+                title: t("recipe-type-feature.update.failure"),
                 description: message,
                 status: "error",
                 duration: 5000
@@ -39,12 +41,12 @@ const EditRecipeType: React.FC<{ id: number }> = ({id}) => {
         }
     }
 
-    return <Section title="Edit a recipe type">
+    return <Section title={t("recipe-type-feature.edit.title")}>
         <IfPending state={state}>
             <Loader/>
         </IfPending>
         <IfRejected state={state}>
-            <Text>Failed to fetch the recipe type</Text>
+            <Text>{t("recipe-type-feature.errors.cannot-load")}</Text>
         </IfRejected>
         <IfFulfilled state={state}>
             {data => <RecipeTypeForm initialValues={data} onSubmit={handleOnSubmit}/>}

@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {MdFirstPage, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLastPage} from "react-icons/md"
 import {Box, ButtonGroup, Flex, IconButton, Select, Spacer, Text} from "@chakra-ui/react"
+import {useTranslation} from "react-i18next"
 
 interface TablePaginationProps {
     count: number
@@ -11,13 +12,15 @@ interface TablePaginationProps {
     onChangePage: (page: number) => void
 }
 
-const TablePagination: React.FC<TablePaginationProps> = ({
+const TablePagination: React.VFC<TablePaginationProps> = ({
                                                              count,
                                                              page,
                                                              rowsPerPage,
                                                              onChangeRowsPerPage,
                                                              onChangePage
                                                          }) => {
+    const {t} = useTranslation()
+
     const pageNumber = Math.ceil(count / rowsPerPage)
 
     const handleFirstPageButtonClick = () => {
@@ -38,7 +41,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({
 
     return <Flex>
         <Box>
-            <Select aria-label={"Rows per page"}
+            <Select aria-label={t("pagination.rows-per-page")}
                     onChange={ev => onChangeRowsPerPage(Number(ev.target.value))}>
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -47,7 +50,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({
         </Box>
         <Spacer/>
         <Box>
-            <Text>{count !== 0 ? `Page ${page} of ${pageNumber}` : "No pages"}</Text>
+            <Text>{count !== 0 ?  t("pagination.page-x-of-y", {page, totalPages :pageNumber}) : t("pagination.no-pages")}</Text>
         </Box>
         <Spacer/>
         <Box>
@@ -55,25 +58,25 @@ const TablePagination: React.FC<TablePaginationProps> = ({
                 <IconButton
                     onClick={handleFirstPageButtonClick}
                     disabled={page === 1}
-                    aria-label="first page">
+                    aria-label={t("pagination.first-page-aria-label")}>
                     <MdFirstPage/>
                 </IconButton>
                 <IconButton
                     onClick={handlePreviousButtonClick}
                     disabled={page === 1}
-                    aria-label="previous page">
+                    aria-label={t("pagination.previous-page-aria-label")}>
                     <MdKeyboardArrowLeft/>
                 </IconButton>
                 <IconButton
                     onClick={handleNextButtonClick}
                     disabled={page >= pageNumber}
-                    aria-label="next page">
+                    aria-label={t("pagination.next-page-aria-label")}>
                     <MdKeyboardArrowRight/>
                 </IconButton>
                 <IconButton
                     onClick={handleLastPageButtonClick}
                     disabled={page >= pageNumber}
-                    aria-label="last page">
+                    aria-label={t("pagination.last-page-aria-label")}>
                     <MdLastPage/>
                 </IconButton>
             </ButtonGroup>

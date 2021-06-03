@@ -4,7 +4,7 @@ import { WrapperWithRouter, WrapperWithRoutes } from "../../../tests/render-help
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
-jest.mock("components/theme-mode-toggler/theme-mode-toggler", () => ({
+jest.mock("components/theme-mode-toggle/theme-mode-toggle", () => ({
     __esModule: true,
     default: () => <>I'm the theme mode toggler</>
 }))
@@ -18,8 +18,8 @@ describe("Application Toolbar", () => {
             </WrapperWithRouter>)
 
             expect(screen.getByText("A title")).toBeInTheDocument()
-            expect(screen.getByText("Recipe types")).toBeInTheDocument()
-            expect(screen.getByText("Recipes")).toBeInTheDocument()
+            expect(screen.getByText(/translated recipe-type-feature.plural/i)).toBeInTheDocument()
+            expect(screen.getByText(/translated recipe-feature.plural/i)).toBeInTheDocument()
             expect(screen.getByText(/I'm the theme mode toggler/i)).toBeInTheDocument()
         })
     })
@@ -32,12 +32,12 @@ describe("Application Toolbar", () => {
                 expectedContent: "Main page"
             }],
             ["Recipe types", {
-                elementText: "Recipe types",
+                elementText: "translated recipe-type-feature.plural",
                 expectedRoute: "/recipetype",
                 expectedContent: "The best recipe types"
             }],
             ["Recipes", {
-                elementText: "Recipes",
+                elementText: "translated recipe-feature.plural",
                 expectedRoute: "/recipe",
                 expectedContent: "The best recipes"
             }]

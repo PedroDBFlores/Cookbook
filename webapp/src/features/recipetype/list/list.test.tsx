@@ -15,15 +15,15 @@ describe("Recipe type list component", () => {
         it("shows 'No recipes types.' if there are none", () => {
             render(<RecipeTypeList recipeTypes={[]} onDelete={jest.fn()}/>)
 
-            expect(screen.getByText(/No recipe types/i)).toBeInTheDocument()
+            expect(screen.getByText(/^translated recipe-type-feature.list.no-results$/i)).toBeInTheDocument()
         })
 
         it("shows a table with the required headers and data", () => {
             render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>)
 
-            expect(screen.getByText(/^id$/i)).toBeInTheDocument()
-            expect(screen.getByText(/^name$/i)).toBeInTheDocument()
-            expect(screen.getByText(/^actions$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^translated id$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^translated name$/i)).toBeInTheDocument()
+            expect(screen.getByText(/^translated actions$/i)).toBeInTheDocument()
             recipeTypes.forEach(element => {
                 expect(screen.getByText(element.id.toString())).toBeInTheDocument()
                 expect(screen.getByText(element.name)).toBeInTheDocument()
@@ -48,7 +48,7 @@ describe("Recipe type list component", () => {
                 }
             ]}/>)
 
-            userEvent.click(screen.getByLabelText(`Recipe type details for id ${firstRecipeType.id}`, {
+            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.details-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 
@@ -71,7 +71,7 @@ describe("Recipe type list component", () => {
                 }
             ]}/>)
 
-            userEvent.click(screen.getByLabelText(`Edit Recipe type with id ${firstRecipeType.id}`, {
+            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.edit-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 
@@ -84,7 +84,7 @@ describe("Recipe type list component", () => {
 
             render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteMock}/>)
 
-            userEvent.click(screen.getByLabelText(`Delete Recipe type with id ${firstRecipeType.id}`, {
+            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.delete-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 

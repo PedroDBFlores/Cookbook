@@ -9,45 +9,77 @@ import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
 import DataDisplay from "../../../components/data-display/data-display"
 import Section from "components/section/section"
+import {useTranslation} from "react-i18next"
 
-const RecipeDetails: React.FC<{ id: number }> = ({ id }) => {
-    const { setModalState } = useContext(ModalContext)
-    const history = useHistory()
+const RecipeDetails: React.VFC<{ id: number }> = ({id}) => {
+    const {t} = useTranslation()
     const toast = useToast()
 
-    const { find, delete: deleteRecipe } = createRecipeService()
+    const {find, delete: deleteRecipe} = createRecipeService()
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeDetail>({
         promiseFn: findPromiseRef.current,
-        onReject: ({ message }) => toast({
-            title: "An error occurred while fetching the recipe",
+        onReject: ({message}) => toast({
+            title: t("recipe-feature.errors.occurred-fetching"),
             description: message,
             status: "error",
             duration: 5000
         })
     })
 
-    const showModal = (id: number, name: string) => {
-        setModalState({
-            isOpen: true,
-            props: {
-                title: "Question",
-                content: "Are you sure you want to delete this recipe?",
-                actionText: "Delete",
-                onAction: () => handleDelete(id, name),
-                onClose: () => setModalState({ isOpen: false })
+    return <Section title={t("recipe-feature.details-title")}>
+        <IfPending state={state}>
+            <Loader/>
+        </IfPending>
+        <IfRejected state={state}>
+            <Text>{t("recipe-feature.errors.cannot-load")}</Text>
+        </IfRejected>
+        <IfFulfilled state={state}>
+            {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                <GridItem colSpan={12}>
+                    <DataDisplay title={t("recipe-feature.details.id")} content={data.id.toString()}/>
+                    <DataDisplay title={t("recipe-feature.details.name")} content={data.name}/>
+                    <DataDisplay title={t("recipe-feature.details.description")} content={data.description}/>
+                    <DataDisplay title={t("recipe-feature.details.ingredients")} content={data.ingredients}/>
+                    <DataDisplay title={t("recipe-feature.details.preparing-steps")} content={data.preparingSteps}/>
+                </GridItem>
+                <GridItem colSpan={12}>
+                    <RecipeDetailsActions recipe={data} deleteRecipeFn={deleteRecipe}/>
+                </GridItem>
+            </Grid>
             }
-        })
-    }
+        </IfFulfilled>
+    </Section>
+}
 
-    const handleDelete = async(id: number, name: string) => {
+interface RecipeDetailsActionsProps {
+    recipe: RecipeDetail
+    deleteRecipeFn: (id: number) => void
+}
+
+const RecipeDetailsActions: React.VFC<RecipeDetailsActionsProps> = ({recipe, deleteRecipeFn}) => {
+    const {t} = useTranslation()
+    const history = useHistory()
+    const toast = useToast()
+    const {openModal, closeModal} = useContext(ModalContext)
+
+    const showModal = (id: number, name: string) =>
+        openModal({
+            title: t("common.question"),
+            content: t("recipe-feature.delete.question"),
+            actionText: t("common.delete"),
+            onAction: () => handleDelete(id, name),
+            onClose: closeModal
+        })
+
+    const handleDelete = async (id: number, name: string) => {
         try {
-            await deleteRecipe(id)
-            toast({ title: `Recipe '${name}' was deleted`, status: "success" })
+            await deleteRecipeFn(id)
+            toast({title: t("recipe-feature.delete.success", {name}), status: "success"})
             history.push("/recipe")
-        } catch ({ message }) {
+        } catch ({message}) {
             toast({
-                title: "An error occurred while trying to delete this recipe",
+                title: t("recipe-feature.delete.failure", {name}),
                 description: message,
                 status: "error",
                 duration: 5000
@@ -57,38 +89,21 @@ const RecipeDetails: React.FC<{ id: number }> = ({ id }) => {
 
     const onEdit = (id: number) => history.push(`/recipe/${id}/edit`)
 
-    return <Section title="Recipe details">
-        <IfPending state={state}>
-            <Loader />
-        </IfPending>
-        <IfRejected state={state}>
-            <Text>Failed to fetch the recipe</Text>
-        </IfRejected>
-        <IfFulfilled state={state}>
-            {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                <GridItem colSpan={12}>
-                    <DataDisplay title="Id" content={data.id.toString()} />
-                    <DataDisplay title="Name" content={data.name} />
-                    <DataDisplay title="Description" content={data.description} />
-                    <DataDisplay title="Ingredients" content={data.ingredients} />
-                    <DataDisplay title="Preparing steps" content={data.preparingSteps} />
-                </GridItem>
-                <GridItem colSpan={12}>
-                    <ButtonGroup>
-                        <Button aria-label={`Edit recipe '${data.name}'`}
-                            onClick={() => onEdit(data.id)}>
-                            <MdEdit />
-                        </Button>
-                        <Button aria-label={`Delete recipe '${data.name}'`}
-                            onClick={() => showModal(data.id, data.name)}>
-                            <MdDelete />
-                        </Button>
-                    </ButtonGroup>
-                </GridItem>
-            </Grid>
-            }
-        </IfFulfilled>
-    </Section>
+    return <ButtonGroup>
+        <Button aria-label={t("recipe-feature.edit-label")}
+                onClick={() => onEdit(recipe.id)}>
+            <MdEdit/>
+        </Button>
+        <Button aria-label={t("recipe-feature.delete-label")}
+                onClick={() => showModal(recipe.id, recipe.name)}>
+            <MdDelete/>
+        </Button>
+    </ButtonGroup>
+}
+
+RecipeDetailsActions.propTypes = {
+    recipe: PropTypes.any,
+    deleteRecipeFn: PropTypes.func.isRequired
 }
 
 RecipeDetails.propTypes = {

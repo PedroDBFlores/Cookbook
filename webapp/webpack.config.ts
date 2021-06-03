@@ -1,9 +1,9 @@
 import HtmlWebpackPlugin from "html-webpack-plugin"
+import CopyWebpackPlugin from "copy-webpack-plugin"
 import {Configuration} from "webpack"
 import {resolve} from "path"
 
 const commonConfig: Configuration = {
-    mode: "production",
     entry: "./index.tsx",
     output: {
         path: resolve(__dirname, "dist"),
@@ -14,6 +14,11 @@ const commonConfig: Configuration = {
         new HtmlWebpackPlugin({
             filename: "./index.html",
             template: "./index.html"
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {from: "src/assets/locales", to: "locales"}
+            ]
         })
     ],
     resolve: {
@@ -44,7 +49,8 @@ const commonConfig: Configuration = {
                 ]
             }
         ]
-    }
+    },
+
 }
 
 export default commonConfig

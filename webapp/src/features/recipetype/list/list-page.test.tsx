@@ -38,12 +38,13 @@ describe("Recipe type list page", () => {
             <RecipeTypeListPage/>
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/recipe types/i)).toBeInTheDocument()
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated recipe-type-feature.plural$/i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated common.loading$/i)).toBeInTheDocument()
         expect(createRecipeTypeServiceMock).toHaveBeenCalledWith()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
-        expect(await screen.findByLabelText("Create new recipe type")).toBeInTheDocument()
-        expect(await screen.findByText(/^mock recipe type list$/i)).toBeInTheDocument()
+        expect(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated common.create$/i)).toBeInTheDocument()
+        expect(screen.getByText(/^mock recipe type list$/i)).toBeInTheDocument()
     })
 
     it("shows the error if fetching the recipe types fails", async () => {
@@ -53,8 +54,9 @@ describe("Recipe type list page", () => {
             <RecipeTypeListPage/>
         </WrapWithCommonContexts>)
 
-        expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^database error$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.errors.cannot-load$/i)).toBeInTheDocument()
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
     })
 
@@ -68,7 +70,7 @@ describe("Recipe type list page", () => {
                 ]}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(/^create new recipe type$/i))
+            userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i))
 
             expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
         })
@@ -93,7 +95,7 @@ describe("Recipe type list page", () => {
             </WrapWithCommonContexts>)
 
             expect(getAllRecipeTypesMock).toHaveBeenCalled()
-            expect(await screen.findByText(`Recipe type '${baseRecipeType.name}' was deleted`)).toBeInTheDocument()
+            expect(await screen.findByText(`translated recipe-type-feature.delete.success #${baseRecipeType.name}#`)).toBeInTheDocument()
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(baseRecipeType.id)
             expect(getAllRecipeTypesMock).toHaveBeenCalled()
             expect(screen.queryByText(baseRecipeType.name)).not.toBeInTheDocument()
@@ -113,7 +115,7 @@ describe("Recipe type list page", () => {
                 <RecipeTypeListPage/>
             </WrapWithCommonContexts>)
 
-            expect(await screen.findByText(`An error occurred while trying to delete recipe type '${baseRecipeType.name}': In use`)).toBeInTheDocument()
+            expect(await screen.findByText(`translated recipe-type-feature.delete.failure #${baseRecipeType.name}#`)).toBeInTheDocument()
         })
     })
 })

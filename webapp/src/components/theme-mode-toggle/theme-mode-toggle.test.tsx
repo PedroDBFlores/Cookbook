@@ -1,7 +1,7 @@
 import React from "react"
 import { ColorMode, useColorMode } from "@chakra-ui/react"
 import { render, screen } from "@testing-library/react"
-import ThemeModeToggler from "./theme-mode-toggler"
+import ThemeModeToggle from "./theme-mode-toggle"
 import userEvent from "@testing-library/user-event"
 
 jest.mock("@chakra-ui/react", () => ({
@@ -12,7 +12,7 @@ jest.mock("@chakra-ui/react", () => ({
 }))
 const useColorModeMock = useColorMode as jest.MockedFunction<typeof useColorMode>
 
-describe("Theme mode toggler", () => {
+describe("Theme mode toggle", () => {
     const toggleColorModeMock = jest.fn()
 
     useColorModeMock.mockImplementation(() => ({
@@ -24,7 +24,7 @@ describe("Theme mode toggler", () => {
     beforeEach(jest.clearAllMocks)
 
     it("calls the useColorMode hook on click", () => {
-        render(<ThemeModeToggler/>)
+        render(<ThemeModeToggle/>)
 
         userEvent.click(screen.getByRole("button"))
 
@@ -41,9 +41,9 @@ describe("Theme mode toggler", () => {
             toggleColorMode: toggleColorModeMock
         })
 
-        render(<ThemeModeToggler/>)
+        render(<ThemeModeToggle/>)
 
-        expect(screen.getByLabelText(`Change to ${expectedTheme} theme`)).toBeInTheDocument()
+        expect(screen.getByLabelText(`translated change-to-theme #${expectedTheme}#`)).toBeInTheDocument()
     })
 
 })

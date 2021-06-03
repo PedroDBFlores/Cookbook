@@ -47,14 +47,14 @@ describe("Recipe details component", () => {
             <RecipeDetails id={123} />
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/^recipe details$/i)).toBeInTheDocument()
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated recipe-feature.details-title$/i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated common.loading$/i)).toBeInTheDocument()
         expect(findRecipeMock).toHaveBeenCalledWith(123)
-        expect(await screen.findByText(/^Id$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^Name$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^Description$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^Ingredients$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^Preparing steps$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.details.id$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.details.name$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.details.description$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.details.ingredients$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.details.preparing-steps$/i)).toBeInTheDocument()
         expect(await screen.findByText(baseRecipe.id.toString())).toBeInTheDocument()
         expect(await screen.findByText(baseRecipe.name)).toBeInTheDocument()
         expect(await screen.findByText(baseRecipe.description)).toBeInTheDocument()
@@ -69,9 +69,9 @@ describe("Recipe details component", () => {
             <RecipeDetails id={123} />
         </WrapWithCommonContexts>)
 
-        expect(await screen.findByText(/^an error occurred while fetching the recipe$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
         expect(await screen.findByText(/failure/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^failed to fetch the recipe$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-feature.errors.cannot-load$/i)).toBeInTheDocument()
     })
 
     describe("Actions", () => {
@@ -93,7 +93,7 @@ describe("Recipe details component", () => {
                 ]} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Edit recipe '${baseRecipe.name}'`))
+            userEvent.click(await screen.findByLabelText(/^translated recipe-feature.edit-label$/i))
 
             expect(screen.getByText(/I'm the recipe edit page/i)).toBeInTheDocument()
         })
@@ -121,11 +121,11 @@ describe("Recipe details component", () => {
                 ]} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe '${baseRecipe.name}'`))
-            expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
+            userEvent.click(await screen.findByLabelText(/^translated recipe-feature.delete-label$/i))
+            expect(screen.getByText(/^translated recipe-feature.delete.question$/i)).toBeInTheDocument()
 
             expect(deleteRecipeMock).toHaveBeenCalledWith(baseRecipe.id)
-            expect(await screen.findByText(`Recipe '${baseRecipe.name}' was deleted`)).toBeInTheDocument()
+            expect(await screen.findByText(`translated recipe-feature.delete.success #${baseRecipe.name}#`)).toBeInTheDocument()
             expect(await screen.findByText(/I'm the recipe search page/i)).toBeInTheDocument()
         })
 
@@ -141,10 +141,10 @@ describe("Recipe details component", () => {
                 <RecipeDetails id={baseRecipe.id} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe '${baseRecipe.name}'`))
-            expect(screen.getByText(/are you sure you want to delete this recipe?/i)).toBeInTheDocument()
+            userEvent.click(await screen.findByLabelText(/^translated recipe-feature.delete-label$/i))
+            expect(screen.getByText(/^translated recipe-feature.delete.question$/i)).toBeInTheDocument()
 
-            expect(await screen.findByText(/^an error occurred while trying to delete this recipe$/i)).toBeInTheDocument()
+            expect(await screen.findByText(`translated recipe-feature.delete.failure #${baseRecipe.name}#`)).toBeInTheDocument()
             expect(await screen.findByText(/^something went wrong$/i)).toBeInTheDocument()
         })
     })

@@ -1,0 +1,123 @@
+{
+    "app-name": "Cookbook",
+    "common": {
+        "loading": "A carregar...",
+        "close": "Fechar",
+        "create": "Criar",
+        "edit": "Editar",
+        "reset": "Reset",
+        "delete": "Eliminar",
+        "question": "Questão",
+        "search": "Pesquisar",
+        "reset-form-aria-label": "Limpar formulário"
+    },
+    "recipe-type-feature": {
+        "singular": "Tipo de receita",
+        "plural": "Tipo de receitas",
+        "create": {
+            "success": "Tipo de receita {{name}} criado com sucesso!",
+            "failure": "Um erro ocorreu ao criar este tipo de receita"
+        },
+        "delete": {
+            "question": "Tem a certeza que quer eliminar este tipo de receita?",
+            "success": "Tipo de receita ${{name}} foi eliminado",
+            "failure": "Falha ao eliminar tipo de receita ${{name}}"
+        },
+        "details": {
+            "title": "Detalhes do tipo de receita",
+            "id": "Id:",
+            "name": "Nome:"
+        },
+        "edit": {
+            "title": "Editar um tipo de receita",
+            "success": "Tipo de receita {{name}} atualizado com sucesso!",
+            "failure": "Um erro occoreu ao atualizar este tipo de receita"
+        },
+        "errors": {
+            "occurred-fetching": "Um erro occoreu ao obter este tipo de receita",
+            "cannot-load": "Não foi possível carregar este tipo de receita"
+        },
+        "list": {
+            "no-results": "Sem tipos de receitas",
+            "details-for-label": "Detalhes do tipo de receita {{id}}",
+            "edit-for-label": "Editar tipo de receita {{id}}",
+            "delete-for-label": "Eliminar tipo de receita {{id}}"
+        },
+        "create-label": "Criar novo tipo de receita",
+        "edit-label": "Editar tipo de receita",
+        "delete-label": "Eliminar tipo de receita"
+    },
+    "recipe-feature": {
+        "singular": "Receita",
+        "plural": "Receitas",
+        "create": {
+            "success": "Receita {{name}} criada com sucesso!",
+            "failure": "Um erro ocorreu ao criar esta receita"
+        },
+        "delete": {
+            "question": "Tem a certeza que quer eliminar esta receita?",
+            "success": "Receita {{name}} foi eliminada",
+            "failure": "Falha ao eliminar receita {{name}}"
+        },
+        "details": {
+            "title": "Detalhes da receita",
+            "id": "Id:",
+            "name": "Nome:",
+            "description": "Descrição:",
+            "ingredients": "Ingredientes:",
+            "preparing-steps": "Passos de preparação:"
+        },
+        "edit": {
+            "title": "Editar a receita",
+            "success": "Receita {{name}} atualizada com sucesso!",
+            "failure": "Um erro occoreu ao atualizar esta receita"
+        },
+        "errors": {
+            "occurred-fetching": "Um erro occoreu ao obter esta receita",
+            "occurred-fetching-recipe-types": "Um erro occoreu ao obter os tipos de receitas",
+            "cannot-load": "Não foi possível carregar esta receita",
+            "cannot-load-recipe-types": "Não foi possível carregar os tipos de receitas"
+        },
+        "list": {
+            "no-results": "Sem receita",
+            "details-for-label": "Detalhes da receita {{id}}",
+            "edit-for-label": "Editar receita {{id}}",
+            "delete-for-label": "Eliminar receita {{id}}"
+        },
+        "search": {
+            "title": "Pesquisar receitas",
+            "no-matching-recipes": "Não foram encontradas receitas que cumpram os critérios",
+            "recipe-name-parameter": "Parametro nome da receita",
+            "recipe-description-parameter": "Parametro descrição da receita"
+        },
+        "create-label": "Criar nova receita",
+        "details-label": "Detalhes da receita",
+        "edit-label": "Editar receita",
+        "delete-label": "Eliminar receita",
+        "recipe-type-parameter": "Parametro tipo de receita"
+    },
+    "id": "Id",
+    "name": "Nome",
+    "description": "Descrição",
+    "ingredients": "Ingredientes",
+    "preparing-steps": "Passos de preparação",
+    "change-to-theme": "Alterar para o tema {{themeName}} ",
+    "actions": "Ações",
+    "modal": {
+        "cancel-modal-aria-label": "Cancelar modal",
+        "accept-modal-action-aria-label": "Aceitar ação da modal"
+    },
+    "pagination": {
+        "rows-per-page": "Linhas por página",
+        "no-pages": "Sem páginas",
+        "page-x-of-y": "Página {{page}} de {{totalPages}}",
+        "first-page-aria-label": "Ir para a primeira página",
+        "previous-page-aria-label": "Ir para a página anterior",
+        "next-page-aria-label": "Ir para a próxima página",
+        "last-page-aria-label": "Ir para a última página"
+    },
+    "validations": {
+        "is-required": "{{field}} é obrigatório",
+        "exceeds-the-character-limit": "{{field}} excede o limite de carateres"
+    }
+}

@@ -1,7 +1,7 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
+import {render, screen} from "@testing-library/react"
 import CreateRecipeType from "./create"
-import { WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
+import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
 import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -10,10 +10,10 @@ const createRecipeTypeServiceMock = createRecipeTypeService as jest.MockedFuncti
 
 jest.mock("components/recipe-type-form/recipe-type-form", () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(({ onSubmit }) => <>
+    default: jest.fn().mockImplementation(({onSubmit}) => <>
         <p>Create recipe type form</p>
         <button aria-label="Create recipe type"
-            onClick={() => onSubmit({ id: 0, name: "Fish" })}>
+                onClick={() => onSubmit({id: 0, name: "Fish"})}>
             Create
         </button>
     </>)
@@ -37,15 +37,15 @@ describe("Create recipe type", () => {
             <CreateRecipeType/>
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/create a new recipe type/i)).toBeInTheDocument()
+        expect(screen.getByText(/translated recipe-type-feature.create-label/i)).toBeInTheDocument()
         expect(screen.getByText(/Create recipe type form/i)).toBeInTheDocument()
     })
 
-    it("creates the recipe type in the Cookbook API and navigates to the details", async() => {
-        createRecipeTypeMock.mockResolvedValueOnce({ id: 1 })
+    it("creates the recipe type in the Cookbook API and navigates to the details", async () => {
+        createRecipeTypeMock.mockResolvedValueOnce({id: 1})
         render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipetype/new" routeConfiguration={[
-                { path: "/recipetype/new", exact: true, component: () => <CreateRecipeType/> },
+                {path: "/recipetype/new", exact: true, component: () => <CreateRecipeType/>},
                 {
                     path: "/recipetype/1/details",
                     exact: true,
@@ -56,21 +56,21 @@ describe("Create recipe type", () => {
 
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-        expect(await screen.findByText(/^recipe type 'Fish' created successfully!$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.create.success #Fish#$/i)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe type details page for id 1/i)).toBeInTheDocument()
-        expect(createRecipeTypeMock).toHaveBeenCalledWith({ name: "Fish" })
+        expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
     })
 
-    it("shows an error message if the create API call fails", async() => {
-        createRecipeTypeMock.mockRejectedValueOnce({ message: "Duplicate recipe type" })
+    it("shows an error message if the create API call fails", async () => {
+        createRecipeTypeMock.mockRejectedValueOnce({message: "Duplicate recipe type"})
         render(<WrapWithCommonContexts>
             <CreateRecipeType/>
         </WrapWithCommonContexts>)
 
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
-        expect(await screen.findByText(/^an error occurred while creating the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.create.failure$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^duplicate recipe type$/i)).toBeInTheDocument()
-        expect(createRecipeTypeMock).toHaveBeenCalledWith({ name: "Fish" })
+        expect(createRecipeTypeMock).toHaveBeenCalledWith({name: "Fish"})
     })
 })

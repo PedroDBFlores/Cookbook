@@ -38,11 +38,11 @@ describe("Recipe type details", () => {
             <RecipeTypeDetails id={99} />
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/^recipe type details$/i)).toBeInTheDocument()
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated recipe-type-feature.details.title$/i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated common.loading$/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalledWith(99)
-        expect(await screen.findByText(/^Id:$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^Name:$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.details.id$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.details.name$/i)).toBeInTheDocument()
         expect(await screen.findByText(baseRecipeType.id.toString())).toBeInTheDocument()
         expect(await screen.findByText(baseRecipeType.name)).toBeInTheDocument()
     })
@@ -54,9 +54,9 @@ describe("Recipe type details", () => {
             <RecipeTypeDetails id={99} />
         </WrapWithCommonContexts>)
 
-        expect(await screen.findByText(/^an error occurred while fetching the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^failure$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^failed to fetch the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.errors.cannot-load$/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalled()
     })
 
@@ -79,7 +79,7 @@ describe("Recipe type details", () => {
                 ]} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Edit recipe type '${baseRecipeType.name}'`))
+            userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.edit-label$/i))
 
             expect(screen.getByText(/I'm the recipe type edit page/i)).toBeInTheDocument()
         })
@@ -107,12 +107,11 @@ describe("Recipe type details", () => {
                 ]} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe type '${baseRecipeType.name}'`))
-
-            expect(screen.getByText(/are you sure you want to delete this recipe type?/i)).toBeInTheDocument()
+            userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.delete-label$/i))
+            expect(screen.getByText(/^translated recipe-type-feature.delete.question$/i)).toBeInTheDocument()
 
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(baseRecipeType.id)
-            expect(await screen.findByText(`Recipe type ${baseRecipeType.name} was deleted`)).toBeInTheDocument()
+            expect(await screen.findByText(`translated recipe-type-feature.delete.success #${baseRecipeType.name}#`)).toBeInTheDocument()
             expect(await screen.findByText(/I'm the recipe type list page/i)).toBeInTheDocument()
         })
 
@@ -127,9 +126,10 @@ describe("Recipe type details", () => {
                 <RecipeTypeDetails id={99} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(`Delete recipe type '${baseRecipeType.name}'`))
+            userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.delete-label$/i))
+            expect(screen.getByText(/^translated recipe-type-feature.delete.question$/i)).toBeInTheDocument()
 
-            expect(await screen.findByText(/^An error occurred while trying to delete this recipe type$/i)).toBeInTheDocument()
+            expect(await screen.findByText(`translated recipe-type-feature.delete.failure #${baseRecipeType.name}#`)).toBeInTheDocument()
             expect(await screen.findByText(/^in use$/i)).toBeInTheDocument()
         })
     })

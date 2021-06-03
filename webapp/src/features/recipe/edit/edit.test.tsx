@@ -66,8 +66,8 @@ describe("Edit recipe component", () => {
             <EditRecipe id={1}/>
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/Edit recipe/i)).toBeInTheDocument()
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
+        expect(screen.getByText(/translated common.loading/i)).toBeInTheDocument()
         expect(await screen.findByText(/Edit recipe form/i)).toBeInTheDocument()
         expect(findRecipeMock).toHaveBeenCalledWith(1)
         expect(getRecipeTypesMock).toHaveBeenCalled()
@@ -82,9 +82,9 @@ describe("Edit recipe component", () => {
             </WrapWithCommonContexts>)
 
             expect(getRecipeTypesMock).toHaveBeenCalled()
-            expect(await screen.findByText(/^an error occurred while fetching the recipe types$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^translated recipe-type-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
             expect(await screen.findByText(/^failed to fetch recipe types$/i)).toBeInTheDocument()
-            expect(await screen.findByText(/^failed to fetch the recipe types$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^translated recipe-type-feature.errors.cannot-load$/i)).toBeInTheDocument()
             expect(findRecipeMock).not.toHaveBeenCalled()
         })
 
@@ -95,9 +95,9 @@ describe("Edit recipe component", () => {
                 <EditRecipe id={1}/>
             </WrapWithCommonContexts>)
 
-            expect(await screen.findByText(/^an error occurred while fetching the recipe$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^translated recipe-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
             expect(await screen.findByText(/^failed to fetch recipe$/i)).toBeInTheDocument()
-            expect(await screen.findByText(/^failed to fetch the recipe$/i)).toBeInTheDocument()
+            expect(await screen.findByText(/^translated recipe-type-feature.errors.cannot-load$/i)).toBeInTheDocument()
         })
     })
 
@@ -109,11 +109,12 @@ describe("Edit recipe component", () => {
                 { path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</> }
             ]}/>
         </WrapWithCommonContexts>)
+        expect(await screen.findByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
         await screen.findByText(/Edit recipe form/i)
 
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
-        expect(await screen.findByText(/^recipe 'name' updated successfully!$/i)).toBeInTheDocument()
+        expect(await screen.findByText(`translated recipe-feature.update.success #Name#`)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
         expect(updateRecipeMock).toHaveBeenCalledWith({
             id: 1,
@@ -130,11 +131,13 @@ describe("Edit recipe component", () => {
         render(<WrapWithCommonContexts>
             <EditRecipe id={1}/>
         </WrapWithCommonContexts>)
+        expect(await screen.findByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
         await screen.findByText(/Edit recipe form/i)
 
         userEvent.click(screen.getByLabelText(/edit recipe/i))
 
-        expect(await screen.findByText(/an error occurred while updating the recipe: A wild error has appeared/i)).toBeInTheDocument()
+        expect(await screen.findByText(`translated recipe-feature.update.failure`)).toBeInTheDocument()
+        expect(await screen.findByText(/^A wild error has appeared$/i)).toBeInTheDocument()
         expect(updateRecipeMock).toHaveBeenCalledWith({
             id: 1,
             recipeTypeId: 1,

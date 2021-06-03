@@ -1,26 +1,28 @@
-import React, { useContext, useRef } from "react"
+import React, {useContext, useRef} from "react"
 import PropTypes from "prop-types"
-import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
-import { MdDelete, MdEdit } from "react-icons/md"
-import { useHistory } from "react-router-dom"
-import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import { Button, ButtonGroup, Grid, GridItem, Text, useToast } from "@chakra-ui/react"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
+import {MdDelete, MdEdit, MdError} from "react-icons/md"
+import {useHistory} from "react-router-dom"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
+import {Button, ButtonGroup, Grid, GridItem, Text, useToast} from "@chakra-ui/react"
 import ModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
 import DataDisplay from "../../../components/data-display/data-display"
 import Section from "components/section/section"
+import {useTranslation} from "react-i18next"
 
-const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
-    const { setModalState } = useContext(ModalContext)
+const RecipeTypeDetails: React.VFC<{ id: number }> = ({id}) => {
+    const {t} = useTranslation()
+    const {openModal, closeModal} = useContext(ModalContext)
     const history = useHistory()
     const toast = useToast()
 
-    const { find, delete: deleteRecipeType } = createRecipeTypeService()
+    const {find, delete: deleteRecipeType} = createRecipeTypeService()
     const findPromiseRef = useRef(() => find(id))
     const state = useAsync<RecipeType>({
         promiseFn: findPromiseRef.current,
-        onReject: ({ message }) => toast({
-            title: "An error occurred while fetching the recipe type",
+        onReject: ({message}) => toast({
+            title: t("recipe-type-feature.errors.occurred-fetching"),
             description: message,
             status: "error",
             duration: 5000
@@ -28,26 +30,25 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
     })
 
     const showModal = (data: RecipeType) => {
-        setModalState({
-            isOpen: true,
-            props: {
-                title: "Question",
-                content: "Are you sure you want to delete this recipe type?",
-                actionText: "Delete",
-                onAction: () => handleDelete(data.id, data.name),
-                onClose: () => setModalState({ isOpen: false })
-            }
+        openModal({
+            title: t("common.question"),
+            content: t("recipe-type-feature.delete.question"),
+            actionText: t("common.delete"),
+            onAction: () => handleDelete(data.id, data.name),
+            onClose: closeModal
         })
     }
 
-    const handleDelete = async(id: number, name: string) => {
+    const handleDelete = async (id: number, name: string) => {
         try {
             await deleteRecipeType(id)
-            toast({ title: `Recipe type ${name} was deleted`, status: "success" })
-            history.push("/recipetype")
-        } catch ({ message }) {
             toast({
-                title: "An error occurred while trying to delete this recipe type",
+                title: t("recipe-type-feature.delete.success", {name}), status: "success"
+            })
+            history.push("/recipetype")
+        } catch ({message}) {
+            toast({
+                title: t("recipe-type-feature.delete.failure", {name}),
                 description: message,
                 status: "error",
                 duration: 5000
@@ -57,28 +58,29 @@ const RecipeTypeDetails: React.FC<{ id: number }> = ({ id }) => {
 
     const onEdit = (id: number) => history.push(`/recipetype/${id}/edit`)
 
-    return <Section title="Recipe type details">
+    return <Section title={t("recipe-type-feature.details.title")}>
         <IfPending state={state}>
-            <Loader />
+            <Loader/>
         </IfPending>
         <IfRejected state={state}>
-            <Text>Failed to fetch the recipe type</Text>
+            <MdError/>
+            <Text>{t("recipe-type-feature.errors.cannot-load")}</Text>
         </IfRejected>
         <IfFulfilled state={state}>
             {data => <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                 <GridItem colSpan={12}>
-                    <DataDisplay title="Id:" content={data.id.toString()} />
-                    <DataDisplay title="Name:" content={data.name} />
+                    <DataDisplay title={t("recipe-type-feature.details.id")} content={data.id.toString()}/>
+                    <DataDisplay title={t("recipe-type-feature.details.name")} content={data.name}/>
                 </GridItem>
                 <GridItem colSpan={12}>
                     <ButtonGroup>
-                        <Button aria-label={`Edit recipe type '${data.name}'`}
-                            onClick={() => onEdit(data.id)}>
-                            <MdEdit />
+                        <Button aria-label={t("recipe-type-feature.edit-label")}
+                                onClick={() => onEdit(data.id)}>
+                            <MdEdit/>
                         </Button>
-                        <Button aria-label={`Delete recipe type '${data.name}'`}
-                            onClick={() => showModal(data)}>
-                            <MdDelete />
+                        <Button aria-label={t("recipe-type-feature.delete-label")}
+                                onClick={() => showModal(data)}>
+                            <MdDelete/>
                         </Button>
                     </ButtonGroup>
                 </GridItem>

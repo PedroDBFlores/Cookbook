@@ -12,12 +12,12 @@ describe("Table pagination actions", () => {
             onChangeRowsPerPage={jest.fn()}
             onChangePage={jest.fn()}/>)
 
-        expect(screen.getByLabelText(/rows per page/i)).toHaveValue("10")
-        expect(screen.getByText(/page 4 of 10/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/first page/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/previous page/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/next page/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/last page/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/translated pagination.rows-per-page/i)).toHaveValue("10")
+        expect(screen.getByText(/translated pagination.page-x-of-y #4,10#/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/translated pagination.first-page-aria-label/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/translated pagination.previous-page-aria-label/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/translated pagination.next-page-aria-label/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/translated pagination.last-page-aria-label/i)).toBeInTheDocument()
     })
 
     it("renders no pages if there is no results", () => {
@@ -28,7 +28,8 @@ describe("Table pagination actions", () => {
             onChangeRowsPerPage={jest.fn()}
             onChangePage={jest.fn()}/>)
 
-        expect(screen.getByText(/no pages/i)).toBeInTheDocument()
+        expect(screen.getByText(/translated pagination.no-pages/i)).toBeInTheDocument()
+        expect(screen.queryByText(/translated pagination.page-x-of-y/i)).not.toBeInTheDocument()
     })
 
     test.each([
@@ -43,7 +44,7 @@ describe("Table pagination actions", () => {
             onChangeRowsPerPage={jest.fn()}
             onChangePage={jest.fn()}/>)
 
-        expect(screen.getByText(`Page ${page} of ${expectedMaxPages}`)).toBeInTheDocument()
+        expect(screen.getByText(`translated pagination.page-x-of-y #${page},${expectedMaxPages}#`)).toBeInTheDocument()
     })
 
     describe("Actions", () => {
@@ -60,16 +61,16 @@ describe("Table pagination actions", () => {
                 onChangeRowsPerPage={onChangeRowsPerPageMock}
                 onChangePage={jest.fn()}/>)
 
-            userEvent.selectOptions(screen.getByLabelText(/rows per page/i), value.toString())
+            userEvent.selectOptions(screen.getByLabelText(/translated pagination.rows-per-page/i), value.toString())
 
             expect(onChangeRowsPerPageMock).toHaveBeenCalledWith(value)
         })
 
         test.each([
-            ["first page button is clicked", { label: "first page", expectedPage: 1 }],
-            ["previous page button is clicked", { label: "previous page", expectedPage: 4 }],
-            ["next page button is clicked", { label: "next page", expectedPage: 6 }],
-            ["last page button is clicked", { label: "last page", expectedPage: 10 }]
+            ["first page button is clicked", { label: /translated pagination.first-page-aria-label/i, expectedPage: 1 }],
+            ["previous page button is clicked", { label: /translated pagination.previous-page-aria-label/i, expectedPage: 4 }],
+            ["next page button is clicked", { label: /translated pagination.next-page-aria-label/i, expectedPage: 6 }],
+            ["last page button is clicked", { label: /translated pagination.last-page-aria-label/i, expectedPage: 10 }]
         ])("it calls the 'onChangePage' function when the %s", (_, { label, expectedPage }) => {
             const onChangePageMock = jest.fn()
 
@@ -93,10 +94,10 @@ describe("Table pagination actions", () => {
                 onChangeRowsPerPage={jest.fn()}
                 onChangePage={jest.fn()}/>)
 
-            expect(screen.getByLabelText(/first page/i)).toBeDisabled()
-            expect(screen.getByLabelText(/previous page/i)).toBeDisabled()
-            expect(screen.getByLabelText(/next page/i)).toBeEnabled()
-            expect(screen.getByLabelText(/last page/i)).toBeEnabled()
+            expect(screen.getByLabelText(/translated pagination.first-page-aria-label/i)).toBeDisabled()
+            expect(screen.getByLabelText(/translated pagination.previous-page-aria-label/i)).toBeDisabled()
+            expect(screen.getByLabelText(/translated pagination.next-page-aria-label/i)).toBeEnabled()
+            expect(screen.getByLabelText(/translated pagination.last-page-aria-label/i)).toBeEnabled()
         })
 
         it("has the last page and next page button disabled when on the last page", () => {
@@ -107,10 +108,10 @@ describe("Table pagination actions", () => {
                 onChangeRowsPerPage={jest.fn()}
                 onChangePage={jest.fn()}/>)
 
-            expect(screen.getByLabelText(/first page/i)).toBeEnabled()
-            expect(screen.getByLabelText(/previous page/i)).toBeEnabled()
-            expect(screen.getByLabelText(/next page/i)).toBeDisabled()
-            expect(screen.getByLabelText(/last page/i)).toBeDisabled()
+            expect(screen.getByLabelText(/translated pagination.first-page-aria-label/i)).toBeEnabled()
+            expect(screen.getByLabelText(/translated pagination.previous-page-aria-label/i)).toBeEnabled()
+            expect(screen.getByLabelText(/translated pagination.next-page-aria-label/i)).toBeDisabled()
+            expect(screen.getByLabelText(/translated pagination.last-page-aria-label/i)).toBeDisabled()
         })
     })
 })

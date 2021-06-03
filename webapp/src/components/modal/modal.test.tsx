@@ -10,6 +10,7 @@ describe("Basic modal dialog", () => {
 
         expect(screen.getByText(/a title/i)).toBeInTheDocument()
         expect(screen.getByText(/the content/i)).toBeInTheDocument()
+        expect(screen.getByText(/translated common.close/i)).toBeInTheDocument()
     })
 
     it("performs the modal action on click", () => {
@@ -18,7 +19,7 @@ describe("Basic modal dialog", () => {
         render(<Modal title="A title" content="The content" actionText="OK"
             onAction={modalActionMock} onClose={jest.fn()}/>)
 
-        userEvent.click(screen.getByLabelText(/accept action/i))
+        userEvent.click(screen.getByLabelText(/translated modal.accept-modal-action-aria-label/i))
 
         expect(modalActionMock).toHaveBeenCalled()
     })
@@ -32,7 +33,7 @@ describe("Basic modal dialog", () => {
             onClose={closeFn}
         />)
 
-        userEvent.click(screen.getByLabelText(/cancel modal/i))
+        userEvent.click(screen.getByLabelText(/translated modal.cancel-modal-aria-label/i))
 
         expect(closeFn).toHaveBeenCalled()
     })

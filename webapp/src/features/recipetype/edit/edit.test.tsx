@@ -41,9 +41,9 @@ describe("Edit recipe type", () => {
             <EditRecipeType id={1}/>
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/loading.../i)).toBeInTheDocument()
+        expect(screen.getByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
+        expect(screen.getByText(/translated common.loading/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalledWith(1)
-        expect(await screen.findByText(/edit a recipe type/i)).toBeInTheDocument()
         expect(await screen.findByText(/edit recipe type form/i)).toBeInTheDocument()
     })
 
@@ -54,9 +54,9 @@ describe("Edit recipe type", () => {
             <EditRecipeType id={99}/>
         </WrapWithCommonContexts>)
 
-        expect(await screen.findByText(/^an error occurred while fetching the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^failure$/i)).toBeInTheDocument()
-        expect(await screen.findByText(/^failed to fetch the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.errors.cannot-load$/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalled()
     })
 
@@ -76,12 +76,12 @@ describe("Edit recipe type", () => {
                     component: () => <>I'm the recipe type details page</>
                 }
             ]}/>
-            <EditRecipeType id={baseRecipeType.id}/>
         </WrapWithCommonContexts>)
+        expect(await screen.findByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
 
         userEvent.click(await screen.findByLabelText(/^edit recipe type$/i))
 
-        expect(await screen.findByText(/^recipe type 'Cake' updated successfully!$/i)).toBeInTheDocument()
+        expect(await screen.findByText(`translated recipe-type-feature.update.success #Cake#`)).toBeInTheDocument()
         expect(await screen.findByText(/^I'm the recipe type details page$/i)).toBeInTheDocument()
         expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
     })
@@ -92,11 +92,11 @@ describe("Edit recipe type", () => {
         render(<WrapWithCommonContexts>
             <EditRecipeType id={1}/>
         </WrapWithCommonContexts>)
-        expect(await screen.findByText(/^edit a recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
 
         userEvent.click(screen.getByLabelText(/edit recipe type/i))
 
-        expect(await screen.findByText(/^an error occurred while updating the recipe type$/i)).toBeInTheDocument()
+        expect(await screen.findByText(`translated recipe-type-feature.update.failure`)).toBeInTheDocument()
         expect(await screen.findByText(/^duplicate recipe type$/i)).toBeInTheDocument()
         expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
     })
