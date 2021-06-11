@@ -73,7 +73,9 @@
     "build": "webpack --config webpack.prod.ts",
     "lint": "eslint ./tests/. ./src/. --ext ts --ext tsx --fix",
     "test": "jest --testTimeout=10000",
+    "test:changed": "jest --testTimeout=10000 --onlyChanged",
     "test:watch": "jest --watch --testTimeout=10000",
+    "test:watch-changed": "jest --watch --testTimeout=10000 --onlyChanged",
     "test:coverage": "jest --coverage"
   }
 }
