@@ -1,16 +1,12 @@
 import React from "react"
 import PropTypes from "prop-types"
+import DataDisplay from "../data-display"
 
-interface DataDisplayProps {
-    title: string
-    content: string
-}
+const DataDisplayMock: typeof DataDisplay = ({title, content}) => <>Mock Data Display #{title},{content}#</>
 
-const DataDisplay: React.VFC<DataDisplayProps> = ({title,content}) => <>Mock Data Display #{title},{content}#</>
-
-DataDisplay.propTypes = {
+DataDisplayMock.propTypes = {
     title: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired
 }
 
-export default DataDisplay
+export default DataDisplayMock
