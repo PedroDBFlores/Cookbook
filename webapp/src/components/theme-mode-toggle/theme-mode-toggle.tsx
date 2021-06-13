@@ -9,7 +9,7 @@ const ThemeModeToggle: React.VFC = () => {
     const oppositeTheme = colorMode === "light" ? "dark" : "light"
     const Icon = colorMode === "light" ? <MdBrightness2/> : <MdWbSunny/>
 
-    return <IconButton aria-label={t("change-to-theme", {theme: oppositeTheme})}
+    return <IconButton aria-label={t("change-to-theme", {themeName: oppositeTheme})}
                        variant="outline"
                        colorScheme="white"
                        icon={Icon}
