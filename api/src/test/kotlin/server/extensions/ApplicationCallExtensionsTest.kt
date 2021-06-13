@@ -14,11 +14,20 @@ import kotlinx.serialization.json.Json
 import server.modules.contentNegotiationModule
 import utils.JsonHelpers.createJSONObject
 
+@Serializable
+data class ExampleClass(val id: Int, val name: String)
+
+@Serializable
+data class ExampleClassWithValidation(val id: Int, val name: String) {
+    init {
+        check(id < 100) { "Id must be at most 99" }
+        check(name == "Marco") { "Name must be Marco" }
+    }
+}
+
 internal class ApplicationCallExtensionsTest : DescribeSpec({
 
     describe("Receive or Throw") {
-        @Serializable
-        data class ExampleClass(val id: Int, val name: String)
 
         describe("with custom validation") {
             val receivedBodyHandlerWithValidation: suspend ApplicationCall.() -> Unit = {
@@ -88,21 +97,13 @@ internal class ApplicationCallExtensionsTest : DescribeSpec({
         }
 
         describe("no custom validation") {
-            @Serializable
-            data class ExampleClass(val id: Int, val name: String) {
-                init {
-                    check(id < 100) { "Id must be at most 99" }
-                    check(name == "Marco") { "Name must be Marco" }
-                }
-            }
-
             val receivedBodyHandler: suspend ApplicationCall.() -> Unit = {
-                val body = this.receiveOrThrow<ExampleClass>()
+                val body = this.receiveOrThrow<ExampleClassWithValidation>()
                 respond(HttpStatusCode.OK, body)
             }
 
             it("receives and returns the body as an object when it's successful") {
-                val jsonBody = Json.encodeToString(ExampleClass(1, "Marco"))
+                val jsonBody = Json.encodeToString(ExampleClassWithValidation(1, "Marco"))
 
                 withTestApplication(
                     moduleFunction = {

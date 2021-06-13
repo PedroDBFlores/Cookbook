@@ -1,12 +1,10 @@
 import com.sksamuel.hoplite.ConfigLoader
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
-import io.ktor.util.*
 import org.flywaydb.core.Flyway
 import server.CookbookApi
 
 /** Application entry point */
-@KtorExperimentalAPI
 fun main() = ConfigLoader().loadConfigOrThrow<ConfigurationFile>("/application.conf")
     .run {
         migrateDB(this)

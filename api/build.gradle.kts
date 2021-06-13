@@ -1,11 +1,11 @@
 plugins {
     application
-    kotlin("jvm") version "1.4.32"
-    kotlin("plugin.serialization") version "1.4.32"
+    kotlin("jvm") version "1.5.10"
+    kotlin("plugin.serialization") version "1.5.10"
     id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.github.ben-manes.versions") version "0.39.0"
     id("com.adarshr.test-logger") version "3.0.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
 }
 
 group = "pt.pedro"
@@ -21,15 +21,15 @@ repositories {
 }
 
 val logbackVersion = "1.2.1"
-val hopliteVersion = "1.4.0"
-val ktorVersion = "1.5.4"
-val exposedVersion = "0.31.1"
+val hopliteVersion = "1.4.1"
+val ktorVersion = "1.6.0"
+val exposedVersion = "0.32.1"
 val h2Version = "1.4.200"
-val postgresVersion = "42.2.20"
-val flywayVersion = "7.9.1"
-val jodaDataTypeVersion = "2.12.1"
+val postgresVersion = "42.2.21"
+val flywayVersion = "7.10.0"
 
-val kotestVersion = "4.4.3"
+val kotestVersion = "4.6.0"
+val kotestAssertionsKtorVersion = "1.0.3"
 val mockkVersion = "1.11.0"
 
 dependencies {
@@ -42,7 +42,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:4.0.3")
@@ -56,7 +55,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion") // for kotest core jvm assertions
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion") // for kotest json assertions
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion") // for kotest property test
-    testImplementation("io.kotest:kotest-assertions-ktor:$kotestVersion")
+    testImplementation("io.kotest.extensions:kotest-assertions-ktor:$kotestAssertionsKtorVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
