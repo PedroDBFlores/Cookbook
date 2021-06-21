@@ -5,7 +5,7 @@ const prodConfig = merge(commonConfig, {
     mode: "production",
     performance: {
         maxAssetSize: 500000,
-        maxEntrypointSize: 500000
+        maxEntrypointSize: 500000,
     },
     optimization:{
         usedExports: true

@@ -11,8 +11,11 @@ const devConfig = merge(commonConfig, {
         port: 8080,
         proxy: {
             "/api": "http://localhost:9000"
-        }
+        },
     },
+    optimization: {
+        minimize: false
+    }
 } as Configuration)
 
 export default devConfig

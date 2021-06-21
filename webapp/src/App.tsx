@@ -15,7 +15,7 @@ import i18n from "i18next"
 import {initReactI18next} from "react-i18next"
 import Backend from "i18next-http-backend"
 import LanguageDetector from "i18next-browser-languagedetector"
-
+import FilePicker from "chakra-ui-file-picker"
 
 const App: React.VFC = () => {
     const [ready, setReady] = useState<boolean>()
@@ -46,6 +46,9 @@ const AppComponent = () =>
             <BrowserRouter>
                 <Layout>
                     <Switch>
+                        <Route path="/">
+                            <FilePicker placeholder="Your file here" onFileChange={console.log} />
+                        </Route>
                         <Route exact path="/recipetype" render={() => <RecipeTypeListPage/>}/>
                         <Route exact path="/recipetype/new" render={() => <CreateRecipeType/>}/>
                         <Route exact path="/recipetype/:id/details"
