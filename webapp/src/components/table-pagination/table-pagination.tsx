@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {MdFirstPage, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLastPage} from "react-icons/md"
 import {Box, ButtonGroup, Flex, IconButton, Select, Spacer, Text} from "@chakra-ui/react"
 import {useTranslation} from "react-i18next"
@@ -82,14 +81,6 @@ const TablePagination: React.VFC<TablePaginationProps> = ({
             </ButtonGroup>
         </Box>
     </Flex>
-}
-
-TablePagination.propTypes = {
-    count: PropTypes.number.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
-    onChangeRowsPerPage: PropTypes.func.isRequired,
-    onChangePage: PropTypes.func.isRequired
 }
 
 export default TablePagination

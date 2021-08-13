@@ -1,7 +1,6 @@
 import React from "react"
-import PropTypes from "prop-types"
-import { useTranslation } from "react-i18next"
-import { FormControl, FormControlProps, FormHelperText, FormLabel } from "@chakra-ui/react"
+import {useTranslation} from "react-i18next"
+import {FormControl, FormControlProps, FormHelperText, FormLabel} from "@chakra-ui/react"
 import FilePicker from "chakra-ui-file-picker"
 
 export interface FileFieldProps extends FormControlProps {
@@ -25,12 +24,6 @@ const FileField: React.VFC<FileFieldProps> = (props) => {
 			{helperText && <FormHelperText>{helperText}</FormHelperText>}
 		</FormControl>
 	)
-}
-
-FileField.propTypes = {
-	name: PropTypes.string.isRequired,
-	inputPlaceholder: PropTypes.string.isRequired,
-	helperText: PropTypes.string
 }
 
 export default FileField

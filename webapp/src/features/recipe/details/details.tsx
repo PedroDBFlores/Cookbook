@@ -1,5 +1,4 @@
 import React, {useRef} from "react"
-import PropTypes from "prop-types"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {MdDelete, MdEdit} from "react-icons/md"
 import {useHistory} from "react-router-dom"
@@ -99,15 +98,6 @@ const RecipeDetailsActions: React.VFC<RecipeDetailsActionsProps> = ({recipe, del
 			<MdDelete/>
 		</Button>
 	</ButtonGroup>
-}
-
-RecipeDetailsActions.propTypes = {
-	recipe: PropTypes.any,
-	deleteRecipeFn: PropTypes.func.isRequired
-}
-
-RecipeDetails.propTypes = {
-	id: PropTypes.number.isRequired
 }
 
 export default RecipeDetails

@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {
     Button,
     ButtonGroup,
@@ -49,14 +48,6 @@ const Modal: React.VFC<ModalProps> = ({
                 </ModalFooter>
             </ModalContent>
         </ChakraModal>)
-}
-
-Modal.propTypes = {
-    title: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    actionText: PropTypes.string.isRequired,
-    onAction: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired
 }
 
 export default Modal

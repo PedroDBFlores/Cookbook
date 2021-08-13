@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {Recipe} from "services/recipe-service"
 import {RecipeType} from "services/recipe-type-service"
 import {Form, Formik, FormikValues} from "formik"
@@ -96,12 +95,6 @@ const RecipeForm: React.VFC<RecipeFormProps> = ({initialValues, recipeTypes, onS
             </Grid>
         </Form>
     </Formik>
-}
-
-RecipeForm.propTypes = {
-    recipeTypes: PropTypes.array.isRequired,
-    initialValues: PropTypes.any,
-    onSubmit: PropTypes.func.isRequired
 }
 
 export default RecipeForm

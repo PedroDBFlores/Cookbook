@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import PropTypes from "prop-types"
 import { SearchResult } from "model"
 import { MdDelete, MdEdit, MdVisibility } from "react-icons/md"
 import { useHistory } from "react-router-dom"
@@ -95,17 +94,6 @@ const RecipeSearchList: React.VFC<RecipeSearchListProps> = ({
             </Tr>
         </Tfoot>
     </Table>
-}
-
-RecipeSearchList.propTypes = {
-    searchResult: PropTypes.shape({
-        count: PropTypes.number.isRequired,
-        numberOfPages: PropTypes.number.isRequired,
-        results: PropTypes.array.isRequired
-    }).isRequired,
-    onChangeRowsPerPage: PropTypes.func.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired
 }
 
 export default RecipeSearchList

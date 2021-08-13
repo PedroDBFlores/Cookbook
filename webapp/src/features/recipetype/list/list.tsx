@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {useHistory} from "react-router-dom"
 import {MdDelete, MdEdit, MdVisibility} from "react-icons/md"
 import {RecipeType} from "services/recipe-type-service"
@@ -52,11 +51,6 @@ const RecipeTypeList: React.VFC<RecipeTypeListProps> = ({recipeTypes, onDelete})
                     </Tr>)}
             </Tbody>
         </Table>
-}
-
-RecipeTypeList.propTypes = {
-    recipeTypes: PropTypes.array.isRequired,
-    onDelete: PropTypes.func.isRequired
 }
 
 export default RecipeTypeList

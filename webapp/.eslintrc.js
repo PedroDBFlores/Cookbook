@@ -21,7 +21,7 @@ module.exports = {
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 2019,
+    "ecmaVersion": 2020,
     "sourceType": "module"
   },
   "plugins": [
@@ -31,12 +31,12 @@ module.exports = {
   ],
   "settings": {
     "react": {
-      "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
+      "version": "detect"
     }
   },
   "rules": {
     "react/no-unescaped-entities": "off",
-    "react/prop-types": [2, { ignore: ["children"] }],
+    "react/prop-types": "off",
     "prefer-const": "error",
     "semi": [2, "never"],
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],

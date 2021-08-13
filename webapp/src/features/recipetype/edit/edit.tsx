@@ -1,5 +1,4 @@
 import React, {useRef} from "react"
-import PropTypes from "prop-types"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
@@ -52,10 +51,6 @@ const EditRecipeType: React.VFC<{ id: number }> = ({id}) => {
             {data => <RecipeTypeForm initialValues={data} onSubmit={handleOnSubmit}/>}
         </IfFulfilled>
     </Section>
-}
-
-EditRecipeType.propTypes = {
-    id: PropTypes.number.isRequired
 }
 
 export default EditRecipeType

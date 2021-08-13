@@ -1,5 +1,4 @@
 import React, {useRef} from "react"
-import PropTypes from "prop-types"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {MdDelete, MdEdit, MdError} from "react-icons/md"
 import {useHistory} from "react-router-dom"
@@ -88,10 +87,6 @@ const RecipeTypeDetails: React.VFC<{ id: number }> = ({id}) => {
             }
         </IfFulfilled>
     </Section>
-}
-
-RecipeTypeDetails.propTypes = {
-    id: PropTypes.number.isRequired
 }
 
 export default RecipeTypeDetails

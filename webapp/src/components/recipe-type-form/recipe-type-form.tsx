@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {ButtonGroup, Grid, GridItem} from "@chakra-ui/react"
 import {Form, Formik, FormikValues} from "formik"
 import {InputControl, ResetButton, SubmitButton} from "formik-chakra-ui"
@@ -46,11 +45,6 @@ const RecipeTypeForm: React.VFC<RecipeTypeFormProps> = ({initialValues, onSubmit
             </Grid>
         </Form>
     </Formik>
-}
-
-RecipeTypeForm.propTypes = {
-    initialValues: PropTypes.any,
-    onSubmit: PropTypes.func.isRequired
 }
 
 export default RecipeTypeForm

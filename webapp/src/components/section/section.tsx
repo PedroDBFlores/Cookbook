@@ -1,6 +1,5 @@
 import React from "react"
-import PropTypes from "prop-types"
-import { Box, Flex, Heading } from "@chakra-ui/react"
+import {Box, Flex, Heading} from "@chakra-ui/react"
 
 interface SectionProps {
     title: React.ReactElement | string
@@ -29,13 +28,5 @@ const Section: React.FC<SectionProps> = ({ title, actions, children }) => <Flex
         {children}
     </Box>
 </Flex>
-
-Section.propTypes = {
-    title: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.element
-    ]).isRequired,
-    actions: PropTypes.element
-}
 
 export default Section

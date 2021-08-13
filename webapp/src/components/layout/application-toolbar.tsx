@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {Flex, Heading, Text} from "@chakra-ui/react"
 import {Link} from "react-router-dom"
 import ThemeModeToggle from "../theme-mode-toggle/theme-mode-toggle"
@@ -18,11 +17,6 @@ const MenuItem: React.FC<MenuItemProps> = ({children, isLast, to = "/"}) => (
         <Link to={to}>{children}</Link>
     </Text>
 )
-
-MenuItem.propTypes = {
-    to: PropTypes.string,
-    isLast: PropTypes.bool
-}
 
 interface ApplicationToolbarProps {
     title: string
@@ -59,10 +53,6 @@ const ApplicationToolbar: React.VFC<ApplicationToolbarProps> = ({title}) => {
             </Flex>
         </Flex>
     )
-}
-
-ApplicationToolbar.propTypes = {
-    title: PropTypes.string.isRequired
 }
 
 export default ApplicationToolbar

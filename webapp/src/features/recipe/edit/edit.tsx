@@ -1,5 +1,4 @@
 import React, {useRef} from "react"
-import PropTypes from "prop-types"
 import {FormikValues} from "formik"
 import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import createRecipeService, {Recipe, RecipeDetails} from "services/recipe-service"
@@ -86,10 +85,6 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
             }
         </IfFulfilled>
     </Section>
-}
-
-EditRecipe.propTypes = {
-    id: PropTypes.number.isRequired
 }
 
 export default EditRecipe

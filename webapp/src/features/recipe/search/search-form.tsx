@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "prop-types"
 import {Form, Formik, FormikHelpers} from "formik"
 import {RecipeType} from "services/recipe-type-service"
 import {Button, Grid, GridItem} from "@chakra-ui/react"
@@ -69,11 +68,6 @@ const RecipeSearchForm: React.VFC<RecipeSearchFormProps> = ({recipeTypes, onSear
             </Grid>
         </Form>
     </Formik>
-}
-
-RecipeSearchForm.propTypes = {
-    recipeTypes: PropTypes.array.isRequired,
-    onSearch: PropTypes.func.isRequired
 }
 
 export default RecipeSearchForm
