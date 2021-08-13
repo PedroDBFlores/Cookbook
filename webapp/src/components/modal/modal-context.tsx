@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useContext, useState} from "react"
 import Modal from "./modal"
 
 interface ModalStateProps {
@@ -9,14 +9,19 @@ interface ModalStateProps {
     onClose: () => void
 }
 
-interface ModalState {
+interface InitialModelState {
     isOpen: boolean
     props: ModalStateProps
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const useModalState = (initialState?: ModalState) => {
-    const [modalState, setModalState] = useState<ModalState>(initialState ?? {
+interface ModelState {
+    openModal: (props: ModalStateProps) => void
+    closeModal: () => void
+    modalState: InitialModelState
+}
+
+const useModalState = (initialState?: InitialModelState): ModelState => {
+    const [modalState, setModalState] = useState<InitialModelState>(initialState ?? {
         isOpen: false,
         props: {} as ModalStateProps
     })
@@ -32,7 +37,7 @@ export const useModalState = (initialState?: ModalState) => {
         props: {} as ModalStateProps
     })
 
-    return {modalState, openModal, closeModal}
+    return {openModal, closeModal, modalState}
 }
 
 export const WithModal: React.FC = ({children}) => {
@@ -50,15 +55,17 @@ export const WithModal: React.FC = ({children}) => {
 }
 
 interface ModalContextProps {
-    modalState: ModalState
+    modalState: InitialModelState
     openModal: (props: ModalStateProps) => void
     closeModal: () => void
 }
 
-const ModalContext = React.createContext<ModalContextProps>({
+export const ModalContext = React.createContext<ModalContextProps>({
     modalState: {isOpen: false, props: {} as ModalStateProps},
     openModal: () => void (0),
     closeModal: () => void (0)
 })
 
-export default ModalContext
+export const useModalContext = (): ModalContextProps => useContext(ModalContext)
+
+export default useModalContext

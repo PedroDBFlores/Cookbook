@@ -1,16 +1,16 @@
-import React, { useContext, useEffect, useRef, useState } from "react"
-import { SearchResult } from "model"
-import RecipeSearchForm, { RecipeSearchFormData } from "./search-form"
-import createRecipeService, { RecipeDetails } from "services/recipe-service"
-import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import { useHistory } from "react-router-dom"
-import { Button, Grid, GridItem, Text, useToast } from "@chakra-ui/react"
-import ModalContext from "components/modal/modal-context"
-import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
+import React, {useEffect, useRef, useState} from "react"
+import {SearchResult} from "model"
+import RecipeSearchForm, {RecipeSearchFormData} from "./search-form"
+import createRecipeService, {RecipeDetails} from "services/recipe-service"
+import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
+import {useHistory} from "react-router-dom"
+import {Button, Grid, GridItem, Text, useToast} from "@chakra-ui/react"
+import useModalContext from "components/modal/modal-context"
+import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Loader from "components/loader/loader"
 import RecipeSearchList from "./search-list"
 import Section from "components/section/section"
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next"
 
 const RecipeSearchPage: React.VFC = () => {
     const [formData, setFormData] = useState<RecipeSearchFormData>({
@@ -31,17 +31,17 @@ const RecipeSearchPage: React.VFC = () => {
         results: []
     })
 
-    const { t } = useTranslation()
+    const {t} = useTranslation()
     const toast = useToast()
-    const { openModal, closeModal } = useContext(ModalContext)
+    const {openModal, closeModal} = useModalContext()
     const history = useHistory()
 
-    const { search, delete: deleteRecipe } = createRecipeService()
-    const { getAll: getAllRecipeTypes } = createRecipeTypeService()
+    const {search, delete: deleteRecipe} = createRecipeService()
+    const {getAll: getAllRecipeTypes} = createRecipeTypeService()
     const getAllRecipeTypesRef = useRef(getAllRecipeTypes)
     const getAllRecipeTypesState = useAsync<Array<RecipeType>>({
         promiseFn: getAllRecipeTypesRef.current,
-        onReject: ({ message }) => toast({
+        onReject: ({message}) => toast({
             title: t("recipe-feature.errors.occurred-fetching-recipe-types"),
             description: message,
             status: "error",
@@ -53,16 +53,16 @@ const RecipeSearchPage: React.VFC = () => {
         setFormData(recipeSearchFormData)
 
     const handleOnPageChange = (pageNumber: number) =>
-        setPageParams({ ...pageParams, pageNumber })
+        setPageParams({...pageParams, pageNumber})
 
     const handleOnNumberOfRowsChange = (itemsPerPage: number) =>
-        setPageParams({ ...pageParams, itemsPerPage, pageNumber: 1 })
+        setPageParams({...pageParams, itemsPerPage, pageNumber: 1})
 
     const navigateToCreateRecipe = () => history.push("/recipe/new")
 
     const showModal = (id: number, name: string) => openModal({
         title: t("common.question"),
-        content: t("recipe-feature.delete.question", { name }),
+        content: t("recipe-feature.delete.question", {name}),
         actionText: t("common.delete"),
         onAction: () => handleDelete(id, name),
         onClose: closeModal
@@ -71,11 +71,11 @@ const RecipeSearchPage: React.VFC = () => {
     const handleDelete = async (id: number, name: string) => {
         try {
             await deleteRecipe(id)
-            toast({ title: t("recipe-feature.delete.success", { name }), status: "success" })
-            setRecipes({ ...recipes, results: recipes.results.filter(r => r.id != id) })
-        } catch ({ message }) {
+            toast({title: t("recipe-feature.delete.success", {name}), status: "success"})
+            setRecipes({...recipes, results: recipes.results.filter(r => r.id != id)})
+        } catch ({message}) {
             toast({
-                title: t("recipe-feature.delete.failure", { name }),
+                title: t("recipe-feature.delete.failure", {name}),
                 description: message,
                 status: "error",
                 duration: 5000
@@ -91,10 +91,11 @@ const RecipeSearchPage: React.VFC = () => {
         }).then(setRecipes)
     }, [formData, pageParams])
 
-    return <Section title={t("recipe-feature.search.title")} actions={<Button aria-label={t("recipe-feature.create-label")}
-        onClick={navigateToCreateRecipe}>{t("common.create")}</Button>}>
+    return <Section title={t("recipe-feature.search.title")}
+                    actions={<Button aria-label={t("recipe-feature.create-label")}
+                                     onClick={navigateToCreateRecipe}>{t("common.create")}</Button>}>
         <IfPending state={getAllRecipeTypesState}>
-            <Loader />
+            <Loader/>
         </IfPending>
         <IfRejected state={getAllRecipeTypesState}>
             <Text>{t("recipe-feature.errors.cannot-load-recipe-types")}</Text>
@@ -103,13 +104,13 @@ const RecipeSearchPage: React.VFC = () => {
             {recipeTypes =>
                 <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                     <GridItem colSpan={12}>
-                        <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes} />
+                        <RecipeSearchForm onSearch={handleOnFormSearch} recipeTypes={recipeTypes}/>
                     </GridItem>
                     <GridItem colSpan={12}>
                         <RecipeSearchList searchResult={recipes}
-                            onDelete={(id, name) => showModal(id, name)}
-                            onChangeRowsPerPage={handleOnNumberOfRowsChange}
-                            onPageChange={handleOnPageChange} />
+                                          onDelete={(id, name) => showModal(id, name)}
+                                          onChangeRowsPerPage={handleOnNumberOfRowsChange}
+                                          onPageChange={handleOnPageChange}/>
                     </GridItem>
                 </Grid>
             }

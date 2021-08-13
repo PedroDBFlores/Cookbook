@@ -46,8 +46,4 @@ describe("File field", () => {
 
 		expect(screen.getByText(/You can put your file on/i)).toBeInTheDocument()
 	})
-
-	describe("Formik", () => {
-
-	})
 })

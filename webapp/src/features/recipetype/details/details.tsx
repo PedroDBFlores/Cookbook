@@ -1,11 +1,11 @@
-import React, {useContext, useRef} from "react"
+import React, {useRef} from "react"
 import PropTypes from "prop-types"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import {MdDelete, MdEdit, MdError} from "react-icons/md"
 import {useHistory} from "react-router-dom"
 import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import {Button, ButtonGroup, Grid, GridItem, Text, useToast} from "@chakra-ui/react"
-import ModalContext from "components/modal/modal-context"
+import useModalContext from "components/modal/modal-context"
 import Loader from "components/loader/loader"
 import DataDisplay from "../../../components/data-display/data-display"
 import Section from "components/section/section"
@@ -13,7 +13,7 @@ import {useTranslation} from "react-i18next"
 
 const RecipeTypeDetails: React.VFC<{ id: number }> = ({id}) => {
     const {t} = useTranslation()
-    const {openModal, closeModal} = useContext(ModalContext)
+    const {openModal, closeModal} = useModalContext()
     const history = useHistory()
     const toast = useToast()
 

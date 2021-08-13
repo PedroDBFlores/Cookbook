@@ -4,7 +4,7 @@ import {Form, Formik, FormikHelpers} from "formik"
 import {RecipeType} from "services/recipe-type-service"
 import {Button, Grid, GridItem} from "@chakra-ui/react"
 import {InputControl, SelectControl} from "formik-chakra-ui"
-import {useTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next"
 
 export interface RecipeSearchFormData {
     name: string | undefined
