@@ -2,10 +2,13 @@ import path from "path"
 import type { Config } from "@jest/types"
 
 const jestConfig: Config.InitialOptions = {
-	preset: "ts-jest",
+	// preset: "ts-jest",
 	roots: [
 		"<rootDir>/src"
 	],
+	transform: {
+		"^.+\\.t(s|sx)?$": "@swc/jest",
+	},
 	testEnvironment: "jsdom",
 	clearMocks: true,
 	coveragePathIgnorePatterns: [path.join(__dirname, "tests")],

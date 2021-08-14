@@ -23,6 +23,7 @@
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {
+		"@swc/jest": "^0.1.4",
 		"@testing-library/jest-dom": "^5.14.1",
 		"@testing-library/react": "^12.0.0",
 		"@testing-library/react-hooks": "^7.0.1",
@@ -48,7 +49,6 @@
 		"jest-watch-typeahead": "^0.6.4",
 		"react-test-renderer": "^17.0.2",
 		"rollup-plugin-copy": "^3.4.0",
-		"ts-jest": "^27.0.4",
 		"ts-node": "^10.2.0",
 		"typescript": "^4.3.5",
 		"vite": "^2.4.4",

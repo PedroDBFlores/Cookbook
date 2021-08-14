@@ -1,7 +1,7 @@
 import React from "react"
 import {render, screen} from "@testing-library/react"
 import CreateRecipeType from "./create"
-import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
+import {WrapperWithRoutes} from "../../../../tests/render-helpers"
 import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -33,9 +33,7 @@ describe("Create recipe type", () => {
     beforeEach(jest.clearAllMocks)
 
     it("renders the initial form", () => {
-        render(<WrapWithCommonContexts>
-            <CreateRecipeType/>
-        </WrapWithCommonContexts>)
+        render(<CreateRecipeType/>)
 
         expect(screen.getByText(/translated recipe-type-feature.create-label/i)).toBeInTheDocument()
         expect(screen.getByText(/Create recipe type form/i)).toBeInTheDocument()
@@ -43,7 +41,7 @@ describe("Create recipe type", () => {
 
     it("creates the recipe type in the Cookbook API and navigates to the details", async () => {
         createRecipeTypeMock.mockResolvedValueOnce({id: 1})
-        render(<WrapWithCommonContexts>
+        render(
             <WrapperWithRoutes initialPath="/recipetype/new" routeConfiguration={[
                 {path: "/recipetype/new", exact: true, component: () => <CreateRecipeType/>},
                 {
@@ -52,7 +50,7 @@ describe("Create recipe type", () => {
                     component: () => <div>I'm the recipe type details page for id 1</div>
                 }
             ]}/>
-        </WrapWithCommonContexts>)
+        )
 
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
@@ -63,9 +61,7 @@ describe("Create recipe type", () => {
 
     it("shows an error message if the create API call fails", async () => {
         createRecipeTypeMock.mockRejectedValueOnce({message: "Duplicate recipe type"})
-        render(<WrapWithCommonContexts>
-            <CreateRecipeType/>
-        </WrapWithCommonContexts>)
+        render(<CreateRecipeType/>)
 
         userEvent.click(screen.getByLabelText(/create recipe type/i))
 
