@@ -1,11 +1,11 @@
 plugins {
     application
-    kotlin("jvm") version "1.5.10"
-    kotlin("plugin.serialization") version "1.5.10"
+    kotlin("jvm") version "1.5.30"
+    kotlin("plugin.serialization") version "1.5.30"
     id("com.github.johnrengelman.shadow") version "7.0.0"
     id("com.github.ben-manes.versions") version "0.39.0"
     id("com.adarshr.test-logger") version "3.0.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
 
 group = "pt.pedro"
@@ -21,12 +21,12 @@ repositories {
 }
 
 val logbackVersion = "1.2.1"
-val hopliteVersion = "1.4.1"
-val ktorVersion = "1.6.0"
-val exposedVersion = "0.32.1"
+val hopliteVersion = "1.4.7"
+val ktorVersion = "1.6.3"
+val exposedVersion = "0.34.1"
 val h2Version = "1.4.200"
-val postgresVersion = "42.2.21"
-val flywayVersion = "7.10.0"
+val postgresVersion = "42.2.23"
+val flywayVersion = "7.15.0"
 
 val kotestVersion = "4.6.0"
 val kotestAssertionsKtorVersion = "1.0.3"
