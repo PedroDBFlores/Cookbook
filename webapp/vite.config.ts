@@ -18,12 +18,15 @@ export default defineConfig({
 			hook: "writeBundle"
 		})
 	],
-	publicDir: "src/assets",
+	publicDir: "dist",
 	server: {
 		port: 8080,
 		proxy: {
 			"/api": "http://localhost:9000"
 		},
+		fsServe: {
+			root: "dist",
+		}
 	},
 	base: "./"
 })
