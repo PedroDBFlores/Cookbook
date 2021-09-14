@@ -7,7 +7,7 @@
 		"@emotion/react": "^11.4.1",
 		"@emotion/styled": "^11.3.0",
 		"chakra-ui-file-picker": "^0.2.0",
-		"axios": "^0.21.1",
+		"axios": "^0.21.2",
 		"formik": "^2.2.9",
 		"formik-chakra-ui": "^1.4.7",
 		"framer-motion": "^4.1.17",
