@@ -27,7 +27,7 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
         onResolve: () => findRecipeState.run(),
         onReject: ({message}) => toast({
             title: t("recipe-type-feature.errors.occurred-fetching"),
-            description: message,
+            description: <>{message}</>,
             status: "error",
             duration: 5000
         })
@@ -37,7 +37,7 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
         deferFn: findPromiseRef.current,
         onReject: ({message}) => toast({
             title: t("recipe-feature.errors.occurred-fetching"),
-            description: message,
+            description: <>{message}</>,
             status: "error",
             duration: 5000
         })
@@ -57,7 +57,7 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
             toast(
                 {
                     title:  t("recipe-feature.update.failure"),
-                    description: message,
+                    description: <>{message}</>,
                     status: "error"
                 }
             )

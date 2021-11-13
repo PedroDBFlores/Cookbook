@@ -19,7 +19,7 @@ const RecipeTypeListPage: React.VFC = () => {
         promiseFn: getPromiseRef.current,
         onReject: ({ message }) => toast({
             title: t("recipe-type-feature.errors.occurred-fetching"),
-            description: message,
+            description: <>{message}</>,
             status: "error",
             duration: 5000
         })
@@ -37,7 +37,7 @@ const RecipeTypeListPage: React.VFC = () => {
         } catch ({ message }) {
             toast({
                 title: t("recipe-type-feature.delete.failure", {name}),
-                description: message,
+                description: <>{message}</>,
                 status: "error",
                 duration: 5000
             })

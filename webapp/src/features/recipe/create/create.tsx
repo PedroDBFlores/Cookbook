@@ -21,7 +21,7 @@ const CreateRecipe: React.VFC = () => {
         promiseFn: getAllRecipeTypesFn.current,
         onReject: ({message}) => toast({
             title: t("recipe-feature.errors.occurred-fetching"),
-            description: message,
+            description: <>{message}</>,
             status: "error",
             duration: 5000
         })
@@ -36,7 +36,7 @@ const CreateRecipe: React.VFC = () => {
         } catch ({message}) {
             toast({
                 title: t("recipe-type-feature.create.failure"),
-                description: message,
+                description: <>{message}</>,
                 status: "error",
                 duration: 5000
             })

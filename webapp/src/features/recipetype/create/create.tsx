@@ -23,7 +23,7 @@ const CreateRecipeType: React.VFC = () => {
         } catch ({message}) {
             toast({
                 title: t("recipe-type-feature.create.failure"),
-                description: message,
+                description: <>{message}</>,
                 status: "error",
                 duration: 5000
             })

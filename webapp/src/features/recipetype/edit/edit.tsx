@@ -19,7 +19,7 @@ const EditRecipeType: React.VFC<{ id: number }> = ({id}) => {
         promiseFn: findPromiseRef.current,
         onReject: ({message}) => toast({
             title: t("recipe-type-feature.errors.occurred-fetching"),
-            description: message,
+            description: <>{message}</>,
             status: "error",
             duration: 5000
         })
@@ -33,7 +33,7 @@ const EditRecipeType: React.VFC<{ id: number }> = ({id}) => {
         } catch ({message}) {
             toast({
                 title: t("recipe-type-feature.update.failure"),
-                description: message,
+                description: <>{message}</>,
                 status: "error",
                 duration: 5000
             })
