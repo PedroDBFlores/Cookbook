@@ -1,11 +1,11 @@
 plugins {
     application
-    kotlin("jvm") version "1.5.30"
+    kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.5.30"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("com.github.ben-manes.versions") version "0.39.0"
-    id("com.adarshr.test-logger") version "3.0.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.ben-manes.versions") version "0.41.0"
+    id("com.adarshr.test-logger") version "3.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
 }
 
 group = "pt.pedro"
@@ -21,16 +21,16 @@ repositories {
 }
 
 val logbackVersion = "1.2.1"
-val hopliteVersion = "1.4.7"
+val hopliteVersion = "1.4.16"
 val ktorVersion = "1.6.3"
-val exposedVersion = "0.34.1"
-val h2Version = "1.4.200"
-val postgresVersion = "42.2.23"
-val flywayVersion = "7.15.0"
+val exposedVersion = "0.37.3"
+val h2Version = "2.1.210"
+val postgresVersion = "42.3.1"
+val flywayVersion = "8.4.2"
 
-val kotestVersion = "4.6.0"
+val kotestVersion = "5.1.0"
 val kotestAssertionsKtorVersion = "1.0.3"
-val mockkVersion = "1.11.0"
+val mockkVersion = "1.12.2"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -44,7 +44,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresVersion")
-    implementation("com.zaxxer:HikariCP:4.0.3")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
