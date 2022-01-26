@@ -19,7 +19,7 @@ class ExposedRecipeTypeRepository(database: Database) : ExposedRepository(databa
     }
 
     override fun getAll(): List<RecipeType> = transaction(database) {
-        RecipeTypeEntity.all().map(RecipeTypeEntity::mapToRecipeType).sortedByDescending { id }
+        RecipeTypeEntity.all().map(RecipeTypeEntity::mapToRecipeType).sortedBy { x -> x.id }
     }
 
     override fun count(): Long = transaction(database) {

@@ -122,7 +122,6 @@ internal class ExposedRecipeRepositoryTest : DescribeSpec({
                     pageNumber = 1,
                     itemsPerPage = 18
                 )
-                println(result)
 
                 result.count.shouldBe(1)
                 result.numberOfPages.shouldBe(1)
