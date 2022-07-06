@@ -1,7 +1,7 @@
 package server.modules
 
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.defaultheaders.*
 
 fun Application.defaultHeadersModule() = install(DefaultHeaders) {
     header("Server", "Cookbook Server")

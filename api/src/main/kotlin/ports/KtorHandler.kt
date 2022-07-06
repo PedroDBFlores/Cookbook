@@ -1,6 +1,6 @@
 package ports
 
-import io.ktor.application.*
+import io.ktor.server.application.*
 
 /** Represents the contract that a Ktor handler on this application has to follow */
 interface KtorHandler {

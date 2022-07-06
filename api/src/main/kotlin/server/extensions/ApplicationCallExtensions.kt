@@ -1,8 +1,8 @@
 package server.extensions
 
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.request.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
 
 /**
  * Tries to receive the requested type and returns if it's able to build it

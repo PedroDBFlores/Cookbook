@@ -1,11 +1,13 @@
 package web.recipephoto
 
-import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.util.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import model.CreateResult
 import ports.ImageChecker
 import ports.ImageState
@@ -41,7 +43,9 @@ class CreateRecipePhotoHandler(
         val photoName = call.request.queryParameters.getOrFail("name")
         require(photoName.isNotEmpty()) { throw BadRequestException("Name cannot be empty") }
 
-        val imageData = call.receiveStream().readAllBytes()
+        val imageData = withContext(Dispatchers.IO) {
+            call.receiveStream().readAllBytes()
+        }
         require(imageData.isNotEmpty()) { throw BadRequestException("Must have image content") }
         return Triple(recipeId, photoName, imageData)
     }

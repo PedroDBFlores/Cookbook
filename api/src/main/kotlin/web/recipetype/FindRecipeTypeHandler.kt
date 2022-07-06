@@ -1,11 +1,11 @@
 package web.recipetype
 
 import errors.RecipeTypeNotFound
-import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.util.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.response.*
+import io.ktor.server.util.*
 import ports.KtorHandler
 import usecases.recipetype.FindRecipeType
 

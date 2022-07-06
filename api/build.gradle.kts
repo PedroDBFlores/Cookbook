@@ -1,11 +1,11 @@
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.5.30"
+    kotlin("jvm") version "1.7.0"
+    kotlin("plugin.serialization") version "1.7.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("com.github.ben-manes.versions") version "0.41.0"
-    id("com.adarshr.test-logger") version "3.1.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.adarshr.test-logger") version "3.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 }
 
 group = "pt.pedro"
@@ -20,25 +20,28 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val logbackVersion = "1.2.1"
-val hopliteVersion = "1.4.16"
-val ktorVersion = "1.6.3"
-val exposedVersion = "0.37.3"
-val h2Version = "2.1.210"
-val postgresVersion = "42.3.1"
-val flywayVersion = "8.4.2"
+val logbackVersion = "1.2.8"
+val hopliteVersion = "2.2.0"
+val ktorVersion = "2.0.3"
+val exposedVersion = "0.38.2"
+val h2Version = "2.1.214"
+val postgresVersion = "42.4.0"
+val flywayVersion = "8.5.13"
 
-val kotestVersion = "5.1.0"
+val kotestVersion = "5.3.2"
 val kotestAssertionsKtorVersion = "1.0.3"
-val mockkVersion = "1.12.2"
+val mockkVersion = "1.12.4"
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-host-common:$ktorVersion")
-    implementation("io.ktor:ktor-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")

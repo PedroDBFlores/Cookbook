@@ -2,10 +2,10 @@ package server.modules
 
 import adapters.validators.checkImage
 import config.Dependencies
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import web.recipe.*
 import web.recipephoto.CreateRecipePhotoHandler
 import web.recipetype.*
