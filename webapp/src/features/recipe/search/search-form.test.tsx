@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event"
 
 describe("Recipe search form", () => {
     it("renders the layout", () => {
-        render(<RecipeSearchForm onSearch={jest.fn()} recipeTypes={[]}/>)
+        render(<RecipeSearchForm onSearch={jest.fn()} recipeTypes={[]} />)
 
         expect(screen.getByLabelText(/^translated recipe-feature.search.recipe-name-parameter$/i)).toBeInTheDocument()
         expect(screen.getByLabelText(/^translated name$/i)).toBeInTheDocument()
@@ -16,12 +16,12 @@ describe("Recipe search form", () => {
         expect(screen.getByLabelText(/^translated common.search$/i)).toHaveAttribute("type", "submit")
     })
 
-    it("allows a search to be performed with no parameters provided", async() => {
+    it("allows a search to be performed with no parameters provided", async () => {
         const onSearchMock = jest.fn()
 
-        render(<RecipeSearchForm onSearch={onSearchMock} recipeTypes={[]}/>)
+        render(<RecipeSearchForm onSearch={onSearchMock} recipeTypes={[]} />)
 
-        userEvent.click(screen.getByLabelText(/^translated common.search$/i))
+        await userEvent.click(screen.getByLabelText(/^translated common.search$/i))
 
         await waitFor(() => {
             expect(onSearchMock).toHaveBeenCalledWith({
@@ -48,20 +48,24 @@ describe("Recipe search form", () => {
             description: "",
             recipeTypeId: "2"
         }]
-    ])("searches when %s", async(_, { name, description, recipeTypeId }) => {
+    ])("searches when %s", async (_, { name, description, recipeTypeId }) => {
         const onSearchMock = jest.fn()
 
         render(<RecipeSearchForm onSearch={onSearchMock} recipeTypes={[
             { id: 1, name: "A lovely" },
             { id: 2, name: "new recipe type" }
-        ]}/>)
+        ]} />)
 
 
-        userEvent.paste(screen.getByLabelText(/^translated name$/i), name)
-        userEvent.paste(screen.getByLabelText(/^translated description$/i), description)
-        userEvent.selectOptions(screen.getByLabelText(/^translated recipe-type-feature.singular$/i), recipeTypeId)
+        if (name) {
+            await userEvent.type(screen.getByLabelText(/^translated name$/i), name)
+        }
+        if (description) {
+            await userEvent.type(screen.getByLabelText(/^translated description$/i), description)
+        }
+        await userEvent.selectOptions(screen.getByLabelText(/^translated recipe-type-feature.singular$/i), recipeTypeId)
 
-        userEvent.click(screen.getByLabelText(/^translated common.search$/i))
+        await userEvent.click(screen.getByLabelText(/^translated common.search$/i))
 
         await waitFor(() => {
             expect(onSearchMock).toHaveBeenCalledWith({

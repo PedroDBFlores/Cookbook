@@ -1,13 +1,13 @@
-import React, {useEffect} from "react"
-import {render, screen, waitFor} from "@testing-library/react"
+import React, { useEffect } from "react"
+import { render, screen, waitFor } from "@testing-library/react"
 import RecipeSearchPage from "./search-page"
 import RecipeSearchForm from "./search-form"
-import {SearchResult} from "model"
-import createRecipeService, {RecipeDetails} from "services/recipe-service"
-import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
-import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
+import { SearchResult } from "model"
+import createRecipeService, { RecipeDetails } from "services/recipe-service"
+import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
+import { WrapperWithRouter, WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
-import {Button} from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import Modal from "components/modal/modal"
 
 jest.mock("services/recipe-type-service")
@@ -17,11 +17,11 @@ const createRecipeServiceMock = createRecipeService as jest.MockedFunction<typeo
 
 jest.mock("features/recipe/search/search-form", () => ({
 	__esModule: true,
-	default: jest.fn().mockImplementation(({recipeTypes}: { recipeTypes: Array<RecipeType> }) =>
+	default: jest.fn().mockImplementation(({ recipeTypes }: { recipeTypes: Array<RecipeType> }) =>
 		<>
 			Search Recipe Form
 			{
-				recipeTypes.map(({id, name}) => <span key={id}>{name}</span>)
+				recipeTypes.map(({ id, name }) => <span key={id}>{name}</span>)
 			}
 		</>)
 }))
@@ -29,7 +29,7 @@ const recipeSearchFormMock = RecipeSearchForm as jest.MockedFunction<typeof Reci
 
 jest.mock("features/recipe/search/search-list", () => ({
 	__esModule: true,
-	default: jest.fn().mockImplementation(({searchResult, onDelete, onChangeRowsPerPage, onPageChange}: {
+	default: jest.fn().mockImplementation(({ searchResult, onDelete, onChangeRowsPerPage, onPageChange }: {
 		searchResult: SearchResult<RecipeDetails>
 		onDelete: (id: number, name: string) => void
 		onChangeRowsPerPage: (rowsPerPage: number) => void
@@ -39,7 +39,7 @@ jest.mock("features/recipe/search/search-list", () => ({
 			Search Recipe List
 			{
 				searchResult.count
-					? searchResult.results.map(({id, name}) => <div key={id}>
+					? searchResult.results.map(({ id, name }) => <div key={id}>
 						<span>{name}</span>)
 						<Button
 							onClick={() => onDelete(id, name)}>Delete recipe named '{name}'</Button>
@@ -58,8 +58,8 @@ const basicModalDialogMock = Modal as jest.MockedFunction<typeof Modal>
 
 describe("Search recipe page component", () => {
 	const getAllRecipeTypesMock = jest.fn().mockImplementation(() => Promise.resolve([
-		{id: 1, name: "Meat"},
-		{id: 2, name: "Fish"}
+		{ id: 1, name: "Meat" },
+		{ id: 2, name: "Fish" }
 	]))
 	const basicRecipes: RecipeDetails[] = [
 		{
@@ -117,7 +117,9 @@ describe("Search recipe page component", () => {
 		} as SearchResult<RecipeDetails>)
 
 		render(<WrapWithCommonContexts>
-			<RecipeSearchPage/>
+			<WrapperWithRouter>
+				<RecipeSearchPage />
+			</WrapperWithRouter>
 		</WrapWithCommonContexts>)
 
 		expect(screen.getByText(/translated common.loading/i)).toBeInTheDocument()
@@ -133,7 +135,9 @@ describe("Search recipe page component", () => {
 		getAllRecipeTypesMock.mockRejectedValueOnce(new Error("Failed to fetch recipe types"))
 
 		render(<WrapWithCommonContexts>
-			<RecipeSearchPage/>
+			<WrapperWithRouter>
+				<RecipeSearchPage />
+			</WrapperWithRouter>
 		</WrapWithCommonContexts>)
 
 		expect(await screen.findByText(/^translated recipe-feature.errors.occurred-fetching-recipe-types$/i)).toBeInTheDocument()
@@ -146,10 +150,10 @@ describe("Search recipe page component", () => {
 		["with an unset recipeTypeId", 0, undefined]
 	])("calls the search function with the parameters from the form %s",
 		async (_, recipeTypeId, expectedOnSearchRecipeTypeId) => {
-			recipeSearchFormMock.mockImplementationOnce(({recipeTypes, onSearch}) => {
+			recipeSearchFormMock.mockImplementationOnce(({ recipeTypes, onSearch }) => {
 				useEffect(() => {
 					if (recipeTypes) {
-						onSearch({name: "One", description: "Two", recipeTypeId})
+						onSearch({ name: "One", description: "Two", recipeTypeId })
 					}
 				}, [])
 
@@ -157,7 +161,9 @@ describe("Search recipe page component", () => {
 			})
 
 			render(<WrapWithCommonContexts>
-				<RecipeSearchPage/>
+				<WrapperWithRouter>
+					<RecipeSearchPage />
+				</WrapperWithRouter>
 			</WrapWithCommonContexts>)
 
 			await waitFor(() => {
@@ -176,10 +182,10 @@ describe("Search recipe page component", () => {
 		})
 
 	it("calls the search function and persists the form info even if the numberOfPages or pageNumber changes", async () => {
-		recipeSearchFormMock.mockImplementationOnce(({recipeTypes, onSearch}) => {
+		recipeSearchFormMock.mockImplementationOnce(({ recipeTypes, onSearch }) => {
 			useEffect(() => {
 				if (recipeTypes) {
-					onSearch({name: "One", description: "Two", recipeTypeId: 1})
+					onSearch({ name: "One", description: "Two", recipeTypeId: 1 })
 				}
 			}, [])
 
@@ -187,7 +193,9 @@ describe("Search recipe page component", () => {
 		})
 
 		render(<WrapWithCommonContexts>
-			<RecipeSearchPage/>
+			<WrapperWithRouter>
+				<RecipeSearchPage />
+			</WrapperWithRouter>
 		</WrapWithCommonContexts>)
 
 		await waitFor(() => {
@@ -199,7 +207,7 @@ describe("Search recipe page component", () => {
 				itemsPerPage: 10
 			})
 		})
-		userEvent.click(screen.getByText(/change page/i))
+		await userEvent.click(screen.getByText(/change page/i))
 
 		await waitFor(() => {
 			expect(searchRecipesMock).toHaveBeenNthCalledWith(3, {
@@ -211,7 +219,7 @@ describe("Search recipe page component", () => {
 			})
 		})
 
-		userEvent.click(screen.getByText("Change Items per page"))
+		await userEvent.click(screen.getByText("Change Items per page"))
 
 		await waitFor(() => {
 			expect(searchRecipesMock).toHaveBeenNthCalledWith(4, {
@@ -227,8 +235,8 @@ describe("Search recipe page component", () => {
 	describe("Actions", () => {
 		beforeEach(() => {
 			getAllRecipeTypesMock.mockResolvedValueOnce([])
-			basicModalDialogMock.mockImplementationOnce(({title, content, actionText, onAction}) => {
-				useEffect(() => onAction(), [])
+			basicModalDialogMock.mockImplementationOnce(({ title, content, actionText, onAction }) => {
+				useEffect(() => { onAction() }, [])
 				return <>
 					<p>{title}</p>
 					<p>{content}</p>
@@ -240,12 +248,12 @@ describe("Search recipe page component", () => {
 		it("navigates to the recipe create page on click", async () => {
 			render(<WrapWithCommonContexts>
 				<WrapperWithRoutes initialPath="/recipe" routeConfiguration={[
-					{path: "/recipe", exact: true, component: () => <RecipeSearchPage/>},
-					{path: "/recipe/new", exact: true, component: () => <>I'm the recipe create page</>}
-				]}/>
+					{ path: "/recipe", element: <RecipeSearchPage /> },
+					{ path: "/recipe/new", element: <>I'm the recipe create page</> }
+				]} />
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByLabelText(/^translated recipe-feature.create-label$/i))
+			await userEvent.click(await screen.findByLabelText(/^translated recipe-feature.create-label$/i))
 
 			expect(await screen.findByText(/I'm the recipe create page/i)).toBeInTheDocument()
 		})
@@ -254,10 +262,12 @@ describe("Search recipe page component", () => {
 			deleteRecipeMock.mockResolvedValueOnce(void (0))
 
 			render(<WrapWithCommonContexts>
-				<RecipeSearchPage/>
+				<WrapperWithRouter>
+					<RecipeSearchPage />
+				</WrapperWithRouter>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
+			await userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
 
 			expect(screen.getByText(/^translated common.question$/i)).toBeInTheDocument()
 			expect(screen.getByText(/^translated recipe-feature.delete.question #Arroz de Pato#$/i)).toBeInTheDocument()
@@ -269,13 +279,15 @@ describe("Search recipe page component", () => {
 		})
 
 		it("shows a failure message if it fails to delete the recipe", async () => {
-			deleteRecipeMock.mockRejectedValueOnce({message: "Failure"})
+			deleteRecipeMock.mockRejectedValueOnce({ message: "Failure" })
 
 			render(<WrapWithCommonContexts>
-				<RecipeSearchPage/>
+				<WrapperWithRouter>
+					<RecipeSearchPage />
+				</WrapperWithRouter>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
+			await userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
 
 			expect(screen.getByText(/^translated common.question$/i)).toBeInTheDocument()
 			expect(screen.getByText(/^translated recipe-feature.delete.question #Arroz de Pato#$/i)).toBeInTheDocument()

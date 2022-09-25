@@ -51,7 +51,7 @@ describe("Table pagination actions", () => {
         test.each([
             [20],
             [50]
-        ])("changes to %s rows per page", value => {
+        ])("changes to %s rows per page", async value => {
             const onChangeRowsPerPageMock = jest.fn()
 
             render(<TablePagination
@@ -61,7 +61,7 @@ describe("Table pagination actions", () => {
                 onChangeRowsPerPage={onChangeRowsPerPageMock}
                 onChangePage={jest.fn()}/>)
 
-            userEvent.selectOptions(screen.getByLabelText(/translated pagination.rows-per-page/i), value.toString())
+            await userEvent.selectOptions(screen.getByLabelText(/translated pagination.rows-per-page/i), value.toString())
 
             expect(onChangeRowsPerPageMock).toHaveBeenCalledWith(value)
         })
@@ -71,7 +71,7 @@ describe("Table pagination actions", () => {
             ["previous page button is clicked", { label: /translated pagination.previous-page-aria-label/i, expectedPage: 4 }],
             ["next page button is clicked", { label: /translated pagination.next-page-aria-label/i, expectedPage: 6 }],
             ["last page button is clicked", { label: /translated pagination.last-page-aria-label/i, expectedPage: 10 }]
-        ])("it calls the 'onChangePage' function when the %s", (_, { label, expectedPage }) => {
+        ])("it calls the 'onChangePage' function when the %s", async (_, { label, expectedPage }) => {
             const onChangePageMock = jest.fn()
 
             render(<TablePagination
@@ -81,7 +81,7 @@ describe("Table pagination actions", () => {
                 onChangeRowsPerPage={jest.fn()}
                 onChangePage={onChangePageMock}/>)
 
-            userEvent.click(screen.getByLabelText(label))
+            await userEvent.click(screen.getByLabelText(label))
 
             expect(onChangePageMock).toHaveBeenCalledWith(expectedPage)
         })

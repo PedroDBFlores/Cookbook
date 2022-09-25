@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { SearchResult } from "model"
 import { MdDelete, MdEdit, MdVisibility } from "react-icons/md"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { RecipeDetails } from "services/recipe-service"
 import { Table, Thead, Th, Tr, Tbody, Td, Tfoot, ButtonGroup, Button } from "@chakra-ui/react"
 import TablePagination from "components/table-pagination/table-pagination"
@@ -23,10 +23,10 @@ const RecipeSearchList: React.VFC<RecipeSearchListProps> = ({
     const {t} = useTranslation()
     const [rowsPerPage, setRowsPerPage] = useState<number>(10)
     const [page, setPage] = useState<number>(1)
-    const history = useHistory()
+    const navigate = useNavigate()
 
-    const navigateToDetails = (id: number): void => history.push(`/recipe/${id}/details`)
-    const navigateToEdit = (id: number): void => history.push(`/recipe/${id}/edit`)
+    const navigateToDetails = (id: number): void => navigate(`/recipe/${id}/details`)
+    const navigateToEdit = (id: number): void => navigate(`/recipe/${id}/edit`)
 
     const handleOnChangePage = (page: number) => {
         setPage(page)

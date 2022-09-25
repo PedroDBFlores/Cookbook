@@ -55,7 +55,7 @@ describe("Modal context", () => {
             expect(screen.queryByText(/I'm the modal you're looking for/i)).not.toBeInTheDocument()
         })
 
-        it("allows the children to open and close the modal", () => {
+        it("allows the children to open and close the modal", async () => {
             const Component = () => {
                 const {openModal, closeModal} = useContext(ModalContext)
 
@@ -79,11 +79,11 @@ describe("Modal context", () => {
                 <Component/>
             </WithModal>)
 
-            userEvent.click(screen.getByText(/Open Modal/i))
+            await userEvent.click(screen.getByText(/Open Modal/i))
 
             expect(screen.getByText(/I'm the modal you're looking for/i)).toBeInTheDocument()
 
-            userEvent.click(screen.getByText(/Close Modal/i))
+            await userEvent.click(screen.getByText(/Close Modal/i))
 
             expect(screen.queryByText(/I'm the modal you're looking for/i)).not.toBeInTheDocument()
         })

@@ -1,8 +1,8 @@
-import React, {useEffect} from "react"
-import {render, screen} from "@testing-library/react"
+import React, { useEffect } from "react"
+import { render, screen, waitFor } from "@testing-library/react"
 import RecipeTypeListPage from "./list-page"
 import RecipeTypeList from "./list"
-import {WrapperWithRoutes, WrapWithCommonContexts} from "../../../../tests/render-helpers"
+import { WrapperWithRouter, WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import createRecipeTypeService from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
@@ -16,7 +16,7 @@ jest.mock("features/recipetype/list/list", () => ({
 const recipeTypeListMock = RecipeTypeList as jest.MockedFunction<typeof RecipeTypeList>
 
 describe("Recipe type list page", () => {
-    const baseRecipeType = {id: 123, name: "Meat"}
+    const baseRecipeType = { id: 123, name: "Meat" }
 
     const getAllRecipeTypesMock = jest.fn()
     const deleteRecipeTypeMock = jest.fn()
@@ -35,7 +35,9 @@ describe("Recipe type list page", () => {
         getAllRecipeTypesMock.mockResolvedValueOnce([])
 
         render(<WrapWithCommonContexts>
-            <RecipeTypeListPage/>
+            <WrapperWithRouter >
+                <RecipeTypeListPage />
+            </WrapperWithRouter>
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/^translated recipe-type-feature.plural$/i)).toBeInTheDocument()
@@ -44,14 +46,16 @@ describe("Recipe type list page", () => {
         expect(getAllRecipeTypesMock).toHaveBeenCalled()
         expect(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i)).toBeInTheDocument()
         expect(screen.getByText(/^translated common.create$/i)).toBeInTheDocument()
-        expect(screen.getByText(/^mock recipe type list$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^mock recipe type list$/i)).toBeInTheDocument()
     })
 
     it("shows the error if fetching the recipe types fails", async () => {
         getAllRecipeTypesMock.mockRejectedValueOnce(new Error("Database error"))
 
         render(<WrapWithCommonContexts>
-            <RecipeTypeListPage/>
+            <WrapperWithRouter >
+                <RecipeTypeListPage />
+            </WrapperWithRouter>
         </WrapWithCommonContexts>)
 
         expect(await screen.findByText(/^translated recipe-type-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
@@ -65,12 +69,12 @@ describe("Recipe type list page", () => {
             getAllRecipeTypesMock.mockResolvedValueOnce([])
             render(<WrapWithCommonContexts>
                 <WrapperWithRoutes initialPath="/recipetype" routeConfiguration={[
-                    {path: "/recipetype", exact: true, component: () => <RecipeTypeListPage/>},
-                    {path: "/recipetype/new", exact: true, component: () => <>I'm the recipe type create page</>}
-                ]}/>
+                    { path: "/recipetype", element: <RecipeTypeListPage /> },
+                    { path: "/recipetype/new", element: <>I'm the recipe type create page</> }
+                ]} />
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i))
+            await userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i))
 
             expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
         })
@@ -79,7 +83,7 @@ describe("Recipe type list page", () => {
             getAllRecipeTypesMock.mockResolvedValueOnce([baseRecipeType])
                 .mockResolvedValueOnce([])
             deleteRecipeTypeMock.mockResolvedValueOnce(void (0))
-            recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
+            recipeTypeListMock.mockImplementationOnce(({ recipeTypes, onDelete }) => {
                 useEffect(() => {
                     onDelete(recipeTypes[0].id, recipeTypes[0].name)
                 }, [])
@@ -91,20 +95,22 @@ describe("Recipe type list page", () => {
             })
 
             render(<WrapWithCommonContexts>
-                <RecipeTypeListPage/>
+                <WrapperWithRouter >
+                    <RecipeTypeListPage />
+                </WrapperWithRouter>
             </WrapWithCommonContexts>)
 
             expect(getAllRecipeTypesMock).toHaveBeenCalled()
             expect(await screen.findByText(`translated recipe-type-feature.delete.success #${baseRecipeType.name}#`)).toBeInTheDocument()
             expect(deleteRecipeTypeMock).toHaveBeenCalledWith(baseRecipeType.id)
             expect(getAllRecipeTypesMock).toHaveBeenCalled()
-            expect(screen.queryByText(baseRecipeType.name)).not.toBeInTheDocument()
+            await waitFor(() => expect(screen.queryByText(baseRecipeType.name)).not.toBeInTheDocument())
         })
 
         it("shows an error message if deleting the recipe type fails", async () => {
             getAllRecipeTypesMock.mockResolvedValueOnce([baseRecipeType])
-            deleteRecipeTypeMock.mockRejectedValueOnce({message: "In use"})
-            recipeTypeListMock.mockImplementationOnce(({recipeTypes, onDelete}) => {
+            deleteRecipeTypeMock.mockRejectedValueOnce({ message: "In use" })
+            recipeTypeListMock.mockImplementationOnce(({ recipeTypes, onDelete }) => {
                 useEffect(() => {
                     onDelete(recipeTypes[0].id, recipeTypes[0].name)
                 }, [])
@@ -112,7 +118,9 @@ describe("Recipe type list page", () => {
             })
 
             render(<WrapWithCommonContexts>
-                <RecipeTypeListPage/>
+                <WrapperWithRouter >
+                    <RecipeTypeListPage />
+                </WrapperWithRouter>
             </WrapWithCommonContexts>)
 
             expect(await screen.findByText(`translated recipe-type-feature.delete.failure #${baseRecipeType.name}#`)).toBeInTheDocument()

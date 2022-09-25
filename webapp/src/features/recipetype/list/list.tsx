@@ -1,21 +1,21 @@
 import React from "react"
-import {useHistory} from "react-router-dom"
-import {MdDelete, MdEdit, MdVisibility} from "react-icons/md"
-import {RecipeType} from "services/recipe-type-service"
-import {Button, ButtonGroup, Table, Tbody, Td, Th, Thead, Tr, Text} from "@chakra-ui/react"
-import {useTranslation} from "react-i18next"
+import { useNavigate } from "react-router-dom"
+import { MdDelete, MdEdit, MdVisibility } from "react-icons/md"
+import { RecipeType } from "services/recipe-type-service"
+import { Button, ButtonGroup, Table, Tbody, Td, Th, Thead, Tr, Text } from "@chakra-ui/react"
+import { useTranslation } from "react-i18next"
 
 interface RecipeTypeListProps {
     recipeTypes: Array<RecipeType>
     onDelete: (id: number, name: string) => void
 }
 
-const RecipeTypeList: React.VFC<RecipeTypeListProps> = ({recipeTypes, onDelete}) => {
-    const {t} = useTranslation()
-    const history = useHistory()
+const RecipeTypeList: React.FC<RecipeTypeListProps> = ({ recipeTypes, onDelete }) => {
+    const { t } = useTranslation()
+    const navigate = useNavigate()
 
-    const navigateToDetails = (id: number): void => history.push(`/recipetype/${id}/details`)
-    const navigateToEdit = (id: number): void => history.push(`/recipetype/${id}/edit`)
+    const navigateToDetails = (id: number): void => navigate(`/recipetype/${id}/details`)
+    const navigateToEdit = (id: number): void => navigate(`/recipetype/${id}/edit`)
 
     return !recipeTypes?.length
         ? <Text>{t("recipe-type-feature.list.no-results")}</Text>
@@ -28,23 +28,23 @@ const RecipeTypeList: React.VFC<RecipeTypeListProps> = ({recipeTypes, onDelete})
                 </Tr>
             </Thead>
             <Tbody>
-                {recipeTypes.map(({id, name}) =>
+                {recipeTypes.map(({ id, name }) =>
                     <Tr key={`recipeType-${id}`}>
                         <Td>{id}</Td>
                         <Td>{name}</Td>
                         <Td align="center">
                             <ButtonGroup>
-                                <Button aria-label={t("recipe-type-feature.list.details-for-label", {id})}
-                                        onClick={() => navigateToDetails(id)}>
-                                    <MdVisibility/>
+                                <Button aria-label={t("recipe-type-feature.list.details-for-label", { id })}
+                                    onClick={() => navigateToDetails(id)}>
+                                    <MdVisibility />
                                 </Button>
-                                <Button aria-label={t("recipe-type-feature.list.edit-for-label", {id})}
-                                        onClick={() => navigateToEdit(id)}>
-                                    <MdEdit/>
+                                <Button aria-label={t("recipe-type-feature.list.edit-for-label", { id })}
+                                    onClick={() => navigateToEdit(id)}>
+                                    <MdEdit />
                                 </Button>
-                                <Button aria-label={t("recipe-type-feature.list.delete-for-label", {id})}
-                                        onClick={() => onDelete(id, name)}>
-                                    <MdDelete/>
+                                <Button aria-label={t("recipe-type-feature.list.delete-for-label", { id })}
+                                    onClick={() => onDelete(id, name)}>
+                                    <MdDelete />
                                 </Button>
                             </ButtonGroup>
                         </Td>

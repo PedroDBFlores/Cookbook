@@ -1,41 +1,38 @@
-import React, {useRef} from "react"
-import {FormikValues} from "formik"
-import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
-import createRecipeService, {Recipe, RecipeDetails} from "services/recipe-service"
-import {useHistory} from "react-router-dom"
-import {Text, useToast} from "@chakra-ui/react"
-import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
+import React, { useRef } from "react"
+import { FormikValues } from "formik"
+import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
+import createRecipeService, { Recipe, RecipeDetails } from "services/recipe-service"
+import { useNavigate, useParams } from "react-router-dom"
+import { Text, useToast } from "@chakra-ui/react"
+import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
 import Loader from "components/loader/loader"
 import RecipeForm from "components/recipe-form/recipe-form"
 import Section from "components/section/section"
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next"
 
-interface EditRecipeProps {
-    id: number
-}
-
-const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
-    const {t} = useTranslation()
-    const history = useHistory()
+const EditRecipe = () => {
+    const { t } = useTranslation()
+    const navigate = useNavigate()
+    const { id } = useParams()
     const toast = useToast()
 
-    const {getAll: getAllRecipeTypes} = createRecipeTypeService()
-    const {find, update} = createRecipeService()
+    const { getAll: getAllRecipeTypes } = createRecipeTypeService()
+    const { find, update } = createRecipeService()
     const getAllRecipeTypesRef = useRef(getAllRecipeTypes)
     const getAllRecipeTypesState = useAsync<Array<RecipeType>>({
         promiseFn: getAllRecipeTypesRef.current,
         onResolve: () => findRecipeState.run(),
-        onReject: ({message}) => toast({
+        onReject: ({ message }) => toast({
             title: t("recipe-type-feature.errors.occurred-fetching"),
             description: <>{message}</>,
             status: "error",
             duration: 5000
         })
     })
-    const findPromiseRef = useRef(() => find(id))
+    const findPromiseRef = useRef(() => find(Number(id)))
     const findRecipeState = useAsync<RecipeDetails>({
         deferFn: findPromiseRef.current,
-        onReject: ({message}) => toast({
+        onReject: ({ message }) => toast({
             title: t("recipe-feature.errors.occurred-fetching"),
             description: <>{message}</>,
             status: "error",
@@ -45,18 +42,18 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
 
     const handleOnSubmit = async (formData: FormikValues) => {
         try {
-            await update({...formData, recipeTypeId: Number(formData.recipeTypeId)} as Recipe)
+            await update({ ...formData, recipeTypeId: Number(formData.recipeTypeId) } as Recipe)
             toast({
-                    title: t("recipe-feature.update.success",
-                        {name: formData.name}),
-                    status: "success"
-                }
+                title: t("recipe-feature.update.success",
+                    { name: formData.name }),
+                status: "success"
+            }
             )
-            history.push(`/recipe/${id}`)
-        } catch ({message}) {
+            navigate(`/recipe/${id}`)
+        } catch ({ message }) {
             toast(
                 {
-                    title:  t("recipe-feature.update.failure"),
+                    title: t("recipe-feature.update.failure"),
                     description: <>{message}</>,
                     status: "error"
                 }
@@ -66,10 +63,10 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
 
     return <Section title={t("recipe-feature.edit.title")}>
         <IfPending state={getAllRecipeTypesState}>
-            <Loader/>
+            <Loader />
         </IfPending>
         <IfPending state={findRecipeState}>
-            <Loader/>
+            <Loader />
         </IfPending>
         <IfRejected state={getAllRecipeTypesState}>
             <Text>{t("recipe-type-feature.errors.cannot-load")}</Text>
@@ -80,7 +77,7 @@ const EditRecipe: React.VFC<EditRecipeProps> = ({id}) => {
         <IfFulfilled state={getAllRecipeTypesState}>
             {
                 recipeTypes => <IfFulfilled state={findRecipeState}>
-                    {data => <RecipeForm recipeTypes={recipeTypes} initialValues={data} onSubmit={handleOnSubmit}/>}
+                    {data => <RecipeForm recipeTypes={recipeTypes} initialValues={data} onSubmit={handleOnSubmit} />}
                 </IfFulfilled>
             }
         </IfFulfilled>

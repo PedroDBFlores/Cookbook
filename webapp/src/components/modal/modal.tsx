@@ -20,7 +20,7 @@ interface ModalProps {
     onClose: () => void
 }
 
-const Modal: React.VFC<ModalProps> = ({
+const Modal: React.FC<ModalProps> = ({
                                          title,
                                          content,
                                          actionText,

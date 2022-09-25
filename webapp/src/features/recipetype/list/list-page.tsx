@@ -1,17 +1,17 @@
 import React, { useRef } from "react"
 import RecipeTypeList from "./list"
 import { IfFulfilled, IfPending, IfRejected, useAsync } from "react-async"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
 import { Button, useToast, Text } from "@chakra-ui/react"
 import Loader from "components/loader/loader"
 import Section from "components/section/section"
 import {useTranslation} from "react-i18next"
 
-const RecipeTypeListPage: React.VFC = () => {
+const RecipeTypeListPage: React.FC = () => {
     const {t} = useTranslation()
     const { getAll, delete: deleteRecipeType } = createRecipeTypeService()
-    const history = useHistory()
+    const navigate = useNavigate()
     const toast = useToast()
 
     const getPromiseRef = useRef(() => getAll())
@@ -44,7 +44,7 @@ const RecipeTypeListPage: React.VFC = () => {
         }
     }
 
-    const navigateToCreateRecipeType = () => history.push("/recipetype/new")
+    const navigateToCreateRecipeType = () => navigate("/recipetype/new")
 
     return <Section title={t("recipe-type-feature.plural")} actions={<Button aria-label={t("recipe-type-feature.create-label")}
         onClick={navigateToCreateRecipeType}>{t("common.create")}</Button>}>

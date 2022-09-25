@@ -1,7 +1,7 @@
 import React, {useRef} from "react"
 import createRecipeTypeService, {RecipeType} from "services/recipe-type-service"
 import createRecipeService, {Recipe} from "services/recipe-service"
-import {useHistory} from "react-router-dom"
+import {useNavigate} from "react-router-dom"
 import {Text, useToast} from "@chakra-ui/react"
 import {IfFulfilled, IfPending, IfRejected, useAsync} from "react-async"
 import Loader from "components/loader/loader"
@@ -9,9 +9,9 @@ import RecipeForm from "components/recipe-form/recipe-form"
 import Section from "components/section/section"
 import {useTranslation} from "react-i18next"
 
-const CreateRecipe: React.VFC = () => {
+const CreateRecipe: React.FC = () => {
     const {t} = useTranslation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const toast = useToast()
 
     const {create} = createRecipeService()
@@ -32,7 +32,7 @@ const CreateRecipe: React.VFC = () => {
             const {id} = await create(recipe)
 
             toast({title: t("recipe-feature.create.success", {name: recipe.name}), status: "success"})
-            history.push(`/recipe/${id}/details`)
+            navigate(`/recipe/${id}/details`)
         } catch ({message}) {
             toast({
                 title: t("recipe-type-feature.create.failure"),

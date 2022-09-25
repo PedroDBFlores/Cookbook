@@ -2,7 +2,7 @@ import React from "react"
 import { render, screen } from "@testing-library/react"
 import createRecipeService, { RecipeDetails } from "services/recipe-service"
 import createRecipeTypeService, { RecipeType } from "services/recipe-type-service"
-import { WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
+import { WrapperWithRouter, WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 import EditRecipe from "./edit"
 import "jest-chain"
@@ -61,9 +61,11 @@ describe("Edit recipe component", () => {
         getAll: jest.fn()
     }))
 
-    it("renders the initial layout", async() => {
+    it("renders the initial layout", async () => {
         render(<WrapWithCommonContexts>
-            <EditRecipe id={1}/>
+            <WrapperWithRouter initialPath="/recipe/1/edit" elementRoute="/recipe/:id/edit">
+                <EditRecipe />
+            </WrapperWithRouter>
         </WrapWithCommonContexts>)
 
         expect(screen.getByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
@@ -74,11 +76,13 @@ describe("Edit recipe component", () => {
     })
 
     describe("Error rendering", () => {
-        it("renders an error if it fails to get the recipe types", async() => {
+        it("renders an error if it fails to get the recipe types", async () => {
             getRecipeTypesMock.mockRejectedValueOnce(new Error("Failed to fetch recipe types"))
 
             render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
+                <WrapperWithRouter initialPath="/recipe/1/edit" elementRoute="/recipe/:id/edit">
+                    <EditRecipe />
+                </WrapperWithRouter>
             </WrapWithCommonContexts>)
 
             expect(getRecipeTypesMock).toHaveBeenCalled()
@@ -88,11 +92,13 @@ describe("Edit recipe component", () => {
             expect(findRecipeMock).not.toHaveBeenCalled()
         })
 
-        it("renders an error if it fails to get the recipe", async() => {
+        it("renders an error if it fails to get the recipe", async () => {
             findRecipeMock.mockRejectedValueOnce(new Error("Failed to fetch recipe"))
 
             render(<WrapWithCommonContexts>
-                <EditRecipe id={1}/>
+                <WrapperWithRouter initialPath="/recipe/1/edit" elementRoute="/recipe/:id/edit">
+                    <EditRecipe />
+                </WrapperWithRouter>
             </WrapWithCommonContexts>)
 
             expect(await screen.findByText(/^translated recipe-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
@@ -101,18 +107,18 @@ describe("Edit recipe component", () => {
         })
     })
 
-    it("calls the 'updateRecipe' function on submit", async() => {
+    it("calls the 'updateRecipe' function on submit", async () => {
         updateRecipeMock.mockResolvedValueOnce({})
         render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipe/1/edit" routeConfiguration={[
-                { path: "/recipe/1/edit", exact: true, component: () => <EditRecipe id={1}/> },
-                { path: "/recipe/1", exact: true, component: () => <>I'm the recipe details page for id 1</> }
-            ]}/>
+                { path: "/recipe/:id/edit", element: <EditRecipe /> },
+                { path: "/recipe/:id", element: <>I'm the recipe details page for id 1</> }
+            ]} />
         </WrapWithCommonContexts>)
         expect(await screen.findByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
         await screen.findByText(/Edit recipe form/i)
 
-        userEvent.click(screen.getByLabelText(/edit recipe/i))
+        await userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(`translated recipe-feature.update.success #Name#`)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
@@ -126,15 +132,17 @@ describe("Edit recipe component", () => {
         })
     })
 
-    it("shows an error message if the update API call fails", async() => {
+    it("shows an error message if the update API call fails", async () => {
         updateRecipeMock.mockRejectedValueOnce({ message: "A wild error has appeared" })
         render(<WrapWithCommonContexts>
-            <EditRecipe id={1}/>
+            <WrapperWithRouter initialPath="/recipe/1/edit" elementRoute="/recipe/:id/edit">
+                <EditRecipe />
+            </WrapperWithRouter>
         </WrapWithCommonContexts>)
         expect(await screen.findByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
         await screen.findByText(/Edit recipe form/i)
 
-        userEvent.click(screen.getByLabelText(/edit recipe/i))
+        await userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(`translated recipe-feature.update.failure`)).toBeInTheDocument()
         expect(await screen.findByText(/^A wild error has appeared$/i)).toBeInTheDocument()

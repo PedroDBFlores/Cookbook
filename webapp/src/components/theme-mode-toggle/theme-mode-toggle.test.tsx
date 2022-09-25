@@ -23,10 +23,10 @@ describe("Theme mode toggle", () => {
 
     beforeEach(jest.clearAllMocks)
 
-    it("calls the useColorMode hook on click", () => {
+    it("calls the useColorMode hook on click", async () => {
         render(<ThemeModeToggle/>)
 
-        userEvent.click(screen.getByRole("button"))
+        await userEvent.click(screen.getByRole("button"))
 
         expect(toggleColorModeMock).toHaveBeenCalled()
     })

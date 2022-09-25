@@ -14,7 +14,7 @@ describe("Application Toolbar", () => {
     describe("Layout", () => {
         it("render the initial state", () => {
             render(<WrapperWithRouter>
-                <ApplicationToolbar title="A title"/>
+                <ApplicationToolbar title="A title" />
             </WrapperWithRouter>)
 
             expect(screen.getByText("A title")).toBeInTheDocument()
@@ -41,23 +41,21 @@ describe("Application Toolbar", () => {
                 expectedRoute: "/recipe",
                 expectedContent: "The best recipes"
             }]
-        ])("navigates to the %s", (_, { elementText, expectedRoute, expectedContent }) => {
+        ])("navigates to the %s", async (_, { elementText, expectedRoute, expectedContent }) => {
             render(<WrapperWithRoutes initialPath={"/apptoolbar"}
                 routeConfiguration={[
                     {
                         path: "/apptoolbar",
-                        exact: true,
-                        component: () => <ApplicationToolbar title="A title"/>
+                        element: <ApplicationToolbar title="A title" />
                     },
                     {
                         path: expectedRoute,
-                        exact: true,
-                        component: () => <>{expectedContent}</>
+                        element: <>{expectedContent}</>
                     }
                 ]}
             />)
 
-            userEvent.click(screen.getByText(elementText))
+            await userEvent.click(screen.getByText(elementText))
 
             expect(screen.getByText(expectedContent)).toBeInTheDocument()
         })

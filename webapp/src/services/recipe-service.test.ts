@@ -1,8 +1,13 @@
 import axios from "axios"
 import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "utils/error-handling"
-import createRecipeService, {Recipe, RecipeDetails, SearchRecipeParameters} from "./recipe-service"
-import {SearchResult} from "model"
+import createRecipeService, { Recipe, RecipeDetails, SearchRecipeParameters } from "./recipe-service"
+import { SearchResult } from "model"
+
+jest.mock("utils/error-handling", () => ({
+    __esModule: true,
+    ...jest.requireActual("utils/error-handling")
+}))
 
 const mockedAxios = new MockAdapter(axios)
 const handleErrorsSpy = jest.spyOn(errorHandler, "default")
@@ -124,13 +129,13 @@ describe("Recipe service", () => {
     describe("Create", () => {
         it("creates a recipe", async () => {
             mockedAxios.onPost("/api/recipe", baseRecipe)
-                .replyOnce(201, {id: 59})
+                .replyOnce(201, { id: 59 })
 
             const result = await service.create(baseRecipe)
 
             expect(mockedAxios.history.post.length).toBe(1)
             expect(mockedAxios.history.post[0].url).toBe("/api/recipe")
-            expect(result).toStrictEqual({id: 59})
+            expect(result).toStrictEqual({ id: 59 })
         })
 
         it("calls the error handler", async () => {

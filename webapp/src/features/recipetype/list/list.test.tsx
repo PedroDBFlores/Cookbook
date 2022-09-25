@@ -2,7 +2,7 @@ import React from "react"
 import { render, screen } from "@testing-library/react"
 import RecipeTypeList from "./list"
 import userEvent from "@testing-library/user-event"
-import { WrapperWithRoutes } from "../../../../tests/render-helpers"
+import { WrapperWithRouter, WrapperWithRoutes } from "../../../../tests/render-helpers"
 import { RecipeType } from "../../../services/recipe-type-service"
 
 describe("Recipe type list component", () => {
@@ -13,13 +13,21 @@ describe("Recipe type list component", () => {
 
     describe("Render", () => {
         it("shows 'No recipes types.' if there are none", () => {
-            render(<RecipeTypeList recipeTypes={[]} onDelete={jest.fn()}/>)
+            render(
+                <WrapperWithRouter>
+                    <RecipeTypeList recipeTypes={[]} onDelete={jest.fn()} />
+                </WrapperWithRouter>
+            )
 
             expect(screen.getByText(/^translated recipe-type-feature.list.no-results$/i)).toBeInTheDocument()
         })
 
         it("shows a table with the required headers and data", () => {
-            render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>)
+            render(
+                <WrapperWithRouter>
+                    <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />
+                </WrapperWithRouter>
+            )
 
             expect(screen.getByText(/^translated id$/i)).toBeInTheDocument()
             expect(screen.getByText(/^translated name$/i)).toBeInTheDocument()
@@ -32,59 +40,59 @@ describe("Recipe type list component", () => {
     })
 
     describe("Actions", () => {
-        it("navigates to the recipe type details", async() => {
+        it("navigates to the recipe type details", async () => {
             const firstRecipeType = recipeTypes[0]
 
             render(<WrapperWithRoutes initialPath={"/recipetype"} routeConfiguration={[
                 {
                     path: "/recipetype",
-                    exact: true,
-                    component: () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>
+                    element: <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />
                 },
                 {
                     path: `/recipetype/${firstRecipeType.id}/details`,
-                    exact: true,
-                    component: () => <>I'm the recipe type details page</>
+                    element: <>I'm the recipe type details page</>
                 }
-            ]}/>)
+            ]} />)
 
-            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.details-for-label #${firstRecipeType.id}#`, {
+            await userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.details-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 
             expect(await screen.findByText(/i'm the recipe type details page/i)).toBeInTheDocument()
         })
 
-        it("navigates to the recipe type edit page", async() => {
+        it("navigates to the recipe type edit page", async () => {
             const firstRecipeType = recipeTypes[0]
 
             render(<WrapperWithRoutes initialPath={"/recipetype"} routeConfiguration={[
                 {
                     path: "/recipetype",
-                    exact: true,
-                    component: () => <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()}/>
+                    element: <RecipeTypeList recipeTypes={recipeTypes} onDelete={jest.fn()} />
                 },
                 {
                     path: `/recipetype/${firstRecipeType.id}/edit`,
-                    exact: true,
-                    component: () => <>I'm the recipe type edit page</>
+                    element: <>I'm the recipe type edit page</>
                 }
-            ]}/>)
+            ]} />)
 
-            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.edit-for-label #${firstRecipeType.id}#`, {
+            await userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.edit-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 
             expect(await screen.findByText(/i'm the recipe type edit page/i)).toBeInTheDocument()
         })
 
-        it("deletes a recipe type", () => {
+        it("deletes a recipe type", async () => {
             const onDeleteMock = jest.fn()
             const firstRecipeType = recipeTypes[0]
 
-            render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteMock}/>)
+            render(
+                <WrapperWithRouter>
+                    <RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteMock} />
+                </WrapperWithRouter>
+            )
 
-            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.delete-for-label #${firstRecipeType.id}#`, {
+            await userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.delete-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 

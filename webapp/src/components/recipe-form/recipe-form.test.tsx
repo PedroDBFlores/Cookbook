@@ -1,14 +1,14 @@
 import React from "react"
-import {fireEvent, render, screen, waitFor} from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import RecipeForm from "./recipe-form"
-import {Recipe} from "services/recipe-service"
-import {RecipeType} from "services/recipe-type-service"
+import { Recipe } from "services/recipe-service"
+import { RecipeType } from "services/recipe-type-service"
 import userEvent from "@testing-library/user-event"
 
 describe("Recipe form", () => {
     const recipeTypes: Array<RecipeType> = [
-        {id: 1, name: "The first"},
-        {id: 2, name: "The second"}
+        { id: 1, name: "The first" },
+        { id: 2, name: "The second" }
     ]
 
     describe("Initial rendering", () => {
@@ -27,8 +27,8 @@ describe("Recipe form", () => {
         ])("renders the necessary elements for the %s form",
             (_, initialValues, submitRegExp) => {
                 render(<RecipeForm recipeTypes={recipeTypes}
-                                   initialValues={initialValues}
-                                   onSubmit={jest.fn()}/>)
+                    initialValues={initialValues}
+                    onSubmit={jest.fn()} />)
 
                 expect(screen.getByLabelText(/^translated name$/i)).toBeInTheDocument()
                 expect(screen.getByLabelText(/^translated description$/i)).toBeInTheDocument()
@@ -45,7 +45,7 @@ describe("Recipe form", () => {
             [
                 "creating",
                 undefined,
-                {recipeTypeId: undefined, name: "", description: "", ingredients: "", preparingSteps: ""}
+                { recipeTypeId: undefined, name: "", description: "", ingredients: "", preparingSteps: "" }
             ],
             [
                 "updating",
@@ -67,8 +67,8 @@ describe("Recipe form", () => {
             ]
         ])("sets the initial values while %s", (_, initialValues, expectedValues) => {
             render(<RecipeForm recipeTypes={recipeTypes}
-                               initialValues={initialValues}
-                               onSubmit={jest.fn()}/>)
+                initialValues={initialValues}
+                onSubmit={jest.fn()} />)
 
             expect(screen.getByLabelText(/^translated name$/i)).toHaveValue(expectedValues.name)
             expect(screen.getByLabelText(/^translated description$/i)).toHaveValue(expectedValues.description)
@@ -129,17 +129,18 @@ describe("Recipe form", () => {
                 inputValue: "a".repeat(4097),
                 expectedMessage: /translated validations.exceeds-the-character-limit #translated preparing-steps#/i
             }
-        ].forEach(({condition, inputLabel, inputValue, expectedMessage}) => {
+        ].forEach(({ condition, inputLabel, inputValue, expectedMessage }) => {
             it(`displays an error when ${condition}`, async () => {
                 const onSubmitMock = jest.fn()
 
-                render(<RecipeForm recipeTypes={recipeTypes} onSubmit={onSubmitMock}/>)
+                render(<RecipeForm recipeTypes={recipeTypes} onSubmit={onSubmitMock} />)
 
                 const input = await screen.findByLabelText(inputLabel)
 
-                userEvent.clear(input)
-                userEvent.paste(input, inputValue)
-                userEvent.click(screen.getByLabelText(/^translated common.create$/i))
+                await userEvent.clear(input)
+                input.focus()
+                await userEvent.paste(inputValue)
+                await userEvent.click(screen.getByLabelText(/^translated common.create$/i))
 
                 expect(await screen.findByText(expectedMessage)).toBeInTheDocument()
                 expect(onSubmitMock).not.toHaveBeenCalled()
@@ -150,10 +151,10 @@ describe("Recipe form", () => {
             const onSubmitMock = jest.fn()
 
             render(<RecipeForm recipeTypes={recipeTypes}
-                               onSubmit={onSubmitMock}/>)
+                onSubmit={onSubmitMock} />)
 
-            userEvent.selectOptions(await screen.findByLabelText("translated recipe-type-feature.singular"), "")
-            userEvent.click(screen.getByLabelText(/^translated common.create$/i))
+            await userEvent.selectOptions(await screen.findByLabelText("translated recipe-type-feature.singular"), "")
+            await userEvent.click(screen.getByLabelText(/^translated common.create$/i))
 
             expect(await screen.findByText(/translated validations.is-required #translated recipe-type-feature.singular#/i)).toBeInTheDocument()
         })
@@ -199,24 +200,24 @@ describe("Recipe form", () => {
             const onSubmitMock = jest.fn()
 
             render(<RecipeForm recipeTypes={recipeTypes}
-                               initialValues={initialValues}
-                               onSubmit={onSubmitMock}/>)
+                initialValues={initialValues}
+                onSubmit={onSubmitMock} />)
 
             const nameInput = screen.getByLabelText(/^translated name$/i)
             const descriptionInput = screen.getByLabelText(/^translated description$/i)
             const ingredientsInput = screen.getByLabelText(/^translated ingredients$/i)
             const preparingStepsInput = screen.getByLabelText(/^translated preparing-steps$/i)
 
-            userEvent.clear(nameInput)
-            userEvent.clear(descriptionInput)
-            userEvent.clear(ingredientsInput)
-            userEvent.clear(preparingStepsInput)
+            await userEvent.clear(nameInput)
+            await userEvent.clear(descriptionInput)
+            await userEvent.clear(ingredientsInput)
+            await userEvent.clear(preparingStepsInput)
 
-            userEvent.paste(nameInput, "One")
-            userEvent.paste(descriptionInput, "Two")
-            userEvent.selectOptions(screen.getByLabelText("translated recipe-type-feature.singular"), "1")
-            userEvent.paste(ingredientsInput, "Three")
-            userEvent.paste(preparingStepsInput, "Four")
+            await userEvent.type(nameInput, "One")
+            await userEvent.type(descriptionInput, "Two")
+            await userEvent.selectOptions(screen.getByLabelText("translated recipe-type-feature.singular"), "1")
+            await userEvent.type(ingredientsInput, "Three")
+            await userEvent.type(preparingStepsInput, "Four")
             fireEvent.click(screen.getByLabelText(submitRegExp))
 
             await waitFor(() => expect(onSubmitMock).toHaveBeenCalledWith(expectedRecipeCalled))
@@ -237,8 +238,8 @@ describe("Recipe form", () => {
             ]
         ])("resets the form to the original values while %s", async (_, initialValues) => {
             render(<RecipeForm recipeTypes={recipeTypes}
-                               initialValues={initialValues}
-                               onSubmit={jest.fn()}/>)
+                initialValues={initialValues}
+                onSubmit={jest.fn()} />)
 
             const nameInput = screen.getByLabelText(/^translated name$/i)
             const descriptionInput = screen.getByLabelText(/^translated description$/i)
@@ -246,18 +247,19 @@ describe("Recipe form", () => {
             const ingredientsInput = screen.getByLabelText(/^translated ingredients$/i)
             const preparingStepsInput = screen.getByLabelText(/^translated preparing-steps$/i)
 
-            userEvent.clear(nameInput)
-            userEvent.clear(descriptionInput)
-            userEvent.selectOptions(recipeTypeInput, "")
-            userEvent.clear(ingredientsInput)
-            userEvent.clear(preparingStepsInput)
-            userEvent.paste(nameInput, "One")
-            userEvent.paste(descriptionInput, "Two")
-            userEvent.selectOptions(recipeTypeInput, "2")
-            userEvent.paste(ingredientsInput, "Three")
-            userEvent.paste(preparingStepsInput, "Four")
+            await userEvent.clear(nameInput)
+            await userEvent.clear(descriptionInput)
+            await userEvent.selectOptions(recipeTypeInput, "")
+            await userEvent.clear(ingredientsInput)
+            await userEvent.clear(preparingStepsInput)
 
-            userEvent.click(screen.getByLabelText(/translated common.reset-form-aria-label/i))
+            await userEvent.type(nameInput, "One")
+            await userEvent.type(descriptionInput, "Two")
+            await userEvent.selectOptions(recipeTypeInput, "1")
+            await userEvent.type(ingredientsInput, "Three")
+            await userEvent.type(preparingStepsInput, "Four")
+
+            await userEvent.click(screen.getByLabelText(/translated common.reset-form-aria-label/i))
 
             expect(nameInput).toHaveValue(initialValues?.name ?? "")
             expect(descriptionInput).toHaveValue(initialValues?.description ?? "")

@@ -3,6 +3,11 @@ import MockAdapter from "axios-mock-adapter"
 import * as errorHandler from "utils/error-handling"
 import createRecipeTypeService, {RecipeType} from "./recipe-type-service"
 
+jest.mock("utils/error-handling", () => ({
+    __esModule: true,
+    ...jest.requireActual("utils/error-handling")
+}))
+
 const mockedAxios = new MockAdapter(axios)
 const handleErrorsSpy = jest.spyOn(errorHandler, "default")
 const service = createRecipeTypeService()

@@ -7,6 +7,7 @@ import {useTranslation} from "react-i18next"
 interface MenuItemProps {
     to?: string
     isLast?: boolean
+    children?: React.ReactNode
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({children, isLast, to = "/"}) => (
