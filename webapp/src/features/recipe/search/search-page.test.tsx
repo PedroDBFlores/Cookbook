@@ -199,7 +199,7 @@ describe("Search recipe page component", () => {
 				itemsPerPage: 10
 			})
 		})
-		userEvent.click(screen.getByText(/change page/i))
+		await userEvent.click(screen.getByText(/change page/i))
 
 		await waitFor(() => {
 			expect(searchRecipesMock).toHaveBeenNthCalledWith(3, {
@@ -211,7 +211,7 @@ describe("Search recipe page component", () => {
 			})
 		})
 
-		userEvent.click(screen.getByText("Change Items per page"))
+		await userEvent.click(screen.getByText("Change Items per page"))
 
 		await waitFor(() => {
 			expect(searchRecipesMock).toHaveBeenNthCalledWith(4, {
@@ -245,7 +245,7 @@ describe("Search recipe page component", () => {
 				]}/>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByLabelText(/^translated recipe-feature.create-label$/i))
+			await userEvent.click(await screen.findByLabelText(/^translated recipe-feature.create-label$/i))
 
 			expect(await screen.findByText(/I'm the recipe create page/i)).toBeInTheDocument()
 		})
@@ -257,7 +257,7 @@ describe("Search recipe page component", () => {
 				<RecipeSearchPage/>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
+			await userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
 
 			expect(screen.getByText(/^translated common.question$/i)).toBeInTheDocument()
 			expect(screen.getByText(/^translated recipe-feature.delete.question #Arroz de Pato#$/i)).toBeInTheDocument()
@@ -275,7 +275,7 @@ describe("Search recipe page component", () => {
 				<RecipeSearchPage/>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
+			await userEvent.click(await screen.findByText(/delete recipe named 'Arroz de Pato'/i))
 
 			expect(screen.getByText(/^translated common.question$/i)).toBeInTheDocument()
 			expect(screen.getByText(/^translated recipe-feature.delete.question #Arroz de Pato#$/i)).toBeInTheDocument()

@@ -11,7 +11,7 @@ interface TablePaginationProps {
     onChangePage: (page: number) => void
 }
 
-const TablePagination: React.VFC<TablePaginationProps> = ({
+const TablePagination: React.FC<TablePaginationProps> = ({
                                                              count,
                                                              page,
                                                              rowsPerPage,

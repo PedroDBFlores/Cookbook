@@ -112,7 +112,7 @@ describe("Edit recipe component", () => {
         expect(await screen.findByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
         await screen.findByText(/Edit recipe form/i)
 
-        userEvent.click(screen.getByLabelText(/edit recipe/i))
+        await userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(`translated recipe-feature.update.success #Name#`)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
@@ -134,7 +134,7 @@ describe("Edit recipe component", () => {
         expect(await screen.findByText(/^translated recipe-feature.edit.title$/i)).toBeInTheDocument()
         await screen.findByText(/Edit recipe form/i)
 
-        userEvent.click(screen.getByLabelText(/edit recipe/i))
+        await userEvent.click(screen.getByLabelText(/edit recipe/i))
 
         expect(await screen.findByText(`translated recipe-feature.update.failure`)).toBeInTheDocument()
         expect(await screen.findByText(/^A wild error has appeared$/i)).toBeInTheDocument()

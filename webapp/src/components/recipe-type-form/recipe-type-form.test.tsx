@@ -39,8 +39,8 @@ describe("Recipe type form", () => {
 
             render(<RecipeTypeForm onSubmit={onSubmitMock}/>)
 
-            userEvent.clear(screen.getByLabelText(/^translated name$/i))
-            userEvent.click(screen.getByLabelText(/^translated common.create$/i))
+            await userEvent.clear(screen.getByLabelText(/^translated name$/i))
+            await userEvent.click(screen.getByLabelText(/^translated common.create$/i))
 
             expect(await screen.findByText(/translated validations.is-required #translated name#/i)).toBeInTheDocument()
             expect(onSubmitMock).not.toHaveBeenCalled()
@@ -51,9 +51,9 @@ describe("Recipe type form", () => {
 
             render(<RecipeTypeForm onSubmit={onSubmitMock}/>)
 
-            userEvent.clear(screen.getByLabelText(/^translated name$/i))
-            userEvent.paste(screen.getByLabelText(/^translated name$/i), "a".repeat(65))
-            userEvent.click(screen.getByLabelText(/^translated common.create$/i))
+            await userEvent.clear(screen.getByLabelText(/^translated name$/i))
+            await userEvent.paste(screen.getByLabelText(/^translated name$/i), "a".repeat(65))
+            await userEvent.click(screen.getByLabelText(/^translated common.create$/i))
 
 
             expect(await screen.findByText(/translated validations.exceeds-the-character-limit #translated name#/i)).toBeInTheDocument()
@@ -76,14 +76,14 @@ describe("Recipe type form", () => {
 
             render(<RecipeTypeForm initialValues={initialValues} onSubmit={onSubmitMock}/>)
 
-            userEvent.clear(screen.getByLabelText(/^translated name$/i))
-            userEvent.paste(screen.getByLabelText(/^translated name$/i), "The best recipe type")
-            userEvent.click(screen.getByLabelText(submitRegExp))
+            await userEvent.clear(screen.getByLabelText(/^translated name$/i))
+            await userEvent.paste(screen.getByLabelText(/^translated name$/i), "The best recipe type")
+            await userEvent.click(screen.getByLabelText(submitRegExp))
 
             await waitFor(() => {
                 expect(onSubmitMock).toHaveBeenCalledWith(expectedRecipeType)
-                expect(screen.getByLabelText(/^translated name$/i)).toHaveValue()
             })
+            expect(screen.getByLabelText(/^translated name$/i)).toHaveValue()
         })
     })
 
@@ -94,13 +94,13 @@ describe("Recipe type form", () => {
         ])("resets the form to the original values while %s", async (_, initialValues) => {
             render(<RecipeTypeForm initialValues={initialValues} onSubmit={jest.fn}/>)
 
-            userEvent.clear(screen.getByLabelText(/^translated name$/i))
-            userEvent.paste(screen.getByLabelText(/^translated name$/i), "Definitely I don't want this")
+            await userEvent.clear(screen.getByLabelText(/^translated name$/i))
+            await userEvent.paste(screen.getByLabelText(/^translated name$/i), "Definitely I don't want this")
 
-            userEvent.click(screen.getByLabelText(/translated common.reset-form-aria-label/i))
+            await userEvent.click(screen.getByLabelText(/translated common.reset-form-aria-label/i))
 
             expect(screen.getByLabelText(/^translated name$/i)).toHaveValue(initialValues?.name ?? "")
-            await waitFor(() => expect(screen.getByLabelText(/translated common.reset-form-aria-label/i)).toBeDisabled())
+            expect(await screen.findByLabelText(/translated common.reset-form-aria-label/i)).toBeDisabled()
         })
     })
 })

@@ -93,7 +93,7 @@ describe("Recipe details component", () => {
 				]}/>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByLabelText(/^translated recipe-feature.edit-label$/i))
+			await userEvent.click(await screen.findByLabelText(/^translated recipe-feature.edit-label$/i))
 
 			expect(screen.getByText(/I'm the recipe edit page/i)).toBeInTheDocument()
 		})
@@ -121,7 +121,7 @@ describe("Recipe details component", () => {
 				]}/>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByLabelText(/^translated recipe-feature.delete-label$/i))
+			await userEvent.click(await screen.findByLabelText(/^translated recipe-feature.delete-label$/i))
 			expect(screen.getByText(/^translated recipe-feature.delete.question$/i)).toBeInTheDocument()
 
 			await waitFor(() => expect(deleteRecipeMock).toHaveBeenCalledWith(baseRecipe.id))
@@ -141,7 +141,7 @@ describe("Recipe details component", () => {
 				<RecipeDetails id={baseRecipe.id}/>
 			</WrapWithCommonContexts>)
 
-			userEvent.click(await screen.findByLabelText(/^translated recipe-feature.delete-label$/i))
+			await userEvent.click(await screen.findByLabelText(/^translated recipe-feature.delete-label$/i))
 			expect(screen.getByText(/^translated recipe-feature.delete.question$/i)).toBeInTheDocument()
 
 			expect(await screen.findByText(`translated recipe-feature.delete.failure #${baseRecipe.name}#`)).toBeInTheDocument()

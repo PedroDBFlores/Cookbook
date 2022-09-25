@@ -34,24 +34,34 @@ describe("Edit recipe type", () => {
 
     beforeEach(jest.clearAllMocks)
 
-    it("renders the initial form", async() => {
+    it("renders the initial form", async () => {
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
 
         render(<WrapWithCommonContexts>
-            <EditRecipeType id={1}/>
+            <WrapperWithRoutes initialPath="/recipetype/1/edit" routeConfiguration={[
+                {
+                    path: "/recipetype/:id/edit",
+                    element: <EditRecipeType />
+                },
+            ]} />
         </WrapWithCommonContexts>)
 
-        expect(screen.getByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
+        expect(await screen.findByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
         expect(screen.getByText(/translated common.loading/i)).toBeInTheDocument()
         expect(findRecipeTypeMock).toHaveBeenCalledWith(1)
         expect(await screen.findByText(/edit recipe type form/i)).toBeInTheDocument()
     })
 
-    it("renders an error if the recipe type cannot be obtained", async() => {
+    it("renders an error if the recipe type cannot be obtained", async () => {
         findRecipeTypeMock.mockRejectedValueOnce(new Error("failure"))
 
         render(<WrapWithCommonContexts>
-            <EditRecipeType id={99}/>
+            <WrapperWithRoutes initialPath="/recipetype/1/edit" routeConfiguration={[
+                {
+                    path: "/recipetype/:id/edit",
+                    element: <EditRecipeType />
+                },
+            ]} />
         </WrapWithCommonContexts>)
 
         expect(await screen.findByText(/^translated recipe-type-feature.errors.occurred-fetching$/i)).toBeInTheDocument()
@@ -60,44 +70,48 @@ describe("Edit recipe type", () => {
         expect(findRecipeTypeMock).toHaveBeenCalled()
     })
 
-    it("updates the recipe type in the Cookbook API and navigates to the details", async() => {
+    it("updates the recipe type in the Cookbook API and navigates to the details", async () => {
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
         updateRecipeTypeMock.mockResolvedValueOnce({})
         render(<WrapWithCommonContexts>
             <WrapperWithRoutes initialPath="/recipetype/1/edit" routeConfiguration={[
                 {
-                    path: "/recipetype/1/edit",
-                    exact: true,
-                    component: () => <EditRecipeType id={1}/>
+                    path: "/recipetype/:id/edit",
+                    element: <EditRecipeType />
                 },
                 {
                     path: "/recipetype/1",
-                    exact: true,
-                    component: () => <>I'm the recipe type details page</>
+                    element: <>I'm the recipe type details page</>
                 }
-            ]}/>
+            ]} />
         </WrapWithCommonContexts>)
         expect(await screen.findByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
 
-        userEvent.click(await screen.findByLabelText(/^edit recipe type$/i))
+        await userEvent.click(await screen.findByLabelText(/^edit recipe type$/i))
 
         expect(await screen.findByText(`translated recipe-type-feature.update.success #Cake#`)).toBeInTheDocument()
         expect(await screen.findByText(/^I'm the recipe type details page$/i)).toBeInTheDocument()
         expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
     })
 
-    it("shows an error message if the update API call fails", async() => {
+    fit("shows an error message if the update API call fails", async () => {
         findRecipeTypeMock.mockResolvedValueOnce(baseRecipeType)
         updateRecipeTypeMock.mockRejectedValueOnce({ message: "Duplicate recipe type" })
         render(<WrapWithCommonContexts>
-            <EditRecipeType id={1}/>
+            <WrapperWithRoutes initialPath="/recipetype/1/edit" routeConfiguration={[
+                {
+                    path: "/recipetype/:id/edit",
+                    element: <EditRecipeType />
+                },
+            ]} />
         </WrapWithCommonContexts>)
+
         expect(await screen.findByText(/^translated recipe-type-feature.edit.title$/i)).toBeInTheDocument()
 
-        userEvent.click(screen.getByLabelText(/edit recipe type/i))
+        await userEvent.click(await screen.findByLabelText(/edit recipe type/i))
 
+        expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
         expect(await screen.findByText(`translated recipe-type-feature.update.failure`)).toBeInTheDocument()
         expect(await screen.findByText(/^duplicate recipe type$/i)).toBeInTheDocument()
-        expect(updateRecipeTypeMock).toHaveBeenCalledWith({ ...baseRecipeType, name: "Cake" })
     })
 })

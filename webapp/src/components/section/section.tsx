@@ -4,6 +4,7 @@ import {Box, Flex, Heading} from "@chakra-ui/react"
 interface SectionProps {
     title: React.ReactElement | string
     actions?: React.ReactElement
+    children?: React.ReactNode
 }
 
 const Section: React.FC<SectionProps> = ({ title, actions, children }) => <Flex

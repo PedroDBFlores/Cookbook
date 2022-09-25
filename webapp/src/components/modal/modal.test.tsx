@@ -13,18 +13,18 @@ describe("Basic modal dialog", () => {
         expect(screen.getByText(/translated common.close/i)).toBeInTheDocument()
     })
 
-    it("performs the modal action on click", () => {
+    it("performs the modal action on click", async () => {
         const modalActionMock = jest.fn()
 
         render(<Modal title="A title" content="The content" actionText="OK"
             onAction={modalActionMock} onClose={jest.fn()}/>)
 
-        userEvent.click(screen.getByLabelText(/translated modal.accept-modal-action-aria-label/i))
+        await userEvent.click(screen.getByLabelText(/translated modal.accept-modal-action-aria-label/i))
 
         expect(modalActionMock).toHaveBeenCalled()
     })
 
-    it("Performs the onClose action by clicking on the 'Cancel' button", () => {
+    it("Performs the onClose action by clicking on the 'Cancel' button", async () => {
         const closeFn = jest.fn()
 
         render(<Modal title="A title" content="The content"
@@ -33,7 +33,7 @@ describe("Basic modal dialog", () => {
             onClose={closeFn}
         />)
 
-        userEvent.click(screen.getByLabelText(/translated modal.cancel-modal-aria-label/i))
+        await userEvent.click(screen.getByLabelText(/translated modal.cancel-modal-aria-label/i))
 
         expect(closeFn).toHaveBeenCalled()
     })

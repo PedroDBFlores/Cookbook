@@ -70,7 +70,7 @@ describe("Recipe type list page", () => {
                 ]}/>
             </WrapWithCommonContexts>)
 
-            userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i))
+            await userEvent.click(await screen.findByLabelText(/^translated recipe-type-feature.create-label$/i))
 
             expect(await screen.findByText(/I'm the recipe type create page/i)).toBeInTheDocument()
         })

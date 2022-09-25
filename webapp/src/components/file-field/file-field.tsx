@@ -9,7 +9,7 @@ export interface FileFieldProps extends FormControlProps {
 	helperText?: string
 }
 
-const FileField: React.VFC<FileFieldProps> = (props) => {
+const FileField: React.FC<FileFieldProps> = (props) => {
 	const { t } = useTranslation()
 
 	const { name, inputPlaceholder, helperText, ...rest } = props

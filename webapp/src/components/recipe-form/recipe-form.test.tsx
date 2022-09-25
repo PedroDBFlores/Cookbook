@@ -137,9 +137,9 @@ describe("Recipe form", () => {
 
                 const input = await screen.findByLabelText(inputLabel)
 
-                userEvent.clear(input)
-                userEvent.paste(input, inputValue)
-                userEvent.click(screen.getByLabelText(/^translated common.create$/i))
+                await userEvent.clear(input)
+                await userEvent.paste(input, inputValue)
+                await userEvent.click(screen.getByLabelText(/^translated common.create$/i))
 
                 expect(await screen.findByText(expectedMessage)).toBeInTheDocument()
                 expect(onSubmitMock).not.toHaveBeenCalled()
@@ -152,8 +152,8 @@ describe("Recipe form", () => {
             render(<RecipeForm recipeTypes={recipeTypes}
                                onSubmit={onSubmitMock}/>)
 
-            userEvent.selectOptions(await screen.findByLabelText("translated recipe-type-feature.singular"), "")
-            userEvent.click(screen.getByLabelText(/^translated common.create$/i))
+            await userEvent.selectOptions(await screen.findByLabelText("translated recipe-type-feature.singular"), "")
+            await userEvent.click(screen.getByLabelText(/^translated common.create$/i))
 
             expect(await screen.findByText(/translated validations.is-required #translated recipe-type-feature.singular#/i)).toBeInTheDocument()
         })
@@ -207,16 +207,16 @@ describe("Recipe form", () => {
             const ingredientsInput = screen.getByLabelText(/^translated ingredients$/i)
             const preparingStepsInput = screen.getByLabelText(/^translated preparing-steps$/i)
 
-            userEvent.clear(nameInput)
-            userEvent.clear(descriptionInput)
-            userEvent.clear(ingredientsInput)
-            userEvent.clear(preparingStepsInput)
+            await userEvent.clear(nameInput)
+            await userEvent.clear(descriptionInput)
+            await userEvent.clear(ingredientsInput)
+            await userEvent.clear(preparingStepsInput)
 
-            userEvent.paste(nameInput, "One")
-            userEvent.paste(descriptionInput, "Two")
-            userEvent.selectOptions(screen.getByLabelText("translated recipe-type-feature.singular"), "1")
-            userEvent.paste(ingredientsInput, "Three")
-            userEvent.paste(preparingStepsInput, "Four")
+            await userEvent.paste(nameInput, "One")
+            await userEvent.paste(descriptionInput, "Two")
+            await userEvent.selectOptions(screen.getByLabelText("translated recipe-type-feature.singular"), "1")
+            await userEvent.paste(ingredientsInput, "Three")
+            await userEvent.paste(preparingStepsInput, "Four")
             fireEvent.click(screen.getByLabelText(submitRegExp))
 
             await waitFor(() => expect(onSubmitMock).toHaveBeenCalledWith(expectedRecipeCalled))
@@ -246,18 +246,18 @@ describe("Recipe form", () => {
             const ingredientsInput = screen.getByLabelText(/^translated ingredients$/i)
             const preparingStepsInput = screen.getByLabelText(/^translated preparing-steps$/i)
 
-            userEvent.clear(nameInput)
-            userEvent.clear(descriptionInput)
-            userEvent.selectOptions(recipeTypeInput, "")
-            userEvent.clear(ingredientsInput)
-            userEvent.clear(preparingStepsInput)
-            userEvent.paste(nameInput, "One")
-            userEvent.paste(descriptionInput, "Two")
-            userEvent.selectOptions(recipeTypeInput, "2")
-            userEvent.paste(ingredientsInput, "Three")
-            userEvent.paste(preparingStepsInput, "Four")
+            await userEvent.clear(nameInput)
+            await userEvent.clear(descriptionInput)
+            await userEvent.selectOptions(recipeTypeInput, "")
+            await userEvent.clear(ingredientsInput)
+            await userEvent.clear(preparingStepsInput)
+            await userEvent.paste(nameInput, "One")
+            await userEvent.paste(descriptionInput, "Two")
+            await userEvent.selectOptions(recipeTypeInput, "2")
+            await userEvent.paste(ingredientsInput, "Three")
+            await userEvent.paste(preparingStepsInput, "Four")
 
-            userEvent.click(screen.getByLabelText(/translated common.reset-form-aria-label/i))
+            await userEvent.click(screen.getByLabelText(/translated common.reset-form-aria-label/i))
 
             expect(nameInput).toHaveValue(initialValues?.name ?? "")
             expect(descriptionInput).toHaveValue(initialValues?.description ?? "")

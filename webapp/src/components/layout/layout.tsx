@@ -1,10 +1,10 @@
 import React from "react"
 import ApplicationToolbar from "./application-toolbar"
-import {Flex} from "@chakra-ui/react"
-import {useTranslation} from "react-i18next"
+import { Flex } from "@chakra-ui/react"
+import { useTranslation } from "react-i18next"
 
-const Layout: React.FC = ({children}) => {
-    const {t} = useTranslation()
+const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+    const { t } = useTranslation()
 
     return (
         <Flex
@@ -15,7 +15,7 @@ const Layout: React.FC = ({children}) => {
                 xl: "1200px"
             }}
             m="0 auto">
-            <ApplicationToolbar title={t("app-name")}/>
+            <ApplicationToolbar title={t("app-name")} />
             {children}
         </Flex>
     )

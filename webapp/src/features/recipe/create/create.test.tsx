@@ -85,7 +85,7 @@ describe("Create recipe component", () => {
         )
         await screen.findByText(/^Create recipe form$/i)
 
-        userEvent.click(screen.getByLabelText(/create recipe/i))
+        await userEvent.click(screen.getByLabelText(/create recipe/i))
 
         expect(await screen.findByText(/^translated recipe-feature.create.success #Name#$/i)).toBeInTheDocument()
         expect(await screen.findByText(/i'm the recipe details page for id 1/i)).toBeInTheDocument()
@@ -104,7 +104,7 @@ describe("Create recipe component", () => {
 
         await screen.findByText(/^Create recipe form$/i)
 
-        userEvent.click(screen.getByLabelText(/create recipe/i))
+        await userEvent.click(screen.getByLabelText(/create recipe/i))
 
         expect(await screen.findByText(/^translated recipe-type-feature.create.failure$/i)).toBeInTheDocument()
         expect(await screen.findByText(/^a wild error has appeared$/i)).toBeInTheDocument()

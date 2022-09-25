@@ -48,7 +48,7 @@ describe("Recipe type list component", () => {
                 }
             ]}/>)
 
-            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.details-for-label #${firstRecipeType.id}#`, {
+            await userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.details-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 
@@ -71,7 +71,7 @@ describe("Recipe type list component", () => {
                 }
             ]}/>)
 
-            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.edit-for-label #${firstRecipeType.id}#`, {
+            await userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.edit-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 
@@ -84,7 +84,7 @@ describe("Recipe type list component", () => {
 
             render(<RecipeTypeList recipeTypes={recipeTypes} onDelete={onDeleteMock}/>)
 
-            userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.delete-for-label #${firstRecipeType.id}#`, {
+            await userEvent.click(screen.getByLabelText(`translated recipe-type-feature.list.delete-for-label #${firstRecipeType.id}#`, {
                 selector: "button"
             }))
 

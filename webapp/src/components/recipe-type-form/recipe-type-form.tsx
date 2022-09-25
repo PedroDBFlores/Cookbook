@@ -11,7 +11,7 @@ interface RecipeTypeFormProps {
     onSubmit: (recipeType: RecipeType) => void
 }
 
-const RecipeTypeForm: React.VFC<RecipeTypeFormProps> = ({initialValues, onSubmit}) => {
+const RecipeTypeForm: React.FC<RecipeTypeFormProps> = ({initialValues, onSubmit}) => {
     const {t} = useTranslation()
 
     const RecipeTypeFormSchema = yup.object({

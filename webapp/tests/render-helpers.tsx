@@ -1,14 +1,15 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {MemoryRouter, Route, Switch} from "react-router-dom"
-import {WithModal} from "../src/components/modal/modal-context"
+import { MemoryRouter, Route, Routes } from "react-router-dom"
+import { WithModal } from "../src/components/modal/modal-context"
+import { ChakraProvider } from "@chakra-ui/react"
 
-const MemoryRouterWrapper: React.FC<{ initialPath: string }> =
-    ({children, initialPath}) =>
-        <MemoryRouter initialEntries={[{pathname: initialPath}]}>
-            <Switch>
+const MemoryRouterWrapper: React.FC<{ initialPath: string; children?: React.ReactNode }> =
+    ({ children, initialPath }) =>
+        <MemoryRouter initialEntries={[{ pathname: initialPath }]}>
+            <Routes>
                 {children}
-            </Switch>
+            </Routes>
         </MemoryRouter>
 
 MemoryRouterWrapper.propTypes = {
@@ -18,16 +19,15 @@ MemoryRouterWrapper.propTypes = {
 interface WrapperWithRouterProps {
     initialPath?: string
     routeConfiguration: Array<{
-        exact: boolean
         path: string
-        component: () => JSX.Element
+        element: JSX.Element
     }>
 }
 
 export const WrapperWithRoutes: React.FC<WrapperWithRouterProps> = ({
-                                                                        initialPath = "/",
-                                                                        routeConfiguration
-                                                                    }) =>
+    initialPath = "/",
+    routeConfiguration
+}) =>
     <MemoryRouterWrapper initialPath={initialPath}>
         {
             routeConfiguration.map(routeConfiguration => <Route
@@ -39,25 +39,26 @@ WrapperWithRoutes.propTypes = {
     routeConfiguration: PropTypes.array.isRequired
 }
 
-export const WrapperWithRouter: React.FC = ({children}) => <WrapperWithRoutes
+export const WrapperWithRouter: React.FC<{ children: JSX.Element }> = ({ children }) => <WrapperWithRoutes
     routeConfiguration={[
         {
             path: "/",
-            exact: true,
-            component: () => <>{children}</>
+            element: children
         }]
     }
 />
 
 
-export const WrapWithCommonContexts: React.FC = ({
-                                                     children,
-                                                 }) => (
-    <WithModal>
-        {children}
-    </WithModal>
+export const WrapWithCommonContexts: React.FC<{ children?: React.ReactNode }> = ({
+    children,
+}) => (
+    <ChakraProvider>
+        <WithModal>
+            {children}
+        </WithModal>
+    </ChakraProvider>
 )
 
 WrapWithCommonContexts.propTypes = {
-    apiHandler: PropTypes.func
+    children: PropTypes.node
 }

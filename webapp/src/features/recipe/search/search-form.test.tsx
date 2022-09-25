@@ -21,7 +21,7 @@ describe("Recipe search form", () => {
 
         render(<RecipeSearchForm onSearch={onSearchMock} recipeTypes={[]}/>)
 
-        userEvent.click(screen.getByLabelText(/^translated common.search$/i))
+        await userEvent.click(screen.getByLabelText(/^translated common.search$/i))
 
         await waitFor(() => {
             expect(onSearchMock).toHaveBeenCalledWith({
@@ -57,11 +57,11 @@ describe("Recipe search form", () => {
         ]}/>)
 
 
-        userEvent.paste(screen.getByLabelText(/^translated name$/i), name)
-        userEvent.paste(screen.getByLabelText(/^translated description$/i), description)
-        userEvent.selectOptions(screen.getByLabelText(/^translated recipe-type-feature.singular$/i), recipeTypeId)
+        await userEvent.paste(screen.getByLabelText(/^translated name$/i), name)
+        await userEvent.paste(screen.getByLabelText(/^translated description$/i), description)
+        await userEvent.selectOptions(screen.getByLabelText(/^translated recipe-type-feature.singular$/i), recipeTypeId)
 
-        userEvent.click(screen.getByLabelText(/^translated common.search$/i))
+        await userEvent.click(screen.getByLabelText(/^translated common.search$/i))
 
         await waitFor(() => {
             expect(onSearchMock).toHaveBeenCalledWith({

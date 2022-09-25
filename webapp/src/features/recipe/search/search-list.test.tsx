@@ -118,10 +118,10 @@ describe("Recipe search list component", () => {
                 onChangeRowsPerPage={jest.fn()}
                 onPageChange={onPageChangeMock}/>)
 
-            userEvent.click(screen.getByLabelText(/next page/i))
+            await userEvent.click(screen.getByLabelText(/next page/i))
             expect(onPageChangeMock).toHaveBeenCalledWith(2)
 
-            userEvent.click(screen.getByLabelText(/previous page/i))
+            await userEvent.click(screen.getByLabelText(/previous page/i))
             expect(onPageChangeMock).toHaveBeenCalledWith(1)
         })
 
@@ -143,7 +143,7 @@ describe("Recipe search list component", () => {
                                      onPageChange={jest.fn()}/>)
 
 
-            userEvent.click(screen.getByLabelText(/^rows per page$/i))
+            await userEvent.click(screen.getByLabelText(/^rows per page$/i))
 
             expect(onNumberOfRowsChange).toHaveBeenCalledWith(numberOfItems)
         })
@@ -168,7 +168,7 @@ describe("Recipe search list component", () => {
                 }
             ]}/>)
 
-            userEvent.click(screen.getAllByLabelText(/^translated recipe-feature.details-label$/i, {
+            await userEvent.click(screen.getAllByLabelText(/^translated recipe-feature.details-label$/i, {
                 selector: "button"
             })[0])
 
@@ -192,7 +192,7 @@ describe("Recipe search list component", () => {
                 }
             ]}/>)
 
-            userEvent.click(screen.getAllByLabelText(/^translated recipe-feature.edit-label$/i, {
+            await userEvent.click(screen.getAllByLabelText(/^translated recipe-feature.edit-label$/i, {
                 selector: "button"
             })[0])
 
@@ -207,7 +207,7 @@ describe("Recipe search list component", () => {
                                      onChangeRowsPerPage={jest.fn()}
                                      onPageChange={jest.fn()}/>)
 
-            userEvent.click(screen.getAllByLabelText(/^translated recipe-feature.delete-label$/i, {
+            await userEvent.click(screen.getAllByLabelText(/^translated recipe-feature.delete-label$/i, {
                 selector: "button"
             })[0])
 

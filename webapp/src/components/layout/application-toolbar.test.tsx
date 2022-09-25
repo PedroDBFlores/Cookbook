@@ -41,7 +41,7 @@ describe("Application Toolbar", () => {
                 expectedRoute: "/recipe",
                 expectedContent: "The best recipes"
             }]
-        ])("navigates to the %s", (_, { elementText, expectedRoute, expectedContent }) => {
+        ])("navigates to the %s", async (_, { elementText, expectedRoute, expectedContent }) => {
             render(<WrapperWithRoutes initialPath={"/apptoolbar"}
                 routeConfiguration={[
                     {
@@ -57,7 +57,7 @@ describe("Application Toolbar", () => {
                 ]}
             />)
 
-            userEvent.click(screen.getByText(elementText))
+            await userEvent.click(screen.getByText(elementText))
 
             expect(screen.getByText(expectedContent)).toBeInTheDocument()
         })
