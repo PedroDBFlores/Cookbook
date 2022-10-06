@@ -1,4 +1,4 @@
-FROM gradle:7.0-jdk11 as api_build
+FROM gradle:7-jdk11-alpine as api_build
 RUN mkdir -p /usr/src/app/api
 COPY ./api/build.gradle.kts /usr/src/app/api
 COPY ./api/gradle.properties /usr/src/app/api
