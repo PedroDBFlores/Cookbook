@@ -4,9 +4,11 @@ import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.next
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +20,7 @@ import utils.recipeTypeGenerator
 
 internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
 
-    fun createTestServer(getAllRecipeTypes: GetAllRecipeTypes): Application.() -> Unit = {
+    fun Application.setupTestServer(getAllRecipeTypes: GetAllRecipeTypes) {
         contentNegotiationModule()
         routing {
             get("/api/recipetype") { GetAllRecipeTypesHandler(getAllRecipeTypes).handle(call) }
@@ -34,10 +36,13 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
             every { this@mockk() } returns expectedRecipeTypes
         }
 
-        withTestApplication(moduleFunction = createTestServer(getAllRecipeTypesMock)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipetype")) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedRecipeTypes.toJson())
+        testApplication {
+            application { setupTestServer(getAllRecipeTypesMock) }
+            val client = createClient { }
+
+            with(client.get("/api/recipetype")) {
+                status.shouldBe(HttpStatusCode.OK)
+                bodyAsText().shouldMatchJson(expectedRecipeTypes.toJson())
                 verify(exactly = 1) { getAllRecipeTypesMock() }
             }
         }

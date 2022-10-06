@@ -8,9 +8,11 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.string
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.Called
 import io.mockk.every
@@ -24,7 +26,7 @@ import utils.JsonHelpers.toJson
 import utils.getTyped
 
 internal class CreateRecipeHandlerTest : DescribeSpec({
-    fun createTestServer(createRecipe: CreateRecipe): Application.() -> Unit = {
+    fun Application.setupTestServer(createRecipe: CreateRecipe) {
         contentNegotiationModule()
         routing {
             post("/api/recipe") { CreateRecipeHandler(createRecipe).handle(call) }
@@ -54,15 +56,20 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
             every { this@mockk(expectedParameters) } returns expectedRecipeId
         }
 
-        withTestApplication(moduleFunction = createTestServer(createRecipe)) {
+        testApplication {
+            application {
+                setupTestServer(createRecipe)
+            }
+            val client = createClient { }
+
             with(
-                handleRequest(HttpMethod.Post, "/api/recipe") {
+                client.post("/api/recipe") {
                     setBody(createRecipeRepresenterMap.toJson())
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             ) {
-                response.status().shouldBe(HttpStatusCode.Created)
-                response.content.shouldMatchJson(CreateResult(expectedRecipeId).toJson())
+                status.shouldBe(HttpStatusCode.Created)
+                bodyAsText().shouldMatchJson(CreateResult(expectedRecipeId).toJson())
                 verify(exactly = 1) { createRecipe(expectedParameters) }
             }
         }
@@ -95,14 +102,19 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
         it("returns 400 when $description") {
             val createRecipeMock = mockk<CreateRecipe>()
 
-            withTestApplication(moduleFunction = createTestServer(createRecipeMock)) {
+            testApplication {
+                application {
+                    setupTestServer(createRecipeMock)
+                }
+                val client = createClient { }
+
                 with(
-                    handleRequest(HttpMethod.Post, "/api/recipe") {
+                    client.post("/api/recipe") {
                         jsonBody?.run { setBody(this) }
-                        addHeader("Content-Type", "application/json")
+                        header("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify { createRecipeMock wasNot Called }
                 }
             }

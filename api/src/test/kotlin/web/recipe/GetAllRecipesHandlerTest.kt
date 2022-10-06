@@ -4,9 +4,11 @@ import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.next
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +20,7 @@ import utils.recipeGenerator
 
 internal class GetAllRecipesHandlerTest : DescribeSpec({
 
-    fun createTestServer(getAllRecipes: GetAllRecipes): Application.() -> Unit = {
+    fun Application.setupTestServer(getAllRecipes: GetAllRecipes) {
         contentNegotiationModule()
         routing {
             get("/api/recipe") { GetAllRecipesHandler(getAllRecipes).handle(call) }
@@ -34,10 +36,13 @@ internal class GetAllRecipesHandlerTest : DescribeSpec({
             every { this@mockk() } returns expectedRecipes
         }
 
-        withTestApplication(moduleFunction = createTestServer(getAllRecipes)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipe")) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedRecipes.toJson())
+        testApplication {
+            application { setupTestServer(getAllRecipes) }
+            val client = createClient { }
+
+            with(client.get("/api/recipe")) {
+                status.shouldBe(HttpStatusCode.OK)
+                bodyAsText().shouldMatchJson(expectedRecipes.toJson())
                 verify(exactly = 1) { getAllRecipes() }
             }
         }

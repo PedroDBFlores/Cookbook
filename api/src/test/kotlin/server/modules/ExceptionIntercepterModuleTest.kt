@@ -6,17 +6,19 @@ import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import utils.JsonHelpers.toJson
 import java.sql.SQLException
 import java.util.concurrent.TimeoutException
 
 class ExceptionIntercepterModuleTest : DescribeSpec({
-    fun createTestServerForCallPhase(action: () -> Nothing): Application.() -> Unit = {
+    fun Application.setupTestServerForCallPhase(action: () -> Nothing) {
         contentNegotiationModule()
         exceptionInterceptorModule()
         routing {
@@ -74,12 +76,16 @@ class ExceptionIntercepterModuleTest : DescribeSpec({
         ),
     ).forEach { (action, expectedStatusCode, expectedResponseError, description) ->
         it("returns ${expectedStatusCode.value} when $description during the Call phase") {
-            withTestApplication(moduleFunction = createTestServerForCallPhase(action)) {
-                with(handleRequest(HttpMethod.Get, "/will-throw-error")) {
-                    with(response) {
-                        status().shouldBe(expectedStatusCode)
-                        content.shouldMatchJson(expectedResponseError.toJson())
-                    }
+            testApplication {
+                application {
+                    setupTestServerForCallPhase(action)
+                }
+
+                val client = createClient { }
+
+                with(client.get("/will-throw-error")) {
+                    status.shouldBe(expectedStatusCode)
+                    bodyAsText().shouldMatchJson(expectedResponseError.toJson())
                 }
             }
         }

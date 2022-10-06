@@ -8,9 +8,11 @@ import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
@@ -22,7 +24,7 @@ import utils.recipeTypeGenerator
 
 internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
-    fun createTestServer(findRecipeType: FindRecipeType): Application.() -> Unit = {
+    fun Application.setupTestServer(findRecipeType: FindRecipeType) {
         contentNegotiationModule()
         routing {
             get("/api/recipetype/{id}") { FindRecipeTypeHandler(findRecipeType).handle(call) }
@@ -35,10 +37,13 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
             every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
         }
 
-        withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipetype/${expectedRecipeType.id}")) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedRecipeType.toJson())
+        testApplication {
+            application { setupTestServer(getRecipeTypeMock) }
+            val client = createClient { }
+
+            with(client.get("/api/recipetype/${expectedRecipeType.id}")) {
+                status.shouldBe(HttpStatusCode.OK)
+                bodyAsText().shouldMatchJson(expectedRecipeType.toJson())
                 verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
             }
         }
@@ -52,9 +57,12 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
             )
         }
 
-        withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipetype/$expectedRecipeTypeId")) {
-                response.status().shouldBe(HttpStatusCode.NotFound)
+        testApplication {
+            application { setupTestServer(getRecipeTypeMock) }
+            val client = createClient { }
+
+            with(client.get("/api/recipetype/$expectedRecipeTypeId")) {
+                status.shouldBe(HttpStatusCode.NotFound)
                 verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
             }
         }
@@ -73,9 +81,12 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
         it("should return BAD_REQUEST if $description") {
             val getRecipeTypeMock = mockk<FindRecipeType>()
 
-            withTestApplication(moduleFunction = createTestServer(getRecipeTypeMock)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipetype/$pathParam")) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+            testApplication {
+                application { setupTestServer(getRecipeTypeMock) }
+                val client = createClient { }
+
+                with(client.get("/api/recipetype/$pathParam")) {
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify(exactly = 0) { getRecipeTypeMock(any()) }
                 }
             }

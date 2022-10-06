@@ -7,9 +7,10 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.string
-import io.ktor.application.*
+import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import server.modules.contentNegotiationModule
@@ -19,7 +20,7 @@ import utils.JsonHelpers.toJson
 import utils.getTyped
 
 internal class UpdateRecipeHandlerTest : DescribeSpec({
-    fun createTestServer(updateRecipe: UpdateRecipe): Application.() -> Unit = {
+    fun Application.setupTestServer(updateRecipe: UpdateRecipe) {
         contentNegotiationModule()
         routing {
             put("/api/recipe") { UpdateRecipeHandler(updateRecipe).handle(call) }
@@ -50,14 +51,17 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
             every { this@mockk(updateParameters) } just runs
         }
 
-        withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
+        testApplication {
+            application { setupTestServer(updateRecipe) }
+            val client = createClient { }
+
             with(
-                handleRequest(HttpMethod.Put, "/api/recipe") {
+                client.put("/api/recipe") {
                     setBody(updateRecipeRepresenterMap.toJson())
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             ) {
-                response.status().shouldBe(HttpStatusCode.OK)
+                status.shouldBe(HttpStatusCode.OK)
                 verify(exactly = 1) { updateRecipe(updateParameters) }
             }
         }
@@ -96,14 +100,17 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                 every { this@mockk(any()) } just runs
             }
 
-            withTestApplication(moduleFunction = createTestServer(updateRecipe)) {
+            testApplication {
+                application { setupTestServer(updateRecipe) }
+                val client = createClient { }
+
                 with(
-                    handleRequest(HttpMethod.Put, "/api/recipe") {
+                    client.put("/api/recipe") {
                         jsonBody?.run { setBody(this) }
-                        addHeader("Content-Type", "application/json")
+                        header("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify { updateRecipe wasNot called }
                 }
             }

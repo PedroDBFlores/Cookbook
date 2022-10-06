@@ -10,9 +10,11 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.string
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.called
 import io.mockk.every
@@ -26,7 +28,7 @@ import utils.JsonHelpers.toJson
 
 internal class CreateRecipeTypeHandlerTest : DescribeSpec({
 
-    fun createTestServer(createRecipeType: CreateRecipeType): Application.() -> Unit = {
+    fun Application.setupTestServer(createRecipeType: CreateRecipeType) {
         contentNegotiationModule()
         routing {
             post("/api/recipetype") { CreateRecipeTypeHandler(createRecipeType).handle(call) }
@@ -43,15 +45,18 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         }
         val jsonBody = createJSONObject("name" to expectedParameters.name)
 
-        withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
+        testApplication {
+            application { setupTestServer(createRecipeTypeMock) }
+            val client = createClient { }
+
             with(
-                handleRequest(HttpMethod.Post, "/api/recipetype") {
+                client.post("/api/recipetype") {
                     setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             ) {
-                response.status().shouldBe(HttpStatusCode.Created)
-                response.content.shouldMatchJson(CreateResult(expectedRecipeId).toJson())
+                status.shouldBe(HttpStatusCode.Created)
+                bodyAsText().shouldMatchJson(CreateResult(expectedRecipeId).toJson())
                 verify(exactly = 1) { createRecipeTypeMock(expectedParameters) }
             }
         }
@@ -65,10 +70,13 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         }
 
         shouldThrow<RecipeTypeAlreadyExists> {
-            withTestApplication(moduleFunction = createTestServer(createRecipeTypeMock)) {
-                handleRequest(HttpMethod.Post, "/api/recipetype") {
+            testApplication {
+                application { setupTestServer(createRecipeTypeMock) }
+                val client = createClient { }
+
+                client.post("/api/recipetype") {
                     setBody(jsonBody)
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             }
         }
@@ -80,17 +88,20 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         row(createJSONObject("name" to " "), "the name is invalid")
     ).forEach { (jsonBody, description) ->
         it("returns 400 when $description") {
-            val createRecipeType = mockk<CreateRecipeType>()
+            val createRecipeTypeMock = mockk<CreateRecipeType>()
 
-            withTestApplication(moduleFunction = createTestServer(createRecipeType)) {
+            testApplication {
+                application { setupTestServer(createRecipeTypeMock) }
+                val client = createClient { }
+
                 with(
-                    handleRequest(HttpMethod.Post, "/api/recipetype") {
+                    client.post("/api/recipetype") {
                         jsonBody?.run { setBody(this) }
-                        addHeader("Content-Type", "application/json")
+                        header("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
-                    verify { createRecipeType wasNot called }
+                    status.shouldBe(HttpStatusCode.BadRequest)
+                    verify { createRecipeTypeMock wasNot called }
                 }
             }
         }

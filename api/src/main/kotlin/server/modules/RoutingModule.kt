@@ -1,13 +1,11 @@
 package server.modules
 
-import adapters.validators.checkImage
 import config.Dependencies
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import web.recipe.*
-import web.recipephoto.CreateRecipePhotoHandler
 import web.recipetype.*
 
 fun Application.routingModule() = routing {
@@ -72,12 +70,6 @@ fun Routing.recipeTypeRoutes() = route("/api/recipetype") {
             }
             delete {
                 DeleteRecipeTypeHandler(deleteRecipeType = deleteRecipeType).handle(call)
-            }
-            post("photo") {
-                CreateRecipePhotoHandler(
-                    createRecipePhoto = createRecipePhoto,
-                    imageChecker = ::checkImage
-                )
             }
         }
     }

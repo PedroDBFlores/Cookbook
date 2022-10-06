@@ -7,15 +7,16 @@ import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
-import io.ktor.application.*
+import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import usecases.recipetype.DeleteRecipeType
 
 internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
-    fun createTestServer(deleteRecipeType: DeleteRecipeType): Application.() -> Unit = {
+    fun Application.setupTestServer(deleteRecipeType: DeleteRecipeType) {
         routing {
             delete("/api/recipetype/{id}") { DeleteRecipeTypeHandler(deleteRecipeType).handle(call) }
         }
@@ -31,9 +32,12 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             every { this@mockk(expectedParameters) } just runs
         }
 
-        withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
-            with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
-                response.status().shouldBe(HttpStatusCode.NoContent)
+        testApplication {
+            application { setupTestServer(deleteRecipeType) }
+            val client = createClient { }
+
+            with(client.delete("/api/recipetype/${expectedParameters.recipeTypeId}")) {
+                status.shouldBe(HttpStatusCode.NoContent)
                 verify(exactly = 1) { deleteRecipeType(expectedParameters) }
             }
         }
@@ -47,9 +51,12 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             every { this@mockk(expectedParameters) } throws RecipeTypeNotFound(expectedParameters.recipeTypeId)
         }
 
-        withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
-            with(handleRequest(HttpMethod.Delete, "/api/recipetype/${expectedParameters.recipeTypeId}")) {
-                response.status().shouldBe(HttpStatusCode.NotFound)
+        testApplication {
+            application { setupTestServer(deleteRecipeType) }
+            val client = createClient { }
+
+            with(client.delete("/api/recipetype/${expectedParameters.recipeTypeId}")) {
+                status.shouldBe(HttpStatusCode.NotFound)
                 verify(exactly = 1) { deleteRecipeType(expectedParameters) }
             }
         }
@@ -68,9 +75,12 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
         it("should return 400 if $description") {
             val deleteRecipeType = mockk<DeleteRecipeType>()
 
-            withTestApplication(moduleFunction = createTestServer(deleteRecipeType)) {
-                with(handleRequest(HttpMethod.Delete, "/api/recipetype/$pathParam")) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+            testApplication {
+                application { setupTestServer(deleteRecipeType) }
+                val client = createClient { }
+
+                with(client.delete("/api/recipetype/$pathParam")) {
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify { deleteRecipeType wasNot called }
                 }
             }

@@ -6,9 +6,11 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.next
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.called
 import io.mockk.every
@@ -21,7 +23,7 @@ import utils.recipeGenerator
 
 internal class FindRecipeHandlerTest : DescribeSpec({
 
-    fun createTestServer(findRecipe: FindRecipe): Application.() -> Unit = {
+    fun Application.setupTestServer(findRecipe: FindRecipe) {
         contentNegotiationModule()
         routing {
             get("/api/recipe/{id}") { FindRecipeHandler(findRecipe).handle(call) }
@@ -34,10 +36,13 @@ internal class FindRecipeHandlerTest : DescribeSpec({
             every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } returns expectedRecipe
         }
 
-        withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedRecipe.toJson())
+        testApplication {
+            application { setupTestServer(findRecipe) }
+            val client = createClient { }
+
+            with(client.get("/api/recipe/${expectedRecipe.id}")) {
+                status.shouldBe(HttpStatusCode.OK)
+                bodyAsText().shouldMatchJson(expectedRecipe.toJson())
                 verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
             }
         }
@@ -49,9 +54,12 @@ internal class FindRecipeHandlerTest : DescribeSpec({
             every { this@mockk(FindRecipe.Parameters(expectedRecipe.id)) } throws RecipeNotFound(expectedRecipe.id)
         }
 
-        withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-            with(handleRequest(HttpMethod.Get, "/api/recipe/${expectedRecipe.id}")) {
-                response.status().shouldBe(HttpStatusCode.NotFound)
+        testApplication {
+            application { setupTestServer(findRecipe) }
+            val client = createClient { }
+
+            with(client.get("/api/recipe/${expectedRecipe.id}")) {
+                status.shouldBe(HttpStatusCode.NotFound)
                 verify(exactly = 1) { findRecipe(FindRecipe.Parameters(expectedRecipe.id)) }
             }
         }
@@ -70,9 +78,12 @@ internal class FindRecipeHandlerTest : DescribeSpec({
         it("should return 400 if $description") {
             val findRecipe = mockk<FindRecipe>()
 
-            withTestApplication(moduleFunction = createTestServer(findRecipe)) {
-                with(handleRequest(HttpMethod.Get, "/api/recipe/$pathParam")) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+            testApplication {
+                application { setupTestServer(findRecipe) }
+                val client = createClient { }
+
+                with(client.get("/api/recipe/$pathParam")) {
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify { findRecipe wasNot called }
                 }
             }

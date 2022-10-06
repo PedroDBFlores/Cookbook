@@ -7,9 +7,10 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.string
-import io.ktor.application.*
+import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import server.modules.contentNegotiationModule
@@ -18,7 +19,7 @@ import utils.JsonHelpers.createJSONObject
 
 internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
 
-    fun createTestServer(updateRecipeType: UpdateRecipeType): Application.() -> Unit = {
+    fun Application.setupTestServer(updateRecipeType: UpdateRecipeType) {
         contentNegotiationModule()
         routing {
             put("/api/recipetype") { UpdateRecipeTypeHandler(updateRecipeType).handle(call) }
@@ -40,14 +41,17 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
             "name" to expectedParameters.name
         )
 
-        withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
+        testApplication {
+            application { setupTestServer(updateRecipeTypeMock) }
+            val client = createClient { }
+
             with(
-                handleRequest(HttpMethod.Put, "/api/recipetype") {
+                client.put("/api/recipetype") {
                     setBody(requestBody)
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             ) {
-                response.status().shouldBe(HttpStatusCode.OK)
+                status.shouldBe(HttpStatusCode.OK)
                 verify(exactly = 1) { updateRecipeTypeMock(expectedParameters) }
             }
         }
@@ -73,14 +77,17 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 every { this@mockk(any()) } just runs
             }
 
-            withTestApplication(moduleFunction = createTestServer(updateRecipeTypeMock)) {
+            testApplication {
+                application { setupTestServer(updateRecipeTypeMock) }
+                val client = createClient { }
+
                 with(
-                    handleRequest(HttpMethod.Put, "/api/recipetype") {
+                    client.put("/api/recipetype") {
                         jsonBody?.run { setBody(this) }
-                        addHeader("Content-Type", "application/json")
+                        header("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify(exactly = 0) { updateRecipeTypeMock.invoke(any()) }
                 }
             }

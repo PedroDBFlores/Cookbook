@@ -5,9 +5,11 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.next
-import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.Called
 import io.mockk.every
@@ -23,7 +25,7 @@ import utils.recipeGenerator
 
 internal class SearchRecipeHandlerTest : DescribeSpec({
 
-    fun createTestServer(searchRecipe: SearchRecipe): Application.() -> Unit = {
+    fun Application.setupTestServer(searchRecipe: SearchRecipe) {
         contentNegotiationModule()
         routing {
             post("/api/recipe/search") { SearchRecipeHandler(searchRecipe).handle(call) }
@@ -45,15 +47,18 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             every { this@mockk(SearchRecipe.Parameters(name = "name")) } returns expectedSearchResult
         }
 
-        withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
+        testApplication {
+            application { setupTestServer(searchRecipe) }
+            val client = createClient { }
+
             with(
-                handleRequest(HttpMethod.Post, "/api/recipe/search") {
+                client.post("/api/recipe/search") {
                     setBody(requestBody)
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             ) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedSearchResult.toJson())
+                status.shouldBe(HttpStatusCode.OK)
+                bodyAsText().shouldMatchJson(expectedSearchResult.toJson())
                 verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(name = "name")) }
             }
         }
@@ -69,15 +74,18 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             every { this@mockk(SearchRecipe.Parameters()) } returns expectedSearchResult
         }
 
-        withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
+        testApplication {
+            application { setupTestServer(searchRecipe) }
+            val client = createClient { }
+
             with(
-                handleRequest(HttpMethod.Post, "/api/recipe/search") {
+                client.post("/api/recipe/search") {
                     setBody("{}")
-                    addHeader("Content-Type", "application/json")
+                    header("Content-Type", "application/json")
                 }
             ) {
-                response.status().shouldBe(HttpStatusCode.OK)
-                response.content.shouldMatchJson(expectedSearchResult.toJson())
+                status.shouldBe(HttpStatusCode.OK)
+                bodyAsText().shouldMatchJson(expectedSearchResult.toJson())
                 verify(exactly = 1) {
                     searchRecipe(SearchRecipe.Parameters())
                 }
@@ -94,14 +102,17 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
         it("returns 400 when $description") {
             val searchRecipe = mockk<SearchRecipe>()
 
-            withTestApplication(moduleFunction = createTestServer(searchRecipe)) {
+            testApplication {
+                application { setupTestServer(searchRecipe) }
+                val client = createClient { }
+
                 with(
-                    handleRequest(HttpMethod.Post, "/api/recipe/search") {
+                    client.post("/api/recipe/search") {
                         jsonBody?.run { setBody(this) }
-                        addHeader("Content-Type", "application/json")
+                        header("Content-Type", "application/json")
                     }
                 ) {
-                    response.status().shouldBe(HttpStatusCode.BadRequest)
+                    status.shouldBe(HttpStatusCode.BadRequest)
                     verify { searchRecipe wasNot Called }
                 }
             }
