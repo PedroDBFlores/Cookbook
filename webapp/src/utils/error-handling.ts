@@ -4,7 +4,12 @@ export interface ApiError extends Error {
     code: string
 }
 
-export const handleApiError = (err: AxiosError): never => {
+export interface ResponseError {
+    code: string
+    message: string
+}
+
+export const handleApiError = (err: AxiosError<ResponseError>): never => {
     throw {
         message: err.response?.data.message,
         code: err.response?.data.code

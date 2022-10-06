@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios"
 import {CreateResult} from "model"
-import handleApiError from "utils/error-handling"
+import handleApiError, { ResponseError } from "utils/error-handling"
 
 export interface RecipeTypeService {
     find(id: number): Promise<RecipeType>
@@ -20,7 +20,7 @@ const findRecipeType = () => async (id: number): Promise<RecipeType> => {
 
         return response.data
     } catch (err) {
-        throw handleApiError(err as AxiosError)
+        throw handleApiError(err as AxiosError<ResponseError>)
     }
 }
 
@@ -30,7 +30,7 @@ const getAllRecipeTypes = () => async (): Promise<Array<RecipeType>> => {
 
         return response.data
     } catch (err) {
-        throw handleApiError(err as AxiosError)
+        throw handleApiError(err as AxiosError<ResponseError>)
     }
 }
 
@@ -40,7 +40,7 @@ const createRecipeType = () => async (recipeType: Omit<RecipeType, "id">): Promi
 
         return response.data
     } catch (err) {
-        throw handleApiError(err as AxiosError)
+        throw handleApiError(err as AxiosError<ResponseError>)
     }
 }
 
@@ -48,7 +48,7 @@ const updateRecipeType = () => async (recipeType: RecipeType): Promise<void> => 
     try {
         await axios.put("/api/recipetype", recipeType)
     } catch (err) {
-        throw handleApiError(err as AxiosError)
+        throw handleApiError(err as AxiosError<ResponseError>)
     }
 }
 
@@ -56,7 +56,7 @@ const deleteRecipeType = () => async (id: number): Promise<void> => {
     try {
         await axios.delete(`/api/recipetype/${id}`)
     } catch (err) {
-        throw handleApiError(err as AxiosError)
+        throw handleApiError(err as AxiosError<ResponseError>)
     }
 }
 

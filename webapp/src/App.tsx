@@ -48,16 +48,16 @@ const AppComponent = () =>
 						<Route path="/recipetype" element={<RecipeTypeListPage />} />
 						<Route path="/recipetype/new" element={<CreateRecipeType />} />
 						<Route path="/recipetype/:id/details"
-							element={x => <RecipeTypeDetails id={Number(x.match.params.id)} />} />
+							element={<RecipeTypeDetails />} />
 						<Route path="/recipetype/:id/edit"
-							element={x => <EditRecipeType id={Number(x.match.params.id)} />} />
+							element={<EditRecipeType />} />
 
 						<Route path="/recipe" element={<RecipeSearchPage />} />
 						<Route path="/recipe/new" element={<CreateRecipe />} />
 						<Route path="/recipe/:id/details"
-							element={x => <RecipeDetails id={Number(x.match.params.id)} />} />
+							element={<RecipeDetails />} />
 						<Route path="/recipe/:id/edit"
-							element={x => <EditRecipe id={Number(x.match.params.id)} />} />
+							element={<EditRecipe />} />
 					</Routes>
 				</Layout>
 			</BrowserRouter>
