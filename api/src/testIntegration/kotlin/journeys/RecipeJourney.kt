@@ -3,12 +3,12 @@ package journeys
 import actions.RecipeActions
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
-import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import model.Recipe
 import model.SearchResult
-import org.eclipse.jetty.http.HttpStatus
+import org.apache.http.HttpStatus
 import server.CookbookApi
 import utils.DatabaseMigration
 import utils.JsonHelpers.toJson
@@ -43,8 +43,8 @@ class RecipeJourney : BehaviorSpec({
                 )
 
                 with(searchRecipesResponse) {
-                    statusCode().shouldBe(HttpStatus.OK_200)
-                    body().shouldMatchJson(expectedResponse.toJson())
+                    statusCode().shouldBe(HttpStatus.SC_OK)
+                    body().shouldEqualJson(expectedResponse.toJson())
                 }
             }
         }

@@ -1,18 +1,16 @@
 plugins {
     application
-    kotlin("jvm") version "1.7.20"
-    kotlin("plugin.serialization") version "1.7.20"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.serialization") version "1.8.21"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.github.ben-manes.versions") version "0.46.0"
     id("com.adarshr.test-logger") version "3.2.0"
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 }
 
 group = "pt.pedro"
 
 application {
-    @Suppress("Deprecation")
-    mainClassName = "ApplicationKt"
+    this.mainClass.set("ApplicationKt")
 }
 
 repositories {
@@ -20,21 +18,21 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val logbackVersion = "1.4.3"
-val hopliteVersion = "2.6.4"
-val ktorVersion = "2.1.2"
-val exposedVersion = "0.40.1"
+val logbackVersion = "1.4.7"
+val hopliteVersion = "2.7.4"
+val ktorVersion = "2.3.0"
+val exposedVersion = "0.41.1"
 val h2Version = "2.1.214"
-val postgresVersion = "42.5.0"
-val flywayVersion = "8.5.13"
+val postgresVersion = "42.6.0"
+val flywayVersion = "9.17.0"
 
-val kotestVersion = "5.5.0"
-val kotestAssertionsKtorVersion = "1.0.3"
-val mockkVersion = "1.13.2"
+val kotestVersion = "5.6.1"
+val kotestAssertionsKtorVersion = "2.0.0"
+val mockkVersion = "1.13.5"
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -66,18 +64,16 @@ dependencies {
 
 sourceSets {
     create("testIntegration") {
-        withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
-            kotlin.srcDir("src/testIntegration/kotlin")
-            resources.srcDir("src/testIntegration/resources")
-            compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
-            runtimeClasspath += output + compileClasspath + sourceSets["test"].runtimeClasspath
-        }
+        kotlin.srcDir("src/testIntegration/kotlin")
+        resources.srcDir("src/testIntegration/resources")
+        compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+        runtimeClasspath += output + compileClasspath + sourceSets["test"].runtimeClasspath
     }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -94,16 +90,6 @@ task<Test>("testIntegration") {
 
 tasks.check {
     dependsOn("testIntegration")
-}
-
-ktlint {
-    disabledRules.set(setOf("no-wildcard-imports"))
-    coloredOutput.set(true)
-    filter {
-        exclude("**/generated/**")
-        exclude("**/build/**")
-        include("**/kotlin/**")
-    }
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

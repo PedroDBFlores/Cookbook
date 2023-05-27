@@ -1,4 +1,4 @@
-FROM gradle:7-jdk11-alpine as api_build
+FROM gradle:8-jdk17-alpine as api_build
 RUN mkdir -p /usr/src/app/api
 COPY ./api/build.gradle.kts /usr/src/app/api
 COPY ./api/gradle.properties /usr/src/app/api
@@ -9,7 +9,7 @@ COPY ./api/src ./src
 RUN gradle shadowJar -i
 
 # Deploy project step
-FROM openjdk:11-jre-slim as run
+FROM amazoncorretto:17-alpine as run
 WORKDIR  /usr/src/app/api
 ENV JAVA_TOOL_OPTIONS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8999
 COPY --from=api_build /usr/src/app/api/build/libs ./

@@ -12,7 +12,6 @@ import kotlinx.serialization.json.encodeToJsonElement
 object JsonHelpers {
     /**
      * Transforms and returns a JSON object
-     * @param source The source object
      * @return A JSON representation of the source object
      */
     inline fun <reified T> T.toJson(): String = Json.encodeToString(this)
@@ -33,7 +32,6 @@ object JsonHelpers {
     }
 
     fun createJSONObject(vararg properties: Pair<String, Any?>) = createJSONObject(mapOf(*properties))
-    fun Map<String, Any?>.toJson(): String = createJSONObject(this)
 
     // Extension methods
     inline fun <reified T> String.transformInto() = Json.decodeFromString<T>(this)

@@ -1,12 +1,14 @@
 package adapters.database
 
 import com.sksamuel.hoplite.ConfigLoader
+import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import config.ConfigurationFile
 import model.Recipe
 import model.RecipeType
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
+import java.util.*
 
 /**
  * Object that contains common functions that are used throughout the database tests
@@ -27,14 +29,12 @@ object DatabaseTestHelper {
 
     private fun migrateDB(configuration: ConfigurationFile) {
         val dataSource = HikariDataSource()
-        with(configuration.database) {
-            dataSource.jdbcUrl = jdbcUrl
-            val flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .load()
+        dataSource.jdbcUrl = configuration.database.jdbcUrl
+        val flyway = Flyway.configure()
+            .dataSource(dataSource)
+            .load()
 
-            flyway.migrate()
-        }
+        flyway.migrate()
     }
 
     fun createRecipeTypeInDatabase(recipeType: RecipeType): RecipeType {

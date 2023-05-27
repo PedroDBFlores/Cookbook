@@ -4,12 +4,12 @@ import actions.RecipeTypeActions
 import com.sksamuel.hoplite.ConfigLoader
 import config.ConfigurationFile
 import io.kotest.assertions.json.shouldContainJsonKey
-import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import model.CreateResult
 import model.RecipeType
-import org.eclipse.jetty.http.HttpStatus
+import org.apache.http.HttpStatus
 import server.CookbookApi
 import utils.DatabaseMigration
 import utils.JsonHelpers.createJSONObject
@@ -42,8 +42,8 @@ class RecipeTypeJourney : BehaviorSpec({
                 val getRecipeTypeResponse = RecipeTypeActions.getRecipeTypes(baseUrl)
 
                 with(getRecipeTypeResponse) {
-                    statusCode().shouldBe(HttpStatus.OK_200)
-                    body().shouldMatchJson(
+                    statusCode().shouldBe(HttpStatus.SC_OK)
+                    body().shouldEqualJson(
                         arrayOf(
                             RecipeType(id = 1, name = "First Recipe Type name"),
                             RecipeType(id = 2, name = "Second Recipe Type name"),
@@ -62,7 +62,7 @@ class RecipeTypeJourney : BehaviorSpec({
                 val createRecipeTypeResponse = RecipeTypeActions.createRecipeType(baseUrl, requestBody)
 
                 with(createRecipeTypeResponse) {
-                    statusCode().shouldBe(HttpStatus.CREATED_201)
+                    statusCode().shouldBe(HttpStatus.SC_CREATED)
                     body().shouldContainJsonKey("id")
                 }
             }
@@ -82,8 +82,8 @@ class RecipeTypeJourney : BehaviorSpec({
                 val findRecipeTypeResponse = RecipeTypeActions.getRecipeType(baseUrl, createResult.id)
 
                 with(findRecipeTypeResponse) {
-                    statusCode().shouldBe(HttpStatus.OK_200)
-                    body().shouldMatchJson(
+                    statusCode().shouldBe(HttpStatus.SC_OK)
+                    body().shouldEqualJson(
                         RecipeType(
                             id = createResult.id,
                             name = "Another recipe type for our user"
@@ -110,7 +110,7 @@ class RecipeTypeJourney : BehaviorSpec({
                 val updateRecipeTypeResponse =
                     RecipeTypeActions.updateRecipeType(baseUrl, updateRecipeTypeRequestBody)
 
-                updateRecipeTypeResponse.statusCode().shouldBe(HttpStatus.OK_200)
+                updateRecipeTypeResponse.statusCode().shouldBe(HttpStatus.SC_OK)
             }
         }
     }
@@ -127,7 +127,7 @@ class RecipeTypeJourney : BehaviorSpec({
                 val deleteRecipeTypeResponse =
                     RecipeTypeActions.deleteRecipeType(baseUrl, createResult.id)
 
-                deleteRecipeTypeResponse.statusCode().shouldBe(HttpStatus.NO_CONTENT_204)
+                deleteRecipeTypeResponse.statusCode().shouldBe(HttpStatus.SC_NO_CONTENT)
             }
         }
     }
