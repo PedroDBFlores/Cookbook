@@ -1,9 +1,9 @@
 plugins {
     application
-    kotlin("jvm") version "1.8.21"
-    kotlin("plugin.serialization") version "1.8.21"
+    kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.46.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
     id("com.adarshr.test-logger") version "3.2.0"
 }
 
@@ -18,15 +18,15 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val logbackVersion = "1.4.7"
+val logbackVersion = "1.4.9"
 val hopliteVersion = "2.7.4"
-val ktorVersion = "2.3.0"
-val exposedVersion = "0.41.1"
-val h2Version = "2.1.214"
+val ktorVersion = "2.3.3"
+val exposedVersion = "0.42.0"
+val h2Version = "2.2.220"
 val postgresVersion = "42.6.0"
-val flywayVersion = "9.17.0"
+val flywayVersion = "9.21.1"
 
-val kotestVersion = "5.6.1"
+val kotestVersion = "5.6.2"
 val kotestAssertionsKtorVersion = "2.0.0"
 val mockkVersion = "1.13.5"
 
@@ -41,7 +41,6 @@ dependencies {
     implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")

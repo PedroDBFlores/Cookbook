@@ -7,24 +7,23 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import ports.RecipeRepository
 import kotlin.math.ceil
 
-class ExposedRecipeRepository(database: Database) : ExposedRepository(database), RecipeRepository {
+class ExposedRecipeRepository(database: Database) : ExposedRepository(database) {
 
-    override fun find(id: Int): Recipe? = transaction(database) {
+    fun find(id: Int): Recipe? = transaction(database) {
         RecipeEntity.findById(id)?.run(RecipeEntity::mapToRecipe)
     }
 
-    override fun getAll(): List<Recipe> = transaction(database) {
+    fun getAll(): List<Recipe> = transaction(database) {
         RecipeEntity.all().map(RecipeEntity::mapToRecipe)
     }
 
-    override fun count(): Long = transaction(database) {
+    fun count(): Long = transaction(database) {
         RecipeEntity.count()
     }
 
-    override fun search(
+    fun search(
         name: String?,
         description: String?,
         recipeTypeId: Int?,
@@ -58,7 +57,7 @@ class ExposedRecipeRepository(database: Database) : ExposedRepository(database),
         SearchResult(count = count, numberOfPages = numberOfPages, results = results)
     }
 
-    override fun create(recipe: Recipe): Int = transaction(database) {
+    fun create(recipe: Recipe): Int = transaction(database) {
         RecipeEntity.new {
             recipeType = RecipeTypeEntity[recipe.recipeTypeId]
             name = recipe.name
@@ -68,7 +67,7 @@ class ExposedRecipeRepository(database: Database) : ExposedRepository(database),
         }.id.value
     }
 
-    override fun update(recipe: Recipe): Unit = transaction(database) {
+    fun update(recipe: Recipe): Unit = transaction(database) {
         RecipeEntity.findById(recipe.id)?.run {
             recipeType = RecipeTypeEntity[recipe.recipeTypeId]
             name = recipe.name
@@ -78,7 +77,7 @@ class ExposedRecipeRepository(database: Database) : ExposedRepository(database),
         }
     }
 
-    override fun delete(id: Int): Boolean = transaction(database) {
+    fun delete(id: Int): Boolean = transaction(database) {
         RecipeEntity.findById(id)?.run {
             delete()
             true

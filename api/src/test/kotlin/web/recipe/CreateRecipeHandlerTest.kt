@@ -1,5 +1,6 @@
 package web.recipe
 
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.json.shouldMatchJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
@@ -14,10 +15,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import io.mockk.Called
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import model.CreateResult
 import server.modules.contentNegotiationModule
 import usecases.recipe.CreateRecipe
@@ -53,7 +51,7 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
         )
         val expectedRecipeId = intSource.next()
         val createRecipe = mockk<CreateRecipe> {
-            every { this@mockk(expectedParameters) } returns expectedRecipeId
+            coEvery { this@mockk(expectedParameters) } returns expectedRecipeId
         }
 
         testApplication {
@@ -69,8 +67,8 @@ internal class CreateRecipeHandlerTest : DescribeSpec({
                 }
             ) {
                 status.shouldBe(HttpStatusCode.Created)
-                bodyAsText().shouldMatchJson(CreateResult(expectedRecipeId).toJson())
-                verify(exactly = 1) { createRecipe(expectedParameters) }
+                bodyAsText().shouldEqualJson(CreateResult(expectedRecipeId).toJson())
+                coVerify(exactly = 1) { createRecipe(expectedParameters) }
             }
         }
     }

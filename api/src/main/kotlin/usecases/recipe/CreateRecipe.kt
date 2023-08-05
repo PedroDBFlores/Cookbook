@@ -1,13 +1,13 @@
 package usecases.recipe
 
 import model.Recipe
-import ports.RecipeRepository
+import ports.RecipeCreator
 
 class CreateRecipe(
-    private val recipeRepository: RecipeRepository,
+    private val recipeCreator: RecipeCreator,
 ) {
-    operator fun invoke(parameters: Parameters): Int =
-        recipeRepository.create(parameters.toRecipe())
+    suspend operator fun invoke(parameters: Parameters): Int =
+        recipeCreator(parameters.toRecipe())
 
     data class Parameters(
         val recipeTypeId: Int,

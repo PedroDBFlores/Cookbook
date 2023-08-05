@@ -2,14 +2,18 @@ package usecases.recipe
 
 import errors.RecipeNotFound
 import model.Recipe
-import ports.RecipeRepository
+import ports.RecipeFinder
+import ports.RecipeUpdater
 
-class UpdateRecipe(private val recipeRepository: RecipeRepository) {
-    operator fun invoke(parameters: Parameters) {
-        check(recipeRepository.find(parameters.id) != null) {
+class UpdateRecipe(
+    private val recipeFinder: RecipeFinder,
+    private val recipeUpdater: RecipeUpdater
+) {
+    suspend operator fun invoke(parameters: Parameters) {
+        check(recipeFinder(parameters.id) != null) {
             throw RecipeNotFound(id = parameters.id)
         }
-        recipeRepository.update(parameters.toRecipe())
+        recipeUpdater(parameters.toRecipe())
     }
 
     data class Parameters(

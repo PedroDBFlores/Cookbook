@@ -1,6 +1,6 @@
 package web.recipetype
 
-import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.next
@@ -10,9 +10,9 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import server.modules.contentNegotiationModule
 import usecases.recipetype.GetAllRecipeTypes
 import utils.JsonHelpers.toJson
@@ -33,7 +33,7 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
             recipeTypeGenerator.next()
         )
         val getAllRecipeTypesMock = mockk<GetAllRecipeTypes> {
-            every { this@mockk() } returns expectedRecipeTypes
+            coEvery { this@mockk() } returns expectedRecipeTypes
         }
 
         testApplication {
@@ -42,8 +42,8 @@ internal class GetAllRecipeTypesHandlerTest : DescribeSpec({
 
             with(client.get("/api/recipetype")) {
                 status.shouldBe(HttpStatusCode.OK)
-                bodyAsText().shouldMatchJson(expectedRecipeTypes.toJson())
-                verify(exactly = 1) { getAllRecipeTypesMock() }
+                bodyAsText().shouldEqualJson(expectedRecipeTypes.toJson())
+                coVerify(exactly = 1) { getAllRecipeTypesMock() }
             }
         }
     }

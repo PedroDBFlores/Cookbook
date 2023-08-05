@@ -1,7 +1,7 @@
 package web.recipetype
 
 import errors.RecipeTypeNotFound
-import io.kotest.assertions.json.shouldMatchJson
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -14,9 +14,9 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import server.modules.contentNegotiationModule
 import usecases.recipetype.FindRecipeType
 import utils.JsonHelpers.toJson
@@ -34,7 +34,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
     it("returns a recipe type with status code 200") {
         val expectedRecipeType = recipeTypeGenerator.next()
         val getRecipeTypeMock = mockk<FindRecipeType> {
-            every { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
+            coEvery { this@mockk(FindRecipeType.Parameters(expectedRecipeType.id)) } returns expectedRecipeType
         }
 
         testApplication {
@@ -43,8 +43,8 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
             with(client.get("/api/recipetype/${expectedRecipeType.id}")) {
                 status.shouldBe(HttpStatusCode.OK)
-                bodyAsText().shouldMatchJson(expectedRecipeType.toJson())
-                verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
+                bodyAsText().shouldEqualJson(expectedRecipeType.toJson())
+                coVerify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeType.id)) }
             }
         }
     }
@@ -52,7 +52,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
     it("returns 404 if the recipe type was not found") {
         val expectedRecipeTypeId = Arb.int(1..100).next()
         val getRecipeTypeMock = mockk<FindRecipeType> {
-            every { this@mockk(FindRecipeType.Parameters(expectedRecipeTypeId)) } throws RecipeTypeNotFound(
+            coEvery { this@mockk(FindRecipeType.Parameters(expectedRecipeTypeId)) } throws RecipeTypeNotFound(
                 expectedRecipeTypeId
             )
         }
@@ -63,7 +63,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
             with(client.get("/api/recipetype/$expectedRecipeTypeId")) {
                 status.shouldBe(HttpStatusCode.NotFound)
-                verify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
+                coVerify(exactly = 1) { getRecipeTypeMock(FindRecipeType.Parameters(expectedRecipeTypeId)) }
             }
         }
     }
@@ -87,7 +87,7 @@ internal class FindRecipeTypeHandlerTest : DescribeSpec({
 
                 with(client.get("/api/recipetype/$pathParam")) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify(exactly = 0) { getRecipeTypeMock(any()) }
+                    coVerify(exactly = 0) { getRecipeTypeMock(any()) }
                 }
             }
         }

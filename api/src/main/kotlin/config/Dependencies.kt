@@ -22,18 +22,27 @@ object Dependencies {
 
     // Recipe types
     private val recipeTypeRepository = ExposedRecipeTypeRepository(database = database)
-    val findRecipeType = FindRecipeType(recipeTypeRepository = recipeTypeRepository)
-    val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeRepository = recipeTypeRepository)
-    val createRecipeType = CreateRecipeType(recipeTypeRepository = recipeTypeRepository)
-    val updateRecipeType = UpdateRecipeType(recipeTypeRepository = recipeTypeRepository)
-    val deleteRecipeType = DeleteRecipeType(recipeTypeRepository = recipeTypeRepository)
+    val findRecipeType = FindRecipeType(recipeTypeFinderById = recipeTypeRepository::find)
+    val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeLister = recipeTypeRepository::getAll)
+    val createRecipeType = CreateRecipeType(
+        recipeTypeFinderByName = recipeTypeRepository::find,
+        recipeTypeCreator = recipeTypeRepository::create
+    )
+    val updateRecipeType = UpdateRecipeType(
+        recipeTypeFinderById = recipeTypeRepository::find,
+        recipeTypeUpdater = recipeTypeRepository::update
+    )
+    val deleteRecipeType = DeleteRecipeType(recipeTypeDeleter = recipeTypeRepository::delete)
 
     // Recipe
     private val recipeRepository = ExposedRecipeRepository(database = database)
-    val findRecipe = FindRecipe(recipeRepository = recipeRepository)
-    val searchRecipe = SearchRecipe(recipeRepository = recipeRepository)
-    val getAllRecipes = GetAllRecipes(recipeRepository = recipeRepository)
-    val createRecipe = CreateRecipe(recipeRepository = recipeRepository)
-    val updateRecipe = UpdateRecipe(recipeRepository = recipeRepository)
-    val deleteRecipe = DeleteRecipe(recipeRepository = recipeRepository)
+    val findRecipe = FindRecipe(recipeFinder = recipeRepository::find)
+    val searchRecipe = SearchRecipe(recipeSearcher = recipeRepository::search)
+    val getAllRecipes = GetAllRecipes(recipeLister = recipeRepository::getAll)
+    val createRecipe = CreateRecipe(recipeCreator = recipeRepository::create)
+    val updateRecipe = UpdateRecipe(
+        recipeFinder = recipeRepository::find,
+        recipeUpdater = recipeRepository::update
+    )
+    val deleteRecipe = DeleteRecipe(recipeDeleter = recipeRepository::delete)
 }

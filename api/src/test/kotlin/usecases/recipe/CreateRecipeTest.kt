@@ -6,11 +6,12 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.string
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
 import model.Recipe
-import ports.RecipeRepository
+import ports.RecipeCreator
 
 internal class CreateRecipeTest : DescribeSpec({
     fun provideRandomId() = Arb.int(1..100).next()
@@ -29,8 +30,8 @@ internal class CreateRecipeTest : DescribeSpec({
     it("creates a recipe") {
         val expectedRecipeId = provideRandomId()
         val expectedRecipe = provideRandomRecipe()
-        val recipeRepository = mockk<RecipeRepository> {
-            every { create(expectedRecipe) } returns expectedRecipeId
+        val recipeRepository = mockk<RecipeCreator> {
+            coEvery { this@mockk(expectedRecipe) } returns expectedRecipeId
         }
 
         val createRecipe = CreateRecipe(recipeRepository)
@@ -45,6 +46,6 @@ internal class CreateRecipeTest : DescribeSpec({
         )
 
         recipeId.shouldBe(expectedRecipeId)
-        verify(exactly = 1) { recipeRepository.create(expectedRecipe) }
+        coVerify(exactly = 1) { recipeRepository(expectedRecipe) }
     }
 })

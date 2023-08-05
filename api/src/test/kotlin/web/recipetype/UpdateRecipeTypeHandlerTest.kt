@@ -34,7 +34,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
             name = stringSource.next()
         )
         val updateRecipeTypeMock = mockk<UpdateRecipeType> {
-            every { this@mockk(expectedParameters) } just runs
+            coEvery { this@mockk(expectedParameters) } just runs
         }
         val requestBody = createJSONObject(
             "id" to expectedParameters.id,
@@ -52,7 +52,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                 }
             ) {
                 status.shouldBe(HttpStatusCode.OK)
-                verify(exactly = 1) { updateRecipeTypeMock(expectedParameters) }
+                coVerify(exactly = 1) { updateRecipeTypeMock(expectedParameters) }
             }
         }
     }
@@ -74,7 +74,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
     ).forEach { (jsonBody, description) ->
         it("returns 400 when $description") {
             val updateRecipeTypeMock = mockk<UpdateRecipeType> {
-                every { this@mockk(any()) } just runs
+                coEvery { this@mockk(any()) } just runs
             }
 
             testApplication {
@@ -88,7 +88,7 @@ internal class UpdateRecipeTypeHandlerTest : DescribeSpec({
                     }
                 ) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify(exactly = 0) { updateRecipeTypeMock.invoke(any()) }
+                    coVerify(exactly = 0) { updateRecipeTypeMock.invoke(any()) }
                 }
             }
         }

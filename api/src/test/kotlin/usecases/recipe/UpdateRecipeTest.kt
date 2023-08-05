@@ -5,7 +5,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.property.arbitrary.next
 import io.mockk.*
-import ports.RecipeRepository
+import ports.RecipeFinder
+import ports.RecipeUpdater
 import utils.recipeGenerator
 
 internal class UpdateRecipeTest : DescribeSpec({
@@ -21,28 +22,30 @@ internal class UpdateRecipeTest : DescribeSpec({
 
     it("updates an existing recipe") {
         val expectedRecipe = basicRecipe.copy(name = "NOT", description = "EQUAL")
-        val recipeRepository = mockk<RecipeRepository> {
-            every { find(parameters.id) } returns basicRecipe
-            every { update(expectedRecipe) } just runs
+        val recipeFinder = mockk<RecipeFinder> {
+            coEvery { this@mockk(parameters.id) } returns basicRecipe
         }
-        val updateRecipe = UpdateRecipe(recipeRepository)
+        val recipeUpdater = mockk<RecipeUpdater> {
+            coEvery { this@mockk(expectedRecipe) } just runs
+        }
+        val updateRecipe = UpdateRecipe(recipeFinder, recipeUpdater)
 
         updateRecipe(parameters)
 
-        verify(exactly = 1) {
-            recipeRepository.update(expectedRecipe)
+        coVerify(exactly = 1) {
+            recipeFinder(parameters.id)
+            recipeUpdater(expectedRecipe)
         }
     }
 
     it("throws a 'RecipeNotFound' if the recipe doesn't exist") {
-        val recipeRepository = mockk<RecipeRepository> {
-            every { find(parameters.id) } returns null
+        val recipeFinder = mockk<RecipeFinder> {
+            coEvery { this@mockk(parameters.id) } returns null
         }
-        val updateRecipe = UpdateRecipe(recipeRepository)
+        val recipeUpdater = mockk<RecipeUpdater>()
+        val updateRecipe = UpdateRecipe(recipeFinder, recipeUpdater)
 
-        val act = { updateRecipe(parameters) }
-
-        shouldThrow<RecipeNotFound>(act)
-        verify(exactly = 1) { recipeRepository.find(parameters.id) }
+        shouldThrow<RecipeNotFound> { updateRecipe(parameters) }
+        coVerify { recipeUpdater wasNot called }
     }
 })

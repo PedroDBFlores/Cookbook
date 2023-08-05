@@ -5,7 +5,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.property.arbitrary.next
 import io.mockk.*
-import ports.RecipeTypeRepository
+import ports.RecipeTypeFinderById
+import ports.RecipeTypeUpdater
 import utils.recipeTypeGenerator
 
 internal class UpdateRecipeTypeTest : DescribeSpec({
@@ -13,11 +14,13 @@ internal class UpdateRecipeTypeTest : DescribeSpec({
 
     it("updates a recipe type") {
         val expectedRecipeType = currentRecipeType.copy(name = "Cake")
-        val recipeTypeRepository = mockk<RecipeTypeRepository> {
-            every { find(expectedRecipeType.id) } returns currentRecipeType
-            every { update(expectedRecipeType) } just runs
+        val recipeTypeFinderById = mockk<RecipeTypeFinderById> {
+            coEvery { this@mockk(expectedRecipeType.id) } returns currentRecipeType
         }
-        val updateRecipeType = UpdateRecipeType(recipeTypeRepository)
+        val recipeTypeUpdater = mockk<RecipeTypeUpdater> {
+            coEvery { this@mockk(expectedRecipeType) } just Runs
+        }
+        val updateRecipeType = UpdateRecipeType(recipeTypeFinderById, recipeTypeUpdater)
 
         updateRecipeType(
             UpdateRecipeType.Parameters(
@@ -26,18 +29,20 @@ internal class UpdateRecipeTypeTest : DescribeSpec({
             )
         )
 
-        verify(exactly = 1) {
-            recipeTypeRepository.update(expectedRecipeType)
+        coVerify(exactly = 1) {
+            recipeTypeFinderById(expectedRecipeType.id)
+            recipeTypeUpdater(expectedRecipeType)
         }
     }
 
     it("throws if the recipe type doesn't exist") {
-        val recipeTypeRepository = mockk<RecipeTypeRepository> {
-            every { find(currentRecipeType.id) } returns null
+        val recipeTypeFinderById = mockk<RecipeTypeFinderById> {
+            coEvery { this@mockk(any()) } returns null
         }
-        val updateRecipeType = UpdateRecipeType(recipeTypeRepository)
+        val recipeTypeUpdater = mockk<RecipeTypeUpdater>()
+        val updateRecipeType = UpdateRecipeType(recipeTypeFinderById, recipeTypeUpdater)
 
-        val act = {
+        shouldThrow<RecipeTypeNotFound> {
             updateRecipeType(
                 UpdateRecipeType.Parameters(
                     id = currentRecipeType.id,
@@ -46,7 +51,6 @@ internal class UpdateRecipeTypeTest : DescribeSpec({
             )
         }
 
-        shouldThrow<RecipeTypeNotFound>(act)
-        verify(exactly = 1) { recipeTypeRepository.find(currentRecipeType.id) }
+        coVerify { recipeTypeUpdater wasNot called }
     }
 })

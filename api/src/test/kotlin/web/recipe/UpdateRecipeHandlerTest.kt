@@ -48,7 +48,7 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
             preparingSteps = updateRecipeRepresenterMap.getTyped("preparingSteps")
         )
         val updateRecipe = mockk<UpdateRecipe> {
-            every { this@mockk(updateParameters) } just runs
+            coEvery { this@mockk(updateParameters) } just runs
         }
 
         testApplication {
@@ -62,7 +62,7 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                 }
             ) {
                 status.shouldBe(HttpStatusCode.OK)
-                verify(exactly = 1) { updateRecipe(updateParameters) }
+                coVerify(exactly = 1) { updateRecipe(updateParameters) }
             }
         }
     }
@@ -97,7 +97,7 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
     ).forEach { (jsonBody, description) ->
         it("returns 400 when $description") {
             val updateRecipe = mockk<UpdateRecipe> {
-                every { this@mockk(any()) } just runs
+                coEvery { this@mockk(any()) } just runs
             }
 
             testApplication {
@@ -111,7 +111,7 @@ internal class UpdateRecipeHandlerTest : DescribeSpec({
                     }
                 ) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify { updateRecipe wasNot called }
+                    coVerify { updateRecipe wasNot called }
                 }
             }
         }

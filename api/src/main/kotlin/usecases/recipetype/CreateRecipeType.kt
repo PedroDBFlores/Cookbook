@@ -2,14 +2,18 @@ package usecases.recipetype
 
 import errors.RecipeTypeAlreadyExists
 import model.RecipeType
-import ports.RecipeTypeRepository
+import ports.RecipeTypeCreator
+import ports.RecipeTypeFinderByName
 
-class CreateRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
+class CreateRecipeType(
+    private val recipeTypeFinderByName: RecipeTypeFinderByName,
+    private val recipeTypeCreator: RecipeTypeCreator
+) {
 
-    operator fun invoke(parameters: Parameters): Int = with(parameters) {
-        recipeTypeRepository.find(name)?.let {
+    suspend operator fun invoke(parameters: Parameters): Int = with(parameters) {
+        recipeTypeFinderByName(name)?.let {
             throw RecipeTypeAlreadyExists(name)
-        } ?: recipeTypeRepository.create(RecipeType(name = name))
+        } ?: recipeTypeCreator(RecipeType(name = name))
     }
 
     data class Parameters(val name: String)

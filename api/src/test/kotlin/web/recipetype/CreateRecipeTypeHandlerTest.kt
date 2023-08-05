@@ -16,10 +16,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import io.mockk.called
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import model.CreateResult
 import server.modules.contentNegotiationModule
 import usecases.recipetype.CreateRecipeType
@@ -41,7 +38,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         val expectedRecipeId = intSource.next()
         val expectedParameters = CreateRecipeType.Parameters(stringSource.next())
         val createRecipeTypeMock = mockk<CreateRecipeType> {
-            every { this@mockk(expectedParameters) } returns expectedRecipeId
+            coEvery { this@mockk(expectedParameters) } returns expectedRecipeId
         }
         val jsonBody = createJSONObject("name" to expectedParameters.name)
 
@@ -57,7 +54,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
             ) {
                 status.shouldBe(HttpStatusCode.Created)
                 bodyAsText().shouldMatchJson(CreateResult(expectedRecipeId).toJson())
-                verify(exactly = 1) { createRecipeTypeMock(expectedParameters) }
+                coVerify(exactly = 1) { createRecipeTypeMock(expectedParameters) }
             }
         }
     }
@@ -66,7 +63,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
         val expectedName = stringSource.next()
         val jsonBody = createJSONObject("name" to expectedName)
         val createRecipeTypeMock = mockk<CreateRecipeType> {
-            every { this@mockk(any()) } throws RecipeTypeAlreadyExists(expectedName)
+            coEvery { this@mockk(any()) } throws RecipeTypeAlreadyExists(expectedName)
         }
 
         shouldThrow<RecipeTypeAlreadyExists> {
@@ -101,7 +98,7 @@ internal class CreateRecipeTypeHandlerTest : DescribeSpec({
                     }
                 ) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify { createRecipeTypeMock wasNot called }
+                    coVerify { createRecipeTypeMock wasNot called }
                 }
             }
         }

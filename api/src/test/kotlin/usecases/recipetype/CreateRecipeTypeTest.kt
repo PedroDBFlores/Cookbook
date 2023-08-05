@@ -4,11 +4,12 @@ import errors.RecipeTypeAlreadyExists
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.property.arbitrary.next
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import ports.RecipeTypeRepository
+import io.mockk.*
+import model.RecipeType
+import ports.RecipeTypeCreator
+import ports.RecipeTypeFinderByName
 import utils.recipeTypeGenerator
 
 internal class CreateRecipeTypeTest : DescribeSpec({
@@ -16,32 +17,38 @@ internal class CreateRecipeTypeTest : DescribeSpec({
         val basicRecipeType = recipeTypeGenerator.next()
 
         it("creates a recipe type") {
-            val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(ofType<String>()) } returns null
-                every { create(basicRecipeType.copy(id = 0)) } returns 1
+            val recipeTypeFinderByName = mockk<RecipeTypeFinderByName> {
+                coEvery { this@mockk(any()) } returns null
             }
-            val createRecipeType = CreateRecipeType(recipeTypeRepository)
+            val recipeTypeCreator = mockk<RecipeTypeCreator> {
+                coEvery { this@mockk(basicRecipeType.copy(id = 0)) } returns 1
+            }
+            val createRecipeType = CreateRecipeType(
+                recipeTypeFinderByName, recipeTypeCreator
+            )
 
             val recipeTypeId = createRecipeType(CreateRecipeType.Parameters(basicRecipeType.name))
 
             recipeTypeId.shouldBe(1)
-            verify(exactly = 1) {
-                recipeTypeRepository.find(basicRecipeType.name)
-                recipeTypeRepository.create(basicRecipeType.copy(id = 0))
+            coVerify(exactly = 1) {
+                recipeTypeFinderByName(basicRecipeType.name)
+                recipeTypeCreator(basicRecipeType.copy(id = 0))
             }
         }
 
         it("throws a 'RecipeTypeAlreadyExists' when there is already one with the same name") {
-            val recipeTypeRepository = mockk<RecipeTypeRepository> {
-                every { find(basicRecipeType.name) } returns basicRecipeType
+            val recipeTypeFinderByName = mockk<RecipeTypeFinderByName> {
+                coEvery { this@mockk(any()) } returns basicRecipeType
             }
-            val createRecipeType = CreateRecipeType(recipeTypeRepository)
+            val recipeTypeCreator = mockk<RecipeTypeCreator>()
+            val createRecipeType = CreateRecipeType(
+                recipeTypeFinderByName, recipeTypeCreator
+            )
 
-            val act = { createRecipeType(CreateRecipeType.Parameters(basicRecipeType.name)) }
-
-            shouldThrow<RecipeTypeAlreadyExists>(act)
-            verify(exactly = 1) { recipeTypeRepository.find(basicRecipeType.name) }
-            verify(exactly = 0) { recipeTypeRepository.create(any()) }
+            shouldThrow<RecipeTypeAlreadyExists> {
+                createRecipeType(CreateRecipeType.Parameters(basicRecipeType.name))
+            }
+            coVerify { recipeTypeCreator wasNot Called }
         }
     }
 })

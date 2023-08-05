@@ -3,10 +3,8 @@ package usecases.recipetype
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.next
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import ports.RecipeTypeRepository
+import io.mockk.*
+import ports.RecipeTypeLister
 import utils.recipeTypeGenerator
 
 internal class GetAllRecipeTypesTest : DescribeSpec({
@@ -15,14 +13,14 @@ internal class GetAllRecipeTypesTest : DescribeSpec({
             recipeTypeGenerator.next(),
             recipeTypeGenerator.next()
         )
-        val recipeTypeRepository = mockk<RecipeTypeRepository> {
-            every { getAll() } returns expectedRecipeTypes
+        val recipeTypeLister = mockk<RecipeTypeLister> {
+            coEvery { this@mockk() } returns expectedRecipeTypes
         }
-        val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeRepository)
+        val getAllRecipeTypes = GetAllRecipeTypes(recipeTypeLister)
 
         val recipeTypes = getAllRecipeTypes()
 
         recipeTypes.shouldBe(expectedRecipeTypes)
-        verify(exactly = 1) { recipeTypeRepository.getAll() }
+        coVerify(exactly = 1) { recipeTypeLister() }
     }
 })

@@ -28,7 +28,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
     it("deletes a recipe returning 204") {
         val recipeId = intSource.next()
         val deleteRecipeMock = mockk<DeleteRecipe> {
-            every { this@mockk(DeleteRecipe.Parameters(recipeId)) } just runs
+            coEvery { this@mockk(DeleteRecipe.Parameters(recipeId)) } just runs
         }
 
         testApplication {
@@ -37,7 +37,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
 
             with(client.delete("/api/recipe/$recipeId")) {
                 status.shouldBe(HttpStatusCode.NoContent)
-                verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
+                coVerify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
             }
         }
     }
@@ -45,7 +45,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
     it("returns 404 if the recipe doesn't exist") {
         val recipeId = intSource.next()
         val deleteRecipeMock = mockk<DeleteRecipe> {
-            every { this@mockk(DeleteRecipe.Parameters(recipeId)) } throws RecipeNotFound(recipeId)
+            coEvery { this@mockk(DeleteRecipe.Parameters(recipeId)) } throws RecipeNotFound(recipeId)
         }
 
         testApplication {
@@ -54,7 +54,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
 
             with(client.delete("/api/recipe/$recipeId")) {
                 status.shouldBe(HttpStatusCode.NotFound)
-                verify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
+                coVerify(exactly = 1) { deleteRecipeMock(DeleteRecipe.Parameters(recipeId)) }
             }
         }
     }
@@ -78,7 +78,7 @@ internal class DeleteRecipeHandlerTest : DescribeSpec({
 
                 with(client.delete("/api/recipe/$pathParam")) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify { deleteRecipeMock wasNot called }
+                    coVerify { deleteRecipeMock wasNot called }
                 }
             }
         }

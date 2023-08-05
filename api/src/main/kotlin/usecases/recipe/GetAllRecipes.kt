@@ -1,8 +1,8 @@
 package usecases.recipe
 
 import model.Recipe
-import ports.RecipeRepository
+import ports.RecipeLister
 
-class GetAllRecipes(private val recipeRepository: RecipeRepository) {
-    operator fun invoke(): List<Recipe> = recipeRepository.getAll()
+class GetAllRecipes(private val recipeLister: RecipeLister) {
+    suspend operator fun invoke(): List<Recipe> = recipeLister()
 }

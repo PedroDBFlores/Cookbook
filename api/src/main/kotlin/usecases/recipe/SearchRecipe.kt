@@ -2,11 +2,11 @@ package usecases.recipe
 
 import model.Recipe
 import model.SearchResult
-import ports.RecipeRepository
+import ports.RecipeSearcher
 
-class SearchRecipe(private val recipeRepository: RecipeRepository) {
-    operator fun invoke(parameters: Parameters): SearchResult<Recipe> =
-        recipeRepository.search(
+class SearchRecipe(private val recipeSearcher: RecipeSearcher) {
+    suspend operator fun invoke(parameters: Parameters): SearchResult<Recipe> =
+        recipeSearcher(
             name = parameters.name,
             description = parameters.description,
             recipeTypeId = parameters.recipeTypeId,

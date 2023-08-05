@@ -1,12 +1,12 @@
 package usecases.recipe
 
 import errors.RecipeNotFound
-import ports.RecipeRepository
+import ports.RecipeDeleter
 
-class DeleteRecipe(private val recipeRepository: RecipeRepository) {
+class DeleteRecipe(private val recipeDeleter: RecipeDeleter) {
 
-    operator fun invoke(parameters: Parameters) {
-        if (!recipeRepository.delete(parameters.recipeId)) throw RecipeNotFound(parameters.recipeId)
+    suspend operator fun invoke(parameters: Parameters) {
+        if (!recipeDeleter(parameters.recipeId)) throw RecipeNotFound(parameters.recipeId)
     }
 
     data class Parameters(val recipeId: Int)

@@ -29,7 +29,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             recipeTypeId = intSource.next()
         )
         val deleteRecipeType = mockk<DeleteRecipeType> {
-            every { this@mockk(expectedParameters) } just runs
+            coEvery { this@mockk(expectedParameters) } just runs
         }
 
         testApplication {
@@ -38,7 +38,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
 
             with(client.delete("/api/recipetype/${expectedParameters.recipeTypeId}")) {
                 status.shouldBe(HttpStatusCode.NoContent)
-                verify(exactly = 1) { deleteRecipeType(expectedParameters) }
+                coVerify(exactly = 1) { deleteRecipeType(expectedParameters) }
             }
         }
     }
@@ -48,7 +48,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
             recipeTypeId = intSource.next()
         )
         val deleteRecipeType = mockk<DeleteRecipeType> {
-            every { this@mockk(expectedParameters) } throws RecipeTypeNotFound(expectedParameters.recipeTypeId)
+            coEvery { this@mockk(expectedParameters) } throws RecipeTypeNotFound(expectedParameters.recipeTypeId)
         }
 
         testApplication {
@@ -57,7 +57,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
 
             with(client.delete("/api/recipetype/${expectedParameters.recipeTypeId}")) {
                 status.shouldBe(HttpStatusCode.NotFound)
-                verify(exactly = 1) { deleteRecipeType(expectedParameters) }
+                coVerify(exactly = 1) { deleteRecipeType(expectedParameters) }
             }
         }
     }
@@ -81,7 +81,7 @@ internal class DeleteRecipeTypeHandlerTest : DescribeSpec({
 
                 with(client.delete("/api/recipetype/$pathParam")) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify { deleteRecipeType wasNot called }
+                    coVerify { deleteRecipeType wasNot called }
                 }
             }
         }

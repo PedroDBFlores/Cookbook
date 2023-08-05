@@ -2,12 +2,16 @@ package usecases.recipetype
 
 import errors.RecipeTypeNotFound
 import model.RecipeType
-import ports.RecipeTypeRepository
+import ports.RecipeTypeFinderById
+import ports.RecipeTypeUpdater
 
-class UpdateRecipeType(private val recipeTypeRepository: RecipeTypeRepository) {
-    operator fun invoke(parameters: Parameters): Unit = with(parameters) {
-        recipeTypeRepository.find(id)?.let {
-            recipeTypeRepository.update(RecipeType(id, name))
+class UpdateRecipeType(
+    private val recipeTypeFinderById: RecipeTypeFinderById,
+    private val recipeTypeUpdater: RecipeTypeUpdater
+) {
+    suspend operator fun invoke(parameters: Parameters): Unit = with(parameters) {
+        recipeTypeFinderById(id)?.let {
+            recipeTypeUpdater(RecipeType(id, name))
         } ?: throw RecipeTypeNotFound(id = id)
     }
 

@@ -11,10 +11,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import io.mockk.Called
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import model.Recipe
 import model.SearchResult
 import server.modules.contentNegotiationModule
@@ -44,7 +41,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
         val requestBody = createJSONObject("name" to "name")
 
         val searchRecipe = mockk<SearchRecipe> {
-            every { this@mockk(SearchRecipe.Parameters(name = "name")) } returns expectedSearchResult
+            coEvery { this@mockk(SearchRecipe.Parameters(name = "name")) } returns expectedSearchResult
         }
 
         testApplication {
@@ -59,7 +56,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             ) {
                 status.shouldBe(HttpStatusCode.OK)
                 bodyAsText().shouldMatchJson(expectedSearchResult.toJson())
-                verify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(name = "name")) }
+                coVerify(exactly = 1) { searchRecipe(SearchRecipe.Parameters(name = "name")) }
             }
         }
     }
@@ -71,7 +68,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             results = listOf()
         )
         val searchRecipe = mockk<SearchRecipe> {
-            every { this@mockk(SearchRecipe.Parameters()) } returns expectedSearchResult
+            coEvery { this@mockk(SearchRecipe.Parameters()) } returns expectedSearchResult
         }
 
         testApplication {
@@ -86,9 +83,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
             ) {
                 status.shouldBe(HttpStatusCode.OK)
                 bodyAsText().shouldMatchJson(expectedSearchResult.toJson())
-                verify(exactly = 1) {
-                    searchRecipe(SearchRecipe.Parameters())
-                }
+                coVerify(exactly = 1) { searchRecipe(SearchRecipe.Parameters()) }
             }
         }
     }
@@ -113,7 +108,7 @@ internal class SearchRecipeHandlerTest : DescribeSpec({
                     }
                 ) {
                     status.shouldBe(HttpStatusCode.BadRequest)
-                    verify { searchRecipe wasNot Called }
+                    coVerify { searchRecipe wasNot Called }
                 }
             }
         }
