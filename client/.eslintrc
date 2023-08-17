@@ -1,0 +1,53 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint",
+        "solid",
+        "testing-library"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:solid/typescript"
+    ],
+    "rules": {
+        "prefer-const": "error",
+        "semi": [
+            2,
+            "never"
+        ],
+        "quotes": [
+            "error",
+            "single",
+            {
+                "allowTemplateLiterals": true
+            }
+        ],
+        "@typescript-eslint/member-delimiter-style": [
+            "error",
+            {
+                "multiline": {
+                    "delimiter": "none", // 'none' or 'semi' or 'comma'
+                    "requireLast": true
+                },
+                "singleline": {
+                    "delimiter": "semi", // 'semi' or 'comma'
+                    "requireLast": false
+                }
+            }
+        ],
+        "@typescript-eslint/ban-ts-comment": 0
+    },
+    "overrides": [
+        {
+          "files": ["*.test.tsx", "*.test.ts", "tests/**"],
+          "rules": {
+            "testing-library/prefer-find-by": "error",
+            "testing-library/no-debugging-utils": "error",
+            "no-restricted-globals": ["error", "console"]
+          }
+        }
+      ]
+}
