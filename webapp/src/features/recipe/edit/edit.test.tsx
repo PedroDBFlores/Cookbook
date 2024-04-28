@@ -5,7 +5,6 @@ import createRecipeTypeService, { RecipeType } from "services/recipe-type-servic
 import { WrapperWithRouter, WrapperWithRoutes, WrapWithCommonContexts } from "../../../../tests/render-helpers"
 import userEvent from "@testing-library/user-event"
 import EditRecipe from "./edit"
-import "jest-chain"
 
 jest.mock("services/recipe-type-service")
 jest.mock("services/recipe-service")

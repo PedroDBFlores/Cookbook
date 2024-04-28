@@ -38,6 +38,8 @@ const TablePagination: React.FC<TablePaginationProps> = ({
         onChangePage(Math.max(1, pageNumber))
     }
 
+    console.log("cenas", page >= pageNumber)
+
     return <Flex>
         <Box>
             <Select aria-label={t("pagination.rows-per-page")}
@@ -56,25 +58,25 @@ const TablePagination: React.FC<TablePaginationProps> = ({
             <ButtonGroup isAttached>
                 <IconButton
                     onClick={handleFirstPageButtonClick}
-                    disabled={page === 1}
+                    isDisabled={page === 1}
                     aria-label={t("pagination.first-page-aria-label")}>
                     <MdFirstPage/>
                 </IconButton>
                 <IconButton
                     onClick={handlePreviousButtonClick}
-                    disabled={page === 1}
+                    isDisabled={page === 1}
                     aria-label={t("pagination.previous-page-aria-label")}>
                     <MdKeyboardArrowLeft/>
                 </IconButton>
                 <IconButton
                     onClick={handleNextButtonClick}
-                    disabled={page >= pageNumber}
+                    isDisabled={page >= pageNumber}
                     aria-label={t("pagination.next-page-aria-label")}>
                     <MdKeyboardArrowRight/>
                 </IconButton>
                 <IconButton
                     onClick={handleLastPageButtonClick}
-                    disabled={page >= pageNumber}
+                    isDisabled={page >= pageNumber}
                     aria-label={t("pagination.last-page-aria-label")}>
                     <MdLastPage/>
                 </IconButton>

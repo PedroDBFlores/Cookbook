@@ -34,6 +34,9 @@
       "@webapp/utils/*": [
         "./utils"
       ]
-    }
+    },
+    "types": [
+      "@testing-library/jest-dom"
+    ]
   }
 }

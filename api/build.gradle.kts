@@ -1,10 +1,10 @@
 plugins {
     application
-    kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.serialization") version "1.9.23"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.47.0"
-    id("com.adarshr.test-logger") version "3.2.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 group = "pt.pedro"
@@ -18,21 +18,21 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val logbackVersion = "1.4.9"
+val logbackVersion = "1.5.5"
 val hopliteVersion = "2.7.4"
 val ktorVersion = "2.3.3"
-val exposedVersion = "0.42.0"
-val h2Version = "2.2.220"
-val postgresVersion = "42.6.0"
-val flywayVersion = "9.21.1"
+val exposedVersion = "0.49.0"
+val h2Version = "2.2.224"
+val postgresVersion = "42.7.3"
+val flywayVersion = "10.11.0"
 
-val kotestVersion = "5.6.2"
+val kotestVersion = "5.8.1"
 val kotestAssertionsKtorVersion = "2.0.0"
-val mockkVersion = "1.13.5"
+val mockkVersion = "1.13.10"
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -46,7 +46,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.postgresql:postgresql:$postgresVersion")
-    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
@@ -70,10 +70,8 @@ sourceSets {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+kotlin {
+    jvmToolchain(21)
 }
 
 tasks.withType<Test> {
