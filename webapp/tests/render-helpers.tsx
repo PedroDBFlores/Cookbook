@@ -39,7 +39,7 @@ WrapperWithRoutes.propTypes = {
     routeConfiguration: PropTypes.array.isRequired
 }
 
-export const WrapperWithRouter: React.FC<{ children: JSX.Element; initialPath?: string, elementRoute?: string }> = ({ children, initialPath = "/", elementRoute = "" }) => <WrapperWithRoutes initialPath={initialPath}
+export const WrapperWithRouter: React.FC<{ children: JSX.Element; initialPath?: string; elementRoute?: string }> = ({ children, initialPath = "/", elementRoute = "" }) => <WrapperWithRoutes initialPath={initialPath}
     routeConfiguration={[
         {
             path: elementRoute,
